@@ -1,0 +1,23 @@
+Need some better documentation -- in the source, as manual pages and on the Groovy website.
+
+In an include statement, if the class name cannot be found then you get a weird error message:
+
+  Caused by: groovy.lang.MissingPropertyException: No such property: org for class: build
+          at groovy.lang.MetaClassImpl.getProperty(MetaClassImpl.java:734)
+
+Need to trap all exception that might sensibly happen due to reasonable errors in Gant scripts
+so that sensible error messages can be issued.  Also avoids the huge stack tracers.
+
+If there are compilation errors in the Gant file then sometimes the proper error message is not reported,
+just an exception stack trace.  Using groovy on the Gant file generally shows the errors but Gant should
+have done the right thing in the first place.
+
+Get the GANTLIB stuff finished so it actually works.
+
+task ( flob : '' , thing : '' ) { . . . } is valid but not handled sensibly.
+
+Add a --propertyfile <filename> option.
+
+
+$Revision$
+$Date$

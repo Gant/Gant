@@ -1,0 +1,61 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+  <head>
+    <title>Gant</title>
+  </head>
+
+  <body>
+    <p>
+      Gant is a Groovy-based build framework.  It can replace the use of Ant and Maven.
+    </p>
+    <p>
+      Gant is a lightweight wrapper around Groovy's <code>AntBuilder</code> that allows Ant tasks to be
+      scripted using Groovy rather than having to specify the build systems using XML.
+    </p>
+    <p>
+      A Gant file is a specification of a set of targets plus other bits and pieces of Groovy code.  Thus a
+      Gant build specification is of a set of targets just as an Ant build specification is.  Each
+      target creates a closure in the binding so that it can be called as a function from other targets.
+      This means that dependencies between targets are programmed as function calls.
+    </p>
+    <p>
+      Gant has a number of predefined objects, for example <code>Ant</code> and <code>includeTargets</code>.
+      <code>Ant</code> refers to a pre-constructed <code>AntBuilder</code> object.
+      <code>includeTargets</code> is the object that controls the inclusion of ready-made targets, for
+      example <code>gant.targets.Clean</code>.
+    </p>
+    <p>
+      Here is an example Gant script:
+    </p>
+    <blockquote>
+      <pre>
+includeTargets << gant.targets.Clean
+cleanPattern << [ '**/*~' ,  '**/*.bak' ]
+cleanDirectory << 'build'
+
+target ( 'default' : 'The default target.' ) {
+  println ( 'Default' )
+  depends ( clean )
+  Ant.echo ( message : 'A default message from Ant.' )
+  otherStuff ( )
+}
+
+target ( otherStuff : 'Other stuff' ) {
+  println ( 'OtherStuff' )
+  Ant.echo ( message : 'Another message from Ant.' )
+  clean ( )
+}
+      </pre>
+    </blockquote>
+    <p>
+      The function <code>depends</code> takes a list of targets and 'executes' them if and only if they have
+      not previously been executed.  This means that dependencies can be handled far more flexibly than they
+      can in Ant, leading to simpler target structures.
+    <hr>
+    <address><a href="mailto:russel@russel.org.uk">Russel Winder</a></address>
+<!-- Created: Fri May 18 07:10:41 BST 2007 -->
+<!-- hhmts start -->
+Last modified: Fri May 18 07:49:11 BST 2007
+<!-- hhmts end -->
+  </body>
+</html>

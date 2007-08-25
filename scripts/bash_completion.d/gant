@@ -1,0 +1,79 @@
+# -*- mode:shell-script -*-
+
+#  Gant -- A Groovy build tool based on scripting Ant tasks
+
+#  Copyright (C) 2006 Russel Winder <russel@russel.org.uk>
+
+#  Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in
+#  compliance with the License. You may obtain a copy of the License at
+#
+#    http://www.apache.org/licenses/LICENSE-2.0
+#
+#  Unless required by applicable law or agreed to in writing, software distributed under the License is
+#  distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or
+#  implied. See the License for the specific language governing permissions and limitations under the
+#  License.
+
+#  Programmable completion for the Groovy Ant (gant) command under bash.
+#  This file draws heavily on the rake and subversion file that come as standard with Bash 3.
+
+#  Author :  Russel Winder
+#  $Revision$
+#  $Date$
+#  Licence : ASL 2.0
+
+_gant()
+{
+    local cur prev gantf i
+
+    COMPREPLY=()
+    cur=${COMP_WORDS[COMP_CWORD]}
+    prev=${COMP_WORDS[COMP_CWORD-1]}
+    gantf="build.gant"
+
+    if [[ "$prev" == "-f" || "$prev" == "-l" ]]; then
+        _filedir
+        return 0
+    fi
+
+    if [[ "$cur" == *=* ]]; then
+        prev=${cur/=*/}
+        cur=${cur/*=/}
+        if [[ "$prev" == "--gantfile=" || "$prev" == "--gantlib=" || "$prev" == "--lib=" ]]; then
+            _filedir -o nospace
+            return 0
+        fi
+    fi
+
+    if [[ "$cur" == -* ]]; then
+        COMPREPLY=( $( compgen -W '-q --quiet -s --silent\
+            -h --help\
+            -T --targets -p --projecthelp\
+            -f '--gantfile='\
+            -l '--gantlib='
+            --lib='\
+            -- $cur ))
+    else
+
+        for (( i=0; i < ${#COMP_WORDS[@]}; i++)); do
+            case "${COMP_WORDS[i]}" in
+            -f|-file|-buildfile)
+                eval gantf=${COMP_WORDS[i+1]}
+                break
+                ;;
+            --gantfile=*|--gantfile\=*)
+                eval gantf=${COMP_WORDS[i]/*=/}
+                break
+                ;;
+            esac
+        done
+
+        [ ! -f $gantf ] && return 0
+
+        COMPREPLY=( $( gant -q -f "$gantf" -T | \
+            awk -F ' ' '/^gant / { print $2 }' | \
+            command grep "^$cur" ))
+
+    fi
+}
+complete -F _gant $filenames gant

@@ -1,0 +1,187 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!--
+
+  The Gant build framework Library.
+
+  Copyright © 2007 Russel Winder.
+
+  Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in
+  compliance with the License.  You may obtain a copy of the License at
+
+      http://www.apache.org/licenses/LICENSE-2.0
+
+  Unless required by applicable law or agreed to in writing, software distributed under the License is
+  distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  See the License for the specific language governing permissions and limitations under the License.
+
+  Russel Winder can be contacted by email at:  russel@russel.org.uk
+
+  $Revision: 739 $
+  $Date: 2007-06-20 18:52:13 +0100 (Wed, 20 Jun 2007) $
+
+-->
+
+<project
+  xmlns="http://maven.apache.org/POM/4.0.0"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd"
+>
+
+  <modelVersion>4.0.0</modelVersion>
+  <groupId>org.codehaus.groovy.gant</groupId>
+  <artifactId>gant</artifactId>
+  <packaging>jar</packaging>
+  <version>0.3.2-SNAPSHOT</version>
+  <name>Gant</name>
+  <description>
+    Gant is a Groovy-based build framework that provides a scripting system for Ant tasks.  With Ant the
+    build specification is an XML file, with Gant, the build specification is a Groovy script.  All the
+    underlying Ant tasks are used in the same way in Gant as with Ant, but using a programming language
+    rather than XML to specify the process means that imperative and declarative expression is possible,
+    without any hacking.
+  </description>
+  <url>http://groovy.codehaus.org/Gant</url>
+  <inceptionYear>2006</inceptionYear>
+  <licenses>
+    <license>
+      <name>ASL 2</name>
+      <url>http://www.apache.org/licenses/LICENSE-2.0</url>
+    </license>
+  </licenses>
+
+  <scm>
+    <connection>scm:svn:http://svn.codehaus.org/groovy/trunk/groovy/modules/gant</connection>
+    <url>http://svn.codehaus.org/groovy/trunk/groovy/modules/gant</url>
+  </scm>
+
+  <developers>
+    <developer>
+      <id>russel</id>
+      <name>Russel Winder</name>
+      <email>russel@concertant.com</email>
+      <organization>Concertant LLP</organization>
+    </developer>
+  </developers>
+
+  <!-- We are using the very latest snapshot of Jason Dillon's Maven Groovy Plugin, so we need to use the
+  right repository to get to it. -->
+
+  <repositories>
+    <repository>
+      <id>codehaus-snapshots</id>
+      <name>Codehaus Snapshots Repository</name>
+      <url>http://snapshots.repository.codehaus.org</url>
+      <layout>default</layout>
+      <snapshots>
+        <enabled>true</enabled>
+        <updatePolicy>daily</updatePolicy>
+        <checksumPolicy>ignore</checksumPolicy>
+      </snapshots>
+      <releases>
+        <enabled>false</enabled>
+      </releases>
+    </repository>
+  </repositories>
+
+  <pluginRepositories>
+    <pluginRepository>
+      <id>codehaus-snapshots</id>
+      <name>Codehaus Snapshots Repository</name>
+      <url>http://snapshots.repository.codehaus.org</url>
+      <layout>default</layout>
+      <snapshots>
+        <enabled>true</enabled>
+        <updatePolicy>daily</updatePolicy>
+        <checksumPolicy>ignore</checksumPolicy>
+      </snapshots>
+      <releases>
+        <enabled>false</enabled>
+      </releases>
+    </pluginRepository>
+  </pluginRepositories>
+  
+  <dependencies>
+    <dependency>
+      <groupId>org.codehaus.groovy</groupId>
+      <artifactId>groovy-all</artifactId>
+      <version>1.1-beta-2</version>
+    </dependency>
+  </dependencies>
+
+  <build>
+    <defaultGoal>install</defaultGoal>
+    <plugins>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-compiler-plugin</artifactId>
+        <configuration>
+          <source>1.4</source>
+          <target>1.4</target>
+          <debug>on</debug>
+<!--
+                  <excludes>
+                    <exclude>**/gant/tests/GantTestCase.java</exclude>
+                  </excludes>
+ -->
+        </configuration>
+      </plugin>
+      <plugin>
+        <groupId>org.codehaus.mojo.groovy</groupId>
+        <artifactId>groovy-maven-plugin</artifactId>
+        <executions>
+          <execution>
+            <goals>
+              <!--goal>generateStubs</goal-->
+              <goal>compile</goal>
+              <!--goal>generateTestStubs</goal-->
+              <goal>testCompile</goal>
+            </goals>
+          </execution>
+        </executions>
+      </plugin>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-clean-plugin</artifactId>
+        <configuration>
+          <filesets>
+            <fileset>
+              <directory>.</directory>
+              <includes>
+                <include>**/*~</include>
+              </includes>
+              <followSymlinks>false</followSymlinks>
+            </fileset>
+          </filesets>
+        </configuration>
+      </plugin>
+    </plugins>
+  </build>
+
+  <reporting>
+    <plugins>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-javadoc-plugin</artifactId>
+        <configuration>
+          <packageNames>Gant</packageNames>
+          <overview>${basedir}/overview.html</overview>
+          <private>yes</private>
+          <author>true</author>
+          <version>true</version>
+          <use>true</use>
+          <locale>en_GB</locale>
+          <source>1.4</source>
+          <bottom>Copyright &copy; 2007 Russel Winder.  All rights reserved.</bottom>
+          <charset>UTF-8</charset>
+          <breakIterator>yes</breakIterator>
+        </configuration>
+      </plugin>          
+      <plugin> 
+       <groupId>org.apache.maven.plugins</groupId> 
+         <artifactId>maven-surefire-report-plugin</artifactId> 
+      </plugin>
+    </plugins>
+  </reporting>
+  
+</project>

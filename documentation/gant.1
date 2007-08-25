@@ -1,0 +1,60 @@
+.TH gant 1 "2007-03-03" "Russel Winder"
+.SH NAME
+gant \- a Groovy-based build tool.  Ant task scripting without the XML.
+
+.SH SYNOPSIS
+.B gant
+[\fIoptions\fR] [\fItarget\fR [\fItarget2\fR [\fItarget3\fR] ...\fR]\fR]
+
+.SH DESCRIPTION
+
+.B gant
+is a tool for working with Ant tasks but using Groovy as the scripting language rather than using XML as a
+specification language.
+
+By default it takes information from
+.B build.gant
+which describes the targets.
+
+.TP
+\fB \-c,\-\-usecache\fR
+Whether to cache the generated class and perform modified checks on the file before re-compilation.
+.TP
+\fB \-n,\-\-dry\-run \fR
+Do not actually action any tasks.
+.TP
+\fB \-D <name>=<value>\fR
+Define <name> to have value <value>.
+Creates a variable named <name> for use in the scripts and a property
+named <name> for the Ant tasks.
+.TP
+\fB \-T,\-\-targets\fR
+Print out a list of the possible targets.
+.TP
+\fB \-V,\-\-version\fR
+Print lots of extra information.
+.TP
+\fB \-f,\-\-gantfile <build\-file>\fR
+Use the named build file instead of the default,
+.BR build.gant .
+.TP
+\fB \-h,\-\-help\fR
+Print out this message.
+.TP
+\fB \-l,\-\-gantlib <library>\fR
+A directory that contains classes to be used as extra Gant modules,
+.TP
+\fB \-p,\-\-projecthelp\fR
+Print out a list of the possible targets.
+.TP
+\fB \-q,\-\-quiet \fR
+Do not print out much when executing.
+.TP
+\fB \-s,\-\-silent\fR
+Print out nothing when executing.
+.TP
+\fB \-v,\-\-verbose\fR
+Print lots of extra information.
+
+.SH AUTHOR
+Gant and this manpage written by Russel Winder <russel@russel.org.uk>.

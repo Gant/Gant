@@ -1,0 +1,49 @@
+//  Gant -- A Groovy build tool based on scripting Ant tasks
+//
+//  Copyright © 2006 Russel Winder <russel@russel.org.uk>
+//
+//  Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in
+//  compliance with the License. You may obtain a copy of the License at
+//
+//    http://www.apache.org/licenses/LICENSE-2.0
+//
+//  Unless required by applicable law or agreed to in writing, software distributed under the License is
+//  distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or
+//  implied. See the License for the specific language governing permissions and limitations under the
+//  License.
+//
+//  Author : Russel Winder <russel@russel.org.uk>
+//  $Revision$
+//  $Date$
+
+//  Must be in the binding not be local variables so they are available to the closures.
+
+buildDirectory = 'build'
+sourceDirectory = 'source'
+exampleDirectory = sourceDirectory + '/example' 
+
+ //  The standard cleaning tool.
+
+includeTargets << org.codehaus.groovy.gant.targets.Clean
+cleanDirectory << buildDirectory
+
+cleanPattern << '**/*~'
+cleanPattern << '**/*.bak'
+
+//  Cannot have a target called run as it creates an infinite mutual recursion. :-(
+
+task ( runTest : 'Run the Ivy "Hello" test.' ) {
+  def classPathRef = 'classpath'
+  Ant.mkdir ( dir : buildDirectory )
+  Ant.path ( id : classPathRef )
+  includeTool << org.codehaus.groovy.gant.tools.Ivy
+  Ivy.cachepath ( organisation : 'apache' , module : 'commons-lang' , revision : '2.1' ,  pathid : classPathRef , inline : 'true' )
+  Ant.javac ( srcdir : sourceDirectory , destdir : buildDirectory , debug : 'true' , classpathref : classPathRef )
+  Ant.java ( classname : 'example.Hello' , classpathref : classPathRef ) {
+    classpath { pathelement ( location : buildDirectory ) }
+  }
+}
+
+task ( cleanCache : 'Clean the Ivy cache.' ) { Ant.delete ( dir : System.getenv ( ).HOME + '/.ivy/cache' ) }
+
+task ( 'default' : 'The default task in run.' ) { runTest ( ) }

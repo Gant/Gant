@@ -1,0 +1,64 @@
+0.3.2 (rXXXX)
+-------------
+
+Fixed problem with -V option.
+
+0.3.1 (r6962)
+-------------
+
+Added returning a sensible return code -- 0 for success and 1 for failure.
+
+Added extending of the classpath:
+      --lib <path> for individual jars.
+      Searching ~/.ant/lib for user collections of jar files.
+      Searching ANT_HOME/lib for jar files if ANT_HOME is defined.
+
+0.3.0 (r6320)
+-------------
+
+Works with both Groovy 1.0 release and the Groovy 1.1-beta-1 release.
+Changed from using `task' to using `target' as the string introducing a target.
+Added a Maven project processing tool.
+Added a mechanism for accessing the documentation string of a target.
+Improved the error reporting.
+
+
+0.2.4 (r5374)
+-------------
+
+Use System.properties.'file.separator' instead of / so things work on Windows.
+Added the ability to have multiple -D options so as to be able to define any number of variables/properties
+on the command line.
+Added specialized Grails build infrastructure.
+Implemented local caching of .class files to improve performance when executing scripts. This is an optional
+feature (disabled by default) and is enabled using the -c option of gant.
+Added the a LaTeX processing tool.
+
+0.2.3 (r4761)
+-------------
+
+Updated to use and work with Groovy 1.0 release.
+
+
+0.2.2 (r4329)
+-------------
+
+Licence changed from LGPL to ASL 2.0.
+Updated to use and work with Groovy 1.0 RC-1.
+Added gant.tool.Execute, works on Linux, Solaris and Mac OS X, not tested on Windows.
+Tidies up code and removed redundant bits.
+Package structure of the code changed.
+Enforced 1.4 class files.
+
+(There appears never to have been a version 0.2.1.)
+
+0.2.0 (r4160)
+------------
+
+First release of Gant.
+
+
+The Epoch (r3965)
+-----------------
+
+No release of 0.1.x of Gant ever made.
