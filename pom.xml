@@ -2,7 +2,7 @@
 
 <!--
 
-  The Gant build framework Library.
+  The Gant build framework.
 
   Copyright © 2007 Russel Winder.
 
@@ -29,11 +29,12 @@
 >
 
   <modelVersion>4.0.0</modelVersion>
+
   <groupId>org.codehaus.groovy.gant</groupId>
   <artifactId>gant</artifactId>
   <packaging>jar</packaging>
-  <version>0.3.2-SNAPSHOT</version>
   <name>Gant</name>
+  <version>0.3.2-SNAPSHOT</version>
   <description>
     Gant is a Groovy-based build framework that provides a scripting system for Ant tasks.  With Ant the
     build specification is an XML file, with Gant, the build specification is a Groovy script.  All the
@@ -43,26 +44,85 @@
   </description>
   <url>http://groovy.codehaus.org/Gant</url>
   <inceptionYear>2006</inceptionYear>
+
+  <organization>
+    <name>Russel Winder</name>
+    <url>http://www.russel.org.uk</url>
+  </organization>
+  
+  <prerequisites>
+    <maven>2.0.5</maven>
+  </prerequisites>
+
+  <issueManagement>
+    <system>jira</system>
+    <url>http://jira.codehaus.org/browse/GROOVY</url>
+  </issueManagement>
+
+  <!--ciManagement>
+  </ciManagement-->
+
+  <mailingLists>
+    <mailingList>
+      <name>Groovy Users</name>
+      <subscribe>http://xircles.codehaus.org/manage_email</subscribe>
+      <unsubscribe>http://xircles.codehaus.org/manage_email</unsubscribe>
+      <post>user@groovy.codehaus.org</post>
+      <archive>http://archive.groovy.codehaus.org/user</archive>
+    </mailingList>
+    <mailingList>
+      <name>Groovy Developerss</name>
+      <subscribe>http://xircles.codehaus.org/manage_email</subscribe>
+      <unsubscribe>http://xircles.codehaus.org/manage_email</unsubscribe>
+      <post>dev@groovy.codehaus.org</post>
+      <archive>http://archive.groovy.codehaus.org/dev</archive>
+    </mailingList>
+  </mailingLists>
+
   <licenses>
     <license>
-      <name>ASL 2</name>
-      <url>http://www.apache.org/licenses/LICENSE-2.0</url>
+      <name>The Apache Software License, Version 2.0</name>
+      <url>http://www.apache.org/licenses/LICENSE-2.0.txt</url>
+      <distribution>repo</distribution>
     </license>
   </licenses>
 
   <scm>
-    <connection>scm:svn:http://svn.codehaus.org/groovy/trunk/groovy/modules/gant</connection>
-    <url>http://svn.codehaus.org/groovy/trunk/groovy/modules/gant</url>
+    <!--connection>scm:svn:svn://svn.codehaus.org/groovy/gant</connection-->
+    <connection>scm:svn:http://svn.codehaus.org/groovy/gant</connection>
+    <!--developerConnection>scm:svn:https://svn.codehaus.org/groovy/gant</developerConnection-->
+    <developerConnection>scm:svn:svn+ssh://svn.codehaus.org/groovy/gant</developerConnection>
+    <url>http://fisheye.codehaus.org/browse/groovy/gant</url>
   </scm>
 
+  <distributionManagement>
+    <repository>
+      <id>codehaus.org</id>
+      <url>dav:https://dav.codehaus.org/repository/groovy</url>
+    </repository>
+    <snapshotRepository>
+      <id>codehaus.org</id>
+      <url>dav:https://dav.codehaus.org/snapshots.repository/groovy</url>
+    </snapshotRepository>
+    <site>
+      <id>codehaus.org</id>
+      <url>dav:https://dav.codehaus.org/groovy</url>
+    </site>
+  </distributionManagement>
+  
   <developers>
     <developer>
       <id>russel</id>
       <name>Russel Winder</name>
+      <url>http://www.russel.org.uk</url>
       <email>russel@concertant.com</email>
       <organization>Concertant LLP</organization>
+      <organizationUrl>http://www.concertant.com</organizationUrl>
     </developer>
   </developers>
+
+  <!--contributors>
+  </contributors-->
 
   <!-- We are using the very latest snapshot of Jason Dillon's Maven Groovy Plugin, so we need to use the
   right repository to get to it. -->
@@ -100,7 +160,7 @@
       </releases>
     </pluginRepository>
   </pluginRepositories>
-  
+
   <dependencies>
     <dependency>
       <groupId>org.codehaus.groovy</groupId>
@@ -108,10 +168,32 @@
       <version>1.1-beta-2</version>
     </dependency>
   </dependencies>
-
+  
   <build>
     <defaultGoal>install</defaultGoal>
     <plugins>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-enforcer-plugin</artifactId>
+        <executions>
+          <execution>
+            <phase>validate</phase>
+            <goals>
+              <goal>enforce</goal>
+            </goals>
+            <configuration>
+              <rules>
+                <requireJavaVersion>
+                  <version>[1.4,1.7)</version>
+                </requireJavaVersion>
+                <requireMavenVersion>
+                  <version>[2.0.5,)</version>
+                </requireMavenVersion>
+              </rules>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-compiler-plugin</artifactId>
@@ -119,11 +201,13 @@
           <source>1.4</source>
           <target>1.4</target>
           <debug>on</debug>
-<!--
-                  <excludes>
-                    <exclude>**/gant/tests/GantTestCase.java</exclude>
-                  </excludes>
- -->
+        </configuration>
+      </plugin>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-surefire-plugin</artifactId>
+        <configuration>
+          <redirectTestOutputToFile>true</redirectTestOutputToFile>
         </configuration>
       </plugin>
       <plugin>
@@ -142,6 +226,31 @@
       </plugin>
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-jar-plugin</artifactId>
+        <configuration>
+          <archive>
+            <manifestEntries>
+              <Extension-Name>gant</Extension-Name>
+              <Specification-Title>Gant: Scripting Ant tasks with Groovy.</Specification-Title>
+              <Specification-Version>${pom.version}</Specification-Version>
+              <Specification-Vendor>The Codehaus</Specification-Vendor>
+              <Implementation-Title>Gant: Scripting Ant tasks with Groovy.</Implementation-Title>
+              <Implementation-Version>${pom.version}</Implementation-Version>
+              <Implementation-Vendor>The Codehaus</Implementation-Vendor>
+              <url>${pom.url}</url>
+            </manifestEntries>
+          </archive>
+        </configuration>
+      </plugin>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-javadoc-plugin</artifactId>
+        <configuration>
+          <source>1.4</source>
+        </configuration>
+      </plugin>
+       <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-clean-plugin</artifactId>
         <configuration>
           <filesets>
@@ -157,7 +266,7 @@
       </plugin>
     </plugins>
   </build>
-
+  
   <reporting>
     <plugins>
       <plugin>
@@ -177,10 +286,6 @@
           <breakIterator>yes</breakIterator>
         </configuration>
       </plugin>          
-      <plugin> 
-       <groupId>org.apache.maven.plugins</groupId> 
-         <artifactId>maven-surefire-report-plugin</artifactId> 
-      </plugin>
     </plugins>
   </reporting>
   
