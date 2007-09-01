@@ -88,10 +88,8 @@
   </licenses>
 
   <scm>
-    <!--connection>scm:svn:svn://svn.codehaus.org/groovy/gant/trunk</connection-->
     <connection>scm:svn:http://svn.codehaus.org/groovy/gant/trunk</connection>
-    <!--developerConnection>scm:svn:https://svn.codehaus.org/groovy/gant/trunk</developerConnection-->
-    <developerConnection>scm:svn:svn+ssh://svn.codehaus.org/groovy/gant/trunk</developerConnection>
+    <developerConnection>scm:svn:https://svn.codehaus.org/groovy/gant/trunk</developerConnection>
     <url>http://fisheye.codehaus.org/browse/groovy/gant/trunk</url>
   </scm>
 
