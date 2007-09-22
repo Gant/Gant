@@ -1,7 +1,11 @@
-0.3.2 (rXXXX)
+0.3.2 (r8191)
 -------------
 
 Fixed problem with -V option.
+Started a Maven 2 build capability -- this is work in progress on not complete.
+Restructured source to fit better with the Maven 2 directory structure.
+Corrected various problems with return values.
+Changed the location of the repository to http://svn.codehaus.org/groovy/gant
 
 0.3.1 (r6962)
 -------------

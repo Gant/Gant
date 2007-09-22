@@ -34,7 +34,7 @@
   <artifactId>gant</artifactId>
   <packaging>jar</packaging>
   <name>Gant</name>
-  <version>0.3.2-SNAPSHOT</version>
+  <version>0.3.2</version>
   <description>
     Gant is a Groovy-based build framework that provides a scripting system for Ant tasks.  With Ant the
     build specification is an XML file, with Gant, the build specification is a Groovy script.  All the
