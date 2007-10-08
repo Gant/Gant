@@ -1,3 +1,11 @@
+0.3.3 ( rXXXX )
+---------------
+
+Created a new option (-d,--cachedir) to specify a cache directory for
+the caching system.  This is used by Grails.  Gant release rushed out
+for the Grails 1.1 release.
+
+
 0.3.2 (r8191)
 -------------
 
