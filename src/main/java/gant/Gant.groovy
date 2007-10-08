@@ -129,7 +129,7 @@ final class Gant {
     binding.includeTargets = new IncludeTargets ( binding )
     binding.includeTool = new IncludeTool ( binding )
     binding.target = target
-    binding.task = target   //  For backward compatibility.  Should deprecate this soon.
+    binding.task = { map , closure -> System.err.println ( 'Deprecation warning: Use of task instead of target is deprecated.' ) ; target ( map , closure ) } //  For backward compatibility.  Should deprecate this soon.
     binding.message = message
   }  
   public Gant ( Binding b ) {

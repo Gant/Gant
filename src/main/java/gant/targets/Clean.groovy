@@ -38,13 +38,13 @@ final class Clean {
     this.binding = binding
     binding.cleanPattern = [ ]
     binding.cleanDirectory = [ ]
-    binding.task.call ( clean : 'Action the cleaning.' ) {
+    binding.target.call ( clean : 'Action the cleaning.' ) {
       performPatternAction ( binding.cleanPattern )
       performDirectoryAction ( binding.cleanDirectory )
     }
     binding.clobberPattern = [ ]
     binding.clobberDirectory = [ ]
-    binding.task.call ( clobber : 'Action the clobbering.  Do the cleaning first.' ) {
+    binding.target.call ( clobber : 'Action the clobbering.  Do the cleaning first.' ) {
       depends ( binding.clean )
       performPatternAction ( binding.clobberPattern )
       performDirectoryAction ( binding.clobberDirectory )
