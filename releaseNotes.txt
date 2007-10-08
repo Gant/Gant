@@ -1,4 +1,4 @@
-0.3.3 ( rXXXX )
+0.3.3 ( r8490 )
 ---------------
 
 Created a new option (-d,--cachedir) to specify a cache directory for
