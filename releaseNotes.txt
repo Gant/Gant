@@ -1,3 +1,13 @@
+0.3.3 ( r8490 )
+---------------
+
+Created a new option (-d,--cachedir) to specify a cache directory for
+the caching system.  This is used by Grails.  Gant release rushed out
+for the Grails 1.0 release.
+
+Formally announced deprecation of task, should now use target.
+
+
 0.3.2 (r8191)
 -------------
 

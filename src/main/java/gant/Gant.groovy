@@ -129,7 +129,7 @@ final class Gant {
     binding.includeTargets = new IncludeTargets ( binding )
     binding.includeTool = new IncludeTool ( binding )
     binding.target = target
-    binding.task = target   //  For backward compatibility.  Should deprecate this soon.
+    binding.task = { map , closure -> System.err.println ( 'Deprecation warning: Use of task instead of target is deprecated.' ) ; target ( map , closure ) } //  For backward compatibility.  Should deprecate this soon.
     binding.message = message
   }  
   public Gant ( Binding b ) {
@@ -179,8 +179,7 @@ final class Gant {
     def cli = new CliBuilder ( usage : 'gant [option]* [target]*' , parser : new PosixParser ( ) )
     //  Options with short and long form.
     cli.c ( longOpt : 'usecache' , 'Whether to cache the generated class and perform modified checks on the file before re-compilation.' )
-    cli.m ( longOpt : 'cachedir' , args : 1 , argName : 'cache-file' , 'The directory where to cache generated classes to.' )
-    //cli.d ( longOpt : 'debug' , 'Print debugging information.' )
+    cli.d ( longOpt : 'cachedir' , args : 1 , argName : 'cache-file' , 'The directory where to cache generated classes to.' )
     cli.f ( longOpt : 'gantfile' , args : 1 , argName : 'build-file' , 'Use the named build file instead of the default, build.gant.' )
     cli.h ( longOpt : 'help' , 'Print out this message.' )
     cli.l ( longOpt : 'gantlib' , args : Option.UNLIMITED_VALUES , argName : 'library' , 'A directory that contains classes to be used as extra Gant modules,' )
@@ -191,15 +190,15 @@ final class Gant {
     cli.v ( longOpt : 'verbose' , 'Print lots of extra information.' )
     cli.D (argName : 'name>=<value' , args : Option.UNLIMITED_VALUES , 'Define <name> to have value <value>.  Creates a variable named <name> for use in the scripts and a property named <name> for the Ant tasks.' )
     cli.T ( longOpt : 'targets' , 'Print out a list of the possible targets.' )
-    cli.V ( longOpt : 'version' , 'Print lots of extra information.' )
+    cli.V ( longOpt : 'version' , 'Print the version number and exit.' )
     // Options with only a long form.
-    def option = OptionBuilder.withLongOpt ( 'lib' ).hasArgs ( ).withArgName ( 'path' ).withDescription ( 'Adds a path to search for jars and classes.' ).create ( )
-    cli.options.addOption ( option )
+    cli.options.addOption ( OptionBuilder.withLongOpt ( 'lib' ).hasArgs ( ).withArgName ( 'path' ).withDescription ( 'Adds a path to search for jars and classes.' ).create ( ) )
+    //cli.options.addOption ( OptionBuilder.withLongOpt ( 'debug' ).withDescription ( 'Print debugging information.' ).create ( ) )
     //  Process the arguments for options.
     def options = cli.parse ( args )
     if ( options == null ) { println ( 'Error in processing command line options.' ) ; return 1 }
     binding.cacheEnabled = options.c ? true : false
-    binding.cacheDirectory = binding.cacheEnabled && options.m ? new File(options.m) : new File ( "${System.properties.'user.home'}/.gant/cache" )
+    binding.cacheDirectory = binding.cacheEnabled && options.d ? new File ( options.d ) : new File ( "${System.properties.'user.home'}/.gant/cache" )
     if ( options.f ) {
       buildFileName = options.f
       buildClassName = buildFileName.replaceAll ( '\\.' , '_' ) 
