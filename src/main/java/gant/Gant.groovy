@@ -179,6 +179,7 @@ final class Gant {
     def cli = new CliBuilder ( usage : 'gant [option]* [target]*' , parser : new PosixParser ( ) )
     //  Options with short and long form.
     cli.c ( longOpt : 'usecache' , 'Whether to cache the generated class and perform modified checks on the file before re-compilation.' )
+    cli.m ( longOpt : 'cachedir' , args : 1 , argName : 'cache-file' , 'The directory where to cache generated classes to.' )
     //cli.d ( longOpt : 'debug' , 'Print debugging information.' )
     cli.f ( longOpt : 'gantfile' , args : 1 , argName : 'build-file' , 'Use the named build file instead of the default, build.gant.' )
     cli.h ( longOpt : 'help' , 'Print out this message.' )
@@ -198,7 +199,8 @@ final class Gant {
     def options = cli.parse ( args )
     if ( options == null ) { println ( 'Error in processing command line options.' ) ; return 1 }
     binding.cacheEnabled = options.c ? true : false
-    if ( options.f ) { 
+    binding.cacheDirectory = binding.cacheEnabled && options.m ? new File(options.m) : new File ( "${System.properties.'user.home'}/.gant/cache" )
+    if ( options.f ) {
       buildFileName = options.f
       buildClassName = buildFileName.replaceAll ( '\\.' , '_' ) 
     }
@@ -258,8 +260,7 @@ final class Gant {
     }
     if ( binding.cacheEnabled ) {       
       if ( buildFile == null ) { println 'Caching can only be used in combination with the -f option.' ; return 1 }
-      def userHome = System.properties.'user.home'
-      def cacheDirectory = new File ( userHome + '/.gant/cache' )
+      def cacheDirectory = binding.cacheDirectory
       rootLoader.addURL ( cacheDirectory.toURL ( ) )
       def loadClassFromCache = { className , fileLastModified , file  ->
         try {      
@@ -302,9 +303,8 @@ final class Gant {
   private void compileScript ( destDir , buildFileText , buildClassName ) {
     if ( ! destDir.exists ( ) ) { destDir.mkdirs ( ) }
     def configuration = new CompilerConfiguration ( )
-    println ( "Caching script $buildClassName to dir ${destDir.absolutePath}" )                         		
     configuration.setTargetDirectory ( destDir )
-    def unit = new CompilationUnit ( configuration , null , new GroovyClassLoader ( ) )	          
+    def unit = new CompilationUnit ( configuration , null , new GroovyClassLoader ( ) )
     unit.addSource ( buildClassName , new ByteArrayInputStream ( buildFileText.bytes ) )
     unit.compile ( )				
   }
