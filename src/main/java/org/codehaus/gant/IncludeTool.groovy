@@ -12,7 +12,7 @@
 //  implied. See the License for the specific language governing permissions and limitations under the
 //  License.
 
-package org.codehaus.groovy.gant
+package org.codehaus.gant
 
 /**
  *  An instance of this class is provided to each Gant script for including tools.  A tool is a class that

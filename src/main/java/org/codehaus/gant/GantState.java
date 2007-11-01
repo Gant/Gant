@@ -12,7 +12,7 @@
 //  implied. See the License for the specific language governing permissions and limitations under the
 //  License.
 
-package org.codehaus.groovy.gant ;
+package org.codehaus.gant ;
 
 /**
  *  A class to hold the global shared state for a run of Gant.  This is needed because parts of Gant are

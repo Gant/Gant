@@ -12,7 +12,7 @@
 //  implied. See the License for the specific language governing permissions and limitations under the
 //  License.
 
-package org.codehaus.groovy.gant
+package org.codehaus.gant
 
 /**
  *  This class is for code sharing between classes doing include activity.
