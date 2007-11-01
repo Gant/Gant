@@ -14,7 +14,7 @@
 
 package gant.targets.tests
 
-import org.codehaus.groovy.gant.tests.GantTestCase
+import org.codehaus.gant.tests.GantTestCase
 
 /**
  *  A test to ensure that the Clean targets are not broken.

@@ -12,7 +12,7 @@
 //  implied. See the License for the specific language governing permissions and limitations under the
 //  License.
 
-package org.codehaus.groovy.gant.tests
+package org.codehaus.gant.tests
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 //  NB Commented out tests are ones that it is not certain should be supported.

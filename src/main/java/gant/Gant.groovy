@@ -18,11 +18,11 @@ import org.codehaus.groovy.control.MultipleCompilationErrorsException
 import org.codehaus.groovy.control.CompilerConfiguration
 import org.codehaus.groovy.control.CompilationUnit
 
-import org.codehaus.groovy.gant.GantBuilder
-import org.codehaus.groovy.gant.GantMetaClass
-import org.codehaus.groovy.gant.GantState
-import org.codehaus.groovy.gant.IncludeTargets
-import org.codehaus.groovy.gant.IncludeTool
+import org.codehaus.gant.GantBuilder
+import org.codehaus.gant.GantMetaClass
+import org.codehaus.gant.GantState
+import org.codehaus.gant.IncludeTargets
+import org.codehaus.gant.IncludeTool
 
 //import org.apache.commons.cli.GnuParser
 import org.apache.commons.cli.Option

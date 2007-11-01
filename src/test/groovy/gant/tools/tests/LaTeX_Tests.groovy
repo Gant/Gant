@@ -14,7 +14,7 @@
 
 package gant.tools.tests
 
-import org.codehaus.groovy.gant.tests.GantTestCase
+import org.codehaus.gant.tests.GantTestCase
 
 /**
  *  A test to ensure that the LaTeX tool is not broken.

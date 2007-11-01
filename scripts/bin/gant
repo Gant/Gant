@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 
 #  Gant -- A Groovy build tool based on scripting Ant tasks
 

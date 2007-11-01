@@ -14,7 +14,7 @@
 
 package gant.tools
 
-import org.codehaus.groovy.gant.GantState
+import org.codehaus.gant.GantState
 
 /**
  *  A class providing methods support for processing LaTeX.
