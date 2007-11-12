@@ -30,9 +30,9 @@
 
   <modelVersion>4.0.0</modelVersion>
 
-  <groupId>org.codehaus.groovy.gant</groupId>
+  <groupId>org.codehaus.gant</groupId>
   <artifactId>gant</artifactId>
-  <packaging>jar</packaging>
+  <packaging>pom</packaging>
   <name>Gant</name>
   <version>0.3.4-SNAPSHOT</version>
   <description>
@@ -42,7 +42,7 @@
     rather than XML to specify the process means that imperative and declarative expression is possible,
     without any hacking.
   </description>
-  <url>http://groovy.codehaus.org/Gant</url>
+  <url>http://gant.codehaus.org/</url>
   <inceptionYear>2006</inceptionYear>
 
   <organization>
@@ -56,7 +56,7 @@
 
   <issueManagement>
     <system>jira</system>
-    <url>http://jira.codehaus.org/browse/GROOVY</url>
+    <url>http://jira.codehaus.org/browse/GANT</url>
   </issueManagement>
 
   <!--ciManagement>
@@ -64,18 +64,18 @@
 
   <mailingLists>
     <mailingList>
-      <name>Groovy Users</name>
+      <name>Gant Users</name>
       <subscribe>http://xircles.codehaus.org/manage_email</subscribe>
       <unsubscribe>http://xircles.codehaus.org/manage_email</unsubscribe>
-      <post>user@groovy.codehaus.org</post>
-      <archive>http://archive.groovy.codehaus.org/user</archive>
+      <post>user@gant.codehaus.org</post>
+      <archive>http://archive.gant.codehaus.org/user</archive>
     </mailingList>
     <mailingList>
-      <name>Groovy Developerss</name>
+      <name>Gant Developerss</name>
       <subscribe>http://xircles.codehaus.org/manage_email</subscribe>
       <unsubscribe>http://xircles.codehaus.org/manage_email</unsubscribe>
-      <post>dev@groovy.codehaus.org</post>
-      <archive>http://archive.groovy.codehaus.org/dev</archive>
+      <post>dev@gant.codehaus.org</post>
+      <archive>http://archive.gant.codehaus.org/dev</archive>
     </mailingList>
   </mailingLists>
 
@@ -88,23 +88,23 @@
   </licenses>
 
   <scm>
-    <connection>scm:svn:http://svn.codehaus.org/groovy/gant/trunk</connection>
-    <developerConnection>scm:svn:https://svn.codehaus.org/groovy/gant/trunk</developerConnection>
-    <url>http://fisheye.codehaus.org/browse/groovy/gant/trunk</url>
+    <connection>scm:svn:http://svn.codehaus.org/gant/gant/trunk</connection>
+    <developerConnection>scm:svn:https://svn.codehaus.org/gant/gant/trunk</developerConnection>
+    <url>http://fisheye.codehaus.org/browse/gant/gant/trunk</url>
   </scm>
 
   <distributionManagement>
     <repository>
       <id>codehaus.org</id>
-      <url>dav:https://dav.codehaus.org/repository/groovy</url>
+      <url>dav:https://dav.codehaus.org/repository/gant</url>
     </repository>
     <snapshotRepository>
       <id>codehaus.org</id>
-      <url>dav:https://dav.codehaus.org/snapshots.repository/groovy</url>
+      <url>dav:https://dav.codehaus.org/snapshots.repository/gant</url>
     </snapshotRepository>
     <site>
       <id>codehaus.org</id>
-      <url>dav:https://dav.codehaus.org/groovy</url>
+      <url>dav:https://dav.codehaus.org/gant</url>
     </site>
   </distributionManagement>
   
@@ -113,7 +113,7 @@
       <id>russel</id>
       <name>Russel Winder</name>
       <url>http://www.russel.org.uk</url>
-      <email>russel@concertant.com</email>
+      <email>russel.winder@concertant.com</email>
       <organization>Concertant LLP</organization>
       <organizationUrl>http://www.concertant.com</organizationUrl>
     </developer>
@@ -163,7 +163,12 @@
     <dependency>
       <groupId>org.codehaus.groovy</groupId>
       <artifactId>groovy-all</artifactId>
-      <version>1.1-beta-2</version>
+      <version>1.1-rc-2</version>
+    </dependency>
+    <dependency>
+      <groupId>commons-cli</groupId>
+      <artifactId>commons-cli</artifactId>
+      <version>1.0</version>
     </dependency>
   </dependencies>
   
