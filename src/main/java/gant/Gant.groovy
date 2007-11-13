@@ -121,19 +121,15 @@ final class Gant {
   private List gantLib ; {
     // def item = System.getenv ( ).GANTLIB ;
     def item = ant.project.properties.'environment.GANTLIB'
-    if ( item == null ) { gantLib = [] }
+    if ( item == null ) { gantLib = [ ] }
     else { gantLib = Arrays.asList ( item.split ( System.properties.'path.separator' ) ) }
   }
-  public Gant ( ) {
-	 this(null,getClass().getClassLoader())
-  }  
-  public Gant ( Binding b ) {
-    this (b,getClass().getClassLoader() )
-  }
-  public Gant( Binding b, ClassLoader cl) {
-	if(b) this.binding = b
-	if(cl) this.classLoader = cl
-	this.groovyShell = new GroovyShell(this.classLoader, this.binding)
+  public Gant ( ) { this ( null , getClass ( ).getClassLoader ( ) ) }  
+  public Gant ( Binding b ) { this ( b , getClass ( ).getClassLoader ( ) ) }
+  public Gant ( Binding b , ClassLoader cl ) {
+    if ( b ) { this.binding = b }
+    if ( cl ) { this.classLoader = cl }
+    this.groovyShell = new GroovyShell ( this.classLoader , this.binding ) // Appears to assign a final variable :-(
     binding.gantLib = gantLib
     binding.Ant = ant
     binding.groovyShell = groovyShell
@@ -243,7 +239,7 @@ final class Gant {
     if ( gotUnknownOptions ) { cli.usage ( ) ; return 1 ; }
     def userAntLib = new File ( "${System.properties.'user.home'}/.ant/lib" )
     if ( userAntLib.isDirectory ( ) ) { userAntLib.eachFile { file -> rootLoader?.addURL ( file.toURL ( ) ) } }
-    //def antHome = System.getenv().'ANT_HOME'
+    //def antHome = System.getenv ( ).'ANT_HOME'
     def antHome = ant.project.properties.'environment.ANT_HOME'
     if ( ( antHome != null ) && ( antHome != '' ) ) {
       def antLib = new File ( antHome + '/lib' )
@@ -266,13 +262,8 @@ final class Gant {
     if ( binding.cacheEnabled ) {       
       if ( buildFile == null ) { println 'Caching can only be used in combination with the -f option.' ; return 1 }
       def cacheDirectory = binding.cacheDirectory
-      if(classLoader instanceof URLClassLoader) {
-	     classLoader.addURL ( cacheDirectory.toURL ( ) )
-      }
-      else {
-	     rootLoader?.addURL ( cacheDirectory.toURL ( ) )
-      } 
-      
+      if ( classLoader instanceof URLClassLoader ) { classLoader.addURL ( cacheDirectory.toURL ( ) ) }
+      else { rootLoader?.addURL ( cacheDirectory.toURL ( ) ) }      
       def loadClassFromCache = { className , fileLastModified , file  ->
         try {      
           def url = classLoader.getResource ( "${className}.class" )
@@ -315,7 +306,7 @@ final class Gant {
     if ( ! destDir.exists ( ) ) { destDir.mkdirs ( ) }
     def configuration = new CompilerConfiguration ( )
     configuration.setTargetDirectory ( destDir )
-    def unit = new CompilationUnit ( configuration , null , new GroovyClassLoader(classLoader) )
+    def unit = new CompilationUnit ( configuration , null , new GroovyClassLoader ( classLoader ) )
     unit.addSource ( buildClassName , new ByteArrayInputStream ( buildFileText.bytes ) )
     unit.compile ( )				
   }
