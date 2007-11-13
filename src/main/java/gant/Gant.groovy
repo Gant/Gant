@@ -96,6 +96,8 @@ final class Gant {
   private final targetDescriptions = new TreeMap ( ) 
   private final binding = new Binding ( )
   private final groovyShell = new GroovyShell ( binding )
+  private final classLoader = getClass().getClassLoader()
+
   private final target = { map , closure ->
     def targetName = map.keySet ( ).iterator ( ).next ( )
     def targetDescription = map.get ( targetName )
@@ -123,6 +125,15 @@ final class Gant {
     else { gantLib = Arrays.asList ( item.split ( System.properties.'path.separator' ) ) }
   }
   public Gant ( ) {
+	 this(null,getClass().getClassLoader())
+  }  
+  public Gant ( Binding b ) {
+    this (b,getClass().getClassLoader() )
+  }
+  public Gant( Binding b, ClassLoader cl) {
+	if(b) this.binding = b
+	if(cl) this.classLoader = cl
+	this.groovyShell = new GroovyShell(this.classLoader, this.binding)
     binding.gantLib = gantLib
     binding.Ant = ant
     binding.groovyShell = groovyShell
@@ -131,10 +142,6 @@ final class Gant {
     binding.target = target
     binding.task = { map , closure -> System.err.println ( 'Deprecation warning: Use of task instead of target is deprecated.' ) ; target ( map , closure ) } //  For backward compatibility.  Should deprecate this soon.
     binding.message = message
-  }  
-  public Gant ( Binding b ) {
-    this.binding = b
-    this ( )
   }
   private int targetList ( targets ) {
     def message = targetDescriptions['default']
@@ -171,8 +178,7 @@ final class Gant {
     }
     returnCode
   }
-  private int process ( args ) {
-    final classLoader =  getClass ( ).classLoader
+  public int process ( args ) {
     final rootLoader = classLoader.rootLoader
     // Use the GnuParser rather than the PosixParse (the default) so as to avoid the problem of processing
     // parameters to long options.
@@ -225,7 +231,7 @@ final class Gant {
       println ( 'Gant version ' + ( ( version == null ) ? '<unknown>' : version ) )
       return 0
     }
-    if ( options.lib ) { options.libs.each { lib -> rootLoader.addURL ( ( new File ( lib ) ).toURL ( ) ) } }
+    if ( options.lib ) { options.libs.each { lib -> rootLoader?.addURL ( ( new File ( lib ) ).toURL ( ) ) } }
     def targets = options.arguments ( )
     def gotUnknownOptions = false ;
     targets.each { target ->
@@ -236,12 +242,12 @@ final class Gant {
     }
     if ( gotUnknownOptions ) { cli.usage ( ) ; return 1 ; }
     def userAntLib = new File ( "${System.properties.'user.home'}/.ant/lib" )
-    if ( userAntLib.isDirectory ( ) ) { userAntLib.eachFile { file -> rootLoader.addURL ( file.toURL ( ) ) } }
+    if ( userAntLib.isDirectory ( ) ) { userAntLib.eachFile { file -> rootLoader?.addURL ( file.toURL ( ) ) } }
     //def antHome = System.getenv().'ANT_HOME'
     def antHome = ant.project.properties.'environment.ANT_HOME'
     if ( ( antHome != null ) && ( antHome != '' ) ) {
       def antLib = new File ( antHome + '/lib' )
-      if ( antLib.isDirectory ( ) ) { antLib.eachFileMatch ( ~/ant-.*\.jar/ ) { file -> rootLoader.addURL ( file.toURL ( ) ) } }
+      if ( antLib.isDirectory ( ) ) { antLib.eachFileMatch ( ~/ant-.*\.jar/ ) { file -> rootLoader?.addURL ( file.toURL ( ) ) } }
     }
     def buildFileText = ''
     def buildFileModified = -1  
@@ -260,7 +266,13 @@ final class Gant {
     if ( binding.cacheEnabled ) {       
       if ( buildFile == null ) { println 'Caching can only be used in combination with the -f option.' ; return 1 }
       def cacheDirectory = binding.cacheDirectory
-      rootLoader.addURL ( cacheDirectory.toURL ( ) )
+      if(classLoader instanceof URLClassLoader) {
+	     classLoader.addURL ( cacheDirectory.toURL ( ) )
+      }
+      else {
+	     rootLoader?.addURL ( cacheDirectory.toURL ( ) )
+      } 
+      
       def loadClassFromCache = { className , fileLastModified , file  ->
         try {      
           def url = classLoader.getResource ( "${className}.class" )
@@ -303,7 +315,7 @@ final class Gant {
     if ( ! destDir.exists ( ) ) { destDir.mkdirs ( ) }
     def configuration = new CompilerConfiguration ( )
     configuration.setTargetDirectory ( destDir )
-    def unit = new CompilationUnit ( configuration , null , new GroovyClassLoader ( ) )
+    def unit = new CompilationUnit ( configuration , null , new GroovyClassLoader(classLoader) )
     unit.addSource ( buildClassName , new ByteArrayInputStream ( buildFileText.bytes ) )
     unit.compile ( )				
   }
