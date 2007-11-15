@@ -1,3 +1,11 @@
+0.3.4 ( rXXXX )
+---------------
+
+Changed the lookup sequence in GantMetaClass adding lookup in the Ant
+object for a method call as a final attempt to resolve a name.  This
+makes Ant. completely optional as requested in GANT-10.
+
+
 0.3.3 ( r8490 )
 ---------------
 

@@ -21,6 +21,7 @@ import java.util.List ;
 import groovy.lang.Binding ;
 import groovy.lang.Closure ;
 import groovy.lang.DelegatingMetaClass ;
+import groovy.lang.MissingMethodException ;
 import groovy.lang.MissingPropertyException ;
 
 import org.codehaus.groovy.runtime.InvokerHelper ;
@@ -72,12 +73,23 @@ class GantMetaClass extends DelegatingMetaClass {
       }
     }
     else {
-      returnObject = super.invokeMethod ( object , methodName , arguments ) ;
       try {
-        final Closure closure = (Closure) binding.getVariable ( methodName ) ;
-        if ( closure != null ) { methodsInvoked.add ( closure ) ; }
+        returnObject = super.invokeMethod ( object , methodName , arguments ) ;
+        try {
+          final Closure closure = (Closure) binding.getVariable ( methodName ) ;
+          if ( closure != null ) { methodsInvoked.add ( closure ) ; }
+        }
+        catch ( final MissingPropertyException mpe ) { }
       }
-      catch ( final MissingPropertyException mpe ) { }      
+      catch ( final MissingMethodException mme ) {
+
+          System.err.println ( methodName ) ;
+          for ( int i = 0 ; i < arguments.length ; ++i ) {
+            System.err.println ( '\t' + arguments[i].getClass ( ).getName ( ) + " :: " + arguments[i] ) ;
+          }
+
+        returnObject = ( (GantBuilder) ( binding.getVariable ( "Ant" ) ) ).invokeMethod ( methodName , arguments ) ;
+      }
     }
     return returnObject ;
   }

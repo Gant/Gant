@@ -129,7 +129,7 @@ final class Gant {
   public Gant ( Binding b , ClassLoader cl ) {
     if ( b ) { this.binding = b }
     if ( cl ) { this.classLoader = cl }
-    this.groovyShell = new GroovyShell ( this.classLoader , this.binding ) // Appears to assign a final variable :-(
+    this.groovyShell = new GroovyShell ( this.classLoader , this.binding ) // Appears to assign a final variable :-( cf GROOVY-2302.
     binding.gantLib = gantLib
     binding.Ant = ant
     binding.groovyShell = groovyShell
