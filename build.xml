@@ -23,6 +23,10 @@ $Date$
 This Ant script provides the bootstrap capability to install Gant for the first time for those people
 installing from a Subversion checkout.
 
+There are two possibilities: install into a Groovy installation or install into a Grails installation.  The
+latter only installs the jar file.  If the property grailsBuild is defined then it is a Grails build
+otherwise it is a Groovy build. 
+
 -->
 
 <project name="Gant" default="compile" basedir=".">
@@ -109,7 +113,7 @@ installing from a Subversion checkout.
       <attribute name="Specification-Title" value="Gant: scripting Ant tasks with Groovy."/>
       <attribute name="Specification-Version" value="${gantVersion}"/>
       <attribute name="Specification-Vendor" value="The Codehaus"/>
-      <attribute name="Implementation-Title" value="Gant: scripting Ant tasks with Groovy."/>
+      <attribute name="Implementation-Title" value="Gant: Scripting Ant tasks with Groovy."/>
       <attribute name="Implementation-Version" value="${gantVersion}"/> 
       <attribute name="Implementation-Vendor" value="The Codehaus"/>
     </manifest>

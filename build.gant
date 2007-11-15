@@ -113,7 +113,7 @@ makeManifest = { ->
     attribute ( name : 'Specification-Title' , value : 'Gant: scripting Ant tasks with Groovy.' )
     attribute ( name : 'Specification-Version' , value : gantVersion )
     attribute ( name : 'Specification-Vendor' , value : 'The Codehaus' )
-    attribute ( name : 'Implementation-Title' , value : 'Gant: scripting Ant tasks with Groovy.' )
+    attribute ( name : 'Implementation-Title' , value : 'Gant: Scripting Ant tasks with Groovy.' )
     attribute ( name : 'Implementation-Version' , value : gantVersion ) 
     attribute ( name : 'Implementation-Vendor' , value : 'The Codehaus' )
   }

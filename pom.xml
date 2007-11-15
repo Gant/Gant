@@ -32,12 +32,12 @@
 
   <groupId>org.codehaus.gant</groupId>
   <artifactId>gant</artifactId>
-  <packaging>pom</packaging>
+  <packaging>jar</packaging>
   <name>Gant</name>
   <version>0.3.4-SNAPSHOT</version>
   <description>
     Gant is a Groovy-based build framework that provides a scripting system for Ant tasks.  With Ant the
-    build specification is an XML file, with Gant, the build specification is a Groovy script.  All the
+    build specification is an XML file, with Gant the build specification is a Groovy script.  All the
     underlying Ant tasks are used in the same way in Gant as with Ant, but using a programming language
     rather than XML to specify the process means that imperative and declarative expression is possible,
     without any hacking.
@@ -96,15 +96,19 @@
   <distributionManagement>
     <repository>
       <id>codehaus.org</id>
+      <name>Gant Central Repository</name>
       <url>dav:https://dav.codehaus.org/repository/gant</url>
     </repository>
     <snapshotRepository>
       <id>codehaus.org</id>
+      <name>Gant Snapshot Repository</name>
       <url>dav:https://dav.codehaus.org/snapshots.repository/gant</url>
     </snapshotRepository>
+    <!--  The following is not currently used. -->
     <site>
       <id>codehaus.org</id>
-      <url>dav:https://dav.codehaus.org/gant</url>
+      <name>Gant Web Site</name>
+       <url>dav:https://dav.codehaus.org/gant</url>
     </site>
   </distributionManagement>
   
@@ -125,7 +129,7 @@
   <!-- We are using the very latest snapshot of Jason Dillon's Maven Groovy Plugin, so we need to use the
   right repository to get to it. -->
 
-  <repositories>
+  <!--repositories>
     <repository>
       <id>codehaus-snapshots</id>
       <name>Codehaus Snapshots Repository</name>
@@ -140,9 +144,9 @@
         <enabled>false</enabled>
       </releases>
     </repository>
-  </repositories>
+  </repositories-->
 
-  <pluginRepositories>
+  <!--pluginRepositories>
     <pluginRepository>
       <id>codehaus-snapshots</id>
       <name>Codehaus Snapshots Repository</name>
@@ -157,7 +161,7 @@
         <enabled>false</enabled>
       </releases>
     </pluginRepository>
-  </pluginRepositories>
+  </pluginRepositories-->
 
   <dependencies>
     <dependency>
@@ -170,6 +174,13 @@
       <artifactId>commons-cli</artifactId>
       <version>1.0</version>
     </dependency>
+
+    <!--dependency>
+      <groupId>org.codehaus.mojo.groovy</groupId>
+      <artifactId>groovy</artifactId>
+      <version>1.0-beta-3-SNAPSHOT</version>
+    </dependency-->
+
   </dependencies>
   
   <build>
@@ -268,6 +279,17 @@
         </configuration>
       </plugin>
     </plugins>
+
+    <!-- It seems that Maven 2.0.6 doesn't download this artefact which is needed for deployment as a matter
+    of course.  So unless we specify it here then the WebDAV stuff doesn't work. -->
+
+    <extensions>
+      <extension>
+        <groupId>org.apache.maven.wagon</groupId>
+        <artifactId>wagon-webdav</artifactId>
+        <version>1.0-beta-2</version>
+      </extension>
+    </extensions>
   </build>
   
   <reporting>
