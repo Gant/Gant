@@ -115,7 +115,7 @@ installing from a Subversion checkout.
     </manifest>
   </target>
 
-  <target name="package" depends="compile,-makeManifest" description="Create the jarfile.">
+  <target name="package" depends="compile,-makeManifest" description="Create the jar file.">
     <jar destfile="${buildLibDirectory}/gant-${gantVersion}.jar" basedir="${buildClassesDirectory}" includes="org/**,gant/**,META-INF/*" excludes="**/tests/**" manifest="${buildMetadataDirectory}/MANIFEST.MF"/>
   </target>
 

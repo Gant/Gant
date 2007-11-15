@@ -21,6 +21,8 @@ Ant.property ( file : 'local.build.properties' )
 
 gantVersion = Ant.project.properties.gantVersion
 
+// NB  System.getenv ( ) does not work on Java 1.5 but does on Java 5 or later.
+  
 installationHome = System.getenv ( ).'GROOVY_HOME'
 try { if ( grailsBuild ) { installationHome = System.getenv ( ).'GRAILS_HOME' } }
 catch ( MissingPropertyException mpe ) { grailsBuild = false }
@@ -62,23 +64,23 @@ Ant.path ( id : 'installationJarSet' ) { fileset ( dir : installationHome + '/li
 Ant.taskdef ( name : 'groovyc' , classname : 'org.codehaus.groovy.ant.Groovyc' , classpathref : 'installationJarSet' )
 
 target ( compile : 'Compile everything needed for a Gant installation.' ) {
-  Ant.mkdir ( dir : buildClassesDirectory )
-  Ant.mkdir ( dir : buildLibDirectory )
-  Ant.javac ( srcdir : sourceDirectory , destDir : buildClassesDirectory , source : '1.4' , target : '1.4' , debug : 'on' , classpathref : 'installationJarSet'  , excludes : '**/tests/**' )
-  Ant.groovyc ( srcdir : sourceDirectory , destDir : buildClassesDirectory , classpath : buildClassesDirectory , excludes : 'bin/*.groovy' )
+  mkdir ( dir : buildClassesDirectory )
+  mkdir ( dir : buildLibDirectory )
+  javac ( srcdir : sourceDirectory , destDir : buildClassesDirectory , source : '1.4' , target : '1.4' , debug : 'on' , classpathref : 'installationJarSet'  , excludes : '**/tests/**' )
+  groovyc ( srcdir : sourceDirectory , destDir : buildClassesDirectory , classpath : buildClassesDirectory , excludes : 'bin/*.groovy' )
 }
 
 target ( compileTests : 'Compile all the tests for a newly built Gant.' ) {
   depends ( compile )
-  Ant.mkdir ( dir : buildTestsDirectory )
-  Ant.javac ( srcdir : sourceDirectory , destDir : buildClassesDirectory , source : '1.4' , target : '1.4' , debug : 'on' , classpathref : 'installationJarSet'  , includes : '**/tests/**' )
-  Ant.javac ( srcdir : testsDirectory , destDir : buildTestsDirectory , source : '1.4' , target : '1.4' , debug : 'on' ) {
+  mkdir ( dir : buildTestsDirectory )
+  javac ( srcdir : sourceDirectory , destDir : buildClassesDirectory , source : '1.4' , target : '1.4' , debug : 'on' , classpathref : 'installationJarSet'  , includes : '**/tests/**' )
+  javac ( srcdir : testsDirectory , destDir : buildTestsDirectory , source : '1.4' , target : '1.4' , debug : 'on' ) {
     classpath {
       path ( refid : 'installationJarSet' )
       pathelement ( location : buildClassesDirectory )
     }
   }
-  Ant.groovyc ( srcdir : testsDirectory , destdir : buildTestsDirectory ) {
+  groovyc ( srcdir : testsDirectory , destdir : buildTestsDirectory ) {
     classpath {
       pathelement ( location : buildTestsDirectory )
       pathelement ( location : buildClassesDirectory )
@@ -88,8 +90,8 @@ target ( compileTests : 'Compile all the tests for a newly built Gant.' ) {
 
 target ( test : 'Test a build.' ) {
   depends ( compileTests )
-  Ant.mkdir ( dir : buildReportsDirectory )
-  Ant.junit ( printsummary : 'yes' ) {
+  mkdir ( dir : buildReportsDirectory )
+  junit ( printsummary : 'yes' ) {
     formatter ( type : 'plain' )
     batchtest ( fork : 'yes' , todir : buildReportsDirectory ) {
       fileset ( dir : buildTestsDirectory , includes : '**/*_Test.class' )
@@ -117,19 +119,19 @@ makeManifest = { ->
   }
 }
 
-target ( 'package' : 'Create the jar file' ) {
+target ( 'package' : 'Create the jar file.' ) {
   depends ( compile )
   makeManifest ( )
-  Ant.jar ( destfile : buildLibDirectory + "/gant-${gantVersion}.jar" , basedir : buildClassesDirectory , includes : 'org/**,gant/**,META-INF/*' , excludes : '**/tests/**' , manifest :buildMetadataDirectory + '/MANIFEST.MF' )
+  jar ( destfile : buildLibDirectory + "/gant-${gantVersion}.jar" , basedir : buildClassesDirectory , includes : 'org/**,gant/**,META-INF/*' , excludes : '**/tests/**' , manifest :buildMetadataDirectory + '/MANIFEST.MF' )
 }
 
 target ( documentation : 'Create the API documentation.' ) {
-  Ant.taskdef ( name : 'groovydoc' , classname : 'org.codehaus.groovy.ant.Groovydoc' )
+  taskdef ( name : 'groovydoc' , classname : 'org.codehaus.groovy.ant.Groovydoc' )
   def javaApiDocumentationDirectory = apiDocumentationDirectory + '/java'
   def groovyApiDocumentationDirectory = apiDocumentationDirectory + '/groovy'
-  Ant.mkdir ( dir : javaApiDocumentationDirectory )
-  Ant.mkdir ( dir : groovyApiDocumentationDirectory )
-  Ant.javadoc (
+  mkdir ( dir : javaApiDocumentationDirectory )
+  mkdir ( dir : groovyApiDocumentationDirectory )
+  javadoc (
                destdir : javaApiDocumentationDirectory ,
                sourcepath : sourceDirectory ,
                packagenames : 'gant.*,org.codehaus.groovy.gant.*',
@@ -145,34 +147,34 @@ target ( documentation : 'Create the API documentation.' ) {
                ) {
     classpath { fileset ( dir : System.properties.'groovy.home' + '/lib' , includes : '*.jar' ) }
   }    
-  Ant.groovydoc (
-                 destdir : groovyApiDocumentationDirectory ,
-                 sourcepath : sourceDirectory ,
-                 packagenames : 'gant.*,org.codehaus.groovy.gant.*' ,
-                 //overview : 'overview.html' ,
-                 //author : 'true' ,
-                 //version : 'true' ,
-                 use : 'true' ,
-                 'private' : 'false' ,
-                 windowtitle : "Gant (${gantVersion})" ,
-                 //doctitle : "Gant (${gantVersion})" ,
-                 //encoding : 'UTF-8' ,
-                 //footer : 'Copyright &amp;copy; 2006-7 The Codehaus.  All rights reserved.'
-                 )
+  groovydoc (
+             destdir : groovyApiDocumentationDirectory ,
+             sourcepath : sourceDirectory ,
+             packagenames : 'gant.*,org.codehaus.groovy.gant.*' ,
+             //overview : 'overview.html' ,
+             //author : 'true' ,
+             //version : 'true' ,
+             use : 'true' ,
+             'private' : 'false' ,
+             windowtitle : "Gant (${gantVersion})" ,
+             //doctitle : "Gant (${gantVersion})" ,
+             //encoding : 'UTF-8' ,
+             //footer : 'Copyright &amp;copy; 2006-7 The Codehaus.  All rights reserved.'
+             )
 }
 
 target ( install : "Compile everything and install it to ${installationHome}" ) {
   depends ( 'package' )
-  Ant.copy ( todir : installationHome ) {
-    if ( ! grailsBuild ) { fileset ( dir : scriptsDirectory , includes : 'bin/gant*' ) }
-    fileset ( dir : buildDirectory , includes : 'lib/gant*.jar' )
+  copy ( todir : installationHome + '/lib' ) { fileset ( dir : buildLibDirectory , includes : 'gant*.jar' ) }
+  if ( ! grailsBuild ) {
+    copy ( todir : installationHome ) { fileset ( dir : scriptsDirectory , includes : 'bin/gant*' ) }
+    copy ( todir : installationHome + '/lib' ) { fileset ( dir : jarsDirectory , includes : 'ivy*.jar,maven*.jar' ) }
+    chmod ( perm : 'a+x' ) { fileset ( dir : installationHome + '/bin' , includes : 'gant*' ) }
   }
-  Ant.copy ( todir : installationHome + '/lib' ) { fileset ( dir : jarsDirectory , includes : 'ivy*.jar,maven*.jar' ) }
-  Ant.chmod ( perm : 'a+x' ) { fileset ( dir : installationHome + '/bin' , includes : 'gant*' ) }
 }
 
 target ( uninstall : "Uninstall Gant from ${installationHome}." ) {
-  Ant.delete {
+  delete {
     if ( ! grailsBuild ) { fileset ( dir : installationHome + '/bin' , includes : 'gant*' ) }
     fileset ( dir : installationHome + '/lib' , includes : 'gant*.jar' )
   }
@@ -182,24 +184,24 @@ target ( distribution : 'Create the distribution.' ) {
   depends ( 'package' ) 
   def prefix = "gant-${gantVersion}"
   def archiveRoot = "${buildDirectory}/gant-${gantVersion}"
-  Ant.zip ( destfile : "${archiveRoot}.zip" ) {
+  zip ( destfile : "${archiveRoot}.zip" ) {
     zipfileset ( dir : buildDirectory , includes : 'gant*.jar' , prefix : prefix + '/lib' )
     zipfileset ( dir : 'scripts/bin' , includes : 'gant*' , prefix : prefix + '/bin' )
     zipfileset ( dir : 'scripts/install' , includes : 'install.groovy' , prefix : prefix + '/bin' )
     zipfileset ( dir : '.' , includes : 'README*' , prefix : prefix )
   }
-  Ant.tar ( destfile :  "${archiveRoot}.tgz" , compression : 'gzip' ) {
+  tar ( destfile :  "${archiveRoot}.tgz" , compression : 'gzip' ) {
     tarfileset ( dir : buildDirectory , includes : 'gant*.jar' , prefix : prefix + '/lib' )
     tarfileset ( dir : 'scripts/bin' , includes : 'gant*' , prefix : prefix + '/bin' , mode : '755' )
     tarfileset ( dir : 'scripts/install' , includes : 'install.groovy' , prefix : prefix + '/bin' , mode : '755' )
     tarfileset ( dir : '.' , includes : 'README*' , prefix : prefix )
   }
   archiveRoot = "${buildDirectory}/gant_src-${gantVersion}"
-  Ant.zip ( destfile : "${archiveRoot}.zip" ) {
+  zip ( destfile : "${archiveRoot}.zip" ) {
     zipfileset ( dir : '.' , includes : distributionTopLevelFiles.join ( ',' ) , prefix : prefix )
     distributionDirectories.each { directory -> zipfileset ( dir : directory , prefix : "${prefix}/${directory}" ) }
   }
-  Ant.tar ( destfile :  "${archiveRoot}.tgz" , compression : 'gzip' ) {
+  tar ( destfile :  "${archiveRoot}.tgz" , compression : 'gzip' ) {
     tarfileset ( dir : '.' , includes : distributionTopLevelFiles.join ( ',' ) , prefix : prefix )
     distributionDirectories.each { directory -> tarfileset ( dir : directory , prefix : "${prefix}/${directory}" ) }
   }
