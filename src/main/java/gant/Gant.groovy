@@ -190,7 +190,14 @@ final class Gant {
     cli.q ( longOpt : 'quiet' , 'Do not print out much when executing.' )
     cli.s ( longOpt : 'silent' , 'Print out nothing when executing.' )
     cli.v ( longOpt : 'verbose' , 'Print lots of extra information.' )
-    cli.D (argName : 'name>=<value' , args : Option.UNLIMITED_VALUES , 'Define <name> to have value <value>.  Creates a variable named <name> for use in the scripts and a property named <name> for the Ant tasks.' )
+    //
+    //  Commons CLI is broken.  1.0 has one set of ideas about multiple args and is broken.  1.1 has a
+    //  different set of ideas about multiple args and is broken.  For the moment we leave things so that
+    //  they work in 1.0.
+    //
+    //cli.D (argName : 'name>=<value' , args : Option.UNLIMITED_VALUES , 'Define <name> to have value <value>.  Creates a variable named <name> for use in the scripts and a property named <name> for the Ant tasks.' )
+    //
+    cli.D (argName : 'name>=<value' , args : 1 , 'Define <name> to have value <value>.  Creates a variable named <name> for use in the scripts and a property named <name> for the Ant tasks.' )
     cli.T ( longOpt : 'targets' , 'Print out a list of the possible targets.' )
     cli.V ( longOpt : 'version' , 'Print the version number and exit.' )
     // Options with only a long form.

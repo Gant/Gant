@@ -27,20 +27,14 @@ final class Options_Test extends GantTestCase {
     //  returned as the version number.
     assertEquals ( 'Gant version <unknown>' , output.toString ( ).trim ( ) )
   }
-
-  ////
-  ////  This test fails because Commons CLI is broken.  Multiple options such as this means that the target
-  ////  name is absorbed as an option.  This means the target is 'default' which does not exist, thus the
-  ////  build fails.
-  ////
-  void XXX_testDefinitions ( ) {
+  void testDefinitions ( ) {
     System.setIn ( new StringBufferInputStream ( '''
 target ( printDefinitions : "Print some definitions" ) {
   println ( first )
   println ( second )
   println ( third )
 }''' ) )
-    assertEquals ( 0 , gant.process ( [ '-f' , '-' , '-Dfirst=strif' , '-Dsecond=dnoced' , '-Dthird=driht' , 'printDefinitions' ] as String[] ) )
+    assertEquals ( 0 , gant.process ( [ '-f' , '-' , '-Dfirst=tsrif' , '-Dsecond=dnoces' , '-Dthird=driht' , 'printDefinitions' ] as String[] ) )
     assertEquals ( '''tsrif
 dnoces
 driht
