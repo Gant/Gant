@@ -1,4 +1,4 @@
-0.3.4 ( rXXXX )
+1.0 ( rXXXX )
 ---------------
 
 Changed the lookup sequence in GantMetaClass adding lookup in the Ant object for a method call as a final

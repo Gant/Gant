@@ -129,7 +129,7 @@ target ( standard_input , '' ) { println ( 'done.' ) }
 target ( startingPoint , '' ) { depends ( standard_input ) }
 ''' ) )
     assertEquals ( 1 , gant.process ( [ '-f' , '-' , 'startingPoint' ] as String[] ) )
-    assertTrue ( output.toString ( ).startsWith ( 'Standard input, line 2 -- No signature of method: gant.Gant.doCall() is applicable for argument types:' ) )
+    assertTrue ( output.toString ( ).startsWith ( 'Standard input, line 2 -- No signature of method: gant.Gant$_closure1.doCall() is applicable for argument types:' ) )
   }
   void testStringParameter ( ) {
     System.setIn ( new StringBufferInputStream ( '''
