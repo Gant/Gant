@@ -1,6 +1,6 @@
-//  Gant -- A Groovy build tool based on scripting Ant tasks
+//  Gant -- A Groovy build framework based on scripting Ant tasks.
 //
-//  Copyright © 2006 Russel Winder <russel@russel.org.uk>
+//  Copyright © 2006-7 Russel Winder
 //
 //  Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in
 //  compliance with the License. You may obtain a copy of the License at
@@ -21,8 +21,7 @@ package org.codehaus.gant ;
  *  then the Groovy compiled.  This class contains things that should be in the <code>Gant</code> class but
  *  cannot be.
  *
- *  @author Russel Winder <russel@russel.org.uk>
- *  @version $Revision$ $Date$
+ *  @author Russel Winder <russel.winder@concertant.com>
  */
 class GantState {
   public final static int SILENT = 0 , QUIET = 1 , NORMAL = 2 , VERBOSE = 3 ;

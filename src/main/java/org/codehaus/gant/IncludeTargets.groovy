@@ -1,6 +1,6 @@
-//  Gant -- A Groovy build tool based on scripting Ant tasks
+//  Gant -- A Groovy build framework based on scripting Ant tasks.
 //
-//  Copyright © 2006-7 Russel Winder <russel@russel.org.uk>
+//  Copyright © 2006-7 Russel Winder
 //
 //  Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in
 //  compliance with the License. You may obtain a copy of the License at
@@ -18,10 +18,8 @@ package org.codehaus.gant
  *  An instance of this class is provided to each Gant script for including targets.  Targets can be
  *  provided by Gant (sub)scripts or Groovy or Java classes.
  *
- *  @author Russel Winder <russel@russel.org.uk> 
+ *  @author Russel Winder <russel.winder@concertant.com> 
  *  @author Graeme Rocher <graeme.rocher@gmail.com>        
- *
- *  @version $Revision$ $Date$
  */
 class IncludeTargets extends AbstractInclude {
   def loadedClasses = [ ]

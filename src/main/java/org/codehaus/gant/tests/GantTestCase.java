@@ -1,6 +1,6 @@
-//  Gant -- A Groovy build tool based on scripting Ant tasks
+//  Gant -- A Groovy build framework based on scripting Ant tasks.
 //
-//  Copyright © 2006-7 Russel Winder <russel@russel.org.uk>
+//  Copyright © 2006-7 Russel Winder
 //
 //  Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in
 //  compliance with the License. You may obtain a copy of the License at
@@ -24,8 +24,7 @@ import gant.Gant ;
  *  A Gant test case: Adds the required input stream manipulation features to avoid replication of code.
  *  Also prepare a new instance of Gant for each test.
  *
- *  @author Russel Winder
- *  @version $Revision$ $Date$
+ *  @author Russel Winder <russel.winder@concertant.com>
  */
 public class GantTestCase extends GroovyTestCase {
   protected ByteArrayOutputStream output ;

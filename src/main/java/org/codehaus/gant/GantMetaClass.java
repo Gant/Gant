@@ -1,6 +1,6 @@
-//  Gant --- a Groovy build tool based on scripting Ant tasks
+//  Gant -- a Groovy build framework based on scripting Ant tasks.
 //
-//  Copyright © 2006-7 Russel Winder <russel@russel.org.uk>
+//  Copyright © 2006-7 Russel Winder
 //
 //  Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in
 //  compliance with the License. You may obtain a copy of the License at
@@ -33,8 +33,7 @@ import org.codehaus.groovy.runtime.InvokerHelper ;
  *  properly, all closures from the binding called during execution of the Gant specification must be logged
  *  so that when a depends happens the full closure call hiistory is available.</p>
  *
- *  @author Russel Winder <russel@russel.org.uk>
- *  @version $Revision$ $Date$
+ *  @author Russel Winder <russel.winder@concertant.com>
  */
 class GantMetaClass extends DelegatingMetaClass {
   private final static HashSet methodsInvoked = new HashSet ( ) ;

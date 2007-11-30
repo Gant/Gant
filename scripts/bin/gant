@@ -1,8 +1,8 @@
-#!/bin/bash
+#!/bin/sh
 
-#  Gant -- A Groovy build tool based on scripting Ant tasks
+#  Gant -- A Groovy build framework based on scripting Ant tasks.
 
-#  Copyright (C) 2006 Russel Winder <russel@russel.org.uk>
+#  Copyright © 2006-7 Russel Winder
 
 #  Gant initiation script for Linux and UNIX
 

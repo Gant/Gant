@@ -1,6 +1,6 @@
-//  Gant -- A Groovy build tool based on scripting Ant tasks
+//  Gant -- A Groovy build framework based on scripting Ant tasks.
 //
-//  Copyright © 2006 Russel Winder <russel@russel.org.uk>
+//  Copyright © 2006-7 Russel Winder
 //
 //  Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in
 //  compliance with the License. You may obtain a copy of the License at
@@ -12,9 +12,7 @@
 //  implied. See the License for the specific language governing permissions and limitations under the
 //  License.
 //
-//  Author : Russel Winder <russel@russel.org.uk>
-//  $Revision$
-//  $Date$
+//  Author : Russel Winder <russel.winder@concertant.com>
 
 //  Must be in the binding not be local variables so they are available to the closures.
 
@@ -24,7 +22,7 @@ exampleDirectory = sourceDirectory + '/example'
 
  //  The standard cleaning tool.
 
-includeTargets << org.codehaus.groovy.gant.targets.Clean
+includeTargets << gant.targets.Clean
 cleanDirectory << buildDirectory
 
 cleanPattern << '**/*~'
@@ -32,11 +30,11 @@ cleanPattern << '**/*.bak'
 
 //  Cannot have a target called run as it creates an infinite mutual recursion. :-(
 
-task ( runTest : 'Run the Ivy "Hello" test.' ) {
+target ( runTest : 'Run the Ivy "Hello" test.' ) {
   def classPathRef = 'classpath'
   Ant.mkdir ( dir : buildDirectory )
   Ant.path ( id : classPathRef )
-  includeTool << org.codehaus.groovy.gant.tools.Ivy
+  includeTool << gant.tools.Ivy
   Ivy.cachepath ( organisation : 'apache' , module : 'commons-lang' , revision : '2.1' ,  pathid : classPathRef , inline : 'true' )
   Ant.javac ( srcdir : sourceDirectory , destdir : buildDirectory , debug : 'true' , classpathref : classPathRef )
   Ant.java ( classname : 'example.Hello' , classpathref : classPathRef ) {
@@ -44,6 +42,6 @@ task ( runTest : 'Run the Ivy "Hello" test.' ) {
   }
 }
 
-task ( cleanCache : 'Clean the Ivy cache.' ) { Ant.delete ( dir : System.getenv ( ).HOME + '/.ivy/cache' ) }
+target ( cleanCache : 'Clean the Ivy cache.' ) { Ant.delete ( dir : System.getenv ( ).HOME + '/.ivy/cache' ) }
 
-task ( 'default' : 'The default task in run.' ) { runTest ( ) }
+target ( 'default' : 'The default target is runTest.' ) { runTest ( ) }

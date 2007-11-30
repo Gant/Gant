@@ -1,4 +1,4 @@
-Gant -- A Groovy build tool based on scripting Ant tasks
+Gant -- A Groovy build framework based on scripting Ant tasks.
 
 This is Gant a Groovy way of working with Ant tasks -- no more XML :-)
 
@@ -45,7 +45,4 @@ Contact
 If you have any problems using Gant, or have any ideas for
 improvements, please contact me.
 
-Russel Winder <russel@russel.org.uk>
-
-$Revision$
-$Date$
+Russel Winder <russel.winder@concertant.com>

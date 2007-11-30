@@ -17,7 +17,3 @@ Get the GANTLIB stuff finished so it actually works.
 task ( flob : '' , thing : '' ) { . . . } is valid but not handled sensibly.
 
 Add a --propertyfile <filename> option.
-
-
-$Revision$
-$Date$

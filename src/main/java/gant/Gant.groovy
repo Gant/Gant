@@ -1,6 +1,6 @@
-//  Gant -- A Groovy build tool based on scripting Ant tasks
+//  Gant -- A Groovy build framework based on scripting Ant tasks.
 //
-//  Copyright © 2006-7 Russel Winder <russel@russel.org.uk>
+//  Copyright © 2006-7 Russel Winder
 //
 //  Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in
 //  compliance with the License. You may obtain a copy of the License at
@@ -85,10 +85,8 @@ import org.apache.commons.cli.PosixParser
  *  should notbe there, we have to have it in the source because asterisk followed by solidus is end of
  *  comment in Groovy</em></p>
  *
- *  @author Russel Winder <russel@russel.org.uk>  
+ *  @author Russel Winder <russel.winder@concertant.com>
  *  @author Graeme Rocher <graeme.rocher@gmail.com>
- *
- *  @version $Revision$ $Date$
  */
 final class Gant {
   private buildFileName = 'build.gant'

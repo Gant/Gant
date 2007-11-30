@@ -2,7 +2,7 @@
 
 <!--
 
-  The Gant build framework.
+  Gant - A Groovy build framework based on scripting Ant tasks.
 
   Copyright © 2007 Russel Winder.
 
@@ -12,13 +12,11 @@
       http://www.apache.org/licenses/LICENSE-2.0
 
   Unless required by applicable law or agreed to in writing, software distributed under the License is
-  distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-  See the License for the specific language governing permissions and limitations under the License.
+  distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or
+  implied. See the License for the specific language governing permissions and limitations under the
+  License.
 
-  Russel Winder can be contacted by email at:  russel@russel.org.uk
-
-  $Revision: 739 $
-  $Date: 2007-06-20 18:52:13 +0100 (Wed, 20 Jun 2007) $
+  Author : Russel Winder <russel.winder@concertant.com>
 
 -->
 

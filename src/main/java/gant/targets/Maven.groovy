@@ -1,6 +1,6 @@
-//  Gant -- A Groovy build tool based on scripting Ant tasks
+//  Gant -- A Groovy build framework based on scripting Ant tasks.
 //
-//  Copyright © 2007 Russel Winder <russel@russel.org.uk>
+//  Copyright © 2007 Russel Winder
 //
 //  Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in
 //  compliance with the License. You may obtain a copy of the License at
@@ -17,8 +17,7 @@ package gant.targets
 /**
  *  A class to provide the lifecycle targets associated with a Maven 2 project.
  *
- *  @author Russel Winder <russel@russel.org.uk>
- *  @version $Revision: 4214 $ $Date: 2006-11-13 08:59:52 +0000 (Mon, 13 Nov 2006) $
+ *  @author Russel Winder <russel.winder@concertant.com>
  */
 final class Maven {
   private final Binding binding

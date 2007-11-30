@@ -1,6 +1,6 @@
-//  Gant -- A Groovy build tool based on scripting Ant tasks
+//  Gant -- A Groovy build framework based on scripting Ant tasks.
 //
-//  Copyright © 2007 Russel Winder <russel@russel.org.uk>
+//  Copyright © 2007 Russel Winder
 //
 //  Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in
 //  compliance with the License. You may obtain a copy of the License at
@@ -17,8 +17,7 @@ package org.codehaus.gant.tests
 /**
  *  A test to ensure access to the comment in a task works correctly.
  *
- *  @author Russel Winder <russel@russel.org.uk>
- *  @version $Revision$ $Date$
+ *  @author Russel Winder <russel.winder@concertant.com>
  */
 final class CommentAccess_Test extends GantTestCase {
   void testcommentAccess ( ) {

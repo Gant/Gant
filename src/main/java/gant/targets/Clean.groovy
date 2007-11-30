@@ -1,6 +1,6 @@
-//  Gant -- A Groovy build tool based on scripting Ant tasks
+//  Gant -- A Groovy build framework based on scripting Ant tasks.
 //
-//  Copyright © 2006-7 Russel Winder <russel@russel.org.uk>
+//  Copyright © 2006-7 Russel Winder
 //
 //  Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in
 //  compliance with the License. You may obtain a copy of the License at
@@ -19,8 +19,7 @@ package gant.targets
  *  Ant pattern specifications and directory names for clean and for clobber.  The lists are used as the
  *  specifications when the clean or clobber methods are called.
  *
- *  @author Russel Winder <russel@russel.org.uk>
- *  @version $Revision$ $Date$
+ *  @author Russel Winder <russel.winder@concertant.com>
  */
 final class Clean {
   private Binding binding
