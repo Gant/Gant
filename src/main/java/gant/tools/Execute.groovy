@@ -22,31 +22,43 @@ package gant.tools
 final class Execute {
   private final Binding binding ;
   Execute ( final Binding binding ) { this.binding = binding ; }
+  //
+  //  Don't use the Elvis operator since that would mean the code would not compile in Groovy 1.0.
+  //
   /**
    *  Execute a command from the PATH.
    */
-  void executable ( final String command , final Closure closure = { println it } ) {
+  void executable ( final Map keywordParameters = [:] , final String command ) {
+    def outProcessing = keywordParameters['outProcessing'] ? keywordParameters['outProcessing'] : { println ( it ) }
+    def errProcessing = keywordParameters['errProcessing'] ? keywordParameters['errProcessing'] : { System.err.println ( it ) }
     binding.getVariable ( 'message' ) ( 'execute' , command )
     def process = command.execute ( )
-    process.in.eachLine ( closure )
+    process.err.eachLine ( errProcessing )
+    process.in.eachLine ( outProcessing )
     process.waitFor ( )
   }
   /**
    *  Execute a command from the PATH.
    */
-  void executable ( final List command , final Closure closure = { println it } ) {
+  void executable ( final Map keywordParameters = [:] , final List command ) {
+    def outProcessing = keywordParameters['outProcessing'] ? keywordParameters['outProcessing'] : { println ( it ) }
+    def errProcessing = keywordParameters['errProcessing'] ? keywordParameters['errProcessing'] : { System.err.println ( it ) }
     binding.getVariable ( 'message' ) ( 'execute' , command )
     def process = command.execute ( )
-    process.in.eachLine ( closure )
+    process.err.eachLine ( errProcessing )
+    process.in.eachLine ( outProcessing )
     process.waitFor ( )
   }
   /**
    *  Execute a UNIX-style shell.
    */
-  void shell ( final String command , final Closure closure = { println it } ) {
+  void shell ( final Map keywordParameters = [:] , final String command ) {
+    def outProcessing = keywordParameters['outProcessing'] ? keywordParameters['outProcessing'] : { println ( it ) }
+    def errProcessing = keywordParameters['errProcessing'] ? keywordParameters['errProcessing'] : { System.err.println ( it ) }
     binding.getVariable ( 'message' ) ( 'shell' , command )
     def process = [ 'sh' , '-c' , command ].execute ( )
-    process.in.eachLine ( closure )
+    process.err.eachLine ( errProcessing )
+    process.in.eachLine ( outProcessing )
     process.waitFor ( )
   }
 }
