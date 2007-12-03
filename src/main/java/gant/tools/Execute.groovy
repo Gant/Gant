@@ -27,6 +27,12 @@ final class Execute {
   //
   /**
    *  Execute a command from the PATH.
+   *
+   *  Optional, keyword parameters: <code>outProcessing</code> is a <code>Closure</code> used to process
+   *  lines from standard out; <code>errProcessing is a <code>Closure</code> used to process lines from
+   *  standard error.
+   *
+   *  @parameter command the command as a single <code>String</code>.
    */
   void executable ( final Map keywordParameters = [:] , final String command ) {
     def outProcessing = keywordParameters['outProcessing'] ? keywordParameters['outProcessing'] : { println ( it ) }
@@ -39,6 +45,12 @@ final class Execute {
   }
   /**
    *  Execute a command from the PATH.
+   *
+   *  Optional, keyword parameters: <code>outProcessing</code> is a <code>Closure</code> used to process
+   *  lines from standard out; <code>errProcessing</code> is a <code>Closure</code> used to process lines
+   *  from standard error.
+   *
+   *  @parameter command the command as a  list of <code>String</code>s.
    */
   void executable ( final Map keywordParameters = [:] , final List command ) {
     def outProcessing = keywordParameters['outProcessing'] ? keywordParameters['outProcessing'] : { println ( it ) }
@@ -50,7 +62,13 @@ final class Execute {
     process.waitFor ( )
   }
   /**
-   *  Execute a UNIX-style shell.
+   *  Execute a command using a shell.
+   *
+   *  Optional, keyword parameters: <code>outProcessing</code> is a <code>Closure</code> used to process
+   *  lines from standard out; <code>errProcessing</code> is a <code>Closure</code> used to process lines
+   *  from standard error.
+   *
+   *  @parameter command the command as a single <code>String</code>.
    */
   void shell ( final Map keywordParameters = [:] , final String command ) {
     def outProcessing = keywordParameters['outProcessing'] ? keywordParameters['outProcessing'] : { println ( it ) }

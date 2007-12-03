@@ -29,11 +29,14 @@ final class Subdirectories {
     if ( GantState.verbosity > GantState.NORMAL ) { println "\n============ ${directory} ================" }
     //  If we allowed ourselves Java SE 5.0 then we could use ProcessBuilder but we restrict ourselves to Java 1.4.
     //def process = ( new ProcessBuilder ( [ 'sh' , '-c' , command ] )).directory ( directory ).start ( )
-
+    //
     //  RC-01 cannot deal with null in the first parameter.
     //def process = command.execute ( null , directory )
     def process = command.execute ( [ ] , directory )
-    if ( GantState.verbosity > GantState.QUIET ) { process.in.eachLine { line -> println ( line ) } }
+    if ( GantState.verbosity > GantState.QUIET ) {
+      process.err.eachLine { line -> System.err.println ( line ) }
+      process.in.eachLine { line -> println ( line ) }
+    }
     process.waitFor ( )
   }
   void forAllSubdirectoriesRun ( final String command ) {
