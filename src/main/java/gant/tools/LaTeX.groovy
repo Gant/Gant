@@ -28,21 +28,21 @@ class LaTeX {
     this.binding = binding
     executor = new Execute ( binding ) 
   }
-  public static final ltxExtension = '.ltx'
-  public static final texExtension = '.tex'
-  public static final dviExtension = '.dvi'
-  public static final epsExtension = '.eps'
-  public static final pdfExtension = '.pdf'
-  public static final psExtension = '.ps'
-  public static final auxExtension = '.aux'
-  public static final bblExtension = '.bbl'
-  public static final blgExtension = '.blg'
-  public static final idxExtension = '.idx'
-  public static final ilgExtension = '.ilg'
-  public static final indExtension = '.ind'
-  public static final logExtension = '.log'
-  public static final tocExtension = '.toc'
-  public static final pdfBookMarkExtension = '.out'
+  public final ltxExtension = '.ltx'
+  public final texExtension = '.tex'
+  public final dviExtension = '.dvi'
+  public final epsExtension = '.eps'
+  public final pdfExtension = '.pdf'
+  public final psExtension = '.ps'
+  public final auxExtension = '.aux'
+  public final bblExtension = '.bbl'
+  public final blgExtension = '.blg'
+  public final idxExtension = '.idx'
+  public final ilgExtension = '.ilg'
+  public final indExtension = '.ind'
+  public final logExtension = '.log'
+  public final tocExtension = '.toc'
+  public final pdfBookMarkExtension = '.out'
    //  As at r5438 super fails to work and so we cannot make this final, we have to make it accesible to subclasses.
   public intermediateExtensions = [
     auxExtension , dviExtension , logExtension , tocExtension ,
@@ -68,14 +68,14 @@ class LaTeX {
     if ( option instanceof List ) { environment[ key ] += option }
     else { environment[ key ] << option }
   }
-  void addLaTeXOption ( option ) { addOption ( 'latexOptions' , option ) }
-  void addBibTeXOption ( option ) { addOption ( 'bibtexOptions' , option ) }
-  void addMakeindexOption ( option ) { addOption ( 'makeindexOptions' , option ) }
-  void addDvipsOption ( option ) { addOption ( 'dvipsOptions' , option ) }
-  void addPs2pdfOption ( option ) { addOption ( 'ps2pdfOptions' , option ) }
-  void addOptions ( Map keywordOptions ) { keywordOptions.each { key , value -> addOption ( key , value ) } }
+  public void addLaTeXOption ( option ) { addOption ( 'latexOptions' , option ) }
+  public void addBibTeXOption ( option ) { addOption ( 'bibtexOptions' , option ) }
+  public void addMakeindexOption ( option ) { addOption ( 'makeindexOptions' , option ) }
+  public void addDvipsOption ( option ) { addOption ( 'dvipsOptions' , option ) }
+  public void addPs2pdfOption ( option ) { addOption ( 'ps2pdfOptions' , option ) }
+  public void addOptions ( Map keywordOptions ) { keywordOptions.each { key , value -> addOption ( key , value ) } }
   private void executeLaTeX ( ) {
-    def root = environment [ 'root' ]
+    def root = environment.root
     def sourceName = root + ltxExtension
     def sourceFile = new File ( sourceName )
     if ( ! sourceFile.exists ( ) ) {
@@ -128,19 +128,19 @@ class LaTeX {
       }
     }
   }
-  void generatePDF ( arguments ) {
+  public void generatePDF ( Map arguments ) {
     arguments.each { key , value -> environment[ key ] = value }
     environment.latexCommand = 'pdflatex'
     executeLaTeX ( )
   }
-  void generatePS ( arguments ) {
+  public void generatePS ( Map arguments ) {
     arguments.each { key , value -> environment[ key ] = value }
     environment.latexCommand = 'latex'
     executeLaTeX ( )
-    def dviFile = new File ( "${environment.root}${dviExtension}" )
-    def psFile = new File ( "${environment.root}${psExtension}" )
+    def dviFile = new File ( environment.root + dviExtension )
+    def psFile = new File ( environment.root + psExtension )
     if ( ( ! psFile.exists ( ) ) || ( dviFile.lastModified ( ) > psFile.lastModified ( ) ) ) {
-      executor.executable ( [ 'dvips' , * environment.dvipsOptions , '-o' , psFile.name , dviFile.name ] )
+      executor.executable ( [ environment.dvipsCommand , * environment.dvipsOptions , '-o' , psFile.name , dviFile.name ] )
     }
   }
 }
