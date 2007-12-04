@@ -1,4 +1,4 @@
-//  Gant -- a Groovy build framework based on scripting Ant tasks.
+//  Gant -- A Groovy build framework based on scripting Ant tasks.
 //
 //  Copyright © 2006-7 Russel Winder
 //

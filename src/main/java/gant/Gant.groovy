@@ -62,8 +62,8 @@ import org.apache.commons.cli.PosixParser
  *        depends ( clean )
  *      }
  *      target ( clean : 'Clean the directory and subdirectories' ) {
- *        Ant.delete ( dir : 'build' , quiet : 'true' )
- *        Ant.delete ( quiet : 'true' ) { fileset ( dir : '.' , includes : '** /*~,** /*.bak'  , defaultexcludes : 'false' ) }
+ *        delete ( dir : 'build' , quiet : 'true' )
+ *        delete ( quiet : 'true' ) { fileset ( dir : '.' , includes : '** /*~,** /*.bak'  , defaultexcludes : 'false' ) }
  *      }
  * </pre>
  *
