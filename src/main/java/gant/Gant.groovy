@@ -95,7 +95,6 @@ final class Gant {
   private final binding = new Binding ( )
   private final groovyShell = new GroovyShell ( binding )
   private final classLoader = getClass().getClassLoader()
-
   private final target = { map , closure ->
     def targetName = map.keySet ( ).iterator ( ).next ( )
     def targetDescription = map.get ( targetName )
@@ -177,30 +176,33 @@ final class Gant {
     // Use the GnuParser rather than the PosixParse (the default) so as to avoid the problem of processing
     // parameters to long options.
     def cli = new CliBuilder ( usage : 'gant [option]* [target]*' , parser : new PosixParser ( ) )
-    //  Options with short and long form.
-    cli.c ( longOpt : 'usecache' , 'Whether to cache the generated class and perform modified checks on the file before re-compilation.' )
-    cli.d ( longOpt : 'cachedir' , args : 1 , argName : 'cache-file' , 'The directory where to cache generated classes to.' )
-    cli.f ( longOpt : 'gantfile' , args : 1 , argName : 'build-file' , 'Use the named build file instead of the default, build.gant.' )
-    cli.h ( longOpt : 'help' , 'Print out this message.' )
-    cli.l ( longOpt : 'gantlib' , args : Option.UNLIMITED_VALUES , argName : 'library' , 'A directory that contains classes to be used as extra Gant modules,' )
-    cli.n ( longOpt : 'dry-run' , 'Do not actually action any tasks.' )
-    cli.p ( longOpt : 'projecthelp' , 'Print out a list of the possible targets.' )
-    cli.q ( longOpt : 'quiet' , 'Do not print out much when executing.' )
-    cli.s ( longOpt : 'silent' , 'Print out nothing when executing.' )
-    cli.v ( longOpt : 'verbose' , 'Print lots of extra information.' )
     //
     //  Commons CLI is broken.  1.0 has one set of ideas about multiple args and is broken.  1.1 has a
     //  different set of ideas about multiple args and is broken.  For the moment we leave things so that
     //  they work in 1.0.
     //
-    //cli.D (argName : 'name>=<value' , args : Option.UNLIMITED_VALUES , 'Define <name> to have value <value>.  Creates a variable named <name> for use in the scripts and a property named <name> for the Ant tasks.' )
+    //  1.0 silently absorbs unknown single letter options.
     //
+    //  Options with short and long form.
+    cli.c ( longOpt : 'usecache' , 'Whether to cache the generated class and perform modified checks on the file before re-compilation.' )
+    cli.d ( longOpt : 'cachedir' , args : 1 , argName : 'cache-file' , 'The directory where to cache generated classes to.' )
+    cli.f ( longOpt : 'gantfile' , args : 1 , argName : 'build-file' , 'Use the named build file instead of the default, build.gant.' )
+    cli.h ( longOpt : 'help' , 'Print out this message.' )
+    //  This options should have "args : Option.UNLIMITED_VALUES" but that doesn't work.
+    cli.l ( longOpt : 'gantlib' , args : 1 , argName : 'library' , 'A directory that contains classes to be used as extra Gant modules,' )
+    cli.n ( longOpt : 'dry-run' , 'Do not actually action any tasks.' )
+    cli.p ( longOpt : 'projecthelp' , 'Print out a list of the possible targets.' )
+    cli.q ( longOpt : 'quiet' , 'Do not print out much when executing.' )
+    cli.s ( longOpt : 'silent' , 'Print out nothing when executing.' )
+    cli.v ( longOpt : 'verbose' , 'Print lots of extra information.' )
+    //  This options should have "args : Option.UNLIMITED_VALUES" but that doesn't work.
     cli.D (argName : 'name>=<value' , args : 1 , 'Define <name> to have value <value>.  Creates a variable named <name> for use in the scripts and a property named <name> for the Ant tasks.' )
+    cli.P ( longOpt : 'classpath' , args : 1 , argName : 'path' , 'Adds a path to search for jars and classes.' )
     cli.T ( longOpt : 'targets' , 'Print out a list of the possible targets.' )
     cli.V ( longOpt : 'version' , 'Print the version number and exit.' )
     // Options with only a long form.
-    cli.options.addOption ( OptionBuilder.withLongOpt ( 'lib' ).hasArgs ( ).withArgName ( 'path' ).withDescription ( 'Adds a path to search for jars and classes.' ).create ( ) )
-    //cli.options.addOption ( OptionBuilder.withLongOpt ( 'debug' ).withDescription ( 'Print debugging information.' ).create ( ) )
+    //  CLI 1.0 can only work with options that have a single letter form. 
+    //cli.options.addOption ( OptionBuilder.withLongOpt ( 'lib' ).hasArg ( ).withArgName ( 'path' ).withDescription ( 'Adds a path to search for jars and classes.' ).create ( ) )
     //  Process the arguments for options.
     def options = cli.parse ( args )
     if ( options == null ) { println ( 'Error in processing command line options.' ) ; return 1 }
@@ -225,6 +227,7 @@ final class Gant {
         binding.setVariable ( pair[0] , pair[1] )
       }
     }
+    if ( options.P ) { options.P.split ( System.properties.'path.separator' ).each { pathitem -> rootLoader?.addURL ( ( new File ( pathitem ) ).toURL ( ) ) } }
     if ( options.V ) {
       def version = ''
       final gantPackage = Package.getPackage ( 'gant' )
@@ -232,7 +235,8 @@ final class Gant {
       println ( 'Gant version ' + ( ( version == null ) ? '<unknown>' : version ) )
       return 0
     }
-    if ( options.lib ) { options.libs.each { lib -> rootLoader?.addURL ( ( new File ( lib ) ).toURL ( ) ) } }
+    //  Have to use a short form here.
+    //if ( options.lib ) { options.libs.each { lib -> rootLoader?.addURL ( ( new File ( lib ) ).toURL ( ) ) } }
     def targets = options.arguments ( )
     def gotUnknownOptions = false ;
     targets.each { target ->
