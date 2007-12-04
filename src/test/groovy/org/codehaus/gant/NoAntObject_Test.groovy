@@ -24,17 +24,17 @@ final class NoAntObject_Test extends GantTestCase {
     System.setIn ( new StringBufferInputStream ( 'target ( test : "" ) { echo ( message : "Hello." ) } ' ) )
     assertEquals ( 0 , gant.process ( [ '-f' ,  '-' , 'test' ] as String[] ) )
     assertEquals ( '''     [echo] Hello.
-''' , output.toString ( ) ) 
+''' , output ) 
   }
   void testEchoText ( ) {
     System.setIn ( new StringBufferInputStream ( 'target ( test : "" ) { echo { "Hello." } } ' ) )
     assertEquals ( 0 , gant.process ( [ '-f' ,  '-' , 'test' ] as String[] ) )
-    assertEquals ( '' , output.toString ( ) ) 
+    assertEquals ( '' , output ) 
   }
   void testEchoMixed ( ) {
     System.setIn ( new StringBufferInputStream ( 'target ( test : "" ) { echo ( message : "Hello" ) { " World." } } ' ) )
     assertEquals ( 0 , gant.process ( [ '-f' ,  '-' , 'test' ] as String[] ) )
     assertEquals ( '''     [echo] Hello
-''' , output.toString ( ) ) 
+''' , output ) 
   }
 }

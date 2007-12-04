@@ -26,6 +26,6 @@ theComment = 'Some comment.'
 target ( commentAccess : theComment ) { assert commentAccess_description == theComment ; println ( 'Success.' ) }
 """ ) )
     assertEquals ( 0 , gant.process ( [ '-f' , '-' , 'commentAccess' ] as String[] ) )
-    assertEquals ( 'Success.\n' , output.toString ( ) )
+    assertEquals ( 'Success.\n' , output )
   }
 }

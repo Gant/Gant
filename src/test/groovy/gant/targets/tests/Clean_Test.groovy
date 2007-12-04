@@ -32,7 +32,7 @@ target ( testClean : '' ) {
 """ ) )
     assertEquals ( 0 , gant.process ( [ '-f' , '-' , 'testClean' ] as String[] ) )
     assertEquals ( '''["target"]
-''' , output.toString ( ) ) 
+''' , output ) 
   }
   void testCleanDirectoryList ( ) {
     System.setIn ( new StringBufferInputStream ( """
@@ -44,7 +44,7 @@ target ( testClean : '' ) {
 """ ) )
     assertEquals ( 0 , gant.process ( [ '-f' , '-' , 'testClean' ] as String[] ) )
     assertEquals ( '''[["target_a", "target_b"]]
-''' , output.toString ( ) ) 
+''' , output ) 
   }
   void testCleanPatternString ( ) {
     System.setIn ( new StringBufferInputStream ( """
@@ -56,7 +56,7 @@ target ( testClean : '' ) {
 """ ) )
     assertEquals ( 0 , gant.process ( [ '-f' , '-' , 'testClean' ] as String[] ) )
     assertEquals ( '''["**/*~"]
-''' , output.toString ( ) ) 
+''' , output ) 
   }
   void testCleanPatternList ( ) {
     System.setIn ( new StringBufferInputStream ( """
@@ -66,7 +66,7 @@ target ( testClean : '' ) { println ( cleanPattern ) }
 """ ) )
     assertEquals ( 0 , gant.process ( [ '-f' , '-' , 'testClean' ] as String[] ) )
     assertEquals ( '''[["**/*~", "**/*.bak"]]
-''' , output.toString ( ) ) 
+''' , output ) 
   }
   void testClobberDirectoryString ( ) {
     System.setIn ( new StringBufferInputStream ( """
@@ -78,7 +78,7 @@ target ( testClobber : '' ) {
 """ ) )
     assertEquals ( 0 , gant.process ( [ '-f' , '-' , 'testClobber' ] as String[] ) )
     assertEquals ( '''["target"]
-''' , output.toString ( ) ) 
+''' , output ) 
   }
   void testClobberDirectoryList ( ) {
     System.setIn ( new StringBufferInputStream ( """
@@ -90,7 +90,7 @@ target ( testClobber : '' ) {
 """ ) )
     assertEquals ( 0 , gant.process ( [ '-f' , '-' , 'testClobber' ] as String[] ) )
     assertEquals ( '''[["target_a", "target_b"]]
-''' , output.toString ( ) ) 
+''' , output ) 
   }
   void testClobberPatternString ( ) {
     System.setIn ( new StringBufferInputStream ( """
@@ -102,7 +102,7 @@ target ( testClobber : '' ) {
 """ ) )
     assertEquals ( 0 , gant.process ( [ '-f' , '-' , 'testClobber' ] as String[] ) )
     assertEquals ( '''["**/*~"]
-''' , output.toString ( ) ) 
+''' , output ) 
   }
   void testClobberPatternList ( ) {
     System.setIn ( new StringBufferInputStream ( """
@@ -112,6 +112,6 @@ target ( testClobber : '' ) { println ( clobberPattern ) }
 """ ) )
     assertEquals ( 0 , gant.process ( [ '-f' , '-' , 'testClobber' ] as String[] ) )
     assertEquals ( '''[["**/*~", "**/*.bak"]]
-''' , output.toString ( ) ) 
+''' , output ) 
   }
 }

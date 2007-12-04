@@ -39,6 +39,6 @@ target ( default : "Should resolve this class" ) {
     assertEquals ( '''Starting
 goodbye
 Finished
-''' , output.toString ( ) )
+''' , output )
   }
 }

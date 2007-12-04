@@ -27,11 +27,14 @@ import gant.Gant ;
  *  @author Russel Winder <russel.winder@concertant.com>
  */
 public class GantTestCase extends GroovyTestCase {
-  protected ByteArrayOutputStream output ;
+  private ByteArrayOutputStream output ;
   protected Gant gant ;
   protected void setUp ( ) {
     output = new ByteArrayOutputStream ( ) ;
     System.setOut ( new PrintStream ( output ) ) ;
     gant = new Gant ( ) ;
+  }
+  protected String getOutput ( ) {
+    return output.toString ( ).replace ( "\r" , "" ) ;
   }
 }

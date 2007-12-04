@@ -24,7 +24,7 @@ final class Options_Test extends GantTestCase {
     assertEquals ( 0 , gant.process ( [ '-V' ] as String[] ) )
     //  It appears that during test, the manifest version number is not actually found so we get <unknown>
     //  returned as the version number.
-    assertEquals ( 'Gant version <unknown>' , output.toString ( ).trim ( ) )
+    assertEquals ( 'Gant version <unknown>' , output.trim ( ) )
   }
   void testDefinitions ( ) {
     System.setIn ( new StringBufferInputStream ( '''
@@ -37,6 +37,6 @@ target ( printDefinitions : "Print some definitions" ) {
     assertEquals ( '''tsrif
 dnoces
 driht
-''' , output.toString ( ) )
+''' , output )
   }
 }

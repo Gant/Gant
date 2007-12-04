@@ -71,62 +71,62 @@ target ( 'default' : '' ) { something ( ) }
   void testToolDefaultClass ( ) {
     System.setIn ( new StringBufferInputStream ( toolBuildScriptClass ) )
     assertEquals ( 0 , gant.process ( [ '-f' ,  '-'  ] as String[] ) )
-    assertEquals ( 'flobbed.\n' , output.toString ( ) ) 
+    assertEquals ( 'flobbed.\n' , output ) 
   }
   void testToolDefaultFile ( ) {
     System.setIn ( new StringBufferInputStream ( toolBuildScriptFile ) )
     assertEquals ( 0 , gant.process ( [ '-f' ,  '-'  ] as String[] ) )
-    assertEquals ( 'flobbed.\n' , output.toString ( ) ) 
+    assertEquals ( 'flobbed.\n' , output ) 
   }
   void testToolDefaultString ( ) {
     System.setIn ( new StringBufferInputStream ( toolBuildScriptString ) )
     assertEquals ( 0 , gant.process ( [ '-f' ,  '-'  ] as String[] ) )
-    assertEquals ( 'flobbed.\n' , output.toString ( ) ) 
+    assertEquals ( 'flobbed.\n' , output ) 
   }
   void testToolFlobClass ( ) {
     System.setIn ( new StringBufferInputStream ( toolBuildScriptClass ) )
     assertEquals ( 1 , gant.process ( [ '-f' ,  '-'  , 'flob'] as String[] ) )
-    assertEquals ( 'Target flob does not exist.\n' , output.toString ( ) ) 
+    assertEquals ( 'Target flob does not exist.\n' , output ) 
   }
   void testToolFlobFile ( ) {
     System.setIn ( new StringBufferInputStream ( toolBuildScriptFile ) )
     assertEquals ( 1 , gant.process ( [ '-f' ,  '-'  , 'flob'] as String[] ) )
-    assertEquals ( 'Target flob does not exist.\n' , output.toString ( ) ) 
+    assertEquals ( 'Target flob does not exist.\n' , output ) 
   }
   void testToolFlobString ( ) {
     System.setIn ( new StringBufferInputStream ( toolBuildScriptString ) )
     assertEquals ( 1 , gant.process ( [ '-f' ,  '-'  , 'flob'] as String[] ) )
-    assertEquals ( 'Target flob does not exist.\n' , output.toString ( ) ) 
+    assertEquals ( 'Target flob does not exist.\n' , output ) 
   }
   void testToolBurbleClass ( ) {
     System.setIn ( new StringBufferInputStream ( toolBuildScriptClass ) )
     assertEquals ( 1 , gant.process ( [ '-f' ,  '-'  , 'burble'] as String[] ) )
-    assertEquals ( 'Target burble does not exist.\n' , output.toString ( ) ) 
+    assertEquals ( 'Target burble does not exist.\n' , output ) 
   }
   void testToolBurbleFile ( ) {
     System.setIn ( new StringBufferInputStream ( toolBuildScriptFile ) )
     assertEquals ( 1 , gant.process ( [ '-f' ,  '-'  , 'burble'] as String[] ) )
-    assertEquals ( 'Target burble does not exist.\n' , output.toString ( ) ) 
+    assertEquals ( 'Target burble does not exist.\n' , output ) 
   }
   void testToolBurbleString ( ) {
     System.setIn ( new StringBufferInputStream ( toolBuildScriptString ) )
     assertEquals ( 1 , gant.process ( [ '-f' ,  '-'  , 'burble'] as String[] ) )
-    assertEquals ( 'Target burble does not exist.\n' , output.toString ( ) ) 
+    assertEquals ( 'Target burble does not exist.\n' , output ) 
   }
   void testToolSomethingClass ( ) {
     System.setIn ( new StringBufferInputStream ( toolBuildScriptClass ) )
     assertEquals ( 0 , gant.process ( [ '-f' ,  '-'  , 'something'] as String[] ) )
-    assertEquals ( 'flobbed.\n' , output.toString ( ) ) 
+    assertEquals ( 'flobbed.\n' , output ) 
   }
   void testToolSomethingFile ( ) {
     System.setIn ( new StringBufferInputStream ( toolBuildScriptFile ) )
     assertEquals ( 0 , gant.process ( [ '-f' ,  '-'  , 'something'] as String[] ) )
-    assertEquals ( 'flobbed.\n' , output.toString ( ) ) 
+    assertEquals ( 'flobbed.\n' , output ) 
   }
   void testToolSomethingString ( ) {
     System.setIn ( new StringBufferInputStream ( toolBuildScriptString ) )
     assertEquals ( 0 , gant.process ( [ '-f' ,  '-'  , 'something'] as String[] ) )
-    assertEquals ( 'flobbed.\n' , output.toString ( ) ) 
+    assertEquals ( 'flobbed.\n' , output ) 
   }
   void testToolClassNoFile ( ) {
     System.setIn ( new StringBufferInputStream ( toolBuildScriptFile.replace ( toolClassFilePath , nonExistentFilePath ) ) )
@@ -137,69 +137,69 @@ target ( 'default' : '' ) { something ( ) }
   void testTargetsDefaultClassClass ( ) {
     System.setIn ( new StringBufferInputStream ( targetsBuildClassClass ) )
     assertEquals ( 0 , gant.process ( [ '-f' ,  '-'  ] as String[] ) )
-    assertEquals ( 'flobbed.\n' , output.toString ( ) ) 
+    assertEquals ( 'flobbed.\n' , output ) 
   }
   /*
   void testTargetsDefaultClassFile ( ) {
     System.setIn ( new StringBufferInputStream ( targetsBuildClassFile ) )
     assertEquals ( 0 , gant.process ( [ '-f' ,  '-'  ] as String[] ) )
-    assertEquals ( 'flobbed.\n' , output.toString ( ) ) 
+    assertEquals ( 'flobbed.\n' , output ) 
   }
   void testTargetsDefaultClassString ( ) {
     System.setIn ( new StringBufferInputStream ( targetsBuildClassString ) )
     assertEquals ( 0 , gant.process ( [ '-f' ,  '-'  ] as String[] ) )
-    assertEquals ( 'flobbed.\n' , output.toString ( ) ) 
+    assertEquals ( 'flobbed.\n' , output ) 
   }
   */
   void testTargetsFlobClassClass ( ) {
     System.setIn ( new StringBufferInputStream ( targetsBuildClassClass ) )
     assertEquals ( 0 , gant.process ( [ '-f' ,  '-'  , 'flob'] as String[] ) )
-    assertEquals ( 'flobbed.\n' , output.toString ( ) ) 
+    assertEquals ( 'flobbed.\n' , output ) 
   }
   /*
   void testTargetsFlobClassFile ( ) {
     System.setIn ( new StringBufferInputStream ( targetsBuildClassFile ) )
     assertEquals ( 0 , gant.process ( [ '-f' ,  '-'  , 'flob'] as String[] ) )
-    assertEquals ( 'flobbed.\n' , output.toString ( ) ) 
+    assertEquals ( 'flobbed.\n' , output ) 
   }
   void testTargetsFlobClassString ( ) {
     System.setIn ( new StringBufferInputStream ( targetsBuildClassString ) )
     assertEquals ( 0 , gant.process ( [ '-f' ,  '-'  , 'flob'] as String[] ) )
-    assertEquals ( 'flobbed.\n' , output.toString ( ) ) 
+    assertEquals ( 'flobbed.\n' , output ) 
   }
   */
   void testTargetsBurbleClassClass ( ) {
     System.setIn ( new StringBufferInputStream ( targetsBuildClassClass ) )
     assertEquals ( 1 , gant.process ( [ '-f' ,  '-'  , 'burble'] as String[] ) )
-    assertEquals ( 'Target burble does not exist.\n' , output.toString ( ) ) 
+    assertEquals ( 'Target burble does not exist.\n' , output ) 
   }
   /*
   void testTargetsBurbleClassFile ( ) {
     System.setIn ( new StringBufferInputStream ( targetsBuildClassFile ) )
     assertEquals ( 1 , gant.process ( [ '-f' ,  '-'  , 'burble'] as String[] ) )
-    assertEquals ( 'Target burble does not exist.\n' , output.toString ( ) ) 
+    assertEquals ( 'Target burble does not exist.\n' , output ) 
   }
   void testTargetsBurbleClassString ( ) {
     System.setIn ( new StringBufferInputStream ( targetsBuildClassString ) )
     assertEquals ( 1 , gant.process ( [ '-f' ,  '-'  , 'burble'] as String[] ) )
-    assertEquals ( 'Target burble does not exist.\n' , output.toString ( ) ) 
+    assertEquals ( 'Target burble does not exist.\n' , output ) 
   }
   */
   void testTargetsSomethingClassClass ( ) {
     System.setIn ( new StringBufferInputStream ( targetsBuildClassClass ) )
     assertEquals ( 0 , gant.process ( [ '-f' ,  '-'  , 'something'] as String[] ) )
-    assertEquals ( 'flobbed.\n' , output.toString ( ) ) 
+    assertEquals ( 'flobbed.\n' , output ) 
   }
   /*
   void testTargetsSomethingClassFile ( ) {
     System.setIn ( new StringBufferInputStream ( targetsBuildClassFile ) )
     assertEquals ( 0 , gant.process ( [ '-f' ,  '-'  , 'something'] as String[] ) )
-    assertEquals ( 'flobbed.\n' , output.toString ( ) ) 
+    assertEquals ( 'flobbed.\n' , output ) 
   }
   void testTargetsSomethingClassString ( ) {
     System.setIn ( new StringBufferInputStream ( targetsBuildClassString ) )
     assertEquals ( 0 , gant.process ( [ '-f' ,  '-'  , 'something'] as String[] ) )
-    assertEquals ( 'flobbed.\n' , output.toString ( ) ) 
+    assertEquals ( 'flobbed.\n' , output ) 
   }
   */
   void testTargetsClassNoFile ( ) {
@@ -212,69 +212,69 @@ target ( 'default' : '' ) { something ( ) }
   void testTargetsDefaultScriptClass ( ) {
     System.setIn ( new StringBufferInputStream ( targetsBuildScriptClass ) )
     assertEquals ( 0 , gant.process ( [ '-f' ,  '-'  ] as String[] ) )
-    assertEquals ( 'flobbed.\n' , output.toString ( ) ) 
+    assertEquals ( 'flobbed.\n' , output ) 
   }
   */
   void testTargetsDefaultScriptFile ( ) {
     System.setIn ( new StringBufferInputStream ( targetsBuildScriptFile ) )
     assertEquals ( 0 , gant.process ( [ '-f' ,  '-'  ] as String[] ) )
-    assertEquals ( 'flobbed.\n' , output.toString ( ) ) 
+    assertEquals ( 'flobbed.\n' , output ) 
   }
   void testTargetsDefaultScriptString ( ) {
     System.setIn ( new StringBufferInputStream ( targetsBuildScriptString ) )
     assertEquals ( 0 , gant.process ( [ '-f' ,  '-'  ] as String[] ) )
-    assertEquals ( 'flobbed.\n' , output.toString ( ) ) 
+    assertEquals ( 'flobbed.\n' , output ) 
   }
   /*
   void testTargetsFlobScriptClass ( ) {
     System.setIn ( new StringBufferInputStream ( targetsBuildScriptClass ) )
     assertEquals ( 0 , gant.process ( [ '-f' ,  '-'  , 'flob'] as String[] ) )
-    assertEquals ( 'flobbed.\n' , output.toString ( ) ) 
+    assertEquals ( 'flobbed.\n' , output ) 
   }
   */
   void testTargetsFlobScriptFile ( ) {
     System.setIn ( new StringBufferInputStream ( targetsBuildScriptFile ) )
     assertEquals ( 0 , gant.process ( [ '-f' ,  '-'  , 'flob'] as String[] ) )
-    assertEquals ( 'flobbed.\n' , output.toString ( ) ) 
+    assertEquals ( 'flobbed.\n' , output ) 
   }
   void testTargetsFlobScriptString ( ) {
     System.setIn ( new StringBufferInputStream ( targetsBuildScriptString ) )
     assertEquals ( 0 , gant.process ( [ '-f' ,  '-'  , 'flob'] as String[] ) )
-    assertEquals ( 'flobbed.\n' , output.toString ( ) ) 
+    assertEquals ( 'flobbed.\n' , output ) 
   }
   /*
   void testTargetsBurbleScriptClass ( ) {
     System.setIn ( new StringBufferInputStream ( targetsBuildScriptClass ) )
     assertEquals ( 1 , gant.process ( [ '-f' ,  '-'  , 'burble'] as String[] ) )
-    assertEquals ( 'Target burble does not exist.\n' , output.toString ( ) ) 
+    assertEquals ( 'Target burble does not exist.\n' , output ) 
   }
   */
   void testTargetsBurbleScriptFile ( ) {
     System.setIn ( new StringBufferInputStream ( targetsBuildScriptFile ) )
     assertEquals ( 1 , gant.process ( [ '-f' ,  '-'  , 'burble'] as String[] ) )
-    assertEquals ( 'Target burble does not exist.\n' , output.toString ( ) ) 
+    assertEquals ( 'Target burble does not exist.\n' , output ) 
   }
   void testTargetsBurbleScriptString ( ) {
     System.setIn ( new StringBufferInputStream ( targetsBuildScriptString ) )
     assertEquals ( 1 , gant.process ( [ '-f' ,  '-'  , 'burble'] as String[] ) )
-    assertEquals ( 'Target burble does not exist.\n' , output.toString ( ) ) 
+    assertEquals ( 'Target burble does not exist.\n' , output ) 
   }
   /*
   void testTargetsSomethingScriptClass ( ) {
     System.setIn ( new StringBufferInputStream ( targetsBuildScriptClass ) )
     assertEquals ( 1 , gant.process ( [ '-f' ,  '-'  , 'something'] as String[] ) )
-    assertEquals ( 'flobbed.\n' , output.toString ( ) ) 
+    assertEquals ( 'flobbed.\n' , output ) 
   }
   */
   void testTargetsSomethingScriptFile ( ) {
     System.setIn ( new StringBufferInputStream ( targetsBuildScriptFile ) )
     assertEquals ( 0 , gant.process ( [ '-f' ,  '-'  , 'something'] as String[] ) )
-    assertEquals ( 'flobbed.\n' , output.toString ( ) ) 
+    assertEquals ( 'flobbed.\n' , output ) 
   }
   void testTargetsSomethingScriptString ( ) {
     System.setIn ( new StringBufferInputStream ( targetsBuildScriptString ) )
     assertEquals ( 0 , gant.process ( [ '-f' ,  '-'  , 'something'] as String[] ) )
-    assertEquals ( 'flobbed.\n' , output.toString ( ) ) 
+    assertEquals ( 'flobbed.\n' , output ) 
   }
   void testTargetsScriptNoFile ( ) {
     System.setIn ( new StringBufferInputStream ( targetsBuildScriptFile.replace ( targetsScriptFilePath , '/tmp/tmp/tmp' ) ) )
@@ -288,41 +288,41 @@ target ( 'default' : '' ) { something ( ) }
   void testTargetsMultipleIncludeDefaultScriptFile ( ) {
     System.setIn ( new StringBufferInputStream ( "includeTargets <<  new File ( '${targetsScriptFilePath}' )\n" + targetsBuildScriptFile ) )
     assertEquals ( 0 , gant.process ( [ '-f' ,  '-'  ] as String[] ) )
-    assertEquals ( 'flobbed.\n' , output.toString ( ) )
+    assertEquals ( 'flobbed.\n' , output )
   }
   void testTargetsMultipleIncludeDefaultScriptString ( ) {
     System.setIn ( new StringBufferInputStream ( "includeTargets <<  '''${targetsScriptText}'''\n" + targetsBuildScriptString ) )
     assertEquals ( 0 , gant.process ( [ '-f' ,  '-'  ] as String[] ) )
-    assertEquals ( 'flobbed.\n' , output.toString ( ) )
+    assertEquals ( 'flobbed.\n' , output )
   }
   void testTargetsMultipleIncludeFlobScriptFile ( ) {
     System.setIn ( new StringBufferInputStream ( "includeTargets <<  new File ( '${targetsScriptFilePath}' )\n" + targetsBuildScriptFile ) )
     assertEquals ( 0 , gant.process ( [ '-f' ,  '-'  , 'flob' ] as String[] ) )
-    assertEquals ( 'flobbed.\n' , output.toString ( ) )
+    assertEquals ( 'flobbed.\n' , output )
   }
   void testTargetsMultipleIncludeFlobScriptString ( ) {
     System.setIn ( new StringBufferInputStream ( "includeTargets <<  '''${targetsScriptText}'''\n" + targetsBuildScriptString ) )
     assertEquals ( 0 , gant.process ( [ '-f' ,  '-'  , 'flob' ] as String[] ) )
-    assertEquals ( 'flobbed.\n' , output.toString ( ) )
+    assertEquals ( 'flobbed.\n' , output )
   }
   void testTargetsMultipleIncludeBurbleScriptFile ( ) {
     System.setIn ( new StringBufferInputStream ( "includeTargets <<  new File ( '${targetsScriptFilePath}' )\n" + targetsBuildScriptFile ) )
     assertEquals ( 1 , gant.process ( [ '-f' ,  '-'  , 'burble'] as String[] ) )
-    assertEquals ( 'Target burble does not exist.\n' , output.toString ( ) ) 
+    assertEquals ( 'Target burble does not exist.\n' , output ) 
   }
   void testTargetsMultipleIncludeBurbleScriptString ( ) {
     System.setIn ( new StringBufferInputStream ( "includeTargets <<  '''${targetsScriptText}'''\n" + targetsBuildScriptString ) )
     assertEquals ( 1 , gant.process ( [ '-f' ,  '-'  , 'burble'] as String[] ) )
-    assertEquals ( 'Target burble does not exist.\n' , output.toString ( ) ) 
+    assertEquals ( 'Target burble does not exist.\n' , output ) 
   }
   void testTargetsMultipleIncludeSomethingScriptFile ( ) {
     System.setIn ( new StringBufferInputStream ( "includeTargets <<  new File ( '${targetsScriptFilePath}' )\n" + targetsBuildScriptFile ) )
     assertEquals ( 0 , gant.process ( [ '-f' ,  '-'  , 'flob' ] as String[] ) )
-    assertEquals ( 'flobbed.\n' , output.toString ( ) )
+    assertEquals ( 'flobbed.\n' , output )
   }
   void testTargetsMultipleIncludeSomethingScriptString ( ) {
     System.setIn ( new StringBufferInputStream ( "includeTargets <<  '''${targetsScriptText}'''\n" + targetsBuildScriptString ) )
     assertEquals ( 0 , gant.process ( [ '-f' ,  '-'  , 'flob' ] as String[] ) )
-    assertEquals ( 'flobbed.\n' , output.toString ( ) )
+    assertEquals ( 'flobbed.\n' , output )
   }
 }

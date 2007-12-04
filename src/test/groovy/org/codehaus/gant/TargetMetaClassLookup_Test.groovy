@@ -39,18 +39,18 @@ target ( "default" : "Default is something." ) { something ( ) }
     assertEquals ( 0 , gant.process ( [ '-n' , '-f' ,  '-'  , 'clean' ] as String[] ) )
     assertEquals ( '''   [delete] quiet : 'false'
   [fileset] dir : '.' , includes : '**/*~' , defaultexcludes : 'no'
-''' , output.toString ( ) )
+''' , output )
   }
   void testDefault ( ) {
     assertEquals ( 0 , gant.process ( [ '-f' ,  '-'  ] as String[] ) )
-    assertEquals ( " [property] environment : 'environment'\n     [echo] message : 'Did something.'\n" , output.toString ( ) ) 
+    assertEquals ( " [property] environment : 'environment'\n     [echo] message : 'Did something.'\n" , output ) 
   }
   void testBlah ( ) {
     assertEquals ( 1 , gant.process ( [ '-f' ,  '-'  , 'blah' ] as String[] ) )
-    assertEquals ( " [property] environment : 'environment'\nTarget blah does not exist.\n" , output.toString ( ) ) 
+    assertEquals ( " [property] environment : 'environment'\nTarget blah does not exist.\n" , output ) 
   }
   void testSomething ( ) {
     assertEquals ( 0 , gant.process ( [ '-f' ,  '-'  , 'something' ] as String[] ) )
-    assertEquals ( " [property] environment : 'environment'\n     [echo] message : 'Did something.'\n" , output.toString ( ) ) 
+    assertEquals ( " [property] environment : 'environment'\n     [echo] message : 'Did something.'\n" , output ) 
   }
 }

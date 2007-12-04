@@ -33,7 +33,7 @@ target ( noneDoAll : '' ) { noneDoA ( ) ; noneDoB ( ) ; noneDoC ( ) }
     assertEquals ( '''done.
 done.
 done.
-''' , output.toString ( ) ) 
+''' , output ) 
   }
   void testMixed ( ) {
     System.setIn ( new StringBufferInputStream ( '''
@@ -46,7 +46,7 @@ target ( mixedDoAll : '' ) { mixedDoA ( ) ; mixedDoB ( ) ; mixedDoC ( ) }
     assertEquals ( 0 , gant.process ( [ '-f' , '-' , 'mixedDoAll' ] as String[] ) )
     assertEquals ( '''done.
 done.
-''' , output.toString ( ) ) 
+''' , output ) 
   }
   void testAll ( ) {
     System.setIn ( new StringBufferInputStream ( '''
@@ -57,7 +57,7 @@ target ( allDoC : '' ) { depends ( allDoit ) }
 target ( allDoAll : '' ) { allDoA ( ) ; allDoB ( ) ; allDoC ( ) }
 ''' ) )
     assertEquals ( 0 , gant.process ( [ '-f' , '-' , 'allDoAll' ] as String[] ) )
-    assertEquals ( 'done.\n' , output.toString ( ) ) 
+    assertEquals ( 'done.\n' , output ) 
   }
   void testMultiple ( ) {
     System.setIn ( new StringBufferInputStream ( '''
@@ -68,7 +68,7 @@ target ( multipleDoC : '' ) { depends ( multipleDoit ) }
 target ( multipleDoAll : '' ) { depends ( multipleDoA , multipleDoB , multipleDoC ) }
 ''' ) )
     assertEquals ( 0 , gant.process ( [ '-f' , '-' , 'multipleDoAll' ] as String[] ) )
-    assertEquals ( 'done.\n' , output.toString ( ) ) 
+    assertEquals ( 'done.\n' , output ) 
   }
   void testList ( ) {
     System.setIn ( new StringBufferInputStream ( '''
@@ -79,7 +79,7 @@ target ( listDoC : '' ) { depends ( listDoit ) }
 target ( listDoAll : '' ) { depends ( [ listDoA , listDoB , listDoC ] ) }
 ''' ) )
     assertEquals ( 0 , gant.process ( [ '-f' , '-' , 'listDoAll' ] as String[] ) )
-    assertEquals ( 'done.\n' , output.toString ( ) ) 
+    assertEquals ( 'done.\n' , output ) 
   }
   void testNotClosure ( ) {
     System.setIn ( new StringBufferInputStream ( '''
@@ -87,7 +87,7 @@ datum = 1
 target ( notClosure : '' ) { depends ( datum ) }
 ''' ) )
     assertEquals ( 1 , gant.process ( [ '-f' , '-' , 'notClosure' ] as String[] ) )
-    assertEquals ( 'depends called with an argument (1) that is not appropriate.\n' , output.toString ( ) )
+    assertEquals ( 'depends called with an argument (1) that is not appropriate.\n' , output )
   }
   void testNotListClosure ( ) {
     System.setIn ( new StringBufferInputStream ( '''
@@ -95,7 +95,7 @@ datum = 1
 target ( notListClosure : '' ) { depends ( [ datum ] ) }
 ''' ) )
     assertEquals ( 1 , gant.process ( [ '-f' , '-' , 'notListClosure' ] as String[] ) )
-    assertEquals ( 'depends called with List argument that contains an item (1) that is not appropriate.\n' , output.toString ( ) )
+    assertEquals ( 'depends called with List argument that contains an item (1) that is not appropriate.\n' , output )
   }
   void testOutOfOrder ( ) {
     System.setIn ( new StringBufferInputStream ( '''
@@ -106,7 +106,7 @@ target ( outOfOrderDoA : '' ) { depends ( outOfOrderDoit ) }
 target ( outOfOrderDoit : '' ) { println ( 'done.' ) }
 ''' ) )
     assertEquals ( 0 , gant.process ( [ '-f' , '-' , 'outOfOrderDoAll' ] as String[] ) )
-    assertEquals ( 'done.\n' , output.toString ( ) )
+    assertEquals ( 'done.\n' , output )
   }
   void testOutOfOrderList ( ) {
     System.setIn ( new StringBufferInputStream ( '''
@@ -117,7 +117,7 @@ target ( outOfOrderListDoA : '' ) { depends ( outOfOrderListDoit ) }
 target ( outOfOrderListDoit : '' ) { println ( 'done.' ) }
 ''' ) )
     assertEquals ( 0 , gant.process ( [ '-f' , '-' , 'outOfOrderListDoAll' ] as String[] ) )
-    assertEquals ( 'done.\n' , output.toString ( ) )
+    assertEquals ( 'done.\n' , output )
   }
   void testSameTargetAndFileName ( ) {
     //  Having a target of the same name as the script being compiled is fine until the target name is used in
@@ -128,7 +128,7 @@ target ( standard_input , '' ) { println ( 'done.' ) }
 target ( startingPoint , '' ) { depends ( standard_input ) }
 ''' ) )
     assertEquals ( 1 , gant.process ( [ '-f' , '-' , 'startingPoint' ] as String[] ) )
-    assertTrue ( output.toString ( ).startsWith ( 'Standard input, line 2 -- No signature of method: gant.Gant$_closure1.doCall() is applicable for argument types:' ) )
+    assertTrue ( output.startsWith ( 'Standard input, line 2 -- No signature of method: gant.Gant$_closure1.doCall() is applicable for argument types:' ) )
   }
   void testStringParameter ( ) {
     System.setIn ( new StringBufferInputStream ( '''
@@ -136,6 +136,6 @@ target ( anotherTarget : '' ) { println ( 'done.' ) }
 target ( stringParameter : '' ) { depends ( 'anotherTarget' ) }
 ''' ) )
     assertEquals ( 0 , gant.process ( [ '-f' , '-' , 'stringParameter' ] as String[] ) )
-    assertEquals ( 'done.\n' , output.toString ( ) )
+    assertEquals ( 'done.\n' , output )
   }
 }

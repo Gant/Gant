@@ -30,14 +30,14 @@ target ( "default" : "Default is something." ) { something ( ) }
 
   void testDefault ( ) {
     assertEquals ( 0 , gant.process ( [ '-f' ,  '-'  ] as String[] ) )
-    assertEquals ( 'yes\n' , output.toString ( ) ) 
+    assertEquals ( 'yes\n' , output ) 
   }
   void testBlah ( ) {
     assertEquals ( 1 , gant.process ( [ '-f' ,  '-'  , 'blah'] as String[] ) )
-    assertEquals ( 'Target blah does not exist.\n' , output.toString ( ) ) 
+    assertEquals ( 'Target blah does not exist.\n' , output ) 
   }
   void testSomething ( ) {
     assertEquals ( 0 , gant.process ( [ '-f' ,  '-'  , 'something'] as String[] ) )
-    assertEquals ( 'yes\n' , output.toString ( ) ) 
+    assertEquals ( 'yes\n' , output ) 
   }
 }

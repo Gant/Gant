@@ -29,7 +29,7 @@ target ( somethingElse : "Do something else." ) { }
     assertEquals ( 0 , gant.process ( [ '-T' ,  '-f' ,  '-' ] as String[] ) )
     assertEquals ( '''gant something  --  Do something.
 gant somethingElse  --  Do something else.
-''' , output.toString ( ) ) 
+''' , output ) 
   }
   void testSomethingAndClean ( ) {
     System.setIn ( new StringBufferInputStream ( 'includeTargets << new File ( "src/main/java/gant/targets/clean.gant" )\n' + coreScript ) )
@@ -38,7 +38,7 @@ gant somethingElse  --  Do something else.
 gant clobber  --  Action the clobbering.  Do the cleaning first.
 gant something  --  Do something.
 gant somethingElse  --  Do something else.
-''' , output.toString ( ) ) 
+''' , output ) 
   }
   void testGStrings ( ) {
     System.setIn ( new StringBufferInputStream ( '''
@@ -49,7 +49,7 @@ target ( somethingElse : "Do ${theWord}." ) { }
     assertEquals ( 0 , gant.process ( [ '-T' ,  '-f' ,  '-' ] as String[] ) )
     assertEquals ( '''gant something  --  Do The Word.
 gant somethingElse  --  Do The Word.
-''' , output.toString ( ) ) 
+''' , output ) 
   }
   void testDefaultSomething ( ) {
     System.setIn ( new StringBufferInputStream ( '''
@@ -61,6 +61,6 @@ target ( 'default' : 'Default is something.' ) { something ( ) }
     assertEquals ( '''gant -- Default is something.
 gant something  --  Do something.
 gant somethingElse  --  Do something else.
-''' , output.toString ( ) ) 
+''' , output ) 
   }  
 }

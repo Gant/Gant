@@ -26,7 +26,7 @@ target ( systemOutPrintln : "Do something." ) { System.out.println ( "Hello Worl
 ''' ) )
     assertEquals ( 0 , gant.process ( [ '-f' , '-' , 'systemOutPrintln' ] as String[] ) )
     assertEquals ( '''Hello World
-''' , output.toString ( ) ) 
+''' , output ) 
   }
   void testPrintln ( ) {
     System.setIn ( new StringBufferInputStream ( '''
@@ -34,13 +34,13 @@ target ( testPrintln : "Do something." ) { println ( "Hello World" ) }
 ''' ) )
     assertEquals ( 0 , gant.process ( [ '-f' , '-' , 'testPrintln' ] as String[] ) )
     assertEquals ( '''Hello World
-''' , output.toString ( ) ) 
+''' , output ) 
   }
   void testMessage ( ) {
     System.setIn ( new StringBufferInputStream ( '''
 target ( testMessage : "Do something." ) { message ( 'message' , 'A message.' ) }
 ''' ) )
     assertEquals ( 0 , gant.process ( [ '-f' , '-' , 'testMessage' ] as String[] ) )
-    assertEquals ( '  [message] A message.\n' , output.toString ( ) ) 
+    assertEquals ( '  [message] A message.\n' , output ) 
   }
 }
