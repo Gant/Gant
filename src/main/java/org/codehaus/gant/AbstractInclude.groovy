@@ -21,8 +21,12 @@ package org.codehaus.gant
  */
 abstract class AbstractInclude {
   protected binding
+  protected AbstractInclude ( binding ) { this.binding = binding }
   protected createInstance ( Class theClass ) {
     theClass.getConstructor ( Binding ).newInstance ( [ binding ] as Object[] )
+  }
+  protected createInstance ( Map keywordParameters , Class theClass ) {
+    theClass.getConstructor ( Binding ).newInstance ( [ keywrodParameters , binding ] as Object[] )
   }
   private Class attemptRead ( File file , boolean asClass ) {
     if ( asClass ) { return binding.groovyShell.evaluate ( file.text + " ; return ${file.name.replace('.groovy', '' )}" ) }
@@ -39,5 +43,4 @@ abstract class AbstractInclude {
       throw fnfe
     }
   }
-  protected AbstractInclude ( binding ) { this.binding = binding }
 }

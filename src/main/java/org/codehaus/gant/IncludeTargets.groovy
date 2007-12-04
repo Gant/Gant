@@ -23,12 +23,13 @@ package org.codehaus.gant
  */
 class IncludeTargets extends AbstractInclude {
   def loadedClasses = [ ]
+  def lastItem
   IncludeTargets ( binding ) { super ( binding ) }
   def leftShift ( Class theClass ) {
     def className = theClass.name
     if ( ! ( className in loadedClasses ) ) {
       def index = className.lastIndexOf ( '.' ) + 1
-      binding.setVariable ( className[index..-1] , createInstance ( theClass ) )
+      binding.setVariable ( className[index..-1] , lastItem = createInstance ( theClass ) )
       loadedClasses << className
     }
     this
@@ -51,4 +52,5 @@ class IncludeTargets extends AbstractInclude {
     throw new RuntimeException ( 'Ignoring includeTargets of type ' + o.class.name )
     this
   }
+  def or ( Map keywordParameters ) { lastItem.addOptions ( keywordParameters ) }
 }

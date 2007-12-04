@@ -24,12 +24,13 @@ package org.codehaus.gant
  */
 class IncludeTool extends AbstractInclude {
   def loadedClasses = [ ]
+  def lastItem 
   IncludeTool ( binding ) { super ( binding  ) }
   def leftShift ( Class theClass ) {
     def className = theClass.name
     if ( ! ( className in loadedClasses ) ) {
       def index = className.lastIndexOf ( '.' ) + 1
-      binding.setVariable ( className[index..-1] , createInstance ( theClass ) )
+      binding.setVariable ( className[index..-1] , lastItem = createInstance ( theClass ) )
       loadedClasses << className
     }
     this
@@ -39,7 +40,7 @@ class IncludeTool extends AbstractInclude {
     if ( ! ( className in loadedClasses ) ) {
       className = className[ 0 ..< className.lastIndexOf ( '.' ) ]
       def theClass = readFile ( file , true )
-      binding.setVariable ( className , createInstance ( theClass ) )
+      binding.setVariable ( className , lastItem = createInstance ( theClass ) )
       loadedClasses << className
     }
     this
@@ -48,7 +49,7 @@ class IncludeTool extends AbstractInclude {
     def className = ''
     final javaIdentifierRegexAsString = /\b\p{javaJavaIdentifierStart}(?:\p{javaJavaIdentifierPart})*\b/
     final javaQualifiedNameRegexAsString = /\b${javaIdentifierRegexAsString}(?:[.\/]${javaIdentifierRegexAsString})*\b/
-    script.eachMatch ( /(?:(?:public|final))*[ \t\n]*class[ \t\n]*(${javaIdentifierRegexAsString})[ \t\n]*(?:extends[ \t\n]*${javaQualifiedNameRegexAsString})*[ \t\n]*\{/ ) { opening , name ->
+    script.eachMatch ( /(?:(?:public|final))*[ \t\r\n]*class[ \t\r\n]*(${javaIdentifierRegexAsString})[ \t\r\n]*(?:extends[ \t\r\n]*${javaQualifiedNameRegexAsString})*[ \t\r\n]*\{/ ) { opening , name ->
       //  There has to be a better way of doing this.  Assume that the first instance of the class
       //  declaration is the one we want and that any later ones are not an issue.
       if ( className == '' ) { className = name }
@@ -56,7 +57,7 @@ class IncludeTool extends AbstractInclude {
     if ( ! ( className in loadedClasses ) ) {
       loadedClasses << className
       def theClass = binding.groovyShell.evaluate ( script + " ; return ${className}" )
-      binding.setVariable ( className , createInstance ( theClass ) )
+      binding.setVariable ( className , lastItem = createInstance ( theClass ) )
     }
     this
   }
@@ -65,4 +66,5 @@ class IncludeTool extends AbstractInclude {
     throw new RuntimeException ( 'Ignoring includeTool of type ' + o.class.name )
     this
   }
+  def or ( Map keywordParameters ) { lastItem.addOptions ( keywordParameters ) }
 }

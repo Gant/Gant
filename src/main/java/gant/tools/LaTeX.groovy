@@ -22,8 +22,8 @@ import org.codehaus.gant.GantState
  *  @author Russel Winder <russel.winder@concertant.com>
  */
 class LaTeX {
-  protected final Binding binding
-  protected final Execute executor
+  protected final binding
+  protected final executor
   public LaTeX ( final Binding binding ) {
     this.binding = binding
     executor = new Execute ( binding ) 
@@ -50,7 +50,7 @@ class LaTeX {
     idxExtension , ilgExtension , indExtension ,
     pdfBookMarkExtension
     ]
-  private final defaultEnvironment = [
+  public environment = [
     latexCommand : 'pdflatex' ,
     latexOptions : [ ] ,
     bibtexCommand : 'bibtex' ,
@@ -64,16 +64,16 @@ class LaTeX {
     root : '' ,
     dependents : [ ]
     ]
-  def environment = defaultEnvironment.clone ( )
   private void addOption ( key , option ) {
-    if ( option instanceof List ) { defaultEnvironment[ key ] += option }
-    else { defaultEnvironment[ key ] << option }
+    if ( option instanceof List ) { environment[ key ] += option }
+    else { environment[ key ] << option }
   }
   void addLaTeXOption ( option ) { addOption ( 'latexOptions' , option ) }
   void addBibTeXOption ( option ) { addOption ( 'bibtexOptions' , option ) }
   void addMakeindexOption ( option ) { addOption ( 'makeindexOptions' , option ) }
   void addDvipsOption ( option ) { addOption ( 'dvipsOptions' , option ) }
   void addPs2pdfOption ( option ) { addOption ( 'ps2pdfOptions' , option ) }
+  void addOptions ( Map keywordOptions ) { keywordOptions.each { key , value -> addOption ( key , value ) } }
   private void executeLaTeX ( ) {
     def root = environment [ 'root' ]
     def sourceName = root + ltxExtension
