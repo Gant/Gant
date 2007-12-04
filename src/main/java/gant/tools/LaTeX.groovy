@@ -28,21 +28,21 @@ class LaTeX {
     this.binding = binding
     executor = new Execute ( binding ) 
   }
-  public final ltxExtension = '.ltx'
-  public final texExtension = '.tex'
-  public final dviExtension = '.dvi'
-  public final epsExtension = '.eps'
-  public final pdfExtension = '.pdf'
-  public final psExtension = '.ps'
-  public final auxExtension = '.aux'
-  public final bblExtension = '.bbl'
-  public final blgExtension = '.blg'
-  public final idxExtension = '.idx'
-  public final ilgExtension = '.ilg'
-  public final indExtension = '.ind'
-  public final logExtension = '.log'
-  public final tocExtension = '.toc'
-  public final pdfBookMarkExtension = '.out'
+  public static final ltxExtension = '.ltx'
+  public static final texExtension = '.tex'
+  public static final dviExtension = '.dvi'
+  public static final epsExtension = '.eps'
+  public static final pdfExtension = '.pdf'
+  public static final psExtension = '.ps'
+  public static final auxExtension = '.aux'
+  public static final bblExtension = '.bbl'
+  public static final blgExtension = '.blg'
+  public static final idxExtension = '.idx'
+  public static final ilgExtension = '.ilg'
+  public static final indExtension = '.ind'
+  public static final logExtension = '.log'
+  public static final tocExtension = '.toc'
+  public static final pdfBookMarkExtension = '.out'
    //  As at r5438 super fails to work and so we cannot make this final, we have to make it accesible to subclasses.
   public intermediateExtensions = [
     auxExtension , dviExtension , logExtension , tocExtension ,
@@ -82,19 +82,19 @@ class LaTeX {
       sourceFile = new File ( sourceName = root + texExtension )
       if ( ! sourceFile.exists ( ) ) { throw new FileNotFoundException ( "Neither ${root}.ltx or ${root}.tex exist." ) }
     }
-    def targetExtension = environment [ 'latexCommand' ] == 'pdflatex' ? pdfExtension : dviExtension
+    def targetExtension = environment.latexCommand == 'pdflatex' ? pdfExtension : dviExtension
     def targetName = root + targetExtension
     def targetFile = new File ( targetName )
     def needToUpdate = false
     if ( ! targetFile.exists ( ) ) { needToUpdate = true }
     else {
-      ( environment [ 'dependents' ] + [ sourceName ] ).each { dependent ->
+      ( environment.dependents + [ sourceName ] ).each { dependent ->
         if ( ! ( dependent instanceof File ) ) { dependent = new File ( dependent ) }
         if ( dependent.lastModified ( ) > targetFile.lastModified ( ) ) { needToUpdate = true }
       }
     }
     if ( needToUpdate ) {
-      def latexAction = [ environment[ 'latexCommand' ] , *environment[ 'latexOptions' ] , sourceName ]
+      def latexAction = [ environment.latexCommand , *environment.latexOptions , sourceName ]
       def runLaTeX = { executor.executable ( latexAction ) }
       def conditionallyRunLaTeX = {
         def rerun = new File ( root + logExtension ).text =~ /(Warning:.*Rerun|Warning:.*undefined citations)/
@@ -106,7 +106,7 @@ class LaTeX {
       def bibTeXRun = false
       currentDirectory.eachFileMatch ( ~/.*.aux/ ) { auxFile ->
         if ( auxFile.text =~ 'bibdata' ) {
-          executor.executable ( [ environment[ 'bibtexCommand' ] , *environment[ 'bibtexOptions' ] , auxFile.name ] )
+          executor.executable ( [ environment.bibtexCommand , *environment.bibtexOptions , auxFile.name ] )
           bibTeXRun = true
         }
       }
@@ -116,7 +116,7 @@ class LaTeX {
       }
       def makeindexRun = false
       currentDirectory.eachFileMatch ( ~/.*.idx/ ) { idxFIle ->
-        executor.executable ( [ environment[ 'bibtexCommand' ] , *environment[ 'bibtexOptions' ] , idxFile.name ] )
+        executor.executable ( [ environment.bibtexCommand , *environment.bibtexOptions , idxFile.name ] )
         makeindexRun = true
       }
       if ( makeindexRun ) { runLaTeX ( ) }
@@ -130,17 +130,17 @@ class LaTeX {
   }
   void generatePDF ( arguments ) {
     arguments.each { key , value -> environment[ key ] = value }
-    environment [ 'latexCommand' ] = 'pdflatex'
+    environment.latexCommand = 'pdflatex'
     executeLaTeX ( )
   }
   void generatePS ( arguments ) {
     arguments.each { key , value -> environment[ key ] = value }
-    environment [ 'latexCommand' ] = 'latex'
+    environment.latexCommand = 'latex'
     executeLaTeX ( )
-    def dviFile = new File ( "${environment [ 'root' ]}${dviExtension}" )
-    def psFile = new File ( "${environment [ 'root' ]}${psExtension}" )
+    def dviFile = new File ( "${environment.root}${dviExtension}" )
+    def psFile = new File ( "${environment.root}${psExtension}" )
     if ( ( ! psFile.exists ( ) ) || ( dviFile.lastModified ( ) > psFile.lastModified ( ) ) ) {
-      executor.executable ( [ 'dvips' , * environment [ 'dvipsOptions' ] , '-o' , psFile.name , dviFile.name ] )
+      executor.executable ( [ 'dvips' , * environment.dvipsOptions , '-o' , psFile.name , dviFile.name ] )
     }
   }
 }
