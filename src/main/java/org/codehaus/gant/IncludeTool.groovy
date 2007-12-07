@@ -24,13 +24,13 @@ package org.codehaus.gant
  */
 class IncludeTool extends AbstractInclude {
   def loadedClasses = [ ]
-  def lastItem 
+  def pendingClass = null
   IncludeTool ( binding ) { super ( binding  ) }
   def leftShift ( Class theClass ) {
     def className = theClass.name
     if ( ! ( className in loadedClasses ) ) {
       def index = className.lastIndexOf ( '.' ) + 1
-      binding.setVariable ( className[index..-1] , lastItem = createInstance ( theClass ) )
+      binding.setVariable ( className[index..-1] , createInstance ( theClass ) )
       loadedClasses << className
     }
     this
@@ -40,7 +40,7 @@ class IncludeTool extends AbstractInclude {
     if ( ! ( className in loadedClasses ) ) {
       className = className[ 0 ..< className.lastIndexOf ( '.' ) ]
       def theClass = readFile ( file , true )
-      binding.setVariable ( className , lastItem = createInstance ( theClass ) )
+      binding.setVariable ( className , createInstance ( theClass ) )
       loadedClasses << className
     }
     this
@@ -57,7 +57,7 @@ class IncludeTool extends AbstractInclude {
     if ( ! ( className in loadedClasses ) ) {
       loadedClasses << className
       def theClass = binding.groovyShell.evaluate ( script + " ; return ${className}" )
-      binding.setVariable ( className , lastItem = createInstance ( theClass ) )
+      binding.setVariable ( className , createInstance ( theClass ) )
     }
     this
   }
@@ -66,5 +66,20 @@ class IncludeTool extends AbstractInclude {
     throw new RuntimeException ( 'Ignoring includeTool of type ' + o.class.name )
     this
   }
-  def or ( Map keywordParameters ) { lastItem.addOptions ( keywordParameters ) }
+  def power ( Class theClass ) {
+    pendingClass = theClass
+    this
+  }
+  def multiply ( Map keywordParameters ) {
+    if ( pendingClass != null ) {
+      def className = pendingClass.name
+      if ( ! ( className in loadedClasses ) ) {
+        def index = className.lastIndexOf ( '.' ) + 1
+        binding.setVariable ( className[index..-1] , createInstance ( pendingClass , keywordParameters ) )
+        loadedClasses << className
+      }
+      pendingClass = null
+    }
+    this
+  }
 }

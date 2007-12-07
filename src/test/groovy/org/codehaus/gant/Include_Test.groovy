@@ -325,4 +325,21 @@ target ( 'default' : '' ) { something ( ) }
     assertEquals ( 0 , gant.process ( [ '-f' ,  '-'  , 'flob' ] as String[] ) )
     assertEquals ( 'flobbed.\n' , output )
   }
+
+
+
+
+  void testUsingParameterConstructor ( ) {
+    def theToolClassName = 'TheTool'
+    def theToolClassText = """class ${theToolClassName} {
+  ${theToolClassName} ( Binding binding , Map map ) { }
+  def flob ( ) { println ( 'flobbed.' ) }
+}"""
+    System.setIn ( new StringBufferInputStream ( """includeTool ** groovyShell.evaluate ( '''${theToolClassText} ; return ${theToolClassName}''' ) * [ flob : 'adob' , foo : 'bar' ]
+target ( something : '' ) { ${theToolClassName}.flob ( ) }
+""" ) )
+    assertEquals ( 0 , gant.process ( [ '-f' ,  '-'  , 'something' ] as String[] ) )    
+    assertEquals ( 'flobbed.\n' , output )
+  }
+  
 }

@@ -25,8 +25,8 @@ abstract class AbstractInclude {
   protected createInstance ( Class theClass ) {
     theClass.getConstructor ( Binding ).newInstance ( [ binding ] as Object[] )
   }
-  protected createInstance ( Map keywordParameters , Class theClass ) {
-    theClass.getConstructor ( Binding ).newInstance ( [ keywrodParameters , binding ] as Object[] )
+  protected createInstance ( Class theClass , Map keywordParameters ) {
+    theClass.getConstructor ( Binding , Map ).newInstance ( [ binding , keywordParameters ] as Object[] )
   }
   private Class attemptRead ( File file , boolean asClass ) {
     if ( asClass ) { return binding.groovyShell.evaluate ( file.text + " ; return ${file.name.replace('.groovy', '' )}" ) }
