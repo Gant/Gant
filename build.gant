@@ -127,7 +127,7 @@ makeManifest = { ->
 target ( 'package' : 'Create the jar file.' ) {
   depends ( compile )
   makeManifest ( )
-  jar ( destfile : buildLibDirectory + "/gant-${gantVersion}.jar" , basedir : buildClassesDirectory , includes : 'org/**,gant/**,META-INF/*' , excludes : '**/tests/**' , manifest :buildMetadataDirectory + '/MANIFEST.MF' )
+  jar ( destfile : buildLibDirectory + "/gant-${gantVersion}.jar" , basedir : buildClassesDirectory , includes : 'org/**,gant/**,META-INF/*' , excludes : '**/tests/**' , manifest : buildMetadataDirectory + '/MANIFEST.MF' )
 }
 
 target ( documentation : 'Create the API documentation.' ) {
@@ -194,14 +194,21 @@ target ( distribution : 'Create the distribution.' ) {
   def prefix = "gant-${gantVersion}"
   def distributionClasspathId = 'classpath'
   distributionVersions.each { item ->
+                              //  This is a closure that doesn't have the right metaclass so we have to
+                              //  specify Ant.  Need to rearrange things to deal with as is done in the
+                              //  target Closure.
                               clean ( )
                               Ant.'antlib:org.apache.maven.artifact.ant:dependencies' ( pathId : distributionClasspathId ) {
                                 dependency ( groupId : item.groupId , artifactId : item.artifactId , version : item.version )
                               }
+                              //  Replicate the build process here as a short term route.  Shuold review the
+                              //  whole build and avoid the replication.
                               Ant.mkdir ( dir : buildClassesDirectory )
                               Ant.mkdir ( dir : buildLibDirectory )
                               Ant.javac ( srcdir : sourceDirectory , destDir : buildClassesDirectory , source : '1.4' , target : '1.4' , debug : 'on' , classpathref : distributionClasspathId , excludes : '**/tests/**' )
                               Ant.groovyc ( srcdir : sourceDirectory , destDir : buildClassesDirectory , classpathref : distributionClasspathId , excludes : 'bin/*.groovy' )
+                              makeManifest ( )
+                              Ant.jar ( destfile : buildLibDirectory + "/gant-${gantVersion}.jar" , basedir : buildClassesDirectory , includes : 'org/**,gant/**,META-INF/*' , excludes : '**/tests/**' , manifest : buildMetadataDirectory + '/MANIFEST.MF' )
                               def archiveRoot = "${buildDirectory}/gant-${gantVersion}_groovy-${item.version}"
                               Ant.zip ( destfile : "${archiveRoot}.zip" ) {
                                 zipfileset ( dir : buildDirectory , includes : 'gant*.jar' , prefix : prefix + '/lib' )

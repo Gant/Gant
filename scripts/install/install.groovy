@@ -20,7 +20,7 @@
 //  the install chooses not to extract the zip or tarball directly into $GROOVY_HOME.
 
 def ant = new AntBuilder ( )
-def groovyHome =System.properties.'groovy.home'
+def groovyHome = System.properties.'groovy.home'
 ant.copy ( todir : groovyHome ) {
   fileset ( dir : '.' , includes : 'bin' + System.properties.'file.separator' + 'gant*' )
   fileset ( dir : '.' , includes : 'lib' + System.properties.'file.separator' + 'gant*.jar' )
