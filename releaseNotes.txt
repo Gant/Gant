@@ -9,6 +9,10 @@ Rearranged the constructors so as to allow for a custom class loader when callin
 Reverted to -D processing as in 0.3.1 which actually works with Commons CLI 1.0 even though it is a bug.
 0.3.2 and 0.3.3 were broken as -D processing did not work at all.
 
+Added the ** * mechanism for creating target set and tool objects using constructor parameters.
+
+Stopped Gant from issuing FileNotFoundException.
+
 
 0.3.3 ( r8490 )
 ---------------
