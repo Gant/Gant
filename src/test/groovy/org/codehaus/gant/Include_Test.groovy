@@ -130,9 +130,8 @@ target ( 'default' : '' ) { something ( ) }
   }
   void testToolClassNoFile ( ) {
     System.setIn ( new StringBufferInputStream ( toolBuildScriptFile.replace ( toolClassFilePath , nonExistentFilePath ) ) )
-    try { assertEquals ( 1 , gant.process ( [ '-f' ,  '-'  , 'flob'] as String[] ) ) }
-    catch ( FileNotFoundException fnfe ) { return }
-    fail ( 'Should have got a FileNotFoundException but didn\'t.' )
+    assertEquals ( 1 , gant.process ( [ '-f' ,  '-'  , 'flob'] as String[] ) )
+    assertEquals ( 'Standard input, line 1 -- ' + nonExistentFilePath + ' (No such file or directory)\n' , output )
   }
   void testTargetsDefaultClassClass ( ) {
     System.setIn ( new StringBufferInputStream ( targetsBuildClassClass ) )
@@ -204,9 +203,9 @@ target ( 'default' : '' ) { something ( ) }
   */
   void testTargetsClassNoFile ( ) {
     System.setIn ( new StringBufferInputStream ( targetsBuildClassFile.replace ( targetsClassFilePath , nonExistentFilePath ) ) )
-    try { assertEquals ( 1 , gant.process ( [ '-f' ,  '-'  , 'flob'] as String[] ) ) }
-    catch ( FileNotFoundException fnfe ) { return }
-    fail ( 'Should have got a FileNotFoundException but didn\'t.' )
+    assertEquals ( 1 , gant.process ( [ '-f' ,  '-'  , 'flob'] as String[] ) )
+    //  This is a weird message, should be better than this.
+    assertEquals ( 'Standard input, line 1 -- ' + nonExistentFilePath + ' (' + nonExistentFilePath + ')\n' , output )
   }
   /*
   void testTargetsDefaultScriptClass ( ) {
@@ -277,10 +276,10 @@ target ( 'default' : '' ) { something ( ) }
     assertEquals ( 'flobbed.\n' , output ) 
   }
   void testTargetsScriptNoFile ( ) {
-    System.setIn ( new StringBufferInputStream ( targetsBuildScriptFile.replace ( targetsScriptFilePath , '/tmp/tmp/tmp' ) ) )
-    try { assertEquals ( 1 , gant.process ( [ '-f' ,  '-'  , 'flob'] as String[] ) ) }
-    catch ( FileNotFoundException fnfe ) { return }
-    fail ( 'Should have got a FileNotFoundException but didn\'t.' )
+    System.setIn ( new StringBufferInputStream ( targetsBuildScriptFile.replace ( targetsScriptFilePath , nonExistentFilePath ) ) )
+    assertEquals ( 1 , gant.process ( [ '-f' ,  '-'  , 'flob'] as String[] ) )
+    //  This is a weird message, should be better than this.
+    assertEquals ( 'Standard input, line 1 -- ' + nonExistentFilePath + ' (' + nonExistentFilePath + ')\n' , output )
   }
 
   ////////  Test multiple include of the same targets.

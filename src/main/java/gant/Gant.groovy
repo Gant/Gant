@@ -297,7 +297,6 @@ final class Gant {
     else {
       if ( buildFile )  { buildFileText = buildFile.text }
       try { groovyShell.evaluate ( buildFileText , buildClassName ) }
-      catch ( FileNotFoundException fnfe ) { throw fnfe }
       catch ( Exception e ) {
         for ( stackEntry in e.stackTrace ) {
           if ( stackEntry.fileName == buildClassName ) {

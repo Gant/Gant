@@ -23,10 +23,12 @@ abstract class AbstractInclude {
   protected binding
   protected AbstractInclude ( binding ) { this.binding = binding }
   protected createInstance ( Class theClass ) {
-    theClass.getConstructor ( Binding ).newInstance ( [ binding ] as Object[] )
+    try { return theClass.getConstructor ( Binding ).newInstance ( [ binding ] as Object[] ) }
+    catch ( NoSuchMethodException nsme ) { throw new RuntimeException ( 'Could not initialize ' + theClass.name , nsme ) }
   }
   protected createInstance ( Class theClass , Map keywordParameters ) {
-    theClass.getConstructor ( Binding , Map ).newInstance ( [ binding , keywordParameters ] as Object[] )
+    try { return theClass.getConstructor ( Binding , Map ).newInstance ( [ binding , keywordParameters ] as Object[] ) }
+    catch ( NoSuchMethodException nsme ) { throw new RuntimeException ( 'Could not initialize ' + theClass.name , nsme ) }
   }
   private Class attemptRead ( File file , boolean asClass ) {
     if ( asClass ) { return binding.groovyShell.evaluate ( file.text + " ; return ${file.name.replace('.groovy', '' )}" ) }
