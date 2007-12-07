@@ -19,7 +19,7 @@ Ant.property ( file : 'local.build.properties' )
 
 gantVersion = Ant.project.properties.gantVersion
 
-// NB  System.getenv ( ) does not work on Java 1.5 but does on Java 5 or later.
+// NB  System.getenv ( ) does not work on Java 1.4 but does on Java 5 or later.
   
 installationHome = System.getenv ( ).'GROOVY_HOME'
 try { if ( grailsBuild ) { installationHome = System.getenv ( ).'GRAILS_HOME' } }
@@ -29,6 +29,13 @@ if ( ( installationHome == null ) || ( installationHome == '' ) ) {
   println ( 'Must set environment variable ' + ( grailsBuild ? 'GRAILS_HOME' : 'GROOVY_HOME' ) + ' to compile Gant.' )
   return
 }
+
+//  The versions in the Maven repository to build distribution version of Gant against.
+
+distributionVersions = [
+                        //[ groupId : 'org.codehaus.groovy' , artifactId : 'groovy' , version : '1.0' ] ,
+                        [ groupId : 'org.codehaus.groovy' , artifactId : 'groovy' , version : '1.1-rc-3' ]
+                        ]
 
 sourceDirectory = 'src/main/java'
 testsDirectory = 'src/test/groovy'  
@@ -179,29 +186,44 @@ target ( uninstall : "Uninstall Gant from ${installationHome}." ) {
 }
 
 target ( distribution : 'Create the distribution.' ) {
-  depends ( 'package' ) 
+  //  Use the Ant Maven plugin to ensure that the groovy-all jar of a given release is in the local Maven
+  //  repository and ensure that is the only version of Groovy used in the compilation.
+  typedef ( resource : 'org/apache/maven/artifact/ant/antlib.xml' , uri : 'urn:maven-artifact-ant' ) {
+    classpath { pathelement ( location : System.properties.'groovy.home' + '/lib/maven-artifact-ant-2.0.4-dep.jar' ) }
+  }
   def prefix = "gant-${gantVersion}"
-  def archiveRoot = "${buildDirectory}/gant-${gantVersion}"
-  zip ( destfile : "${archiveRoot}.zip" ) {
-    zipfileset ( dir : buildDirectory , includes : 'gant*.jar' , prefix : prefix + '/lib' )
-    zipfileset ( dir : 'scripts/bin' , includes : 'gant*' , prefix : prefix + '/bin' )
-    zipfileset ( dir : 'scripts/install' , includes : 'install.groovy' , prefix : prefix + '/bin' )
-    zipfileset ( dir : '.' , includes : 'README*' , prefix : prefix )
-  }
-  tar ( destfile :  "${archiveRoot}.tgz" , compression : 'gzip' ) {
-    tarfileset ( dir : buildDirectory , includes : 'gant*.jar' , prefix : prefix + '/lib' )
-    tarfileset ( dir : 'scripts/bin' , includes : 'gant*' , prefix : prefix + '/bin' , mode : '755' )
-    tarfileset ( dir : 'scripts/install' , includes : 'install.groovy' , prefix : prefix + '/bin' , mode : '755' )
-    tarfileset ( dir : '.' , includes : 'README*' , prefix : prefix )
-  }
-  archiveRoot = "${buildDirectory}/gant_src-${gantVersion}"
-  zip ( destfile : "${archiveRoot}.zip" ) {
-    zipfileset ( dir : '.' , includes : distributionTopLevelFiles.join ( ',' ) , prefix : prefix )
-    distributionDirectories.each { directory -> zipfileset ( dir : directory , prefix : "${prefix}/${directory}" ) }
-  }
-  tar ( destfile :  "${archiveRoot}.tgz" , compression : 'gzip' ) {
-    tarfileset ( dir : '.' , includes : distributionTopLevelFiles.join ( ',' ) , prefix : prefix )
-    distributionDirectories.each { directory -> tarfileset ( dir : directory , prefix : "${prefix}/${directory}" ) }
+  def distributionClasspathId = 'classpath'
+  distributionVersions.each { item ->
+                              clean ( )
+                              Ant.'antlib:org.apache.maven.artifact.ant:dependencies' ( pathId : distributionClasspathId ) {
+                                dependency ( groupId : item.groupId , artifactId : item.artifactId , version : item.version )
+                              }
+                              Ant.mkdir ( dir : buildClassesDirectory )
+                              Ant.mkdir ( dir : buildLibDirectory )
+                              Ant.javac ( srcdir : sourceDirectory , destDir : buildClassesDirectory , source : '1.4' , target : '1.4' , debug : 'on' , classpathref : distributionClasspathId , excludes : '**/tests/**' )
+                              Ant.groovyc ( srcdir : sourceDirectory , destDir : buildClassesDirectory , classpathref : distributionClasspathId , excludes : 'bin/*.groovy' )
+                              def archiveRoot = "${buildDirectory}/gant-${gantVersion}_groovy-${item.version}"
+                              Ant.zip ( destfile : "${archiveRoot}.zip" ) {
+                                zipfileset ( dir : buildDirectory , includes : 'gant*.jar' , prefix : prefix + '/lib' )
+                                zipfileset ( dir : 'scripts/bin' , includes : 'gant*' , prefix : prefix + '/bin' )
+                                zipfileset ( dir : 'scripts/install' , includes : 'install.groovy' , prefix : prefix + '/bin' )
+                                zipfileset ( dir : '.' , includes : 'README*' , prefix : prefix )
+                              }
+                              Ant.tar ( destfile :  "${archiveRoot}.tgz" , compression : 'gzip' ) {
+                                tarfileset ( dir : buildDirectory , includes : 'gant*.jar' , prefix : prefix + '/lib' )
+                                tarfileset ( dir : 'scripts/bin' , includes : 'gant*' , prefix : prefix + '/bin' , mode : '755' )
+                                tarfileset ( dir : 'scripts/install' , includes : 'install.groovy' , prefix : prefix + '/bin' , mode : '755' )
+                                tarfileset ( dir : '.' , includes : 'README*' , prefix : prefix )
+                              }
+                              archiveRoot = "${buildDirectory}/gant_src-${gantVersion}"
+                              Ant.zip ( destfile : "${archiveRoot}.zip" ) {
+                                zipfileset ( dir : '.' , includes : distributionTopLevelFiles.join ( ',' ) , prefix : prefix )
+                                distributionDirectories.each { directory -> zipfileset ( dir : directory , prefix : "${prefix}/${directory}" ) }
+                              }
+                              Ant.tar ( destfile :  "${archiveRoot}.tgz" , compression : 'gzip' ) {
+                                tarfileset ( dir : '.' , includes : distributionTopLevelFiles.join ( ',' ) , prefix : prefix )
+                                distributionDirectories.each { directory -> tarfileset ( dir : directory , prefix : "${prefix}/${directory}" ) }
+                              }
   }
 } 
 
