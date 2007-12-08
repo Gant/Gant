@@ -1,4 +1,4 @@
-1.0 ( rXXXX )
+1.0.0 ( r8816 )
 ---------------
 
 Changed the lookup sequence in GantMetaClass adding lookup in the Ant object for a method call as a final
@@ -13,6 +13,7 @@ Added the ** * mechanism for creating target set and tool objects using construc
 
 Stopped Gant from issuing FileNotFoundException.
 
+Released to coincide with release of Groovy 1.5.0.
 
 0.3.3 ( r8490 )
 ---------------
