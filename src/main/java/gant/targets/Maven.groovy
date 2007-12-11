@@ -59,7 +59,9 @@ final class Maven {
     properties.testReportPath = "${properties.targetPath}${System.properties.'file.separator'}test-reports"
     binding.target.call ( initialize : 'Ensure all the dependencies can be met and set classpaths accordingly.' ) {
       if ( owner.testFramework == 'testng' ) {
-        owner.testDependencies << [ groupId : 'org.testng' , artifactId : 'testng' , version : '5.7' , scope : 'test' , classifier : 'jdk15' ]
+        testngInstalled = false
+        owner.testDependencies.each { dependency -> testngInstalled = ( dependency.artifactId == 'testng' ) }
+        if ( ! testngInstalled ) { owner.testDependencies << [ groupId : 'org.testng' , artifactId : 'testng' , version : '5.7' , scope : 'test' , classifier : 'jdk15' ] }
       }
       if ( owner.compileDependencies || owner.testDependencies  ) {
         owner.Ant.typedef ( resource : 'org/apache/maven/artifact/ant/antlib.xml' , uri : 'urn:maven-artifact-ant' ) {
