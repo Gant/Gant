@@ -24,7 +24,7 @@ import groovy.lang.DelegatingMetaClass ;
 import groovy.lang.MissingMethodException ;
 import groovy.lang.MissingPropertyException ;
 
-import org.codehaus.groovy.runtime.InvokerHelper ;
+import groovy.lang.GroovySystem ;
 
 /**
  *  This class is the custom metaclass used for supporting execution of build descriptions in Gant.
@@ -39,8 +39,7 @@ class GantMetaClass extends DelegatingMetaClass {
   private final static HashSet methodsInvoked = new HashSet ( ) ;
   private final Binding binding ;
   public GantMetaClass ( final Class theClass , final Binding binding ) {
-    //super ( MetaClassRegistry.getInstance ( 0 ).getMetaClass ( theClass ) ) ;
-    super ( InvokerHelper.getInstance ( ).getMetaRegistry ( ).getMetaClass ( theClass ) ) ;
+    super ( GroovySystem.getMetaClassRegistry ( ).getMetaClass ( theClass ) ) ;
     this.binding = binding ;
   }
   private Object processClosure ( final Closure closure ) {
