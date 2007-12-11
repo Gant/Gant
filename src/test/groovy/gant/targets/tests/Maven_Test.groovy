@@ -37,4 +37,65 @@ includeTargets << gant.targets.Maven
     assertEquals ( '''  [groovyc] No sources to compile
 ''' , output ) 
   }
+
+
+  void testPackageNoGroupIdLeftShift ( ) {
+    System.setIn ( new StringBufferInputStream ( """
+includeTargets << gant.targets.Maven
+""" ) )
+    assertEquals ( 13 , gant.process ( [ '-f' , '-' , 'packageX' ] as String[] ) )
+    assertEquals ( '''Maven.groupId must be set to achieve target package.
+''' , output ) 
+  }
+  void testPackageNoGroupIdPower ( ) {
+    System.setIn ( new StringBufferInputStream ( """
+includeTargets ** gant.targets.Maven * [ : ]
+""" ) )
+    assertEquals ( 13 , gant.process ( [ '-f' , '-' , 'packageX' ] as String[] ) )
+    assertEquals ( '''Maven.groupId must be set to achieve target package.
+''' , output ) 
+  }
+  void testPackageNoArtifactIdLeftShift ( ) {
+    System.setIn ( new StringBufferInputStream ( """
+includeTargets << gant.targets.Maven
+Maven.groupId = 'flob'
+""" ) )
+    assertEquals ( 13 , gant.process ( [ '-f' , '-' , 'packageX' ] as String[] ) )
+    assertEquals ( '''Maven.artifactId must be set to achieve target package.
+''' , output ) 
+  }
+  void testPackageNoArtifactIdPower ( ) {
+    System.setIn ( new StringBufferInputStream ( """
+includeTargets ** gant.targets.Maven * [ groupId : 'flob' ]
+""" ) )
+    assertEquals ( 13 , gant.process ( [ '-f' , '-' , 'packageX' ] as String[] ) )
+    assertEquals ( '''Maven.artifactId must be set to achieve target package.
+''' , output ) 
+  }
+  void testPackageVersionLeftShift ( ) {
+    System.setIn ( new StringBufferInputStream ( """
+includeTargets << gant.targets.Maven
+Maven.groupId = 'flob'
+Maven.artifactId = 'adob'
+""" ) )
+    assertEquals ( 13 , gant.process ( [ '-f' , '-' , 'packageX' ] as String[] ) )
+    assertEquals ( '''Maven.version must be set to achieve target package.
+''' , output ) 
+  }
+  void testPackageVersionPower ( ) {
+    System.setIn ( new StringBufferInputStream ( """
+includeTargets ** gant.targets.Maven * [ groupId : 'flob' , artifactId : 'adob' ]
+""" ) )
+    assertEquals ( 13 , gant.process ( [ '-f' , '-' , 'packageX' ] as String[] ) )
+    assertEquals ( '''Maven.version must be set to achieve target package.
+''' , output ) 
+  }
+
+
+
+
+
+
+
+
 }

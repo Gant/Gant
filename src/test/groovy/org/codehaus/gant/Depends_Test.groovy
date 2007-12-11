@@ -86,7 +86,7 @@ target ( listDoAll : '' ) { depends ( [ listDoA , listDoB , listDoC ] ) }
 datum = 1
 target ( notClosure : '' ) { depends ( datum ) }
 ''' ) )
-    assertEquals ( 1 , gant.process ( [ '-f' , '-' , 'notClosure' ] as String[] ) )
+    assertEquals ( 13 , gant.process ( [ '-f' , '-' , 'notClosure' ] as String[] ) )
     assertEquals ( 'depends called with an argument (1) that is not appropriate.\n' , output )
   }
   void testNotListClosure ( ) {
@@ -94,7 +94,7 @@ target ( notClosure : '' ) { depends ( datum ) }
 datum = 1
 target ( notListClosure : '' ) { depends ( [ datum ] ) }
 ''' ) )
-    assertEquals ( 1 , gant.process ( [ '-f' , '-' , 'notListClosure' ] as String[] ) )
+    assertEquals ( 13 , gant.process ( [ '-f' , '-' , 'notListClosure' ] as String[] ) )
     assertEquals ( 'depends called with List argument that contains an item (1) that is not appropriate.\n' , output )
   }
   void testOutOfOrder ( ) {
@@ -127,7 +127,7 @@ target ( outOfOrderListDoit : '' ) { println ( 'done.' ) }
 target ( standard_input , '' ) { println ( 'done.' ) }
 target ( startingPoint , '' ) { depends ( standard_input ) }
 ''' ) )
-    assertEquals ( 1 , gant.process ( [ '-f' , '-' , 'startingPoint' ] as String[] ) )
+    assertEquals ( 2 , gant.process ( [ '-f' , '-' , 'startingPoint' ] as String[] ) )
     assertTrue ( output.startsWith ( 'Standard input, line 2 -- No signature of method: gant.Gant$_closure1.doCall() is applicable for argument types:' ) )
   }
   void testStringParameter ( ) {
