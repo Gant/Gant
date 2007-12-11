@@ -28,11 +28,11 @@ target ( somethingElse : "Do something else." ) { Ant.echo ( message : "Did some
 ''' ) )  }
     
   void testMissingDefault ( ) {
-    assertEquals ( 1 , gant.process ( [ '-n' ,  '-f' ,  '-'  ] as String[] ) )
+    assertEquals ( 12 , gant.process ( [ '-n' ,  '-f' ,  '-'  ] as String[] ) )
     assertEquals ( 'Target default does not exist.\n' , output )
   }
   void testMissingNamedTarget ( ) {
-    assertEquals ( 1 , gant.process ( [ '-n' ,  '-f' ,  '-'  , 'blah'] as String[] ) )
+    assertEquals ( 11 , gant.process ( [ '-n' ,  '-f' ,  '-'  , 'blah'] as String[] ) )
     assertEquals ( " [property] environment : 'environment'\nTarget blah does not exist.\n" , output ) 
   }
   void testSomething ( ) {

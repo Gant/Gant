@@ -43,7 +43,7 @@ includeTargets << gant.targets.Maven
     System.setIn ( new StringBufferInputStream ( """
 includeTargets << gant.targets.Maven
 """ ) )
-    assertEquals ( 13 , gant.process ( [ '-f' , '-' , 'packageX' ] as String[] ) )
+    assertEquals ( 13 , gant.process ( [ '-f' , '-' , 'package' ] as String[] ) )
     assertEquals ( '''Maven.groupId must be set to achieve target package.
 ''' , output ) 
   }
@@ -51,7 +51,7 @@ includeTargets << gant.targets.Maven
     System.setIn ( new StringBufferInputStream ( """
 includeTargets ** gant.targets.Maven * [ : ]
 """ ) )
-    assertEquals ( 13 , gant.process ( [ '-f' , '-' , 'packageX' ] as String[] ) )
+    assertEquals ( 13 , gant.process ( [ '-f' , '-' , 'package' ] as String[] ) )
     assertEquals ( '''Maven.groupId must be set to achieve target package.
 ''' , output ) 
   }
@@ -60,7 +60,7 @@ includeTargets ** gant.targets.Maven * [ : ]
 includeTargets << gant.targets.Maven
 Maven.groupId = 'flob'
 """ ) )
-    assertEquals ( 13 , gant.process ( [ '-f' , '-' , 'packageX' ] as String[] ) )
+    assertEquals ( 13 , gant.process ( [ '-f' , '-' , 'package' ] as String[] ) )
     assertEquals ( '''Maven.artifactId must be set to achieve target package.
 ''' , output ) 
   }
@@ -68,7 +68,7 @@ Maven.groupId = 'flob'
     System.setIn ( new StringBufferInputStream ( """
 includeTargets ** gant.targets.Maven * [ groupId : 'flob' ]
 """ ) )
-    assertEquals ( 13 , gant.process ( [ '-f' , '-' , 'packageX' ] as String[] ) )
+    assertEquals ( 13 , gant.process ( [ '-f' , '-' , 'package' ] as String[] ) )
     assertEquals ( '''Maven.artifactId must be set to achieve target package.
 ''' , output ) 
   }
@@ -78,7 +78,7 @@ includeTargets << gant.targets.Maven
 Maven.groupId = 'flob'
 Maven.artifactId = 'adob'
 """ ) )
-    assertEquals ( 13 , gant.process ( [ '-f' , '-' , 'packageX' ] as String[] ) )
+    assertEquals ( 13 , gant.process ( [ '-f' , '-' , 'package' ] as String[] ) )
     assertEquals ( '''Maven.version must be set to achieve target package.
 ''' , output ) 
   }
@@ -86,7 +86,7 @@ Maven.artifactId = 'adob'
     System.setIn ( new StringBufferInputStream ( """
 includeTargets ** gant.targets.Maven * [ groupId : 'flob' , artifactId : 'adob' ]
 """ ) )
-    assertEquals ( 13 , gant.process ( [ '-f' , '-' , 'packageX' ] as String[] ) )
+    assertEquals ( 13 , gant.process ( [ '-f' , '-' , 'package' ] as String[] ) )
     assertEquals ( '''Maven.version must be set to achieve target package.
 ''' , output ) 
   }

@@ -124,11 +124,11 @@ target ( outOfOrderListDoit : '' ) { println ( 'done.' ) }
     //  a depend.  At this point the class name not the name in the binding is picked up and all hell breaks
     //  loose.  Standard input is compiled as class standard_input.
     System.setIn ( new StringBufferInputStream ( '''
-target ( standard_input , '' ) { println ( 'done.' ) }
-target ( startingPoint , '' ) { depends ( standard_input ) }
+target ( standard_input , '' ) { System.err.println ( 'Standard Input' ) ; println ( 'done.' ) }
+target ( startingPoint , '' ) { System.err.println ( 'StartingPoint' ) ; depends ( standard_input ) }
 ''' ) )
     assertEquals ( 2 , gant.process ( [ '-f' , '-' , 'startingPoint' ] as String[] ) )
-    assertTrue ( output.startsWith ( 'Standard input, line 2 -- No signature of method: gant.Gant$_closure1.doCall() is applicable for argument types:' ) )
+    assertTrue ( output.startsWith ( 'Standard input, line 2 -- Error evaluating Gantfile: groovy.lang.MissingMethodException: No signature of method: gant.Gant$_closure1.doCall() is applicable for argument types:' ) )
   }
   void testStringParameter ( ) {
     System.setIn ( new StringBufferInputStream ( '''

@@ -85,32 +85,32 @@ target ( 'default' : '' ) { something ( ) }
   }
   void testToolFlobClass ( ) {
     System.setIn ( new StringBufferInputStream ( toolBuildScriptClass ) )
-    assertEquals ( 1 , gant.process ( [ '-f' ,  '-'  , 'flob'] as String[] ) )
+    assertEquals ( 11 , gant.process ( [ '-f' ,  '-'  , 'flob'] as String[] ) )
     assertEquals ( 'Target flob does not exist.\n' , output ) 
   }
   void testToolFlobFile ( ) {
     System.setIn ( new StringBufferInputStream ( toolBuildScriptFile ) )
-    assertEquals ( 1 , gant.process ( [ '-f' ,  '-'  , 'flob'] as String[] ) )
+    assertEquals ( 11 , gant.process ( [ '-f' ,  '-'  , 'flob'] as String[] ) )
     assertEquals ( 'Target flob does not exist.\n' , output ) 
   }
   void testToolFlobString ( ) {
     System.setIn ( new StringBufferInputStream ( toolBuildScriptString ) )
-    assertEquals ( 1 , gant.process ( [ '-f' ,  '-'  , 'flob'] as String[] ) )
+    assertEquals ( 11 , gant.process ( [ '-f' ,  '-'  , 'flob'] as String[] ) )
     assertEquals ( 'Target flob does not exist.\n' , output ) 
   }
   void testToolBurbleClass ( ) {
     System.setIn ( new StringBufferInputStream ( toolBuildScriptClass ) )
-    assertEquals ( 1 , gant.process ( [ '-f' ,  '-'  , 'burble'] as String[] ) )
+    assertEquals ( 11 , gant.process ( [ '-f' ,  '-'  , 'burble'] as String[] ) )
     assertEquals ( 'Target burble does not exist.\n' , output ) 
   }
   void testToolBurbleFile ( ) {
     System.setIn ( new StringBufferInputStream ( toolBuildScriptFile ) )
-    assertEquals ( 1 , gant.process ( [ '-f' ,  '-'  , 'burble'] as String[] ) )
+    assertEquals ( 11 , gant.process ( [ '-f' ,  '-'  , 'burble'] as String[] ) )
     assertEquals ( 'Target burble does not exist.\n' , output ) 
   }
   void testToolBurbleString ( ) {
     System.setIn ( new StringBufferInputStream ( toolBuildScriptString ) )
-    assertEquals ( 1 , gant.process ( [ '-f' ,  '-'  , 'burble'] as String[] ) )
+    assertEquals ( 11 , gant.process ( [ '-f' ,  '-'  , 'burble'] as String[] ) )
     assertEquals ( 'Target burble does not exist.\n' , output ) 
   }
   void testToolSomethingClass ( ) {
@@ -130,7 +130,7 @@ target ( 'default' : '' ) { something ( ) }
   }
   void testToolClassNoFile ( ) {
     System.setIn ( new StringBufferInputStream ( toolBuildScriptFile.replace ( toolClassFilePath , nonExistentFilePath ) ) )
-    assertEquals ( 1 , gant.process ( [ '-f' ,  '-'  , 'flob'] as String[] ) )
+    assertEquals ( 2 , gant.process ( [ '-f' ,  '-'  , 'flob'] as String[] ) )
     assertEquals ( 'Standard input, line 1 -- ' + nonExistentFilePath + ' (No such file or directory)\n' , output )
   }
   void testTargetsDefaultClassClass ( ) {
@@ -169,18 +169,18 @@ target ( 'default' : '' ) { something ( ) }
   */
   void testTargetsBurbleClassClass ( ) {
     System.setIn ( new StringBufferInputStream ( targetsBuildClassClass ) )
-    assertEquals ( 1 , gant.process ( [ '-f' ,  '-'  , 'burble'] as String[] ) )
+    assertEquals ( 11 , gant.process ( [ '-f' ,  '-'  , 'burble'] as String[] ) )
     assertEquals ( 'Target burble does not exist.\n' , output ) 
   }
   /*
   void testTargetsBurbleClassFile ( ) {
     System.setIn ( new StringBufferInputStream ( targetsBuildClassFile ) )
-    assertEquals ( 1 , gant.process ( [ '-f' ,  '-'  , 'burble'] as String[] ) )
+    assertEquals ( 11 , gant.process ( [ '-f' ,  '-'  , 'burble'] as String[] ) )
     assertEquals ( 'Target burble does not exist.\n' , output ) 
   }
   void testTargetsBurbleClassString ( ) {
     System.setIn ( new StringBufferInputStream ( targetsBuildClassString ) )
-    assertEquals ( 1 , gant.process ( [ '-f' ,  '-'  , 'burble'] as String[] ) )
+    assertEquals ( 11 , gant.process ( [ '-f' ,  '-'  , 'burble'] as String[] ) )
     assertEquals ( 'Target burble does not exist.\n' , output ) 
   }
   */
@@ -203,7 +203,7 @@ target ( 'default' : '' ) { something ( ) }
   */
   void testTargetsClassNoFile ( ) {
     System.setIn ( new StringBufferInputStream ( targetsBuildClassFile.replace ( targetsClassFilePath , nonExistentFilePath ) ) )
-    assertEquals ( 1 , gant.process ( [ '-f' ,  '-'  , 'flob'] as String[] ) )
+    assertEquals ( 2 , gant.process ( [ '-f' ,  '-'  , 'flob'] as String[] ) )
     //  This is a weird message, should be better than this.
     assertEquals ( 'Standard input, line 1 -- ' + nonExistentFilePath + ' (' + nonExistentFilePath + ')\n' , output )
   }
@@ -244,24 +244,24 @@ target ( 'default' : '' ) { something ( ) }
   /*
   void testTargetsBurbleScriptClass ( ) {
     System.setIn ( new StringBufferInputStream ( targetsBuildScriptClass ) )
-    assertEquals ( 1 , gant.process ( [ '-f' ,  '-'  , 'burble'] as String[] ) )
+    assertEquals ( 11 , gant.process ( [ '-f' ,  '-'  , 'burble'] as String[] ) )
     assertEquals ( 'Target burble does not exist.\n' , output ) 
   }
   */
   void testTargetsBurbleScriptFile ( ) {
     System.setIn ( new StringBufferInputStream ( targetsBuildScriptFile ) )
-    assertEquals ( 1 , gant.process ( [ '-f' ,  '-'  , 'burble'] as String[] ) )
+    assertEquals ( 11 , gant.process ( [ '-f' ,  '-'  , 'burble'] as String[] ) )
     assertEquals ( 'Target burble does not exist.\n' , output ) 
   }
   void testTargetsBurbleScriptString ( ) {
     System.setIn ( new StringBufferInputStream ( targetsBuildScriptString ) )
-    assertEquals ( 1 , gant.process ( [ '-f' ,  '-'  , 'burble'] as String[] ) )
+    assertEquals ( 11 , gant.process ( [ '-f' ,  '-'  , 'burble'] as String[] ) )
     assertEquals ( 'Target burble does not exist.\n' , output ) 
   }
   /*
   void testTargetsSomethingScriptClass ( ) {
     System.setIn ( new StringBufferInputStream ( targetsBuildScriptClass ) )
-    assertEquals ( 1 , gant.process ( [ '-f' ,  '-'  , 'something'] as String[] ) )
+    assertEquals ( 11 , gant.process ( [ '-f' ,  '-'  , 'something'] as String[] ) )
     assertEquals ( 'flobbed.\n' , output ) 
   }
   */
@@ -277,7 +277,7 @@ target ( 'default' : '' ) { something ( ) }
   }
   void testTargetsScriptNoFile ( ) {
     System.setIn ( new StringBufferInputStream ( targetsBuildScriptFile.replace ( targetsScriptFilePath , nonExistentFilePath ) ) )
-    assertEquals ( 1 , gant.process ( [ '-f' ,  '-'  , 'flob'] as String[] ) )
+    assertEquals ( 2 , gant.process ( [ '-f' ,  '-'  , 'flob'] as String[] ) )
     //  This is a weird message, should be better than this.
     assertEquals ( 'Standard input, line 1 -- ' + nonExistentFilePath + ' (' + nonExistentFilePath + ')\n' , output )
   }
@@ -306,12 +306,12 @@ target ( 'default' : '' ) { something ( ) }
   }
   void testTargetsMultipleIncludeBurbleScriptFile ( ) {
     System.setIn ( new StringBufferInputStream ( "includeTargets <<  new File ( '${targetsScriptFilePath}' )\n" + targetsBuildScriptFile ) )
-    assertEquals ( 1 , gant.process ( [ '-f' ,  '-'  , 'burble'] as String[] ) )
+    assertEquals ( 11 , gant.process ( [ '-f' ,  '-'  , 'burble'] as String[] ) )
     assertEquals ( 'Target burble does not exist.\n' , output ) 
   }
   void testTargetsMultipleIncludeBurbleScriptString ( ) {
     System.setIn ( new StringBufferInputStream ( "includeTargets <<  '''${targetsScriptText}'''\n" + targetsBuildScriptString ) )
-    assertEquals ( 1 , gant.process ( [ '-f' ,  '-'  , 'burble'] as String[] ) )
+    assertEquals ( 11 , gant.process ( [ '-f' ,  '-'  , 'burble'] as String[] ) )
     assertEquals ( 'Target burble does not exist.\n' , output ) 
   }
   void testTargetsMultipleIncludeSomethingScriptFile ( ) {
@@ -324,9 +324,6 @@ target ( 'default' : '' ) { something ( ) }
     assertEquals ( 0 , gant.process ( [ '-f' ,  '-'  , 'flob' ] as String[] ) )
     assertEquals ( 'flobbed.\n' , output )
   }
-
-
-
 
   void testUsingParameterConstructor ( ) {
     def theToolClassName = 'TheTool'

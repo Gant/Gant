@@ -306,7 +306,8 @@ final class Gant {
             print ( sourceName + ', line ' + stackEntry.lineNumber + ' -- ' )
           }
         }
-        println ( 'Error evaluating Gantfile: ' + ( e instanceof InvocationTargetException ? e.getCause ( ) : e  ) )
+        if ( e instanceof FileNotFoundException ) { println ( e.message ) }
+        else { println ( 'Error evaluating Gantfile: ' + ( e instanceof InvocationTargetException ? e.cause : e  ) ) }
         return 2
       }
     }

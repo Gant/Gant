@@ -213,7 +213,7 @@ final class Maven {
        break
       }
     }
-    binding.target.call ( 'packageX' : 'Package the artefact: take the compiled code and package it in its distributable format, such as a JAR.' ) {
+    binding.target.call ( 'package' : 'Package the artefact: take the compiled code and package it in its distributable format, such as a JAR.' ) {
        if ( ! owner.groupId ) { throw new RuntimeException ( 'Maven.groupId must be set to achieve target package.' ) }
        if ( ! owner.artifactId ) { throw new RuntimeException ( 'Maven.artifactId must be set to achieve target package.' ) }
        if ( ! owner.version ) { throw new RuntimeException ( 'Maven.version must be set to achieve target package.' ) }

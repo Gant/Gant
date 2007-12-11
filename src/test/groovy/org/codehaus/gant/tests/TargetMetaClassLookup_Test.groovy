@@ -46,7 +46,7 @@ target ( "default" : "Default is something." ) { something ( ) }
     assertEquals ( " [property] environment : 'environment'\n     [echo] message : 'Did something.'\n" , output ) 
   }
   void testBlah ( ) {
-    assertEquals ( 1 , gant.process ( [ '-f' ,  '-'  , 'blah' ] as String[] ) )
+    assertEquals ( 11 , gant.process ( [ '-f' ,  '-'  , 'blah' ] as String[] ) )
     assertEquals ( " [property] environment : 'environment'\nTarget blah does not exist.\n" , output ) 
   }
   void testSomething ( ) {
