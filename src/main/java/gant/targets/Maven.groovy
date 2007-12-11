@@ -175,7 +175,7 @@ final class Maven {
         }
       }
     }
-    binding.target.call ( test : "Run tests using the ${properties.testFramework} unit testing framework. These tests should not require the code be packaged or deployed." ) {
+    binding.target.call ( test : "Run tests using the ${properties.testFramework} unit testing framework." ) {
       depends ( binding.'test-compile' )
       switch ( owner.testFramework ) {
        case 'testng' :
@@ -213,7 +213,7 @@ final class Maven {
        break
       }
     }
-    binding.target.call ( 'package' : 'Package the artefact: take the compiled code and package it in its distributable format, such as a JAR.' ) {
+    binding.target.call ( 'package' : "Package the artefact as a ${properties.packaging}." ) {
        if ( ! owner.groupId ) { throw new RuntimeException ( 'Maven.groupId must be set to achieve target package.' ) }
        if ( ! owner.artifactId ) { throw new RuntimeException ( 'Maven.artifactId must be set to achieve target package.' ) }
        if ( ! owner.version ) { throw new RuntimeException ( 'Maven.version must be set to achieve target package.' ) }
