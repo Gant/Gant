@@ -21,28 +21,39 @@ package gant.targets
  */
 final class Maven {
   private final Binding binding
+  private final Map properties = [
+                                  sourcePath : 'src' ,
+                                  mainSourcePath : '' , // Set in constructor since it uses a GString dependent on a value in the map.
+                                  testSourcePath : '' , // Set in constructor since it uses a GString dependent on a value in the map.
+                                  targetPath : 'target' ,
+                                  mainCompilePath : '' , // Set in constructor since it uses a GString dependent on a value in the map.
+                                  testCompilePath : '' , // Set in constructor since it uses a GString dependent on a value in the map.
+                                  testReportPath : '' , // Set in constructor since it uses a GString dependent on a value in the map.
+                                  javaCompileProperties : [ source : '1.3' , target : '1.3' , debug : 'false' ] ,
+                                  groovyCompileProperties : [ : ] ,
+                                  dependenciesClasspathId :  'dependency.classpath' ,
+                                  classpath : [ ] ,
+                                  dependencies : [ ] ,
+                                  testFramework : 'junit'
+                                  ]
   Maven ( Binding binding ) {
     this.binding = binding
-    binding.mavenSourcePath = 'src'
-    binding.mavenMainSourcePath = "${binding.mavenSourcePath}/main"
-    binding.mavenMainSourceJavaPath = "${binding.mavenMainSourcePath}/java"
-    binding.mavenTestSourcePath = "${binding.mavenSourcePath}/test"
-    binding.mavenTestSourceJavaPath = "${binding.mavenTestSourcePath}/java"
-    binding.mavenTargetPath = 'target'
-    binding.mavenMainCompilePath = "${binding.mavenTargetPath}/classes"
-    binding.mavenTestCompilePath = "${binding.mavenTargetPath}/test-classes"
-    binding.mavenCompileProperties = [ source : '1.3' , target : '1.3' , debug : 'false' ]
-    binding.mavenDependencyClasspathId =  'dependency.classpath'
-    binding.mavenClasspath = [ ]
-    binding.mavenDependency = [ ]
+    properties.mainSourcePath = "${properties.sourcePath}/main"
+    properties.testSourcePath = "${properties.sourcePath}/test"
+    properties.mainCompilePath = "${properties.targetPath}/classes"
+    properties.testCompilePath = "${properties.targetPath}/test-classes"
+    properties.testReportPath = "${properties.targetPath}/test-reports"
     binding.target.call ( initialize : 'Ensure all the dependencies can be met and alter classpaths accordingly.' ) {
-      if ( binding.mavenDependency ) {
+      if ( owner.testFramework == 'testng' ) {
+        owner.dependencies << [ groupId : 'org.testng' , artifactId : 'testng' , version : '5.7' , scope : 'test' , classifier : 'jdk15' ]
+      }
+      if ( owner.dependencies ) {
         binding.Ant.typedef ( resource : 'org/apache/maven/artifact/ant/antlib.xml' , uri : 'urn:maven-artifact-ant' ) {
           classpath { pathelement ( location : System.properties.'groovy.home' + '/lib/maven-artifact-ant-2.0.4-dep.jar' ) }
         }
-        binding.Ant.'antlib:org.apache.maven.artifact.ant:dependencies' ( pathId : binding.mavenDependencyClasspathId ) {
-          binding.mavenDependency.each { item ->
-                                         dependency ( groupId : item [ 'groupId' ] , artifactId : item [ 'artifactId' ] , version : item [ 'version' ] , classifier : item [ 'classifier' ] )
+        binding.Ant.'antlib:org.apache.maven.artifact.ant:dependencies' ( pathId : owner.dependenciesClasspathId ) {
+          owner.dependencies.each { item ->
+                                    dependency ( groupId : item.groupId , artifactId : item.artifactId , version : item.version , classifier : item.classifier )
           }
         }
       }
@@ -66,13 +77,30 @@ final class Maven {
     */
     binding.target.call ( compile : 'Compile the source code of the project.' ) {
       depends ( binding.initialize )
-      binding.Ant.mkdir ( dir : binding.mavenMainCompilePath )
-      binding.Ant.javac ( [ srcdir : binding.mavenMainSourceJavaPath , destdir : binding.mavenMainCompilePath , fork : 'yes' ] + binding.mavenCompileProperties ) {
-        classpath {
-          pathelement ( path : binding.mavenClasspath.join ( ':' ) )
-          path ( refid : binding.mavenDependencyClasspathId )
+      binding.Ant.mkdir ( dir : owner.mainCompilePath )
+      new File ( owner.mainSourcePath ).eachDir { directory ->
+        switch ( directory.name ) {
+         case 'java' :
+          //  Need to use the joint Groovy compiler here to deal wuth the case where Groovy files are in the
+          //  Java hierarchy.
+         binding.Ant.javac ( [ srcdir : owner.mainSourcePath + '/java' , destdir : owner.mainCompilePath ] + owner.javaCompileProperties ) {
+           classpath {
+             pathelement ( path : owner.classpath.join ( ':' ) )
+             path ( refid : owner.dependenciesClasspathId )
+           }
+         }
+         break
+         case 'groovy' :
+         binding.Ant.taskdef ( name : 'groovyc' , classname : 'org.codehaus.groovy.ant.Groovyc' )
+         binding.Ant.groovyc ( [ srcdir : owner.mainSourcePath + '/groovy' , destdir : owner.mainCompilePath ] + owner.groovyCompileProperties ) {
+           classpath {
+             pathelement ( path : owner.classpath.join ( ':' ) )
+             path ( refid : owner.dependenciesClasspathId )
+           }
+         }
+         break
         }
-      } 
+      }
     }
     /*
     binding.target.call ( 'process-classes' , 'Post-process the generated files from compilation, for example to do bytecode enhancement on Java classes.' ) {
@@ -93,18 +121,64 @@ final class Maven {
     */
     binding.target.call ( 'test-compile' : 'Compile the test source code into the test destination directory.' ) {
       depends ( binding.compile )
-      binding.Ant.mkdir ( dir : binding.mavenTestCompilePath  )
-      binding.Ant.javac ( [ srcdir : binding.mavenTestSourceJavaPath , destdir : binding.mavenTestCompilePath , fork : 'yes' ] + binding.mavenCompileProperties ) {
-        classpath {
-          pathelement ( location : binding.mavenMainCompilePath )
-          pathelement ( path : binding.mavenClasspath.join ( ':' ) )
-          path ( refid : binding.mavenDependencyClasspathId )
+      binding.Ant.mkdir ( dir : owner.testCompilePath  )
+      new File ( owner.mainSourcePath ).eachDir { directory ->
+        switch ( directory.name ) {
+         case 'java' :
+          //  Need to use the joint Groovy compiler here to deal wuth the case where Groovy files are in the
+          //  Java hierarchy.
+         binding.Ant.javac ( [ srcdir : owner.testSourcePath + '/java' , destdir : owner.testCompilePath ] + owner.javaCompileProperties ) {
+           classpath {
+             pathelement ( location : owner.mainCompilePath )
+             pathelement ( path : owner.classpath.join ( ':' ) )
+             if ( owner.dependencies ) { path ( refid : owner.dependenciesClasspathId ) }
+           }
+         }
+         break
+         case 'groovy' :
+         binding.Ant.taskdef ( name : 'groovyc' , classname : 'org.codehaus.groovy.ant.Groovyc' )
+         binding.Ant.groovyc ( [ srcdir : owner.testSourcePath + '/groovy' , destdir : owner.testCompilePath ] + owner.groovyCompileProperties ) {
+           classpath {
+             pathelement ( location : owner.mainCompilePath )
+             pathelement ( path : owner.classpath.join ( ':' ) )
+             if ( owner.dependencies ) { path ( refid : owner.dependenciesClasspathId ) }
+           }
+         }
+         break
         }
-      } 
+      }
     }
-    binding.target.call ( test : 'Run tests using a suitable unit testing framework. These tests should not require the code be packaged or deployed.' ) {
+    binding.target.call ( test : "Run tests using the ${properties.testFramework} unit testing framework. These tests should not require the code be packaged or deployed." ) {
       depends ( binding.'test-compile' )
-      println ( 'Run the tests.' )
+      switch ( owner.testFramework ) {
+       case 'testng' :
+       binding.Ant.taskdef ( resource : 'testngtasks' ) { classpath { path ( refid : owner.dependenciesClasspathId ) } }
+       binding.Ant.testng ( outputdir : owner.testReportPath ) {
+         classpath {
+           fileset ( dir : System.properties.'groovy.home' + '/lib' , includes : '*.jar' )
+           pathelement ( location : owner.mainCompilePath )
+           pathelement ( location : owner.testCompilePath )
+           if ( owner.dependencies ) { path ( refid : owner.dependenciesClasspathId ) }
+         }
+         classfileset ( dir : owner.testCompilePath )
+       }
+       break
+       case 'junit' :
+       default :
+       binding.Ant.mkdir ( dir : owner.testReportPath )
+       binding.Ant.junit ( printsummary : 'yes' ) {
+         classpath {
+           pathelement ( location : owner.mainCompilePath )
+           pathelement ( location : owner.testCompilePath )
+           if ( owner.dependencies ) { path ( refid : owner.dependenciesClasspathId ) }
+         }
+         formatter ( type : 'plain' )
+         batchtest ( todir : owner.testReportPath ) {
+           fileset ( dir : owner.testCompilePath , includes : '**/*Test.class' )
+         }
+       }
+       break
+      }
     }
     /*
     binding.target.call ( 'package' : 'Package the artefact: take the compiled code and package it in its distributable format, such as a JAR.' ) {
@@ -124,10 +198,12 @@ final class Maven {
     }
     */
     binding.target.call ( clean : 'Clean everything.' ) {
-      binding.Ant.delete ( dir : binding.mavenTargetPath , quiet : 'true' )
+      binding.Ant.delete ( dir : owner.targetPath , quiet : 'true' )
       binding.Ant.delete ( quiet : 'false' ) {
         fileset ( dir : '.' , includes : '**/*~' , defaultexcludes : 'false' )
       }
     }
   }
+  def getProperty ( String name ) { properties [ name ] }
+  void setProperty ( String name , value ) { properties [ name ] = value }
 }

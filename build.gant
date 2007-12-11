@@ -71,15 +71,15 @@ Ant.taskdef ( name : 'groovyc' , classname : 'org.codehaus.groovy.ant.Groovyc' ,
 target ( compile : 'Compile everything needed for a Gant installation.' ) {
   mkdir ( dir : buildClassesDirectory )
   mkdir ( dir : buildLibDirectory )
-  javac ( srcdir : sourceDirectory , destDir : buildClassesDirectory , source : '1.4' , target : '1.4' , debug : 'on' , classpathref : 'installationJarSet'  , excludes : '**/tests/**' )
-  groovyc ( srcdir : sourceDirectory , destDir : buildClassesDirectory , classpath : buildClassesDirectory , excludes : 'bin/*.groovy' )
+  javac ( srcdir : sourceDirectory , destdir : buildClassesDirectory , source : '1.4' , target : '1.4' , debug : 'on' , classpathref : 'installationJarSet'  , excludes : '**/tests/**' )
+  groovyc ( srcdir : sourceDirectory , destdir : buildClassesDirectory , classpath : buildClassesDirectory , excludes : 'bin/*.groovy' )
 }
 
 target ( compileTests : 'Compile all the tests for a newly built Gant.' ) {
   depends ( compile )
   mkdir ( dir : buildTestsDirectory )
-  javac ( srcdir : sourceDirectory , destDir : buildClassesDirectory , source : '1.4' , target : '1.4' , debug : 'on' , classpathref : 'installationJarSet'  , includes : '**/tests/**' )
-  javac ( srcdir : testsDirectory , destDir : buildTestsDirectory , source : '1.4' , target : '1.4' , debug : 'on' ) {
+  javac ( srcdir : sourceDirectory , destdir : buildClassesDirectory , source : '1.4' , target : '1.4' , debug : 'on' , classpathref : 'installationJarSet'  , includes : '**/tests/**' )
+  javac ( srcdir : testsDirectory , destdir : buildTestsDirectory , source : '1.4' , target : '1.4' , debug : 'on' ) {
     classpath {
       path ( refid : 'installationJarSet' )
       pathelement ( location : buildClassesDirectory )

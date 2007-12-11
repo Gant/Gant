@@ -14,6 +14,8 @@
 
 package gant
 
+import java.lang.reflect.InvocationTargetException
+
 import org.codehaus.groovy.control.MultipleCompilationErrorsException    
 import org.codehaus.groovy.control.CompilerConfiguration
 import org.codehaus.groovy.control.CompilationUnit
@@ -153,7 +155,7 @@ final class Gant {
           try { binding.getVariable ( target ).run ( ) }
           catch ( MissingPropertyException mme ) {
             printDispatchExceptionMessage ( target , mme.property , mme.message )
-            returnCode = 1
+            returnCode = 11
           }
         }
       }
@@ -161,13 +163,13 @@ final class Gant {
         try { binding.getVariable ( 'default' ).run ( ) }
         catch ( MissingPropertyException mme ) {
           printDispatchExceptionMessage ( 'default' , mme.property , mme.message )
-          returnCode = 1
+          returnCode = 12
         }
       }
     }
     catch ( Exception e ) {
       println ( e.message )
-      returnCode = 1
+      returnCode = 13
     }
     returnCode
   }
@@ -304,8 +306,8 @@ final class Gant {
             print ( sourceName + ', line ' + stackEntry.lineNumber + ' -- ' )
           }
         }
-        println ( e.message )
-        return 1
+        println ( 'Error evaluating Gantfile: ' + ( e instanceof InvocationTargetException ? e.getCause ( ) : e  ) )
+        return 2
       }
     }
     invokeMethod ( function , targets )

@@ -1,6 +1,9 @@
 1.0.0 ( r8816 )
 ---------------
 
+Amended and extended the Maven target set so that it actually works well enough to be useful.
+
+Change the return codes so as to provide easier discrimination of error cases.
 
 
 1.0.0 ( r8816 )
