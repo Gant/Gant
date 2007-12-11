@@ -60,7 +60,7 @@ final class Maven {
     binding.target.call ( initialize : 'Ensure all the dependencies can be met and set classpaths accordingly.' ) {
       if ( owner.testFramework == 'testng' ) {
         testngInstalled = false
-        owner.testDependencies.each { dependency -> testngInstalled = ( dependency.artifactId == 'testng' ) }
+        owner.testDependencies.each { dependency -> if ( dependency.artifactId == 'testng' ) { testngInstalled = true } }
         if ( ! testngInstalled ) { owner.testDependencies << [ groupId : 'org.testng' , artifactId : 'testng' , version : '5.7' , scope : 'test' , classifier : 'jdk15' ] }
       }
       if ( owner.compileDependencies || owner.testDependencies  ) {
