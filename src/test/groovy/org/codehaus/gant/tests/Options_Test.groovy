@@ -39,4 +39,11 @@ dnoces
 driht
 ''' , output )
   }
+  void testFileOptionLong ( ) {
+    System.setIn ( new StringBufferInputStream ( '''
+target ( test : "Test entry" ) { println ( "Hello." ) }''' ) )
+    assertEquals ( 0 , gant.process ( [ '--gantfile' , '-' , 'test' ] as String[] ) )
+    assertEquals ( '''Hello.
+''' , output )
+  }
 }

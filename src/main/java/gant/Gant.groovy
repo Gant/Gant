@@ -26,10 +26,9 @@ import org.codehaus.gant.GantState
 import org.codehaus.gant.IncludeTargets
 import org.codehaus.gant.IncludeTool
 
-//import org.apache.commons.cli.GnuParser
+import org.apache.commons.cli.GnuParser
 import org.apache.commons.cli.Option
 import org.apache.commons.cli.OptionBuilder
-import org.apache.commons.cli.PosixParser
 
 /**
  *  This class provides infrastructure and an executable command for using Groovy + AntBuilder as a build
@@ -175,9 +174,6 @@ final class Gant {
   }
   public int process ( args ) {
     final rootLoader = classLoader.rootLoader
-    // Use the GnuParser rather than the PosixParse (the default) so as to avoid the problem of processing
-    // parameters to long options.
-    def cli = new CliBuilder ( usage : 'gant [option]* [target]*' , parser : new PosixParser ( ) )
     //
     //  Commons CLI is broken.  1.0 has one set of ideas about multiple args and is broken.  1.1 has a
     //  different set of ideas about multiple args and is broken.  For the moment we leave things so that
@@ -185,7 +181,14 @@ final class Gant {
     //
     //  1.0 silently absorbs unknown single letter options.
     //
-    //  Options with short and long form.
+    //  1.0 cannot deal with options having only a long form as the access mechanism that works only works
+    //  for short form.
+    //
+    //  The PosixParser does not handle incorrectly formed options at all well.  Also the standard printout
+    //  actually assumes GnuParser form.  So although PosixParser is the default for CliBuilder, we actually
+    //  want GnuParser.
+    //
+    def cli = new CliBuilder ( usage : 'gant [option]* [target]*' , parser : new GnuParser ( ) )
     cli.c ( longOpt : 'usecache' , 'Whether to cache the generated class and perform modified checks on the file before re-compilation.' )
     cli.d ( longOpt : 'cachedir' , args : 1 , argName : 'cache-file' , 'The directory where to cache generated classes to.' )
     cli.f ( longOpt : 'gantfile' , args : 1 , argName : 'build-file' , 'Use the named build file instead of the default, build.gant.' )
@@ -202,10 +205,6 @@ final class Gant {
     cli.P ( longOpt : 'classpath' , args : 1 , argName : 'path' , 'Adds a path to search for jars and classes.' )
     cli.T ( longOpt : 'targets' , 'Print out a list of the possible targets.' )
     cli.V ( longOpt : 'version' , 'Print the version number and exit.' )
-    // Options with only a long form.
-    //  CLI 1.0 can only work with options that have a single letter form. 
-    //cli.options.addOption ( OptionBuilder.withLongOpt ( 'lib' ).hasArg ( ).withArgName ( 'path' ).withDescription ( 'Adds a path to search for jars and classes.' ).create ( ) )
-    //  Process the arguments for options.
     def options = cli.parse ( args )
     if ( options == null ) { println ( 'Error in processing command line options.' ) ; return 1 }
     binding.cacheEnabled = options.c ? true : false
@@ -237,8 +236,6 @@ final class Gant {
       println ( 'Gant version ' + ( ( version == null ) ? '<unknown>' : version ) )
       return 0
     }
-    //  Have to use a short form here.
-    //if ( options.lib ) { options.libs.each { lib -> rootLoader?.addURL ( ( new File ( lib ) ).toURL ( ) ) } }
     def targets = options.arguments ( )
     def gotUnknownOptions = false ;
     targets.each { target ->
