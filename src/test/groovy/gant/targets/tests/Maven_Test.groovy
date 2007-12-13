@@ -97,7 +97,7 @@ includeTargets << gant.targets.Maven
 Maven.binding = new Binding ( )
 """ ) )
     assertEquals ( 2 , gant.process ( [ '-f' , '-' , 'initialize' ] as String[] ) )
-    assertEquals ( '''Standard input, line 3 -- Error evaluating Gantfile: java.lang.RuntimeException: Cannot amend the property binding.
+    assertEquals ( '''Standard input, line 3 -- Error evaluating Gantfile: Cannot amend the property binding.
 ''' , output ) 
   }
   
@@ -108,7 +108,7 @@ includeTargets ** gant.targets.Maven * [ binding : new Binding ( ) ]
 """ ) )
     assertEquals ( 2 , gant.process ( [ '-f' , '-' , 'initialize' ] as String[] ) )
     System.err.println ( gant.process ( [ '-f' , '-' , 'initialize' ] as String[] ) )
-    assertEquals ( '''Standard input, line 2 -- Error evaluating Gantfile: java.lang.RuntimeException: Cannot amend the property binding.
+    assertEquals ( '''Standard input, line 2 -- Error evaluating Gantfile: Cannot amend the property binding.
 Target initialize does not exist.
 ''' , output ) 
   }
