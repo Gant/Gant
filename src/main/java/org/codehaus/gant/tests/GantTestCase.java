@@ -28,13 +28,14 @@ import gant.Gant ;
  */
 public class GantTestCase extends GroovyTestCase {
   private ByteArrayOutputStream output ;
+  private PrintStream savedOut ;
   protected Gant gant ;
   protected void setUp ( ) {
+    savedOut = System.out ;
     output = new ByteArrayOutputStream ( ) ;
     System.setOut ( new PrintStream ( output ) ) ;
     gant = new Gant ( ) ;
   }
-  protected String getOutput ( ) {
-    return output.toString ( ).replace ( "\r" , "" ) ;
-  }
+  protected void tearDown ( ) { System.setOut ( savedOut ) ; }
+  protected String getOutput ( ) { return output.toString ( ).replace ( "\r" , "" ) ; }
 }
