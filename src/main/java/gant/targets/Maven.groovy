@@ -250,12 +250,8 @@ final class Maven {
       throw new RuntimeException ( 'Deploy not implemented as yet.' )
     }
     */
-    binding.target.call ( clean : 'Clean everything.' ) {
-      owner.Ant.delete ( dir : owner.targetPath , quiet : 'true' )
-      owner.Ant.delete ( quiet : 'false' ) {
-        fileset ( dir : '.' , includes : '**/*~' , defaultexcludes : 'false' )
-      }
-    }
+    binding.includeTargets << Clean
+    binding.cleanDirectory << "${properties.targetPath}"
   }
   def getProperty ( String name ) { properties [ name ] }
   void setProperty ( String name , value ) { properties [ name ] = value }
