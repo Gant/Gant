@@ -26,7 +26,7 @@ final class Clean {
    private performPatternAction ( List l ) {
     if ( l.size ( ) > 0 ) {
       binding.Ant.delete ( quiet : 'false' ) {
-        fileset ( dir : '.' , includes : l.flatten ( ).join ( ',' ) , defaultexcludes : 'false' )
+        binding.Ant.fileset ( dir : '.' , includes : l.flatten ( ).join ( ',' ) , defaultexcludes : 'false' )
       }
     }
   }

@@ -96,7 +96,7 @@ final class Gant {
   private final binding = new Binding ( )
   private final groovyShell = new GroovyShell ( binding )
   private final classLoader = getClass().getClassLoader()
-  private final target = { map , closure ->
+  private final target = { Map map , Closure closure ->
     def targetName = map.keySet ( ).iterator ( ).next ( )
     def targetDescription = map.get ( targetName )
     if ( targetDescription ) { targetDescriptions.put ( targetName , targetDescription ) }
@@ -104,10 +104,32 @@ final class Gant {
     binding.setVariable ( targetName , closure )
     binding.setVariable ( targetName + '_description' , targetDescription )
   }
-  private final message = { tag , message ->
+  private final message = { String tag , String message ->
     def padding = 9 - tag.length ( )
     if ( padding < 0 ) { padding = 0 }
     println ( "           ".substring ( 0 , padding ) + '[' + tag + '] ' + message )
+  }
+  private final setdefault = { defaultTarget -> // Deal with Closure or String arguments.
+                               switch ( defaultTarget.getClass ( ) ) {
+                                case Closure :
+                                def targetName = null
+                                binding.variables.each { key , value -> if ( value.is ( defaultTarget ) ) { targetName = key } }
+                                if ( targetName == null ) { throw new RuntimeException ( 'Parameter to setdefault method is not a known target.  This can never happen!' ) }
+                                target ( 'default' : targetName ) { defaultTarget ( ) }
+                                break
+                                case String :
+                                def failed = true
+                                try {
+                                  def targetClosure = binding.getVariable ( defaultTarget )
+                                  if ( targetClosure != null ) { target ( 'default' : defaultTarget ) { targetClosure ( ) } ; failed = false }
+                                }
+                                catch ( MissingPropertyException mpe ) { }
+                                if ( failed ) { throw new RuntimeException ( "Target ${defaultTarget} does not exist so cannot be made the default." ) }
+                                break
+                                default :
+                                throw new RuntimeException ( 'Parameter to setdefault is of the wrong type -- must be a target reference or a string.' )
+                                break 
+                               }
   }
   private def ant = new GantBuilder ( ) ; {
     //
@@ -134,13 +156,27 @@ final class Gant {
     binding.includeTargets = new IncludeTargets ( binding )
     binding.includeTool = new IncludeTool ( binding )
     binding.target = target
-    binding.task = { map , closure -> System.err.println ( 'Deprecation warning: Use of task instead of target is deprecated.' ) ; target ( map , closure ) }
+    binding.task = { Map map , Closure closure -> System.err.println ( 'Deprecation warning: Use of task instead of target is deprecated.' ) ; target ( map , closure ) }
     binding.message = message
+    binding.setdefault = setdefault
   }
   private int targetList ( targets ) {
-    def message = targetDescriptions['default']
-    if ( message != null ) { println ( 'gant -- ' + message) }
-    for ( p in targetDescriptions.entrySet ( ) ) { if ( p.key != 'default' ) { println ( 'gant ' + p.key + '  --  ' + p.value ) } }
+    def max = 0
+    targetDescriptions.entrySet ( ).each { item ->
+                                           if ( item.key != 'default' ) {
+                                             def size = item.key.size ( )
+                                             if ( size > max ) { max = size }
+                                           }
+    }
+    println ( )
+    targetDescriptions.entrySet ( ).each { item ->
+                                          if ( item.key != 'default' ) {
+                                            println ( ' ' + item.key + ' ' * ( max - item.key.size ( ) ) + '  ' + item.value )
+                                          }
+    }
+    println ( )
+    def message = targetDescriptions [ 'default' ]
+    if ( message != null ) { println ( 'Default target is ' + message + '.' ) ; println ( ) }
     0
   }
   private void printDispatchExceptionMessage ( target , method , message ) {
@@ -303,8 +339,7 @@ final class Gant {
             print ( sourceName + ', line ' + stackEntry.lineNumber + ' -- ' )
           }
         }
-        if ( e instanceof FileNotFoundException ) { println ( e.message ) }
-        else { println ( 'Error evaluating Gantfile: ' + ( e instanceof InvocationTargetException ? e.cause : e  ) ) }
+        println ( 'Error evaluating Gantfile: ' + ( e instanceof InvocationTargetException ? e.cause.message : e.message  ) )
         return 2
       }
     }

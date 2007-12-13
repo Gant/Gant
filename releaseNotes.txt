@@ -5,6 +5,10 @@ Amended and extended the Maven target set so that it actually works well enough 
 
 Change the return codes so as to provide easier discrimination of error cases.
 
+Removed --lib option and replaced with --classpath | -P option.  Takes a path not a single jar.
+
+Added setdefault function to make setting up the default target a bit easier.
+
 
 1.0.0 ( r8816 )
 ---------------

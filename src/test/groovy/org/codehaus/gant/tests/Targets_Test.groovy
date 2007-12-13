@@ -27,17 +27,21 @@ target ( somethingElse : "Do something else." ) { }
   void testSomething ( ) {
     System.setIn ( new StringBufferInputStream ( coreScript ) )
     assertEquals ( 0 , gant.process ( [ '-T' ,  '-f' ,  '-' ] as String[] ) )
-    assertEquals ( '''gant something  --  Do something.
-gant somethingElse  --  Do something else.
+    assertEquals ( '''
+ something      Do something.
+ somethingElse  Do something else.
+
 ''' , output ) 
   }
   void testSomethingAndClean ( ) {
-    System.setIn ( new StringBufferInputStream ( 'includeTargets << new File ( "src/main/java/gant/targets/clean.gant" )\n' + coreScript ) )
+    System.setIn ( new StringBufferInputStream ( 'includeTargets << gant.targets.Clean\n' + coreScript ) )
     assertEquals ( 0 , gant.process ( [ '-T' ,  '-f' ,  '-' ] as String[] ) )
-    assertEquals ( '''gant clean  --  Action the cleaning.
-gant clobber  --  Action the clobbering.  Do the cleaning first.
-gant something  --  Do something.
-gant somethingElse  --  Do something else.
+    assertEquals ( '''
+ clean          Action the cleaning.
+ clobber        Action the clobbering.  Do the cleaning first.
+ something      Do something.
+ somethingElse  Do something else.
+
 ''' , output ) 
   }
   void testGStrings ( ) {
@@ -47,20 +51,65 @@ target ( something : "Do ${theWord}." ) { }
 target ( somethingElse : "Do ${theWord}." ) { }
 ''' ) )
     assertEquals ( 0 , gant.process ( [ '-T' ,  '-f' ,  '-' ] as String[] ) )
-    assertEquals ( '''gant something  --  Do The Word.
-gant somethingElse  --  Do The Word.
+    assertEquals ( '''
+ something      Do The Word.
+ somethingElse  Do The Word.
+
 ''' , output ) 
   }
   void testDefaultSomething ( ) {
     System.setIn ( new StringBufferInputStream ( '''
 target ( something : "Do something." ) { }
 target ( somethingElse : "Do something else." ) { }
-target ( 'default' : 'Default is something.' ) { something ( ) }
+target ( 'default' : 'something' ) { something ( ) }
 ''' ) )
     assertEquals ( 0 , gant.process ( [ '-T' ,  '-f' ,  '-' ] as String[] ) )
-    assertEquals ( '''gant -- Default is something.
-gant something  --  Do something.
-gant somethingElse  --  Do something else.
+    assertEquals ( '''
+ something      Do something.
+ somethingElse  Do something else.
+
+Default target is something.
+
+''' , output ) 
+  }  
+  void testDefaultSomethingSetDefaultClosure ( ) {
+    System.setIn ( new StringBufferInputStream ( '''
+target ( something : "Do something." ) { }
+target ( somethingElse : "Do something else." ) { }
+setdefault ( something )
+''' ) )
+    assertEquals ( 0 , gant.process ( [ '-T' ,  '-f' ,  '-' ] as String[] ) )
+    assertEquals ( '''
+ something      Do something.
+ somethingElse  Do something else.
+
+Default target is something.
+
+''' , output ) 
+  }  
+  void testDefaultSomethingSetDefaultString ( ) {
+    System.setIn ( new StringBufferInputStream ( '''
+target ( something : "Do something." ) { }
+target ( somethingElse : "Do something else." ) { }
+setdefault ( 'something' )
+''' ) )
+    assertEquals ( 0 , gant.process ( [ '-T' ,  '-f' ,  '-' ] as String[] ) )
+    assertEquals ( '''
+ something      Do something.
+ somethingElse  Do something else.
+
+Default target is something.
+
+''' , output ) 
+  }  
+  void testDefaultSomethingSetDefaultFail ( ) {
+    System.setIn ( new StringBufferInputStream ( '''
+target ( something : "Do something." ) { }
+target ( somethingElse : "Do something else." ) { }
+setdefault ( 'fail' )
+''' ) )
+    assertEquals ( 2 , gant.process ( [ '-T' ,  '-f' ,  '-' ] as String[] ) )
+    assertEquals ( '''Standard input, line 4 -- Error evaluating Gantfile: Target fail does not exist so cannot be made the default.
 ''' , output ) 
   }  
 }

@@ -233,6 +233,6 @@ target ( distribution : 'Create the distribution.' ) {
                                 distributionDirectories.each { directory -> tarfileset ( dir : directory , prefix : "${prefix}/${directory}" ) }
                               }
   }
-} 
+}
 
-target ( 'default' : 'The default target, currently test.' ) { test ( ) }
+setdefault ( test )
