@@ -42,7 +42,9 @@ final class Maven {
                                   testDependencies : [ ] ,
                                   testFramework : 'junit' ,
                                   testFailIgnore : false ,
-                                  packaging : 'jar'
+                                  packaging : 'jar' ,
+                                  deployURL : '' ,
+                                  deploySnapshotURL : ''
                                   ]
    Maven ( Binding binding ) {
      properties.binding = binding
@@ -263,14 +265,23 @@ final class Maven {
       owner.binding.Ant.'antlib:org.apache.maven.artifact.ant:install' ( file : owner.packagedArtifact  ) { pom ( refid : mavenProjectId ) }
     }
     properties.binding.target.call ( deploy : 'Deploy the artefact: copy the artefact to the remote repository.' ) {
-       if ( ! owner.deployURL ) { throw new RuntimeException ( 'Maven.deployURL must be set to achieve target deploy.' ) }
+      def label = 'deployURL'
+      if ( owner.version =~ 'SNAPSHOT' ) { label = 'deploySnapshotURL' }
+      def deployURL = owner."${label}"
+       if ( ! deployURL ) { throw new RuntimeException ( "Maven.${label} must be set to achieve target deploy." ) }
       depends ( owner.binding.'package' )
       def mavenProjectId = 'maven.project'
       owner.binding.Ant.'antlib:org.apache.maven.artifact.ant:pom' ( id : mavenProjectId , file : 'pom.xml' )
       owner.binding.Ant.'antlib:org.apache.maven.artifact.ant:deploy' ( file : owner.packagedArtifact  ) {
         pom ( refid : mavenProjectId )
-        remoteRepository ( url : owner.deployURL )
+        remoteRepository ( url : deployURL )
       }
+    }
+    properties.binding.target.call ( site : 'Create the website.' ) {
+      def mavenProjectId = 'maven.project'
+      owner.binding.Ant.'antlib:org.apache.maven.artifact.ant:pom' ( id : mavenProjectId , file : 'pom.xml' )
+      owner.binding.Ant.'antlib:org.apache.maven.artifact.ant:site' ( file : owner.packagedArtifact  ) { pom ( refid : mavenProjectId ) }
+      println ( 'Site not implemented as yet.' )
     }
     properties.binding.includeTargets << Clean
     properties.binding.cleanDirectory << "${properties.targetPath}"

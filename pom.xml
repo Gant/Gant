@@ -121,8 +121,12 @@
     </developer>
   </developers>
 
-  <!--contributors>
-  </contributors-->
+  <contributors>
+    <contributor>
+      <id>hans_d</id>
+      <name>Hans Dockter</name>
+    </contributor>
+  </contributors>
 
   <!-- We are using the very latest snapshot of Jason Dillon's Maven Groovy Plugin, so we need to use the
   right repository to get to it. -->

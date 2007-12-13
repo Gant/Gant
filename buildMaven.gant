@@ -18,7 +18,9 @@ includeTargets ** gant.targets.Maven * [
                                         groupId : 'org.codehaus.gant' ,
                                         artifactId : 'gant' ,
                                         version : '1.0.1-SNAPSHOT' ,
-                                        javaCompileProperties : [ source : '1.4' , target : '1.4' , debug : 'true' ]
+                                        javaCompileProperties : [ source : '1.4' , target : '1.4' , debug : 'true' ] ,
+                                        deployURL : 'https://dav.codehaus.org/repository/gant' ,
+                                        deploySnapshotURL : 'https://dav.codehaus.org/snapshots.repository/gant'
                                         ]
 
 target ( 'default' : '' ) { install ( ) }
