@@ -33,7 +33,7 @@ if ( ( installationHome == null ) || ( installationHome == '' ) ) {
 //  The versions in the Maven repository to build distribution version of Gant against.
 
 distributionVersions = [
-                        //[ groupId : 'org.codehaus.groovy' , artifactId : 'groovy-all' , version : '1.0' ] ,
+                        [ groupId : 'groovy' , artifactId : 'groovy-all' , version : '1.0' ] ,
                         [ groupId : 'org.codehaus.groovy' , artifactId : 'groovy-all' , version : '1.5.0' ]
                         ]
 
@@ -61,7 +61,7 @@ distributionTopLevelFiles = [
                              ]
 distributionDirectories = [ 'documentation' , 'examples' , '.settings' , sourceDirectory , testsDirectory ]
 
-includeTargets << new File ( 'src/main/java/gant/targets/clean.gant' )
+includeTargets << gant.targets.Clean
 cleanPattern <<  '**/*~' 
 cleanDirectory << buildDirectory
 
@@ -188,9 +188,9 @@ target ( uninstall : "Uninstall Gant from ${installationHome}." ) {
 target ( distribution : 'Create the distribution.' ) {
   //  Use the Ant Maven plugin to ensure that the groovy-all jar of a given release is in the local Maven
   //  repository and ensure that is the only version of Groovy used in the compilation.
-  typedef ( resource : 'org/apache/maven/artifact/ant/antlib.xml' , uri : 'urn:maven-artifact-ant' ) {
-    classpath { pathelement ( location : System.properties.'groovy.home' + '/lib/maven-artifact-ant-2.0.4-dep.jar' ) }
-  }
+  //typedef ( resource : 'org/apache/maven/artifact/ant/antlib.xml' , uri : 'urn:maven-artifact-ant' ) {
+  //  classpath { pathelement ( location : System.properties.'groovy.home' + '/lib/maven-artifact-ant-2.0.4-dep.jar' ) }
+  //}
   def prefix = "gant-${gantVersion}"
   def distributionClasspathId = 'classpath'
   distributionVersions.each { item ->
@@ -198,15 +198,16 @@ target ( distribution : 'Create the distribution.' ) {
                               //  specify Ant.  Need to rearrange things to deal with as is done in the
                               //  target Closure.
                               clean ( )
-                              Ant.'antlib:org.apache.maven.artifact.ant:dependencies' ( pathId : distributionClasspathId ) {
+                              def pathIdentifier = distributionClasspathId + item.version
+                              Ant.'antlib:org.apache.maven.artifact.ant:dependencies' ( pathId : pathIdentifier ) {
                                 dependency ( groupId : item.groupId , artifactId : item.artifactId , version : item.version )
                               }
-                              //  Replicate the build process here as a short term route.  Shuold review the
+                              //  Replicate the build process here as a short term route.  Should review the
                               //  whole build and avoid the replication.
                               Ant.mkdir ( dir : buildClassesDirectory )
                               Ant.mkdir ( dir : buildLibDirectory )
-                              Ant.javac ( srcdir : sourceDirectory , destDir : buildClassesDirectory , source : '1.4' , target : '1.4' , debug : 'on' , classpathref : distributionClasspathId , excludes : '**/tests/**' )
-                              Ant.groovyc ( srcdir : sourceDirectory , destDir : buildClassesDirectory , classpathref : distributionClasspathId , excludes : 'bin/*.groovy' )
+                              Ant.javac ( srcdir : sourceDirectory , destDir : buildClassesDirectory , source : '1.4' , target : '1.4' , debug : 'on' , classpathref : pathIdentifier , excludes : '**/tests/**' )
+                              Ant.groovyc ( srcdir : sourceDirectory , destDir : buildClassesDirectory , classpathref : pathIdentifier , excludes : 'bin/*.groovy' )
                               makeManifest ( )
                               Ant.jar ( destfile : buildLibDirectory + "/gant-${gantVersion}.jar" , basedir : buildClassesDirectory , includes : 'org/**,gant/**,META-INF/*' , excludes : '**/tests/**' , manifest : buildMetadataDirectory + '/MANIFEST.MF' )
                               def archiveRoot = "${buildDirectory}/gant-${gantVersion}_groovy-${item.version}"
@@ -234,4 +235,4 @@ target ( distribution : 'Create the distribution.' ) {
   }
 } 
 
-target ( 'default' : 'The default target, currently compile.' ) { compile ( ) }
+target ( 'default' : 'The default target, currently test.' ) { test ( ) }
