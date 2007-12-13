@@ -269,7 +269,7 @@ final class Maven {
       if ( owner.version =~ 'SNAPSHOT' ) { label = 'deploySnapshotURL' }
       def deployURL = owner."${label}"
        if ( ! deployURL ) { throw new RuntimeException ( "Maven.${label} must be set to achieve target deploy." ) }
-      depends ( owner.binding.'package' )
+      depends ( owner.binding.install )
       def mavenProjectId = 'maven.project'
       owner.binding.Ant.'antlib:org.apache.maven.artifact.ant:pom' ( id : mavenProjectId , file : 'pom.xml' )
       owner.binding.Ant.'antlib:org.apache.maven.artifact.ant:deploy' ( file : owner.packagedArtifact  ) {
@@ -287,5 +287,8 @@ final class Maven {
     properties.binding.cleanDirectory << "${properties.targetPath}"
   }
   public getProperty ( String name ) { properties [ name ] }
-  public void setProperty ( String name , value ) { properties [ name ] = value }
+  public void setProperty ( String name , value ) {
+    if ( name == 'binding' ) { throw new RuntimeException ( 'Cannot amend the property binding.' ) }
+    properties [ name ] = value
+  }
 }
