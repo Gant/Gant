@@ -25,5 +25,5 @@ includeTargets ** gant.targets.Maven * [
                                         deploySnapshotURL : 'https://dav.codehaus.org/snapshots.repository/gant'
                                         ]
 
-target ( 'default' : '' ) { install ( ) }
+setdefault ( install )
 

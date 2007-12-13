@@ -20,8 +20,8 @@ package gant.targets
  *  @author Russel Winder <russel.winder@concertant.com>
  */
 final class Maven {
+  private final readOnlyKeys = [ 'binding' , 'compileDependenciesClasspathId' , 'testDependenciesClasspathId', 'antlibXMLns' , 'mavenPOMId' ]
   private final Map properties = [
-                                  binding : null ,
                                   groupId : '' ,
                                   artifactId : '' ,
                                   version : '' ,
@@ -34,9 +34,7 @@ final class Maven {
                                   testReportPath : '' , // Set in constructor since it uses a GString dependent on a value in the map.
                                   javaCompileProperties : [ source : '1.3' , target : '1.3' , debug : 'false' ] ,
                                   groovyCompileProperties : [ : ] ,
-                                  compileDependenciesClasspathId :  'compile.dependency.classpath' ,
                                   compileClasspath : [ ] ,
-                                  testDependenciesClasspathId :  'test.dependency.classpath' ,
                                   testClasspath : [ ] ,
                                   compileDependencies : [ ] ,
                                   testDependencies : [ ] ,
@@ -44,7 +42,12 @@ final class Maven {
                                   testFailIgnore : false ,
                                   packaging : 'jar' ,
                                   deployURL : '' ,
-                                  deploySnapshotURL : ''
+                                  deploySnapshotURL : '' ,
+                                  ( readOnlyKeys[0] ) : null ,
+                                  ( readOnlyKeys[1] ) :  'compile.dependency.classpath' ,
+                                  ( readOnlyKeys[2] ) :  'test.dependency.classpath' ,
+                                  ( readOnlyKeys[3] ) : 'antlib:org.apache.maven.artifact.ant' ,
+                                  ( readOnlyKeys[4] ) : 'maven.pom'
                                   ]
    Maven ( Binding binding ) {
      properties.binding = binding
@@ -67,22 +70,17 @@ final class Maven {
         owner.testDependencies.each { dependency -> if ( dependency.artifactId == 'testng' ) { testngInstalled = true } }
         if ( ! testngInstalled ) { owner.testDependencies << [ groupId : 'org.testng' , artifactId : 'testng' , version : '5.7' , scope : 'test' , classifier : 'jdk15' ] }
       }
-      if ( owner.compileDependencies || owner.testDependencies  ) {
-        owner.binding.Ant.typedef ( resource : 'org/apache/maven/artifact/ant/antlib.xml' , uri : 'urn:maven-artifact-ant' ) {
-          classpath { pathelement ( location : System.properties.'groovy.home' + System.properties.'file.separator' + 'lib' + System.properties.'file.separator' + 'maven-artifact-ant-2.0.4-dep.jar' ) }
-        }
-        if ( owner.compileDependencies ) {
-          owner.binding.Ant.'antlib:org.apache.maven.artifact.ant:dependencies' ( pathId : owner.compileDependenciesClasspathId ) {
-            owner.compileDependencies.each { item ->
-                                                        dependency ( groupId : item.groupId , artifactId : item.artifactId , version : item.version , classifier : item.classifier )
-            }
+      if ( owner.compileDependencies ) {
+        owner.binding.Ant."${owner.antlibXMLns}:dependencies" ( pathId : owner.compileDependenciesClasspathId ) {
+          owner.compileDependencies.each { item ->
+                                           dependency ( groupId : item.groupId , artifactId : item.artifactId , version : item.version , classifier : item.classifier )
           }
         }
-        if ( owner.testDependencies ) {
-          owner.binding.Ant.'antlib:org.apache.maven.artifact.ant:dependencies' ( pathId : owner.testDependenciesClasspathId ) {
-            owner.testDependencies.each { item ->
-                                                     dependency ( groupId : item.groupId , artifactId : item.artifactId , version : item.version , classifier : item.classifier )
-            }
+      }
+      if ( owner.testDependencies ) {
+        owner.binding.Ant."${owner.antlibXMLns}:dependencies" ( pathId : owner.testDependenciesClasspathId ) {
+          owner.testDependencies.each { item ->
+                                        dependency ( groupId : item.groupId , artifactId : item.artifactId , version : item.version , classifier : item.classifier )
           }
         }
       }
@@ -104,7 +102,7 @@ final class Maven {
       throw new RuntimeException ( 'Process-resources not implemented as yet.' )
     }
     */
-    properties.binding.target.call ( compile : 'Compile the source code of the project.' ) {
+    properties.binding.target.call ( compile : "Compile the source code in ${properties.mainSourcePath} to ${properties.mainCompilePath}." ) {
       depends ( owner.binding.initialize )
       owner.binding.Ant.mkdir ( dir : owner.mainCompilePath )
       new File ( owner.mainSourcePath ).eachDir { directory ->
@@ -150,7 +148,7 @@ final class Maven {
       throw new RuntimeException ( 'Process-test-sources not implemented as yet.' )
     }
     */
-    properties.binding.target.call ( 'test-compile' : 'Compile the test source code into the test destination directory.' ) {
+    properties.binding.target.call ( 'test-compile' : "Compile the test source code in ${properties.testSourcePath} to ${properties.testCompilePath}." ) {
       depends ( owner.binding.compile )
       owner.binding.Ant.mkdir ( dir : owner.testCompilePath  )
       new File ( owner.testSourcePath ).eachDir { directory ->
@@ -185,7 +183,7 @@ final class Maven {
         }
       }
     }
-    properties.binding.target.call ( test : "Run tests using the ${properties.testFramework} unit testing framework." ) {
+    properties.binding.target.call ( test : "Run the tests using the ${properties.testFramework} unit testing framework." ) {
       depends ( owner.binding.'test-compile' )
       switch ( owner.testFramework ) {
        case 'testng' :
@@ -229,10 +227,10 @@ final class Maven {
       }
       catch ( MissingPropertyException mpe ) { }
     }
-    properties.binding.target.call ( 'package' : "Package the artefact as a ${properties.packaging}." ) {
-       if ( ! owner.groupId ) { throw new RuntimeException ( 'Maven.groupId must be set to achieve target package.' ) }
-       if ( ! owner.artifactId ) { throw new RuntimeException ( 'Maven.artifactId must be set to achieve target package.' ) }
-       if ( ! owner.version ) { throw new RuntimeException ( 'Maven.version must be set to achieve target package.' ) }
+    properties.binding.target.call ( 'package' : "Package the artefact as a ${properties.packaging} in ${properties.mainCompilePath}." ) {
+      [ 'groupId' , 'artifactId' , 'version' ].each { item ->
+        if ( ! owner."${item}" ) { throw new RuntimeException ( "Maven.${item} must be set to achieve target package." ) }
+      }
       depends ( owner.binding.test )
       switch ( owner.packaging ) {
        case 'war' :
@@ -259,28 +257,45 @@ final class Maven {
     }
     */
     properties.binding.target.call ( install : 'Install the artefact into the local repository.' ) {
+      owner.binding.Ant."${owner.antlibXMLns}:pom" ( id : mavenPOMId , file : 'pom.xml' )
+      /*
+       *  It seems that there is a wierd problem.  
+        
+      owner.binding.Ant.property ( name : 'flob.adob' , value : 'weed' )
+      owner.binding.Ant.echo ( '${flob.adob}' )
+      println ( owner.binding.Ant.project.properties.'flob.adob' )
+
+      *  does exactly what you would expect, weed is printed out in both cases.  However:
+
+      owner.binding.Ant.'antlib:org.apache.maven.artifact.ant:pom' ( id : 'blahblah' , file : 'pom.xml' )
+      owner.binding.Ant.echo ( '${blahblah.version}' )
+      println ( owner.binding.Ant.project.properties.'blahblah.version' )
+
+      * prints out the version umber from Ant but null from Groovy :-(  This means we cannot run the consistency checks between POM and Gant file.
+      */
+      /*
+      [ 'groupId' , 'artifactId' , ' version' ].each { item ->
+                                                       if ( owner.binding.Ant.project.properties."${owner.mavenPOMId}.${item}" != owner."${item}" ) {
+                                                         throw new RuntimeException ( "${item} in build file and POM not the same." )
+                                                       }
+      }
+      */
       depends ( owner.binding.'package' )
-      def mavenProjectId = 'maven.project'
-      owner.binding.Ant.'antlib:org.apache.maven.artifact.ant:pom' ( id : mavenProjectId , file : 'pom.xml' )
-      owner.binding.Ant.'antlib:org.apache.maven.artifact.ant:install' ( file : owner.packagedArtifact  ) { pom ( refid : mavenProjectId ) }
+      owner.binding.Ant."${owner.antlibXMLns}:install" ( file : owner.packagedArtifact  ) { pom ( refid : mavenPOMId ) }
     }
-    properties.binding.target.call ( deploy : 'Deploy the artefact: copy the artefact to the remote repository.' ) {
+    properties.binding.target.call ( deploy : "Deploy the artefact: copy the artefact to the remote repository ${ properties.version =~ 'SNAPSHOT' ? properties.deploySnapshotURL : properties.deployURL }." ) {
       def label = 'deployURL'
       if ( owner.version =~ 'SNAPSHOT' ) { label = 'deploySnapshotURL' }
       def deployURL = owner."${label}"
        if ( ! deployURL ) { throw new RuntimeException ( "Maven.${label} must be set to achieve target deploy." ) }
       depends ( owner.binding.install )
-      def mavenProjectId = 'maven.project'
-      owner.binding.Ant.'antlib:org.apache.maven.artifact.ant:pom' ( id : mavenProjectId , file : 'pom.xml' )
-      owner.binding.Ant.'antlib:org.apache.maven.artifact.ant:deploy' ( file : owner.packagedArtifact  ) {
-        pom ( refid : mavenProjectId )
+      owner.binding.Ant."${owner.antlibXMLns}:deploy" ( file : owner.packagedArtifact  ) {
+        pom ( refid : owner.mavenPOMId )
         remoteRepository ( url : deployURL )
       }
     }
     properties.binding.target.call ( site : 'Create the website.' ) {
-      def mavenProjectId = 'maven.project'
-      owner.binding.Ant.'antlib:org.apache.maven.artifact.ant:pom' ( id : mavenProjectId , file : 'pom.xml' )
-      owner.binding.Ant.'antlib:org.apache.maven.artifact.ant:site' ( file : owner.packagedArtifact  ) { pom ( refid : mavenProjectId ) }
+      depends ( owner.binding.initialize )
       println ( 'Site not implemented as yet.' )
     }
     properties.binding.includeTargets << Clean
@@ -288,7 +303,7 @@ final class Maven {
   }
   public getProperty ( String name ) { properties [ name ] }
   public void setProperty ( String name , value ) {
-    if ( name == 'binding' ) { throw new RuntimeException ( 'Cannot amend the property binding.' ) }
+    if ( readOnlyKeys.contains ( name ) ) { throw new RuntimeException ( "Cannot amend the property ${name}." ) }
     properties [ name ] = value
   }
 }
