@@ -21,6 +21,7 @@ package gant.targets
  */
 final class Maven {
   private final Map properties = [
+                                  binding : null ,
                                   groupId : '' ,
                                   artifactId : '' ,
                                   version : '' ,
@@ -40,87 +41,90 @@ final class Maven {
                                   compileDependencies : [ ] ,
                                   testDependencies : [ ] ,
                                   testFramework : 'junit' ,
+                                  testFailIgnore : false ,
                                   packaging : 'jar'
                                   ]
    Maven ( Binding binding ) {
-     properties.Ant = binding.Ant
-     constructMavenObject ( binding )
+     properties.binding = binding
+     constructMavenObject ( )
    }
    Maven ( Binding binding , Map map ) {
-     properties.Ant = binding.Ant
+     properties.binding = binding
      map.each { key , value -> owner.setProperty ( key , value ) }
-     constructMavenObject ( binding )
+     constructMavenObject ( )
    }
-  def constructMavenObject ( binding ) {
+  def constructMavenObject ( ) {
     properties.mainSourcePath = "${properties.sourcePath}${System.properties.'file.separator'}main"
     properties.testSourcePath = "${properties.sourcePath}${System.properties.'file.separator'}test"
     properties.mainCompilePath = "${properties.targetPath}${System.properties.'file.separator'}classes"
     properties.testCompilePath = "${properties.targetPath}${System.properties.'file.separator'}test-classes"
     properties.testReportPath = "${properties.targetPath}${System.properties.'file.separator'}test-reports"
-    binding.target.call ( initialize : 'Ensure all the dependencies can be met and set classpaths accordingly.' ) {
+    properties.binding.target.call ( initialize : 'Ensure all the dependencies can be met and set classpaths accordingly.' ) {
       if ( owner.testFramework == 'testng' ) {
         testngInstalled = false
         owner.testDependencies.each { dependency -> if ( dependency.artifactId == 'testng' ) { testngInstalled = true } }
         if ( ! testngInstalled ) { owner.testDependencies << [ groupId : 'org.testng' , artifactId : 'testng' , version : '5.7' , scope : 'test' , classifier : 'jdk15' ] }
       }
       if ( owner.compileDependencies || owner.testDependencies  ) {
-        owner.Ant.typedef ( resource : 'org/apache/maven/artifact/ant/antlib.xml' , uri : 'urn:maven-artifact-ant' ) {
+        owner.binding.Ant.typedef ( resource : 'org/apache/maven/artifact/ant/antlib.xml' , uri : 'urn:maven-artifact-ant' ) {
           classpath { pathelement ( location : System.properties.'groovy.home' + System.properties.'file.separator' + 'lib' + System.properties.'file.separator' + 'maven-artifact-ant-2.0.4-dep.jar' ) }
         }
         if ( owner.compileDependencies ) {
-          owner.Ant.'antlib:org.apache.maven.artifact.ant:dependencies' ( pathId : owner.compileDependenciesClasspathId ) {
+          owner.binding.Ant.'antlib:org.apache.maven.artifact.ant:dependencies' ( pathId : owner.compileDependenciesClasspathId ) {
             owner.compileDependencies.each { item ->
-                                             dependency ( groupId : item.groupId , artifactId : item.artifactId , version : item.version , classifier : item.classifier )
+                                                        dependency ( groupId : item.groupId , artifactId : item.artifactId , version : item.version , classifier : item.classifier )
             }
           }
         }
         if ( owner.testDependencies ) {
-          owner.Ant.'antlib:org.apache.maven.artifact.ant:dependencies' ( pathId : owner.testDependenciesClasspathId ) {
+          owner.binding.Ant.'antlib:org.apache.maven.artifact.ant:dependencies' ( pathId : owner.testDependenciesClasspathId ) {
             owner.testDependencies.each { item ->
-                                          dependency ( groupId : item.groupId , artifactId : item.artifactId , version : item.version , classifier : item.classifier )
+                                                     dependency ( groupId : item.groupId , artifactId : item.artifactId , version : item.version , classifier : item.classifier )
             }
           }
         }
       }
     }
     /*
-    binding.target.call ( validate : 'Validate the project is correct and all necessary information is available.' ) {
+    properties.binding.target.call ( validate : 'Validate the project is correct and all necessary information is available.' ) {
       throw new RuntimeException ( 'Validate not implemented as yet.' )
     }
-    binding.target.call ( 'generate-sources' : 'Generate any source code for inclusion in compilation.' ) {
+    properties.binding.target.call ( 'generate-sources' : 'Generate any source code for inclusion in compilation.' ) {
       throw new RuntimeException ( 'Generate-sources not implemented as yet.' )
     }
-    binding.target.call ( 'process-sources' : 'Process the source code, for example to filter any values.' ) {
+    properties.binding.target.call ( 'process-sources' : 'Process the source code, for example to filter any values.' ) {
       throw new RuntimeException ( 'Process-sources not implemented as yet.' )
     }
-    binding.target.call ( 'generate-resources' : 'Generate resources for inclusion in the package.' ) {
+    properties.binding.target.call ( 'generate-resources' : 'Generate resources for inclusion in the package.' ) {
       throw new RuntimeException ( 'Generate-resources not implemented as yet.' )
     }
-    binding.target.call ( 'process-resources' : 'Copy and process the resources into the destination directory, ready for packaging.' ) {
+    properties.binding.target.call ( 'process-resources' : 'Copy and process the resources into the destination directory, ready for packaging.' ) {
       throw new RuntimeException ( 'Process-resources not implemented as yet.' )
     }
     */
-    binding.target.call ( compile : 'Compile the source code of the project.' ) {
-      depends ( binding.initialize )
-      owner.Ant.mkdir ( dir : owner.mainCompilePath )
+    properties.binding.target.call ( compile : 'Compile the source code of the project.' ) {
+      depends ( owner.binding.initialize )
+      owner.binding.Ant.mkdir ( dir : owner.mainCompilePath )
       new File ( owner.mainSourcePath ).eachDir { directory ->
         switch ( directory.name ) {
          case 'java' :
           //  Need to use the joint Groovy compiler here to deal wuth the case where Groovy files are in the
           //  Java hierarchy.
-         owner.Ant.javac ( [ srcdir : owner.mainSourcePath + System.properties.'file.separator' + 'java' , destdir : owner.mainCompilePath ] + owner.javaCompileProperties ) {
+         owner.binding.Ant.javac ( [ srcdir : owner.mainSourcePath + System.properties.'file.separator' + 'java' , destdir : owner.mainCompilePath ] + owner.javaCompileProperties ) {
            classpath {
              pathelement ( path : owner.compileClasspath.join ( System.properties.'path.separator' ) )
              if ( owner.compileDependencies ) { path ( refid : owner.compileDependenciesClasspathId ) }
+             path { fileset ( dir : System.properties.'groovy.home' + System.properties.'file.separator' + 'lib' , includes : 'junit*.jar' ) }
            }
          }
          break
          case 'groovy' :
-         owner.Ant.taskdef ( name : 'groovyc' , classname : 'org.codehaus.groovy.ant.Groovyc' )
-         owner.Ant.groovyc ( [ srcdir : owner.mainSourcePath + System.properties.'file.separator' + 'groovy' , destdir : owner.mainCompilePath ] + owner.groovyCompileProperties ) {
+         owner.binding.Ant.taskdef ( name : 'groovyc' , classname : 'org.codehaus.groovy.ant.Groovyc' )
+         owner.binding.Ant.groovyc ( [ srcdir : owner.mainSourcePath + System.properties.'file.separator' + 'groovy' , destdir : owner.mainCompilePath ] + owner.groovyCompileProperties ) {
            classpath {
              pathelement ( path : owner.compileClasspath.join ( System.properties.'path.separator' ) )
              if ( owner.compileDependencies ) { path ( refid : owner.compileDependenciesClasspathId ) }
+             path { fileset ( dir : System.properties.'groovy.home' + System.properties.'file.separator' + 'lib' , includes : 'junit*.jar' ) }
            }
          }
          break
@@ -128,61 +132,63 @@ final class Maven {
       }
     }
     /*
-    binding.target.call ( 'process-classes' , 'Post-process the generated files from compilation, for example to do bytecode enhancement on Java classes.' ) {
+    properties.binding.target.call ( 'process-classes' , 'Post-process the generated files from compilation, for example to do bytecode enhancement on Java classes.' ) {
       throw new RuntimeException ( 'Process-classes not implemented as yet.' )
     }
-    binding.target.call ( 'generate-test-sources' , 'Generate any test source code for inclusion in compilation.' ) {
+    properties.binding.target.call ( 'generate-test-sources' , 'Generate any test source code for inclusion in compilation.' ) {
       throw new RuntimeException ( 'Generate-test-sources not implemented as yet.' )
     }
-    binding.target.call ( 'process-test-sources' , 'Process the test source code, for example to filter any values.' ) {
+    properties.binding.target.call ( 'process-test-sources' , 'Process the test source code, for example to filter any values.' ) {
       throw new RuntimeException ( 'Process-test-sources not implemented as yet.' )
     }
-    binding.target.call ( 'generate-test-resources' , 'Create resources for testing.' ) {
+    properties.binding.target.call ( 'generate-test-resources' , 'Create resources for testing.' ) {
       throw new RuntimeException ( 'Generate-test-sources not implemented as yet.' )
     }
-    binding.target.call ( 'process-test-resources' , 'Copy and process the resources into the test destination directory.' ) {
+    properties.binding.target.call ( 'process-test-resources' , 'Copy and process the resources into the test destination directory.' ) {
       throw new RuntimeException ( 'Process-test-sources not implemented as yet.' )
     }
     */
-    binding.target.call ( 'test-compile' : 'Compile the test source code into the test destination directory.' ) {
-      depends ( binding.compile )
-      owner.Ant.mkdir ( dir : owner.testCompilePath  )
-      new File ( owner.mainSourcePath ).eachDir { directory ->
+    properties.binding.target.call ( 'test-compile' : 'Compile the test source code into the test destination directory.' ) {
+      depends ( owner.binding.compile )
+      owner.binding.Ant.mkdir ( dir : owner.testCompilePath  )
+      new File ( owner.testSourcePath ).eachDir { directory ->
         switch ( directory.name ) {
          case 'java' :
           //  Need to use the joint Groovy compiler here to deal wuth the case where Groovy files are in the
           //  Java hierarchy.
-         owner.Ant.javac ( [ srcdir : owner.testSourcePath + System.properties.'file.separator' + 'java' , destdir : owner.testCompilePath ] + owner.javaCompileProperties ) {
+         owner.binding.Ant.javac ( [ srcdir : owner.testSourcePath + System.properties.'file.separator' + 'java' , destdir : owner.testCompilePath ] + owner.javaCompileProperties ) {
            classpath {
              pathelement ( location : owner.mainCompilePath )
              pathelement ( path : owner.compileClasspath.join ( System.properties.'path.separator' ) )
              pathelement ( path : owner.testClasspath.join ( System.properties.'path.separator' ) )
              if ( owner.compileDependencies ) { path ( refid : owner.compileDependenciesClasspathId ) }
              if ( owner.testDependencies ) { path ( refid : owner.testDependenciesClasspathId ) }
+             path { fileset ( dir : System.properties.'groovy.home' + System.properties.'file.separator' + 'lib' , includes : 'junit*.jar' ) }
            }
          }
          break
          case 'groovy' :
-         owner.Ant.taskdef ( name : 'groovyc' , classname : 'org.codehaus.groovy.ant.Groovyc' )
-         owner.Ant.groovyc ( [ srcdir : owner.testSourcePath + System.properties.'file.separator' + 'groovy' , destdir : owner.testCompilePath ] + owner.groovyCompileProperties ) {
+         owner.binding.Ant.taskdef ( name : 'groovyc' , classname : 'org.codehaus.groovy.ant.Groovyc' )
+         owner.binding.Ant.groovyc ( [ srcdir : owner.testSourcePath + System.properties.'file.separator' + 'groovy' , destdir : owner.testCompilePath ] + owner.groovyCompileProperties ) {
            classpath {
              pathelement ( location : owner.mainCompilePath )
              pathelement ( path : owner.compileClasspath.join ( System.properties.'path.separator' ) )
              pathelement ( path : owner.testClasspath.join ( System.properties.'path.separator' ) )
              if ( owner.compileDependencies ) { path ( refid : owner.compileDependenciesClasspathId ) }
              if ( owner.testDependencies ) { path ( refid : owner.testDependenciesClasspathId ) }
+             path { fileset ( dir : System.properties.'groovy.home' + System.properties.'file.separator' + 'lib' , includes : 'junit*.jar' ) }
            }
          }
          break
         }
       }
     }
-    binding.target.call ( test : "Run tests using the ${properties.testFramework} unit testing framework." ) {
-      depends ( binding.'test-compile' )
+    properties.binding.target.call ( test : "Run tests using the ${properties.testFramework} unit testing framework." ) {
+      depends ( owner.binding.'test-compile' )
       switch ( owner.testFramework ) {
        case 'testng' :
-       owner.Ant.taskdef ( resource : 'testngtasks' ) { classpath { path ( refid : owner.testDependenciesClasspathId ) } }
-       owner.Ant.testng ( outputdir : owner.testReportPath ) {
+       owner.binding.Ant.taskdef ( resource : 'testngtasks' ) { classpath { path ( refid : owner.testDependenciesClasspathId ) } }
+       owner.binding.Ant.testng ( outputdir : owner.testReportPath ) {
          classpath {
            fileset ( dir : System.properties.'groovy.home' + System.properties.'file.separator' + 'lib' , includes : '*.jar' )
            pathelement ( location : owner.mainCompilePath )
@@ -197,8 +203,8 @@ final class Maven {
        break
        case 'junit' :
        default :
-       owner.Ant.mkdir ( dir : owner.testReportPath )
-       owner.Ant.junit ( printsummary : 'yes' ) {
+       owner.binding.Ant.mkdir ( dir : owner.testReportPath )
+       owner.binding.Ant.junit ( printsummary : 'yes' , failureproperty : 'testsFailed' ) {
          classpath {
            pathelement ( location : owner.mainCompilePath )
            pathelement ( location : owner.testCompilePath )
@@ -206,53 +212,69 @@ final class Maven {
            pathelement ( path : owner.testClasspath.join ( System.properties.'path.separator' ) )
            if ( owner.compileDependencies ) { path ( refid : owner.compileDependenciesClasspathId ) }
            if ( owner.testDependencies ) { path ( refid : owner.testDependenciesClasspathId ) }
+           path { fileset ( dir : System.properties.'groovy.home' + System.properties.'file.separator' + 'lib' , includes : '*.jar' ) }
          }
          formatter ( type : 'plain' )
-         batchtest ( todir : owner.testReportPath ) {
+         batchtest ( fork : 'true' , todir : owner.testReportPath ) {
            fileset ( dir : owner.testCompilePath , includes : '**/*Test.class' )
          }
        }
        break
       }
+      try {
+        // owner.binding.testFailureIgnore or owner.binding.Ant.project.properties.testsFailed or both may not exist.  Ignore the MissingPropertyException.
+        if ( ! owner.binding.testFailureIgnore && owner.binding.Ant.project.properties.testsFailed ) { throw new RuntimeException ( 'Tests failed, execution terminating.' ) }
+      }
+      catch ( MissingPropertyException mpe ) { }
     }
-    binding.target.call ( 'package' : "Package the artefact as a ${properties.packaging}." ) {
+    properties.binding.target.call ( 'package' : "Package the artefact as a ${properties.packaging}." ) {
        if ( ! owner.groupId ) { throw new RuntimeException ( 'Maven.groupId must be set to achieve target package.' ) }
        if ( ! owner.artifactId ) { throw new RuntimeException ( 'Maven.artifactId must be set to achieve target package.' ) }
        if ( ! owner.version ) { throw new RuntimeException ( 'Maven.version must be set to achieve target package.' ) }
-      depends ( binding.test )
+      depends ( owner.binding.test )
       switch ( owner.packaging ) {
        case 'war' :
-       def artifactPath = owner.properties.targetPath + System.properties.'file.separator' + owner.artifactId + '-' + owner.version
-       owner.Ant.mkdir ( dir : artifactPath )
-       owner.Ant.copy ( todir : artifactPath ) {
+       def artifactPath = owner.targetPath + System.properties.'file.separator' + owner.artifactId + '-' + owner.version
+       owner.packagedArtifact = artifactPath + '.war'
+       owner.binding.Ant.mkdir ( dir : artifactPath )
+       owner.binding.Ant.copy ( todir : artifactPath ) {
          fileset ( dir : classesDir )
          fileset ( dir : [ 'src' , 'main' , 'webapp' ].join ( System.properties.'file.separator' ) )
        }
-       owner.Ant.jar ( destfile : artifactPath + '.war' ) { fileset ( dir : artifactPath ) }
+       owner.binding.Ant.jar ( destfile : owner.packagedArtifact ) { fileset ( dir : artifactPath ) }
        break
        case 'jar' :
-       owner.Ant.jar ( destfile : owner.targetPath + System.properties.'file.separator' + owner.artifactId + '-' + owner.version + '.jar' ) {
-         fileset ( dir : owner.mainCompilePath ) 
-       }
+       owner.packagedArtifact = owner.targetPath + System.properties.'file.separator' + owner.artifactId + '-' + owner.version + '.jar'
+       owner.binding.Ant.jar ( destfile : owner.packagedArtifact ) { fileset ( dir : owner.mainCompilePath ) }
       }
     }
     /*
-    binding.target.call ( 'integration-test' : 'Process and deploy the package if necessary into an environment where integration tests can be run.' ) {
+    properties.binding.target.call ( 'integration-test' : 'Process and deploy the package if necessary into an environment where integration tests can be run.' ) {
       throw new RuntimeException ( 'Integration-test not implemented as yet.' )
     }
-    binding.target.call ( verify : 'Run any checks to verify the package is valid and meets quality criteria.' ) {
+    properties.binding.target.call ( verify : 'Run any checks to verify the package is valid and meets quality criteria.' ) {
       throw new RuntimeException ( 'Verify not implemented as yet.' )
     }
-    binding.target.call ( install : 'Install the package into the local repository, for use as a dependency in other projects locally.' ) {
-      throw new RuntimeException ( 'Install not implemented as yet.' )
-    }
-    binding.target.call ( deploy : 'Deploy the artefact: done in an integration or release environment, copies the final package to the remote repository for sharing with other developers and projects.' ) {
-      throw new RuntimeException ( 'Deploy not implemented as yet.' )
-    }
     */
-    binding.includeTargets << Clean
-    binding.cleanDirectory << "${properties.targetPath}"
+    properties.binding.target.call ( install : 'Install the artefact into the local repository.' ) {
+      depends ( owner.binding.'package' )
+      def mavenProjectId = 'maven.project'
+      owner.binding.Ant.'antlib:org.apache.maven.artifact.ant:pom' ( id : mavenProjectId , file : 'pom.xml' )
+      owner.binding.Ant.'antlib:org.apache.maven.artifact.ant:install' ( file : owner.packagedArtifact  ) { pom ( refid : mavenProjectId ) }
+    }
+    properties.binding.target.call ( deploy : 'Deploy the artefact: copy the artefact to the remote repository.' ) {
+       if ( ! owner.deployURL ) { throw new RuntimeException ( 'Maven.deployURL must be set to achieve target deploy.' ) }
+      depends ( owner.binding.'package' )
+      def mavenProjectId = 'maven.project'
+      owner.binding.Ant.'antlib:org.apache.maven.artifact.ant:pom' ( id : mavenProjectId , file : 'pom.xml' )
+      owner.binding.Ant.'antlib:org.apache.maven.artifact.ant:deploy' ( file : owner.packagedArtifact  ) {
+        pom ( refid : mavenProjectId )
+        remoteRepository ( url : owner.deployURL )
+      }
+    }
+    properties.binding.includeTargets << Clean
+    properties.binding.cleanDirectory << "${properties.targetPath}"
   }
-  def getProperty ( String name ) { properties [ name ] }
-  void setProperty ( String name , value ) { properties [ name ] = value }
+  public getProperty ( String name ) { properties [ name ] }
+  public void setProperty ( String name , value ) { properties [ name ] = value }
 }
