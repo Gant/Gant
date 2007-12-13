@@ -14,10 +14,12 @@
 //
 //  Author : Russel Winder <russel.winder@concertant.com>
 
+Ant.property ( file : 'build.properties' )
+
 includeTargets ** gant.targets.Maven * [
                                         groupId : 'org.codehaus.gant' ,
                                         artifactId : 'gant' ,
-                                        version : '1.0.1-SNAPSHOT' ,
+                                        version : Ant.project.properties.gantVersion ,
                                         javaCompileProperties : [ source : '1.4' , target : '1.4' , debug : 'true' ] ,
                                         deployURL : 'https://dav.codehaus.org/repository/gant' ,
                                         deploySnapshotURL : 'https://dav.codehaus.org/snapshots.repository/gant'
