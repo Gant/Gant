@@ -185,54 +185,89 @@ target ( uninstall : "Uninstall Gant from ${installationHome}." ) {
   }
 }
 
+distributionProducts = [
+                        distributions : [ ] ,
+                        jars : [ ]
+                        ]
+
 target ( distribution : 'Create the distribution.' ) {
   //  Use the Ant Maven plugin to ensure that the groovy-all jar of a given release is in the local Maven
   //  repository and ensure that is the only version of Groovy used in the compilation.
   //typedef ( resource : 'org/apache/maven/artifact/ant/antlib.xml' , uri : 'urn:maven-artifact-ant' ) {
   //  classpath { pathelement ( location : System.properties.'groovy.home' + '/lib/maven-artifact-ant-2.0.4-dep.jar' ) }
   //}
-  def prefix = "gant-${gantVersion}"
+  def prefix = 'gant-' + gantVersion
   def distributionClasspathId = 'classpath'
+  clean ( )
   distributionVersions.each { item ->
                               //  This is a closure that doesn't have the right metaclass so we have to
                               //  specify Ant.  Need to rearrange things to deal with as is done in the
                               //  target Closure.
-                              clean ( )
                               def pathIdentifier = distributionClasspathId + item.version
                               Ant.'antlib:org.apache.maven.artifact.ant:dependencies' ( pathId : pathIdentifier ) {
                                 dependency ( groupId : item.groupId , artifactId : item.artifactId , version : item.version )
                               }
                               //  Replicate the build process here as a short term route.  Should review the
-                              //  whole build and avoid the replication.
+                              //  whole build and avoid the replication.  Must remember to remove all
+                              //  previously build class files.
+                              Ant.delete ( dir : buildClassesDirectory )
                               Ant.mkdir ( dir : buildClassesDirectory )
                               Ant.mkdir ( dir : buildLibDirectory )
                               Ant.javac ( srcdir : sourceDirectory , destDir : buildClassesDirectory , source : '1.4' , target : '1.4' , debug : 'on' , classpathref : pathIdentifier , excludes : '**/tests/**' )
                               Ant.groovyc ( srcdir : sourceDirectory , destDir : buildClassesDirectory , classpathref : pathIdentifier , excludes : 'bin/*.groovy' )
                               makeManifest ( )
-                              Ant.jar ( destfile : buildLibDirectory + "/gant-${gantVersion}.jar" , basedir : buildClassesDirectory , includes : 'org/**,gant/**,META-INF/*' , excludes : '**/tests/**' , manifest : buildMetadataDirectory + '/MANIFEST.MF' )
-                              def archiveRoot = "${buildDirectory}/gant-${gantVersion}_groovy-${item.version}"
-                              Ant.zip ( destfile : "${archiveRoot}.zip" ) {
+                              def jarPath = buildLibDirectory + System.properties.'file.separator' + prefix + '_groovy-' + item.version + '.jar'
+                              Ant.jar ( destfile : jarPath , basedir : buildClassesDirectory , includes : 'org/**,gant/**,META-INF/*' , excludes : '**/tests/**' , manifest : buildMetadataDirectory + '/MANIFEST.MF' )
+                              distributionProducts [ 'jars' ] << jarPath
+                              def archiveRoot = buildDirectory + System.properties.'file.separator' + prefix + '_groovy-' + item.version
+                              Ant.zip ( destfile : archiveRoot + '.zip' ) {
                                 zipfileset ( dir : buildDirectory , includes : 'gant*.jar' , prefix : prefix + '/lib' )
                                 zipfileset ( dir : 'scripts/bin' , includes : 'gant*' , prefix : prefix + '/bin' )
                                 zipfileset ( dir : 'scripts/install' , includes : 'install.groovy' , prefix : prefix + '/bin' )
                                 zipfileset ( dir : '.' , includes : 'README*' , prefix : prefix )
                               }
-                              Ant.tar ( destfile :  "${archiveRoot}.tgz" , compression : 'gzip' ) {
+                              Ant.tar ( destfile :  archiveRoot + '.tgz' , compression : 'gzip' ) {
                                 tarfileset ( dir : buildDirectory , includes : 'gant*.jar' , prefix : prefix + '/lib' )
                                 tarfileset ( dir : 'scripts/bin' , includes : 'gant*' , prefix : prefix + '/bin' , mode : '755' )
                                 tarfileset ( dir : 'scripts/install' , includes : 'install.groovy' , prefix : prefix + '/bin' , mode : '755' )
                                 tarfileset ( dir : '.' , includes : 'README*' , prefix : prefix )
                               }
-                              archiveRoot = "${buildDirectory}/gant_src-${gantVersion}"
-                              Ant.zip ( destfile : "${archiveRoot}.zip" ) {
+                              distributionProducts [ 'distributions' ] << archiveRoot + '.zip' << archiveRoot + '.tgz'
+                              archiveRoot = buildDirectory + System.properties.'file.separator' + 'gant_src-' + gantVersion
+                              Ant.zip ( destfile : archiveRoot + '.zip' ) {
                                 zipfileset ( dir : '.' , includes : distributionTopLevelFiles.join ( ',' ) , prefix : prefix )
-                                distributionDirectories.each { directory -> zipfileset ( dir : directory , prefix : "${prefix}/${directory}" ) }
+                                distributionDirectories.each { directory -> zipfileset ( dir : directory , prefix : prefix + System.properties.'file.separator' + directory ) }
                               }
-                              Ant.tar ( destfile :  "${archiveRoot}.tgz" , compression : 'gzip' ) {
+                              Ant.tar ( destfile :  archiveRoot + '.tgz' , compression : 'gzip' ) {
                                 tarfileset ( dir : '.' , includes : distributionTopLevelFiles.join ( ',' ) , prefix : prefix )
-                                distributionDirectories.each { directory -> tarfileset ( dir : directory , prefix : "${prefix}/${directory}" ) }
+                                distributionDirectories.each { directory -> tarfileset ( dir : directory , prefix : prefix + System.properties.'file.separator' + directory ) }
                               }
+                              distributionProducts [ 'distributions' ] << archiveRoot + '.zip' << archiveRoot + '.tgz'
   }
 }
+
+includeTool << gant.tools.Execute
+
+target ( uploadDistribution : 'Upload a complete distribution.' ) {
+  //depends ( distribution )
+  //
+  //  It would be nice to programmatically upload things to Codehaus but how to script a WebDAV client?
+  //  Cadaver deals with SSL certificates in a way that measn it is impossible to do the right thing unless
+  //  using it interactively.
+  //
+  distributionProducts [ 'distributions' ] = ["target/gant-1.0.1-SNAPSHOT_groovy-1.0.zip", "target/gant-1.0.1-SNAPSHOT_groovy-1.0.tgz", "target/gant_src-1.0.1-SNAPSHOT.zip", "target/gant_src-1.0.1-SNAPSHOT.tgz", "target/gant-1.0.1-SNAPSHOT_groovy-1.5.0.zip", "target/gant-1.0.1-SNAPSHOT_groovy-1.5.0.tgz"]
+  distributionProducts [ 'jars' ] = ["target/gant-1.0.1-SNAPSHOT_groovy-1.0.jar", "target/gant-1.0.1-SNAPSHOT_groovy-1.5.0.jar"]
+  //
+  distributionProducts [ 'distributions' ].unique ( )
+  distributionProducts [ 'jars' ].unique ( )
+  def baseURL = 'https://dav.codehaus.org/dist/gant'
+  distributionProducts [ 'distributions' ].each { sourcePath -> println ( 'Upload ' + sourcePath + ' somehow.' ) }
+  distributionProducts [ 'jars' ].each { sourcePath -> println ( 'Upload ' + sourcePath + ' somehow.' ) }
+  println ( 'Upload pom.xml somehow.' )
+ 
+  println ( 'Do a maven deploy.' )
+ 
+}
+
 
 setdefault ( test )
