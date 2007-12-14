@@ -34,7 +34,7 @@
 
   <property environment="environment"/>
 
-  <property name="sourceDirectory" value="src/main/java"/>
+  <property name="sourceDirectory" value="src/main/groovy"/>
   <property name="testsDirectory" value="src/test/groovy"/>
   <property name="jarsDirectory" value="jarfiles"/>
   <property name="scriptsDirectory" value="scripts"/>

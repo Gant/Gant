@@ -37,7 +37,7 @@ distributionVersions = [
                         [ groupId : 'org.codehaus.groovy' , artifactId : 'groovy-all' , version : '1.5.0' ]
                         ]
 
-sourceDirectory = 'src/main/java'
+sourceDirectory = 'src/main/groovy'
 testsDirectory = 'src/test/groovy'  
 jarsDirectory = 'jarfiles'
 scriptsDirectory = 'scripts'
