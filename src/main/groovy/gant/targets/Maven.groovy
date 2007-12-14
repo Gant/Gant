@@ -121,6 +121,13 @@ final class Maven {
          case 'groovy' :
          owner.binding.Ant.taskdef ( name : 'groovyc' , classname : 'org.codehaus.groovy.ant.Groovyc' )
          owner.binding.Ant.groovyc ( [ srcdir : owner.mainSourcePath + System.properties.'file.separator' + 'groovy' , destdir : owner.mainCompilePath ] + owner.groovyCompileProperties ) {
+           javac ( owner.javaCompileProperties ) {
+             classpath {
+               pathelement ( path : owner.compileClasspath.join ( System.properties.'path.separator' ) )
+               if ( owner.compileDependencies ) { path ( refid : owner.compileDependenciesClasspathId ) }
+               path { fileset ( dir : System.properties.'groovy.home' + System.properties.'file.separator' + 'lib' , includes : '*.jar' ) }
+             }
+           }
            classpath {
              pathelement ( path : owner.compileClasspath.join ( System.properties.'path.separator' ) )
              if ( owner.compileDependencies ) { path ( refid : owner.compileDependenciesClasspathId ) }
@@ -170,6 +177,16 @@ final class Maven {
          case 'groovy' :
          owner.binding.Ant.taskdef ( name : 'groovyc' , classname : 'org.codehaus.groovy.ant.Groovyc' )
          owner.binding.Ant.groovyc ( [ srcdir : owner.testSourcePath + System.properties.'file.separator' + 'groovy' , destdir : owner.testCompilePath ] + owner.groovyCompileProperties ) {
+           javac ( owner.javaCompileProperties ) {
+             classpath {
+               pathelement ( location : owner.mainCompilePath )
+               pathelement ( path : owner.compileClasspath.join ( System.properties.'path.separator' ) )
+               pathelement ( path : owner.testClasspath.join ( System.properties.'path.separator' ) )
+               if ( owner.compileDependencies ) { path ( refid : owner.compileDependenciesClasspathId ) }
+               if ( owner.testDependencies ) { path ( refid : owner.testDependenciesClasspathId ) }
+               path { fileset ( dir : System.properties.'groovy.home' + System.properties.'file.separator' + 'lib' , includes : '*.jar' ) }
+             }
+           }
            classpath {
              pathelement ( location : owner.mainCompilePath )
              pathelement ( path : owner.compileClasspath.join ( System.properties.'path.separator' ) )

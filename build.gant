@@ -45,7 +45,6 @@ scriptsDirectory = 'scripts'
 buildDirectory = 'target'
 buildClassesDirectory = buildDirectory + '/classes' 
 buildTestsDirectory = buildDirectory + '/test-classes' 
-buildLibDirectory = buildDirectory
 buildReportsDirectory = buildDirectory + '/reports'
 documentationDirectory = buildDirectory + '/documentation'
 apiDocumentationDirectory = documentationDirectory + '/api'
@@ -65,28 +64,36 @@ includeTargets << gant.targets.Clean
 cleanPattern <<  '**/*~' 
 cleanDirectory << buildDirectory
 
-Ant.path ( id : 'installationJarSet' ) { fileset ( dir : installationHome + '/lib' , includes : '*.jar' ) }
-Ant.taskdef ( name : 'groovyc' , classname : 'org.codehaus.groovy.ant.Groovyc' , classpathref : 'installationJarSet' )
+Ant.path ( id : 'compileJarSet' ) {
+  fileset ( dir : installationHome + '/lib' , includes : 'groovy*.jar' )
+  fileset ( dir : installationHome + '/lib' , includes : 'commons-cli*.jar' )
+  fileset ( dir : installationHome + '/lib' , includes : 'asm*.jar' )
+  fileset ( dir : installationHome + '/lib' , includes : 'antlr*.jar' )
+}
+Ant.path ( id : 'testJarSet' ) {
+  path ( refid : 'compileJarSet' )
+  fileset ( dir : installationHome + '/lib' , includes : 'junit*.jar' )
+}
+Ant.taskdef ( name : 'groovyc' , classname : 'org.codehaus.groovy.ant.Groovyc' , classpathref : 'compileJarSet' )
 
 target ( compile : 'Compile everything needed for a Gant installation.' ) {
   mkdir ( dir : buildClassesDirectory )
-  mkdir ( dir : buildLibDirectory )
-  javac ( srcdir : sourceDirectory , destdir : buildClassesDirectory , source : '1.4' , target : '1.4' , debug : 'on' , classpathref : 'installationJarSet'  , excludes : '**/tests/**' )
-  groovyc ( srcdir : sourceDirectory , destdir : buildClassesDirectory , classpath : buildClassesDirectory , excludes : 'bin/*.groovy' )
+  javac ( srcdir : sourceDirectory , destdir : buildClassesDirectory , source : '1.4' , target : '1.4' , debug : 'on' , classpathref : 'compileJarSet' )
+  groovyc ( srcdir : sourceDirectory , destdir : buildClassesDirectory , classpath : buildClassesDirectory )
 }
 
 target ( compileTests : 'Compile all the tests for a newly built Gant.' ) {
   depends ( compile )
   mkdir ( dir : buildTestsDirectory )
-  javac ( srcdir : sourceDirectory , destdir : buildClassesDirectory , source : '1.4' , target : '1.4' , debug : 'on' , classpathref : 'installationJarSet'  , includes : '**/tests/**' )
   javac ( srcdir : testsDirectory , destdir : buildTestsDirectory , source : '1.4' , target : '1.4' , debug : 'on' ) {
     classpath {
-      path ( refid : 'installationJarSet' )
+      path ( refid : 'testJarSet' )
       pathelement ( location : buildClassesDirectory )
     }
   }
   groovyc ( srcdir : testsDirectory , destdir : buildTestsDirectory ) {
     classpath {
+      path ( refid : 'testJarSet' )
       pathelement ( location : buildTestsDirectory )
       pathelement ( location : buildClassesDirectory )
     }
@@ -104,7 +111,7 @@ target ( test : 'Test a build.' ) {
     classpath {
       pathelement ( location : buildTestsDirectory )
       pathelement ( location : buildClassesDirectory )
-      path ( refid : 'installationJarSet' )
+      path ( refid : 'testJarSet' )
     }
   }
 }
@@ -127,7 +134,7 @@ makeManifest = { ->
 target ( 'package' : 'Create the jar file.' ) {
   depends ( compile )
   makeManifest ( )
-  jar ( destfile : buildLibDirectory + "/gant-${gantVersion}.jar" , basedir : buildClassesDirectory , includes : 'org/**,gant/**,META-INF/*' , excludes : '**/tests/**' , manifest : buildMetadataDirectory + '/MANIFEST.MF' )
+  jar ( destfile : buildDirectory + "/gant-${gantVersion}.jar" , basedir : buildClassesDirectory , manifest : buildMetadataDirectory + '/MANIFEST.MF' )
 }
 
 target ( documentation : 'Create the API documentation.' ) {
@@ -170,7 +177,7 @@ target ( documentation : 'Create the API documentation.' ) {
 
 target ( install : "Compile everything and install it to ${installationHome}" ) {
   depends ( 'package' )
-  copy ( todir : installationHome + '/lib' ) { fileset ( dir : buildLibDirectory , includes : 'gant*.jar' ) }
+  copy ( todir : installationHome + '/lib' ) { fileset ( dir : buildDirectory , includes : 'gant*.jar' ) }
   if ( ! grailsBuild ) {
     copy ( todir : installationHome ) { fileset ( dir : scriptsDirectory , includes : 'bin/gant*' ) }
     copy ( todir : installationHome + '/lib' ) { fileset ( dir : jarsDirectory , includes : 'ivy*.jar,maven*.jar' ) }
@@ -212,12 +219,11 @@ target ( distribution : 'Create the distribution.' ) {
                               //  previously build class files.
                               Ant.delete ( dir : buildClassesDirectory )
                               Ant.mkdir ( dir : buildClassesDirectory )
-                              Ant.mkdir ( dir : buildLibDirectory )
-                              Ant.javac ( srcdir : sourceDirectory , destDir : buildClassesDirectory , source : '1.4' , target : '1.4' , debug : 'on' , classpathref : pathIdentifier , excludes : '**/tests/**' )
-                              Ant.groovyc ( srcdir : sourceDirectory , destDir : buildClassesDirectory , classpathref : pathIdentifier , excludes : 'bin/*.groovy' )
+                              Ant.javac ( srcdir : sourceDirectory , destDir : buildClassesDirectory , source : '1.4' , target : '1.4' , debug : 'on' , classpathref : pathIdentifier )
+                              Ant.groovyc ( srcdir : sourceDirectory , destDir : buildClassesDirectory , classpathref : pathIdentifier )
                               makeManifest ( )
-                              def jarPath = buildLibDirectory + System.properties.'file.separator' + prefix + '_groovy-' + item.version + '.jar'
-                              Ant.jar ( destfile : jarPath , basedir : buildClassesDirectory , includes : 'org/**,gant/**,META-INF/*' , excludes : '**/tests/**' , manifest : buildMetadataDirectory + '/MANIFEST.MF' )
+                              def jarPath = buildDirectory + System.properties.'file.separator' + prefix + '_groovy-' + item.version + '.jar'
+                              Ant.jar ( destfile : jarPath , basedir : buildClassesDirectory , manifest : buildMetadataDirectory + '/MANIFEST.MF' )
                               distributionProducts [ 'jars' ] << jarPath
                               def archiveRoot = buildDirectory + System.properties.'file.separator' + prefix + '_groovy-' + item.version
                               Ant.zip ( destfile : archiveRoot + '.zip' ) {

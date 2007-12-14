@@ -26,7 +26,7 @@ import gant.Gant ;
  *
  *  @author Russel Winder <russel.winder@concertant.com>
  */
-public class GantTestCase extends GroovyTestCase {
+public abstract class GantTestCase extends GroovyTestCase {
   private ByteArrayOutputStream output ;
   private PrintStream savedOut ;
   protected Gant gant ;

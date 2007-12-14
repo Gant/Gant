@@ -110,26 +110,26 @@ final class Gant {
     println ( "           ".substring ( 0 , padding ) + '[' + tag + '] ' + message )
   }
   private final setdefault = { defaultTarget -> // Deal with Closure or String arguments.
-                               switch ( defaultTarget.getClass ( ) ) {
-                                case Closure :
-                                def targetName = null
-                                binding.variables.each { key , value -> if ( value.is ( defaultTarget ) ) { targetName = key } }
-                                if ( targetName == null ) { throw new RuntimeException ( 'Parameter to setdefault method is not a known target.  This can never happen!' ) }
-                                target ( 'default' : targetName ) { defaultTarget ( ) }
-                                break
-                                case String :
-                                def failed = true
-                                try {
-                                  def targetClosure = binding.getVariable ( defaultTarget )
-                                  if ( targetClosure != null ) { target ( 'default' : defaultTarget ) { targetClosure ( ) } ; failed = false }
-                                }
-                                catch ( MissingPropertyException mpe ) { }
-                                if ( failed ) { throw new RuntimeException ( "Target ${defaultTarget} does not exist so cannot be made the default." ) }
-                                break
-                                default :
-                                throw new RuntimeException ( 'Parameter to setdefault is of the wrong type -- must be a target reference or a string.' )
-                                break 
-                               }
+    switch ( defaultTarget.getClass ( ) ) {
+     case Closure :
+     def targetName = null
+     binding.variables.each { key , value -> if ( value.is ( defaultTarget ) ) { targetName = key } }
+     if ( targetName == null ) { throw new RuntimeException ( 'Parameter to setdefault method is not a known target.  This can never happen!' ) }
+     target ( 'default' : targetName ) { defaultTarget ( ) }
+     break
+     case String :
+     def failed = true
+     try {
+       def targetClosure = binding.getVariable ( defaultTarget )
+       if ( targetClosure != null ) { target ( 'default' : defaultTarget ) { targetClosure ( ) } ; failed = false }
+     }
+     catch ( MissingPropertyException mpe ) { }
+     if ( failed ) { throw new RuntimeException ( "Target ${defaultTarget} does not exist so cannot be made the default." ) }
+     break
+     default :
+     throw new RuntimeException ( 'Parameter to setdefault is of the wrong type -- must be a target reference or a string.' )
+     break 
+    }
   }
   private def ant = new GantBuilder ( ) ; {
     //
@@ -163,16 +163,16 @@ final class Gant {
   private int targetList ( targets ) {
     def max = 0
     targetDescriptions.entrySet ( ).each { item ->
-                                           if ( item.key != 'default' ) {
-                                             def size = item.key.size ( )
-                                             if ( size > max ) { max = size }
-                                           }
+      if ( item.key != 'default' ) {
+        def size = item.key.size ( )
+        if ( size > max ) { max = size }
+      }
     }
     println ( )
     targetDescriptions.entrySet ( ).each { item ->
-                                          if ( item.key != 'default' ) {
-                                            println ( ' ' + item.key + ' ' * ( max - item.key.size ( ) ) + '  ' + item.value )
-                                          }
+      if ( item.key != 'default' ) {
+        println ( ' ' + item.key + ' ' * ( max - item.key.size ( ) ) + '  ' + item.value )
+      }
     }
     println ( )
     def message = targetDescriptions [ 'default' ]

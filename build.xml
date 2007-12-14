@@ -42,7 +42,6 @@
   <property name="buildDirectory" value="target"/>
   <property name="buildClassesDirectory" value="${buildDirectory}/classes"/>
   <property name="buildTestsDirectory" value="${buildDirectory}/test-classes"/>
-  <property name="buildLibDirectory" value="${buildDirectory}"/>
   <property name="buildReportsDirectory" value="${buildDirectory}/reports"/>
 
   <property name="buildMetadataDirectory" value="${buildClassesDirectory}/META-INF"/>
@@ -56,30 +55,36 @@
   </target>
 
   <target name="-initialize" depends="-forGroovy,-forGrails">
-    <path id="installationJarSet">
-      <fileset dir="${installationHome}/lib" includes="*.jar"/>
+    <path id="compileJarSet">
+      <fileset dir="${installationHome}/lib" includes="groovy*.jar"/>
+      <fileset dir="${installationHome}/lib" includes="commons-cli*.jar"/>
+      <fileset dir="${installationHome}/lib" includes="asm*.jar"/>
+      <fileset dir="${installationHome}/lib" includes="antlr*.jar"/>
     </path>
-    <taskdef name="groovyc" classname="org.codehaus.groovy.ant.Groovyc" classpathref="installationJarSet"/>
+    <path id="testJarSet">
+      <path refid="compileJarSet"/>
+      <fileset dir="${installationHome}/lib" includes="junit*.jar"/>
+    </path>
+    <taskdef name="groovyc" classname="org.codehaus.groovy.ant.Groovyc" classpathref="compileJarSet"/>
   </target>
 
   <target name="compile" depends="-initialize" description="Compile everything needed for a Gant installation.">
     <mkdir dir="${buildClassesDirectory}"/>
-    <mkdir dir="${buildLibDirectory}"/>
-    <javac srcdir="${sourceDirectory}" destdir="${buildClassesDirectory}" source="1.4" target="1.4" debug="on" classpathref="installationJarSet" excludes="**/tests/**"/>
-    <groovyc srcdir="${sourceDirectory}" destdir="${buildClassesDirectory}" classpath="${buildClassesDirectory}" excludes="bin/*.groovy"/>
+    <javac srcdir="${sourceDirectory}" destdir="${buildClassesDirectory}" source="1.4" target="1.4" debug="on" classpathref="compileJarSet"/>
+    <groovyc srcdir="${sourceDirectory}" destdir="${buildClassesDirectory}" classpath="${buildClassesDirectory}"/>
   </target>
 
   <target name="compileTests" depends="compile" description="Compile all the tests for a newly built Gant.">
     <mkdir dir="${buildTestsDirectory}"/>
-    <javac srcdir="${sourceDirectory}" destdir="${buildClassesDirectory}" source="1.4" target="1.4" debug="on" classpathref="installationJarSet" includes="**/tests/**"/>
     <javac srcdir="${testsDirectory}" destdir="${buildTestsDirectory}" source="1.4" target="1.4" debug="on">
       <classpath>
-        <path refid="installationJarSet"/>
+        <path refid="testJarSet"/>
         <pathelement location="${buildClassesDirectory}"/>
       </classpath>
     </javac>
     <groovyc srcdir="${testsDirectory}" destdir="${buildTestsDirectory}">
       <classpath>
+        <path refid="testJarSet"/>
         <pathelement location="${buildClassesDirectory}"/>
         <pathelement location="${buildTestsDirectory}"/>
       </classpath>
@@ -96,7 +101,7 @@
       <classpath>
         <pathelement location="${buildTestsDirectory}"/>
         <pathelement location="${buildClassesDirectory}"/>
-        <path refid="installationJarSet"/>
+        <path refid="testJarSet"/>
         <fileset dir="${jarsDirectory}" includes="ivy*.jar"/>
       </classpath>
     </junit>
@@ -118,7 +123,7 @@
   </target>
 
   <target name="package" depends="compile,-makeManifest" description="Create the jar file.">
-    <jar destfile="${buildLibDirectory}/gant-${gantVersion}.jar" basedir="${buildClassesDirectory}" includes="org/**,gant/**,META-INF/*" excludes="**/tests/**" manifest="${buildMetadataDirectory}/MANIFEST.MF"/>
+    <jar destfile="${buildDirectory}/gant-${gantVersion}.jar" basedir="${buildClassesDirectory}" manifest="${buildMetadataDirectory}/MANIFEST.MF"/>
   </target>
 
   <target name="-installExecutables" unless="grailsBuild">
@@ -132,7 +137,7 @@
 
   <target name="-installJar">
     <copy todir="${installationHome}/lib">
-      <fileset dir="${buildLibDirectory}" includes="gant*.jar"/>
+      <fileset dir="${buildDirectory}" includes="gant*.jar"/>
     </copy>
     <copy todir="${installationHome}/lib">
       <fileset dir="${jarsDirectory}" includes="ivy*.jar,maven*.jar"/>

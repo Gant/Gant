@@ -128,7 +128,7 @@ target ( standard_input , '' ) { System.err.println ( 'Standard Input' ) ; print
 target ( startingPoint , '' ) { System.err.println ( 'StartingPoint' ) ; depends ( standard_input ) }
 ''' ) )
     assertEquals ( 2 , gant.process ( [ '-f' , '-' , 'startingPoint' ] as String[] ) )
-    assertTrue ( output.startsWith ( 'Standard input, line 2 -- Error evaluating Gantfile: No signature of method: gant.Gant$_closure1.doCall() is applicable for argument types:' ) )
+    assertTrue ( output.startsWith ( 'Standard input, line 2 -- Error evaluating Gantfile: No signature of method: gant.Gant$_closure' ) )
   }
   void testStringParameter ( ) {
     System.setIn ( new StringBufferInputStream ( '''
