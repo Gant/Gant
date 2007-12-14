@@ -19,7 +19,7 @@ package org.codehaus.gant.tests
  *
  *  @author Russel Winder <russel.winder@concertant.com>
  */
-final class Targets_Test extends GantTestCase {
+final class ListingTargets_Test extends GantTestCase {
   final coreScript = '''
 target ( something : "Do something." ) { }
 target ( somethingElse : "Do something else." ) { }
