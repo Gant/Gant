@@ -272,7 +272,10 @@ final class Gant {
       println ( 'Gant version ' + ( ( version == null ) ? '<unknown>' : version ) )
       return 0
     }
-    def targets = options.arguments ( )
+    //  The rest of the arguments appear to be delivered as a single string as the first item in a list.  This is surely an error but
+    //  with Commons CLI 1.0 it is the case.  So we must partition.  NB the split method delivers an array
+    //  of Strings so we cast to a List.
+    def targets = options.arguments ( ) [ 0 ].split ( ' ' ) as List
     def gotUnknownOptions = false ;
     targets.each { target ->
       if ( target[0] == '-' ) {
