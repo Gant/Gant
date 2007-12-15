@@ -127,43 +127,6 @@
     </contributor>
   </contributors>
 
-  <!-- We are using the very latest snapshot of Jason Dillon's Maven Groovy Plugin, so we need to use the
-  right repository to get to it. -->
-
-  <!--repositories>
-    <repository>
-      <id>codehaus-snapshots</id>
-      <name>Codehaus Snapshots Repository</name>
-      <url>http://snapshots.repository.codehaus.org</url>
-      <layout>default</layout>
-      <snapshots>
-        <enabled>true</enabled>
-        <updatePolicy>daily</updatePolicy>
-        <checksumPolicy>ignore</checksumPolicy>
-      </snapshots>
-      <releases>
-        <enabled>false</enabled>
-      </releases>
-    </repository>
-  </repositories-->
-
-  <!--pluginRepositories>
-    <pluginRepository>
-      <id>codehaus-snapshots</id>
-      <name>Codehaus Snapshots Repository</name>
-      <url>http://snapshots.repository.codehaus.org</url>
-      <layout>default</layout>
-      <snapshots>
-        <enabled>true</enabled>
-        <updatePolicy>daily</updatePolicy>
-        <checksumPolicy>ignore</checksumPolicy>
-      </snapshots>
-      <releases>
-        <enabled>false</enabled>
-      </releases>
-    </pluginRepository>
-  </pluginRepositories-->
-
   <dependencies>
     <dependency>
       <groupId>org.codehaus.groovy</groupId>
@@ -175,13 +138,6 @@
       <artifactId>commons-cli</artifactId>
       <version>1.0</version>
     </dependency>
-
-    <!--dependency>
-      <groupId>org.codehaus.mojo.groovy</groupId>
-      <artifactId>groovy</artifactId>
-      <version>1.0-beta-3-SNAPSHOT</version>
-    </dependency-->
-
   </dependencies>
   
   <build>
@@ -211,15 +167,6 @@
       </plugin>
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-compiler-plugin</artifactId>
-        <configuration>
-          <source>1.4</source>
-          <target>1.4</target>
-          <debug>on</debug>
-        </configuration>
-      </plugin>
-      <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-surefire-plugin</artifactId>
         <configuration>
           <redirectTestOutputToFile>true</redirectTestOutputToFile>
@@ -231,9 +178,9 @@
         <executions>
           <execution>
             <goals>
-              <!--goal>generateStubs</goal-->
+              <goal>generateStubs</goal>
               <goal>compile</goal>
-              <!--goal>generateTestStubs</goal-->
+              <goal>generateTestStubs</goal>
               <goal>testCompile</goal>
             </goals>
           </execution>

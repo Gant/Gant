@@ -271,19 +271,13 @@ target ( uploadDistribution : 'Upload a complete distribution.' ) {
 }
 
 target ( mavenInstall : 'Do the needful to install a Maven build to the local Maven repository.' ) {
-  //  This will not work on Windows.
-  Execute.shell ( 'cd src/main && ln -s groovy java' )
-  Execute.shell ( 'cd src/test && ln -s groovy java' )
+  depends ( clean )
   Execute.shell ( 'mvn -Dmaven.test.failure.ignore=true install' )
-  Execute.shell ( 'rm src/main/java src/test/java' )
 }
 
 target ( mavenDeploy : 'Do the needful to upload a Maven build to the remote Maven repository.' ) {
-  //  This will not work on Windows.
-  Execute.shell ( 'cd src/main && ln -s groovy java' )
-  Execute.shell ( 'cd src/test && ln -s groovy java' )
+  depends ( clean )
   Execute.shell ( 'mvn -Dmaven.test.failure.ignore=true deploy' )
-  Execute.shell ( 'rm src/main/java src/test/java' )
 }
 
 setdefault ( test )
