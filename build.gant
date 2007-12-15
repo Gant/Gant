@@ -258,7 +258,7 @@ target ( uploadDistribution : 'Upload a complete distribution.' ) {
   //depends ( distribution )
   //
   //  It would be nice to programmatically upload things to Codehaus but how to script a WebDAV client?
-  //  Cadaver deals with SSL certificates in a way that measn it is impossible to do the right thing unless
+  //  Cadaver deals with SSL certificates in a way that means it is impossible to do the right thing unless
   //  using it interactively.
   //
   distributionProducts [ 'distributions' ] = ["target/gant-1.0.1-SNAPSHOT_groovy-1.0.zip", "target/gant-1.0.1-SNAPSHOT_groovy-1.0.tgz", "target/gant_src-1.0.1-SNAPSHOT.zip", "target/gant_src-1.0.1-SNAPSHOT.tgz", "target/gant-1.0.1-SNAPSHOT_groovy-1.5.0.zip", "target/gant-1.0.1-SNAPSHOT_groovy-1.5.0.tgz"]
