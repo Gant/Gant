@@ -1,11 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <classpath>
-	<classpathentry kind="src" path="src/main/java"/>
+	<classpathentry kind="src" path="src/main/groovy"/>
 	<classpathentry kind="src" path="src/test/groovy"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.junit.JUNIT_CONTAINER/3.8.1"/>
-	<classpathentry kind="lib" path="jarfiles/commons-cli-1.0.jar"/>
-	<classpathentry kind="lib" path="jarfiles/groovy-all-1.0.jar"/>
-	<classpathentry kind="lib" path="jarfiles/ant-1.7.0.jar"/>
+	<classpathentry kind="var" path="GROOVY_ECLIPSE_HOME/groovy-all-1.5.0.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
