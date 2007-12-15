@@ -55,17 +55,18 @@ import org.apache.commons.cli.OptionBuilder
  *  <p>A trivial example build specification is:</p>
  *
  *  <pre>
- *      target ( 'default' : 'The default target.' ) {
+ *      target ( stuff : 'A target to do some stuff.' ) {
  *        clean ( )
  *        otherStuff ( )
  *      }
- *      target ( otherStuff : 'Other stuff' ) {
+ *      target ( otherStuff : 'A target to do some other stuff' ) {
  *        depends ( clean )
  *      }
  *      target ( clean : 'Clean the directory and subdirectories' ) {
  *        delete ( dir : 'build' , quiet : 'true' )
  *        delete ( quiet : 'true' ) { fileset ( dir : '.' , includes : '** /*~,** /*.bak'  , defaultexcludes : 'false' ) }
  *      }
+ *      setdefault ( stuff )
  * </pre>
  *
  *  <p>or, using some a ready made targets class:</p>
@@ -74,13 +75,15 @@ import org.apache.commons.cli.OptionBuilder
  *      includeTargets << gant.targets.Clean
  *      cleanPattern << [ '** / *~' , '** / *.bak' ]
  *      cleanDirectory << 'build'
- *      target ( 'default' : 'The default target.' ) {
+ *      target ( stuff : 'A target to do some stuff.' ) {
  *        clean ( )
  *        otherStuff ( )
  *      }
- *      target ( otherStuff : 'Other stuff' ) {
+ *      target ( otherStuff : 'A target to do some other stuff' ) {
  *        depends ( clean )
  *      }
+ *      setdefault ( stuff )
+ *  </pre>
  *
  *  <p><em>Note that there is an space between the two asterisks and the solidus in the fileset line that
  *  should notbe there, we have to have it in the source because asterisk followed by solidus is end of
