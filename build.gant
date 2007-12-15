@@ -60,6 +60,9 @@ distributionTopLevelFiles = [
                              ]
 distributionDirectories = [ 'documentation' , 'examples' , '.settings' , sourceDirectory , testsDirectory ]
 
+antlibXMLns = 'antlib:org.apache.maven.artifact.ant'
+mavenPOMId = 'maven.pom'
+
 includeTargets << gant.targets.Clean
 cleanPattern <<  '**/*~' 
 cleanDirectory << buildDirectory
@@ -200,9 +203,6 @@ distributionProducts = [
 target ( distribution : 'Create the distribution.' ) {
   //  Use the Ant Maven plugin to ensure that the groovy-all jar of a given release is in the local Maven
   //  repository and ensure that is the only version of Groovy used in the compilation.
-  //typedef ( resource : 'org/apache/maven/artifact/ant/antlib.xml' , uri : 'urn:maven-artifact-ant' ) {
-  //  classpath { pathelement ( location : System.properties.'groovy.home' + '/lib/maven-artifact-ant-2.0.4-dep.jar' ) }
-  //}
   def prefix = 'gant-' + gantVersion
   def distributionClasspathId = 'classpath'
   clean ( )
@@ -211,7 +211,7 @@ target ( distribution : 'Create the distribution.' ) {
                               //  specify Ant.  Need to rearrange things to deal with as is done in the
                               //  target Closure.
                               def pathIdentifier = distributionClasspathId + item.version
-                              Ant.'antlib:org.apache.maven.artifact.ant:dependencies' ( pathId : pathIdentifier ) {
+                              Ant."${antlibXMLns}:dependencies" ( pathId : pathIdentifier ) {
                                 dependency ( groupId : item.groupId , artifactId : item.artifactId , version : item.version )
                               }
                               //  Replicate the build process here as a short term route.  Should review the
@@ -219,8 +219,8 @@ target ( distribution : 'Create the distribution.' ) {
                               //  previously build class files.
                               Ant.delete ( dir : buildClassesDirectory )
                               Ant.mkdir ( dir : buildClassesDirectory )
-                              Ant.javac ( srcdir : sourceDirectory , destDir : buildClassesDirectory , source : '1.4' , target : '1.4' , debug : 'on' , classpathref : pathIdentifier )
-                              Ant.groovyc ( srcdir : sourceDirectory , destDir : buildClassesDirectory , classpathref : pathIdentifier )
+                              Ant.javac ( srcdir : sourceDirectory , destDir : buildClassesDirectory , source : '1.4' , target : '1.4' , debug : 'on' , fork : 'yes' , classpathref : pathIdentifier )
+                              Ant.groovyc ( srcdir : sourceDirectory , destDir : buildClassesDirectory , /* fork : 'yes' , */ classpathref : pathIdentifier )
                               makeManifest ( )
                               def jarPath = buildDirectory + System.properties.'file.separator' + prefix + '_groovy-' + item.version + '.jar'
                               Ant.jar ( destfile : jarPath , basedir : buildClassesDirectory , manifest : buildMetadataDirectory + '/MANIFEST.MF' )
@@ -270,10 +270,22 @@ target ( uploadDistribution : 'Upload a complete distribution.' ) {
   distributionProducts [ 'distributions' ].each { sourcePath -> println ( 'Upload ' + sourcePath + ' somehow.' ) }
   distributionProducts [ 'jars' ].each { sourcePath -> println ( 'Upload ' + sourcePath + ' somehow.' ) }
   println ( 'Upload pom.xml somehow.' )
- 
-  println ( 'Do a maven deploy.' )
- 
 }
 
+target ( mavenInstall : 'Do the needful to install a Maven build to the local Maven repository.' ) {
+  //  This will not work on Windows.
+  Execute.shell ( 'cd src/main && ln -s groovy java' )
+  Execute.shell ( 'cd src/test && ln -s groovy java' )
+  Execute.shell ( 'mvn -Dmaven.test.failure.ignore=true install' )
+  Execute.shell ( 'rm src/main/java src/test/java' )
+}
+
+target ( mavenDeploy : 'Do the needful to upload a Maven build to the remote Maven repository.' ) {
+  //  This will not work on Windows.
+  Execute.shell ( 'cd src/main && ln -s groovy java' )
+  Execute.shell ( 'cd src/test && ln -s groovy java' )
+  Execute.shell ( 'mvn -Dmaven.test.failure.ignore=true deploy' )
+  Execute.shell ( 'rm src/main/java src/test/java' )
+}
 
 setdefault ( test )
