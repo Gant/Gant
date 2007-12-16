@@ -259,9 +259,6 @@ target ( uploadDistribution : 'Upload a complete distribution.' ) {
   //  Cadaver deals with SSL certificates in a way that means it is impossible to do the right thing unless
   //  using it interactively.
   //
-  distributionProducts [ 'distributions' ] = ["target/gant-1.0.1-SNAPSHOT_groovy-1.0.zip", "target/gant-1.0.1-SNAPSHOT_groovy-1.0.tgz", "target/gant_src-1.0.1-SNAPSHOT.zip", "target/gant_src-1.0.1-SNAPSHOT.tgz", "target/gant-1.0.1-SNAPSHOT_groovy-1.5.0.zip", "target/gant-1.0.1-SNAPSHOT_groovy-1.5.0.tgz"]
-  distributionProducts [ 'jars' ] = ["target/gant-1.0.1-SNAPSHOT_groovy-1.0.jar", "target/gant-1.0.1-SNAPSHOT_groovy-1.5.0.jar"]
-  //
   distributionProducts [ 'distributions' ].unique ( )
   distributionProducts [ 'jars' ].unique ( )
   def baseURL = 'https://dav.codehaus.org/dist/gant'
@@ -270,14 +267,16 @@ target ( uploadDistribution : 'Upload a complete distribution.' ) {
   println ( 'Upload pom.xml somehow.' )
 }
 
-target ( mavenInstall : 'Do the needful to install a Maven build to the local Maven repository.' ) {
-  depends ( clean )
+target ( mavenInstall : 'Install a Maven build to the local Maven repository.' ) {
+  clean ( )
   Execute.shell ( 'mvn -Dmaven.test.failure.ignore=true install' )
+  clean ( )
 }
 
-target ( mavenDeploy : 'Do the needful to upload a Maven build to the remote Maven repository.' ) {
-  depends ( clean )
+target ( mavenDeploy : 'Upload a Maven build to the remote Maven repository.' ) {
+  clean ( )
   Execute.shell ( 'mvn -Dmaven.test.failure.ignore=true deploy' )
+  clean ( )
 }
 
 setdefault ( test )
