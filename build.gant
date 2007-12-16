@@ -220,18 +220,20 @@ target ( distribution : 'Create the distribution.' ) {
     Ant.javac ( srcdir : sourceDirectory , destDir : buildClassesDirectory , source : '1.4' , target : '1.4' , debug : 'on' , fork : 'yes' , classpathref : pathIdentifier )
     Ant.groovyc ( srcdir : sourceDirectory , destDir : buildClassesDirectory , /* fork : 'yes' , */ classpathref : pathIdentifier )
     makeManifest ( )
-    def jarPath = buildDirectory + System.properties.'file.separator' + prefix + '_groovy-' + item.version + '.jar'
+    def discriminator = prefix + '_groovy-' + item.version
+    def jarName = discriminator + '.jar'                    
+    def jarPath = buildDirectory + System.properties.'file.separator' + jarName
     Ant.jar ( destfile : jarPath , basedir : buildClassesDirectory , manifest : buildMetadataDirectory + '/MANIFEST.MF' )
     distributionProducts [ 'jars' ] << jarPath
-    def archiveRoot = buildDirectory + System.properties.'file.separator' + prefix + '_groovy-' + item.version
+    def archiveRoot = buildDirectory + System.properties.'file.separator' + discriminator
     Ant.zip ( destfile : archiveRoot + '.zip' ) {
-      zipfileset ( dir : buildDirectory , includes : 'gant*.jar' , prefix : prefix + '/lib' )
+      zipfileset ( dir : buildDirectory , includes : jarName , prefix : prefix + '/lib' )
       zipfileset ( dir : 'scripts/bin' , includes : 'gant*' , prefix : prefix + '/bin' )
       zipfileset ( dir : 'scripts/install' , includes : 'install.groovy' , prefix : prefix + '/bin' )
       zipfileset ( dir : '.' , includes : 'README*' , prefix : prefix )
     }
     Ant.tar ( destfile :  archiveRoot + '.tgz' , compression : 'gzip' ) {
-      tarfileset ( dir : buildDirectory , includes : 'gant*.jar' , prefix : prefix + '/lib' )
+      tarfileset ( dir : buildDirectory , includes : jarName , prefix : prefix + '/lib' )
       tarfileset ( dir : 'scripts/bin' , includes : 'gant*' , prefix : prefix + '/bin' , mode : '755' )
       tarfileset ( dir : 'scripts/install' , includes : 'install.groovy' , prefix : prefix + '/bin' , mode : '755' )
       tarfileset ( dir : '.' , includes : 'README*' , prefix : prefix )
