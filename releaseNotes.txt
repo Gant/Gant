@@ -2,6 +2,8 @@
 1.0.2 ( rXXXX )
 ---------------
 
+Fixed bug in parameter types of message Closure in gant.Gant.
+
 
 1.0.1 ( r8861 )
 ---------------

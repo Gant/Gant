@@ -40,8 +40,7 @@ target ( add${name}OptionList : "" ) {
   }
   void testAddLaTeXOption ( ) {
     System.setIn ( new StringBufferInputStream ( optionTestGantFile ( 'LaTeX' , 'latex' ) ) )
-    gant.process ( [ '-f' , '-' , 'addLaTeXOption' ] as String[] )
-    //assertEquals ( 0 , gant.process ( [ '-f' , '-' , 'LaTeXOption' ] as String[] ) )
+    assertEquals ( 0 , gant.process ( [ '-f' , '-' , 'addLaTeXOption' ] as String[] ) )
     assertEquals ( '''["-blah"]
 ''' , output ) 
   }

@@ -107,7 +107,7 @@ final class Gant {
     binding.setVariable ( targetName , closure )
     binding.setVariable ( targetName + '_description' , targetDescription )
   }
-  private final message = { String tag , String message ->
+  private final message = { String tag , Object message ->
     def padding = 9 - tag.length ( )
     if ( padding < 0 ) { padding = 0 }
     println ( "           ".substring ( 0 , padding ) + '[' + tag + '] ' + message )
