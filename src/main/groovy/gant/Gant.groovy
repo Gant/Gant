@@ -306,7 +306,7 @@ final class Gant {
     }
     else {
       buildFile = new File ( buildFileName ) 
-      if ( ! buildFile.isFile ( ) ) { println ( 'Cannot open file ' + buildFileName ) ; return 1 }
+      if ( ! buildFile.isFile ( ) ) { println ( 'Cannot open file ' + buildFileName ) ; return 3 }
       buildClassName = buildFile.name.replaceAll ( /\./ , '_' )
       buildFileModified = buildFile.lastModified ( )
     }
