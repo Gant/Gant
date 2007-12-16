@@ -279,4 +279,4 @@ target ( mavenDeploy : 'Upload a Maven build to the remote Maven repository.' ) 
   clean ( )
 }
 
-setdefault ( test )
+setDefaultTarget ( test )
