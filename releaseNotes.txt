@@ -1,4 +1,9 @@
-1.0.1 ( rXXXX )
+
+1.0.2 ( rXXXX )
+---------------
+
+
+1.0.1 ( r9829 )
 ---------------
 
 Amended and extended the Maven target set so that it actually works well enough to be useful.
