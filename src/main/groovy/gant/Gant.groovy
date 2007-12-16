@@ -66,7 +66,7 @@ import org.apache.commons.cli.OptionBuilder
  *        delete ( dir : 'build' , quiet : 'true' )
  *        delete ( quiet : 'true' ) { fileset ( dir : '.' , includes : '** /*~,** /*.bak'  , defaultexcludes : 'false' ) }
  *      }
- *      setdefault ( stuff )
+ *      setDefaultTarget ( stuff )
  * </pre>
  *
  *  <p>or, using some a ready made targets class:</p>
@@ -82,7 +82,7 @@ import org.apache.commons.cli.OptionBuilder
  *      target ( otherStuff : 'A target to do some other stuff' ) {
  *        depends ( clean )
  *      }
- *      setdefault ( stuff )
+ *      setDefaultTarget ( stuff )
  *  </pre>
  *
  *  <p><em>Note that there is an space between the two asterisks and the solidus in the fileset line that
@@ -112,12 +112,12 @@ final class Gant {
     if ( padding < 0 ) { padding = 0 }
     println ( "           ".substring ( 0 , padding ) + '[' + tag + '] ' + message )
   }
-  private final setdefault = { defaultTarget -> // Deal with Closure or String arguments.
+  private final setDefaultTarget = { defaultTarget -> // Deal with Closure or String arguments.
     switch ( defaultTarget.getClass ( ) ) {
      case Closure :
      def targetName = null
      binding.variables.each { key , value -> if ( value.is ( defaultTarget ) ) { targetName = key } }
-     if ( targetName == null ) { throw new RuntimeException ( 'Parameter to setdefault method is not a known target.  This can never happen!' ) }
+     if ( targetName == null ) { throw new RuntimeException ( 'Parameter to setDefaultTarget method is not a known target.  This can never happen!' ) }
      target ( 'default' : targetName ) { defaultTarget ( ) }
      break
      case String :
@@ -130,7 +130,7 @@ final class Gant {
      if ( failed ) { throw new RuntimeException ( "Target ${defaultTarget} does not exist so cannot be made the default." ) }
      break
      default :
-     throw new RuntimeException ( 'Parameter to setdefault is of the wrong type -- must be a target reference or a string.' )
+     throw new RuntimeException ( 'Parameter to setDefaultTarget is of the wrong type -- must be a target reference or a string.' )
      break 
     }
   }
@@ -161,7 +161,7 @@ final class Gant {
     binding.target = target
     binding.task = { Map map , Closure closure -> System.err.println ( 'Deprecation warning: Use of task instead of target is deprecated.' ) ; target ( map , closure ) }
     binding.message = message
-    binding.setdefault = setdefault
+    binding.setDefaultTarget = setDefaultTarget
   }
   private int targetList ( targets ) {
     def max = 0

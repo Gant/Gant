@@ -26,7 +26,7 @@ final class TargetMetaClassLookup_Test extends GantTestCase {
 includeTargets << gant.targets.Clean
 cleanPattern << "**/*~"
 target ( something : "Do something." ) { Ant.echo ( message : "Did something." ) }
-setdefault ( something )
+setDefaultTarget ( something )
 ''' ) )  }
     
   //  It seems that the same gant.targets.Clean instance is used for all tests in this class whuich is a bit
