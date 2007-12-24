@@ -26,4 +26,3 @@ includeTargets ** gant.targets.Maven * [
                                         ]
 
 setdefault ( install )
-

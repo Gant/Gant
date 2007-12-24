@@ -35,7 +35,8 @@ import groovy.lang.GroovySystem ;
  *
  *  @author Russel Winder <russel.winder@concertant.com>
  */
-class GantMetaClass extends DelegatingMetaClass {
+// Ant and Gant build work without the public, Maven build does not.
+public class GantMetaClass extends DelegatingMetaClass {
   private final static HashSet methodsInvoked = new HashSet ( ) ;
   private final Binding binding ;
   public GantMetaClass ( final Class theClass , final Binding binding ) {

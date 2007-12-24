@@ -23,7 +23,8 @@ package org.codehaus.gant ;
  *
  *  @author Russel Winder <russel.winder@concertant.com>
  */
-class GantState {
+// Ant and Gant build work without the public, Maven build does not.
+public class GantState {
   public final static int SILENT = 0 , QUIET = 1 , NORMAL = 2 , VERBOSE = 3 ;
   static int verbosity = NORMAL ;
   static boolean dryRun = false ;
