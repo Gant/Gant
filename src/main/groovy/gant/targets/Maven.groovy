@@ -262,7 +262,7 @@ final class Maven {
       if ( owner.manifestIncludes ) {
         owner.binding.Ant.mkdir ( dir : owner.metadataPath )
         owner.manifestIncludes.each { item ->
-          if ( new File ( item ).isDir ( ) ) { owner.binding.Ant.copy ( todir : owner.metadataPath ) { fileset ( dir : item , includes : '*' ) } }
+          if ( new File ( item ).isDirectory ( ) ) { owner.binding.Ant.copy ( todir : owner.metadataPath ) { fileset ( dir : item , includes : '*' ) } }
           else {owner.binding.Ant.copy ( todir : owner.metadataPath , file : item ) }
         }
       }
