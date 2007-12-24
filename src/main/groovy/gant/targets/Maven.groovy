@@ -32,6 +32,7 @@ final class Maven {
                                   mainCompilePath : '' , // Set in constructor since it uses a GString dependent on a value in the map.
                                   testCompilePath : '' , // Set in constructor since it uses a GString dependent on a value in the map.
                                   testReportPath : '' , // Set in constructor since it uses a GString dependent on a value in the map.
+                                  metadataPath : '' , // Set in constructor since it uses a GString dependent on a value in the map.
                                   javaCompileProperties : [ source : '1.3' , target : '1.3' , debug : 'false' ] ,
                                   groovyCompileProperties : [ : ] ,
                                   compileClasspath : [ ] ,
@@ -43,6 +44,8 @@ final class Maven {
                                   packaging : 'jar' ,
                                   deployURL : '' ,
                                   deploySnapshotURL : '' ,
+                                  manifest : [ : ] ,
+                                  manifestIncludes :  [ ] ,
                                   ( readOnlyKeys[0] ) : null ,
                                   ( readOnlyKeys[1] ) :  'compile.dependency.classpath' ,
                                   ( readOnlyKeys[2] ) :  'test.dependency.classpath' ,
@@ -64,6 +67,7 @@ final class Maven {
     properties.mainCompilePath = "${properties.targetPath}${System.properties.'file.separator'}classes"
     properties.testCompilePath = "${properties.targetPath}${System.properties.'file.separator'}test-classes"
     properties.testReportPath = "${properties.targetPath}${System.properties.'file.separator'}test-reports"
+    properties.metadataPath = "${properties.mainComilePath}${System.properties.'file.separator'}META-INF"
     properties.binding.target.call ( initialize : 'Ensure all the dependencies can be met and set classpaths accordingly.' ) {
       if ( owner.testFramework == 'testng' ) {
         testngInstalled = false
@@ -249,6 +253,19 @@ final class Maven {
         if ( ! owner."${item}" ) { throw new RuntimeException ( "Maven.${item} must be set to achieve target package." ) }
       }
       depends ( owner.binding.test )
+      if ( owner.manifest ) {
+        owner.binding.Ant.mkdir ( dir : owner.metadataPath )
+        owner.binding.Ant.manifest ( file : owner.metadataPath + System.properties.'file.separator' + 'MANIFEST.MF' ) {
+          owner.manifest.each { key , value -> attribute ( name : key , value : value ) }
+        }
+      }
+      if ( owner.manifestIncludes ) {
+        owner.binding.Ant.mkdir ( dir : owner.metadataPath )
+        owner.manifestIncludes.each { item ->
+          if ( new File ( item ).isDir ( ) ) { owner.binding.Ant.copy ( todir : owner.metadataPath ) { fileset ( dir : item , includes : '*' ) } }
+          else {owner.binding.Ant.copy ( todir : owner.metadataPath , file : item ) }
+        }
+      }
       switch ( owner.packaging ) {
        case 'war' :
        def artifactPath = owner.targetPath + System.properties.'file.separator' + owner.artifactId + '-' + owner.version

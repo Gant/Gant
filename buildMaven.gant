@@ -16,13 +16,26 @@
 
 Ant.property ( file : 'build.properties' )
 
+gantVersion = Ant.project.properties.gantVersion
+
 includeTargets ** gant.targets.Maven * [
                                         groupId : 'org.codehaus.gant' ,
                                         artifactId : 'gant' ,
-                                        version : Ant.project.properties.gantVersion ,
+                                        version : gantVersion ,
                                         javaCompileProperties : [ source : '1.4' , target : '1.4' , debug : 'true' ] ,
                                         deployURL : 'https://dav.codehaus.org/repository/gant' ,
-                                        deploySnapshotURL : 'https://dav.codehaus.org/snapshots.repository/gant'
+                                        deploySnapshotURL : 'https://dav.codehaus.org/snapshots.repository/gant' ,
+                                        manifest : [
+                                                    'Built-By' : System.properties.'user.name' ,
+                                                    'Extension-Name' : 'gant' ,
+                                                    'Specification-Title' : 'Gant: scripting Ant tasks with Groovy.' ,
+                                                    'Specification-Version' : gantVersion ,
+                                                    'Specification-Vendor' : 'The Codehaus' ,
+                                                    'Implementation-Title' : 'Gant: Scripting Ant tasks with Groovy.' ,
+                                                    'Implementation-Version' : gantVersion , 
+                                                    'Implementation-Vendor' : 'The Codehaus' ,
+                                                    ] ,
+                                        manifestInclude : [ 'LICENCE.txt' ]
                                         ]
 
-setdefault ( install )
+setDefaultTarget ( install )

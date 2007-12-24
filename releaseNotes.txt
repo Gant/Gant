@@ -1,6 +1,8 @@
 1.0.3 ( rXXXX )
 ---------------
 
+Added metadata to the Maven target set.
+
 
 1.0.2 ( r8867 )
 ---------------
