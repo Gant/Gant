@@ -17,7 +17,12 @@
 Ant.property ( file : 'build.properties' )
 Ant.property ( file : 'local.build.properties' )
 
-gantVersion = Ant.project.properties.gantVersion
+try { gantVersion }
+catch ( MissingPropertyException mpe ) { gantVersion = Ant.project.properties.gantVersion }
+
+try { debFilesRequired }
+catch ( MissingPropertyException mpe ) { debFilesRequired = Ant.project.properties.debFilesRequired }
+debFilesRequired = debFilesRequired == 'true' ? true : false
 
 // NB  System.getenv ( ) does not work on Java 1.4 but does on Java 5 or later.
   
@@ -30,7 +35,8 @@ if ( ( installationHome == null ) || ( installationHome == '' ) ) {
   return
 }
 
-//  The versions in the Maven repository to build distribution version of Gant against.
+//  The versions in the Maven repository to build distribution version of Gant against.  NB The last in this
+//  list is the one the final deb file will be of.
 
 distributionVersions = [
                         [ groupId : 'groovy' , artifactId : 'groovy-all' , version : '1.0' ] ,
@@ -195,6 +201,27 @@ target ( uninstall : "Uninstall Gant from ${installationHome}." ) {
   }
 }
 
+//  Use the ant-deb-task from Marius Scurtescu <marius.scurtescu@gmail.com> to create a deb file.
+//  Assume the ant-deb.jar file is in ~/.groovy/lib.
+makeDebFiles = { jarName , version ->
+  def antDebJarPath = [ System.properties.'user.home' , '.groovy' , 'lib' , 'ant-deb.jar' ].join ( System.properties.'file.separator' )
+  Ant.taskdef ( resource : 'ant_deb_task.properties' , classpath : antDebJarPath )
+  def debDirectoryPath = [ buildDirectory , 'debs' , 'groovy-' + version ].join ( System.properties.'file.separator' ) 
+  Ant.mkdir ( dir : debDirectoryPath  )
+  Ant.deb ( todir : debDirectoryPath , 'package' : 'gant' , section : 'devel' , depends : 'groovy-' + version ) {
+    //  FIXME: Why is the Ant. necessary here?  
+    Ant.version ( upstream : version )
+    Ant.maintainer ( name : 'Russel Winder' , email : 'russel.winder@concertant.com' )
+    Ant.description ( synopsis : 'Ant task scripting using Groovy' , '''
+Gant is a way of using Groovy instead of XML to manage a build using Ant tasks.
+
+http://gant.codehaus.org
+''' )
+    Ant.tarfileset ( file : 'scripts/bin/gant' , prefix : 'usr/bin' , filemode : '755' )
+    Ant.tarfileset ( file : buildDirectory + System.properties.'file.separator' + jarName , prefix : 'usr/share/groovy' )
+  }                         
+}
+
 distributionProducts = [
                         distributions : [ ] ,
                         jars : [ ]
@@ -249,6 +276,8 @@ target ( distribution : 'Create the distribution.' ) {
       distributionDirectories.each { directory -> tarfileset ( dir : directory , prefix : prefix + System.properties.'file.separator' + directory ) }
     }
     distributionProducts [ 'distributions' ] << archiveRoot + '.zip' << archiveRoot + '.tgz'
+
+    if ( debFilesRequired ) { makeDebFiles ( jarName , item.version ) }                          
   }
 }
 
