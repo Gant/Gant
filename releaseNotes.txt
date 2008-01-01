@@ -3,6 +3,8 @@
 
 Added metadata to the Maven target set.
 
+Updated the Ivy example a bit.  Switched to Ivy 2.0.0-beta-1.
+
 
 1.0.2 ( r8867 )
 ---------------

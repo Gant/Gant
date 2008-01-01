@@ -15,7 +15,7 @@
 package gant.tools
 
 /**
- *  A class to provide support for using Ivy.  Assumes the ivy jar files are in $GROOVY_HOME.
+ *  A class to provide support for using Ivy.  Assumes the ivy jar file is in $GROOVY_HOME/lib.
  *
  *  @author Russel Winder <russel.winder@concertant.com>
  */
@@ -23,17 +23,9 @@ final class Ivy {
   private final Binding binding ;
   private final classpath = 'ivy.class.path'
   Ivy ( final Binding binding ) {
-    this.binding = binding ;
-    /*
-     *  This is what we want to do:
-
-    binding.Ant.path ( id : classpath ) { fileset ( dir : System.getenv ( ).GROOVY_HOME , includes : 'ivy*.jar' ) }
-
-    *  but this causes real hassles when using JDK versions prior to 1.5.  But we know that groovy.home is a
-    *  property in the AntBuilder so just use that.
-    */
-    binding.Ant.path ( id : classpath ) { fileset ( dir : binding.Ant.project.properties.'groovy.home' , includes : 'ivy*.jar' ) }
-    binding.Ant.taskdef ( resource : 'fr/jayasoft/ivy/ant/antlib.xml' , classpathref : classpath )
+    this.binding = binding
+    binding.Ant.path ( id : classpath ) { fileset ( dir : System.properties.'groovy.home' + System.properties.'file.separator' + 'lib' , includes : 'ivy*.jar' ) }
+    binding.Ant.taskdef ( resource : 'org/apache/ivy/ant/antlib.xml' , classpathref : classpath )
   }
   void cachepath ( map ) { binding.Ant.cachepath ( map ) }
   void configure ( map ) { binding.Ant.configure ( map ) }
