@@ -28,8 +28,5 @@ final class Ivy {
     binding.Ant.taskdef ( resource : 'org/apache/ivy/ant/antlib.xml' , classpathref : classpath )
   }
   //  To save having to maintain lists of the functions available, simply redirect all method calls to the Ant object.
-  def invokeMethod ( String name , args ) {
-    System.err.println ( 'Ivy.invokeMethod: ' + name + ' , ' + args )
-    binding.Ant.invokeMethod ( name , args )
-  }
+  def invokeMethod ( String name , args ) { binding.Ant.invokeMethod ( name , args ) }
 }
