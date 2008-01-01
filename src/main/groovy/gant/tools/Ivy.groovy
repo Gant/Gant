@@ -24,13 +24,12 @@ final class Ivy {
   private final classpath = 'ivy.class.path'
   Ivy ( final Binding binding ) {
     this.binding = binding
-    binding.Ant.path ( id : classpath ) { fileset ( dir : System.properties.'groovy.home' + System.properties.'file.separator' + 'lib' , includes : 'ivy*.jar' ) }
+    binding.Ant.path ( id : classpath ) { binding.Ant.fileset ( dir : System.properties.'groovy.home' + System.properties.'file.separator' + 'lib' , includes : 'ivy*.jar' ) }
     binding.Ant.taskdef ( resource : 'org/apache/ivy/ant/antlib.xml' , classpathref : classpath )
   }
-  void cachepath ( map ) { binding.Ant.cachepath ( map ) }
-  void configure ( map ) { binding.Ant.configure ( map ) }
-  void publish ( map ) { binding.Ant.publish ( map ) }
-  void report ( map ) { binding.Ant.report ( map ) }
-  void resolve ( map ) { binding.Ant.resolve ( map ) }
-  void retrieve ( map ) { binding.Ant.retrieve ( map ) }
+  //  To save having to maintain lists of the functions available, simply redirect all method calls to the Ant object.
+  def invokeMethod ( String name , args ) {
+    System.err.println ( 'Ivy.invokeMethod: ' + name + ' , ' + args )
+    binding.Ant.invokeMethod ( name , args )
+  }
 }
