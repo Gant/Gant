@@ -1,6 +1,6 @@
 //  Gant -- A Groovy build framework based on scripting Ant tasks.
 //
-//  Copyright © 2007 Russel Winder
+//  Copyright © 2007-8 Russel Winder
 //
 //  Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in
 //  compliance with the License. You may obtain a copy of the License at
@@ -31,7 +31,7 @@ target ( testClean : '' ) {
 }
 """ ) )
     assertEquals ( 0 , gant.process ( [ '-f' , '-' , 'testClean' ] as String[] ) )
-    assertEquals ( '''["target"]
+    assertEquals ( '''[target]
 ''' , output ) 
   }
   void testCleanDirectoryList ( ) {
@@ -43,7 +43,7 @@ target ( testClean : '' ) {
 }
 """ ) )
     assertEquals ( 0 , gant.process ( [ '-f' , '-' , 'testClean' ] as String[] ) )
-    assertEquals ( '''[["target_a", "target_b"]]
+    assertEquals ( '''[[target_a, target_b]]
 ''' , output ) 
   }
   void testCleanPatternString ( ) {
@@ -55,7 +55,7 @@ target ( testClean : '' ) {
 }
 """ ) )
     assertEquals ( 0 , gant.process ( [ '-f' , '-' , 'testClean' ] as String[] ) )
-    assertEquals ( '''["**/*~"]
+    assertEquals ( '''[**/*~]
 ''' , output ) 
   }
   void testCleanPatternList ( ) {
@@ -65,7 +65,7 @@ cleanPattern << [ '**/*~' , '**/*.bak' ]
 target ( testClean : '' ) { println ( cleanPattern ) }
 """ ) )
     assertEquals ( 0 , gant.process ( [ '-f' , '-' , 'testClean' ] as String[] ) )
-    assertEquals ( '''[["**/*~", "**/*.bak"]]
+    assertEquals ( '''[[**/*~, **/*.bak]]
 ''' , output ) 
   }
   void testClobberDirectoryString ( ) {
@@ -77,7 +77,7 @@ target ( testClobber : '' ) {
 }
 """ ) )
     assertEquals ( 0 , gant.process ( [ '-f' , '-' , 'testClobber' ] as String[] ) )
-    assertEquals ( '''["target"]
+    assertEquals ( '''[target]
 ''' , output ) 
   }
   void testClobberDirectoryList ( ) {
@@ -89,7 +89,7 @@ target ( testClobber : '' ) {
 }
 """ ) )
     assertEquals ( 0 , gant.process ( [ '-f' , '-' , 'testClobber' ] as String[] ) )
-    assertEquals ( '''[["target_a", "target_b"]]
+    assertEquals ( '''[[target_a, target_b]]
 ''' , output ) 
   }
   void testClobberPatternString ( ) {
@@ -101,7 +101,7 @@ target ( testClobber : '' ) {
 }
 """ ) )
     assertEquals ( 0 , gant.process ( [ '-f' , '-' , 'testClobber' ] as String[] ) )
-    assertEquals ( '''["**/*~"]
+    assertEquals ( '''[**/*~]
 ''' , output ) 
   }
   void testClobberPatternList ( ) {
@@ -111,7 +111,7 @@ clobberPattern << [ '**/*~' , '**/*.bak' ]
 target ( testClobber : '' ) { println ( clobberPattern ) }
 """ ) )
     assertEquals ( 0 , gant.process ( [ '-f' , '-' , 'testClobber' ] as String[] ) )
-    assertEquals ( '''[["**/*~", "**/*.bak"]]
+    assertEquals ( '''[[**/*~, **/*.bak]]
 ''' , output ) 
   }
 }

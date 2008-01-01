@@ -1,6 +1,6 @@
 //  Gant -- A Groovy build framework based on scripting Ant tasks.
 //
-//  Copyright © 2007 Russel Winder
+//  Copyright © 2007-8 Russel Winder
 //
 //  Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in
 //  compliance with the License. You may obtain a copy of the License at
@@ -36,7 +36,7 @@ target ( testing : '' ) { Execute.executable ( 'echo 1' ) }
 target ( testing : '' ) { Execute.executable ( [ 'echo' , '1' ] ) }
 ''' ) )
     assertEquals ( 0 , gant.process ( [ '-f' , '-' , 'testing' ] as String[] ) )
-    assertEquals ( '''  [execute] ["echo", "1"]
+    assertEquals ( '''  [execute] [echo, 1]
 1
 ''' , output ) 
   }
