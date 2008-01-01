@@ -24,7 +24,7 @@ final class Ivy {
   private final classpathRef = 'ivy.class.path'
   Ivy ( final Binding binding ) {
     this.binding = binding
-    binding.Ant.path ( id : classpath ) { binding.Ant.fileset ( dir : System.properties.'groovy.home' + System.properties.'file.separator' + 'lib' , includes : 'ivy*.jar' ) }
+    binding.Ant.path ( id : classpathRef ) { binding.Ant.fileset ( dir : System.properties.'groovy.home' + System.properties.'file.separator' + 'lib' , includes : 'ivy*.jar' ) }
     binding.Ant.taskdef ( resource : 'org/apache/ivy/ant/antlib.xml' , classpathref : classpathRef )
   }
   //  To save having to maintain lists of the functions available, simply redirect all method calls to the Ant object.

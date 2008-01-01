@@ -26,6 +26,8 @@ includeTargets << gant.targets.Clean
 cleanDirectory << buildDirectory
 cleanPattern << [ '**/*~' , '**/*.bak' ]
 
+//  We are testing the Ivy tool so we need to include it.
+
 includeTool << gant.tools.Ivy
 
 //  Cannot have a target called run as it creates an infinite mutual recursion. :-(
