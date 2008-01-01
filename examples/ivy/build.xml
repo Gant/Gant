@@ -20,9 +20,10 @@
 
 -->
 
-<project name="Ivy_Hello" default="run" xmlns:ivy="antlib:fr.jayasoft.ivy.ant">
+<project name="Ivy_Hello" default="run" xmlns:ivy="antlib:org.apache.ivy.ant">
 
-  <property name="groovyLibraryDirectory" value="${user.home}/lib/Java/groovy/lib" />
+  <property environment="environment"/>
+  <property name="groovyLibraryDirectory" value="${environment.GROOVY_HOME}/lib" />
   
   <property name="buildDirectory" value="build" />
   <property name="sourceDirectory" value="source" />
