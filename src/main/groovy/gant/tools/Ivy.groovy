@@ -21,11 +21,11 @@ package gant.tools
  */
 final class Ivy {
   private final Binding binding ;
-  private final classpath = 'ivy.class.path'
+  private final classpathRef = 'ivy.class.path'
   Ivy ( final Binding binding ) {
     this.binding = binding
     binding.Ant.path ( id : classpath ) { binding.Ant.fileset ( dir : System.properties.'groovy.home' + System.properties.'file.separator' + 'lib' , includes : 'ivy*.jar' ) }
-    binding.Ant.taskdef ( resource : 'org/apache/ivy/ant/antlib.xml' , classpathref : classpath )
+    binding.Ant.taskdef ( resource : 'org/apache/ivy/ant/antlib.xml' , classpathref : classpathRef )
   }
   //  To save having to maintain lists of the functions available, simply redirect all method calls to the Ant object.
   def invokeMethod ( String name , args ) { binding.Ant.invokeMethod ( name , args ) }

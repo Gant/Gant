@@ -28,17 +28,18 @@
   <property name="buildDirectory" value="build" />
   <property name="sourceDirectory" value="source" />
 
+  <path id="ivy.lib.path">
+    <fileset dir="${groovyLibraryDirectory}" includes="ivy*.jar"/>
+  </path>  
+  <taskdef resource="org/apache/ivy/ant/antlib.xml" uri="antlib:org.apache.ivy.ant" classpathref="ivy.lib.path"/>
+
   <target name="run" description="Resolve dependencies, compile and run the project.">
-    <path id="classpath">
-      <fileset dir="${groovyLibraryDirectory}" includes="ivy*.jar"/>
-    </path>  
-    <taskdef resource="org/apache/ivy/ant/antlib.xml" uri="antlib:org.apache.ivy.ant" classpathref="classpath"/>
-    <ivy:cachepath organisation="apache" module="commons-lang" revision="2.3"  pathid="classpath" inline="true"/>
+    <ivy:cachepath organisation="commons-lang" module="commons-lang" revision="2.3"  pathid="lib.path.id" inline="true"/>
     <mkdir dir="${buildDirectory}" />
-    <javac srcdir="${sourceDirectory}" destdir="${buildDirectory}" classpathref="classpath" />
+    <javac srcdir="${sourceDirectory}" destdir="${buildDirectory}" classpathref="lib.path.id" />
     <java classname="example.Hello">
       <classpath>
-        <path refid="classpath" />
+        <path refid="lib.path.id" />
         <path location="${buildDirectory}" />
       </classpath>
     </java>
@@ -52,6 +53,6 @@
   </target>
 
   <target name="cleanCache" description="Clean the ivy cache.">
-    <delete dir="${user.home}/.ivy/cache"/>
+    <ivy:cleancache/>
   </target>
 </project>
