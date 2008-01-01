@@ -40,7 +40,6 @@ final class Maven {
                                   compileDependencies : [ ] ,
                                   testDependencies : [ ] ,
                                   testFramework : 'junit' ,
-                                  testFailIgnore : false ,
                                   packaging : 'jar' ,
                                   deployURL : '' ,
                                   deploySnapshotURL : '' ,
@@ -68,6 +67,8 @@ final class Maven {
     properties.testCompilePath = "${properties.targetPath}${System.properties.'file.separator'}test-classes"
     properties.testReportPath = "${properties.targetPath}${System.properties.'file.separator'}test-reports"
     properties.metadataPath = "${properties.mainComilePath}${System.properties.'file.separator'}META-INF"
+    try { properties.binding.testFailIgnore }
+    catch ( MissingPropertyException mpe ) { properties.binding.testFailIgnore = false }
     properties.binding.target.call ( initialize : 'Ensure all the dependencies can be met and set classpaths accordingly.' ) {
       if ( owner.testFramework == 'testng' ) {
         testngInstalled = false
@@ -77,14 +78,14 @@ final class Maven {
       if ( owner.compileDependencies ) {
         owner.binding.Ant."${owner.antlibXMLns}:dependencies" ( pathId : owner.compileDependenciesClasspathId ) {
           owner.compileDependencies.each { item ->
-                                           dependency ( groupId : item.groupId , artifactId : item.artifactId , version : item.version , classifier : item.classifier )
+            dependency ( groupId : item.groupId , artifactId : item.artifactId , version : item.version , classifier : item.classifier )
           }
         }
       }
       if ( owner.testDependencies ) {
         owner.binding.Ant."${owner.antlibXMLns}:dependencies" ( pathId : owner.testDependenciesClasspathId ) {
           owner.testDependencies.each { item ->
-                                        dependency ( groupId : item.groupId , artifactId : item.artifactId , version : item.version , classifier : item.classifier )
+            dependency ( groupId : item.groupId , artifactId : item.artifactId , version : item.version , classifier : item.classifier )
           }
         }
       }
@@ -236,15 +237,13 @@ final class Maven {
            path { fileset ( dir : System.properties.'groovy.home' + System.properties.'file.separator' + 'lib' , includes : '*.jar' ) }
          }
          formatter ( type : 'plain' )
-         batchtest ( fork : 'true' , todir : owner.testReportPath ) {
-           fileset ( dir : owner.testCompilePath , includes : '**/*Test.class' )
-         }
+         batchtest ( fork : 'true' , todir : owner.testReportPath ) { fileset ( dir : owner.testCompilePath , includes : '**/*Test.class' ) }
        }
        break
       }
       try {
-        // owner.binding.testFailureIgnore or owner.binding.Ant.project.properties.testsFailed or both may not exist.  Ignore the MissingPropertyException.
-        if ( ! owner.binding.testFailureIgnore && owner.binding.Ant.project.properties.testsFailed ) { throw new RuntimeException ( 'Tests failed, execution terminating.' ) }
+        // owner.binding.Ant.project.properties.testsFailed may not exist, hence the MissingPropertyException capture.
+        if ( ! owner.binding.testFailIgnore && owner.binding.Ant.project.properties.testsFailed ) { throw new RuntimeException ( 'Tests failed, execution terminating.' ) }
       }
       catch ( MissingPropertyException mpe ) { }
     }
