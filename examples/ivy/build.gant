@@ -24,24 +24,22 @@ exampleDirectory = sourceDirectory + '/example'
 
 includeTargets << gant.targets.Clean
 cleanDirectory << buildDirectory
-
-cleanPattern << '**/*~'
-cleanPattern << '**/*.bak'
+cleanPattern << [ '**/*~' , '**/*.bak' ]
 
 //  Cannot have a target called run as it creates an infinite mutual recursion. :-(
 
 target ( runTest : 'Run the Ivy "Hello" test.' ) {
   def classPathRef = 'classpath'
-  Ant.mkdir ( dir : buildDirectory )
-  Ant.path ( id : classPathRef )
+  mkdir ( dir : buildDirectory )
+  path ( id : classPathRef )
   includeTool << gant.tools.Ivy
-  Ivy.cachepath ( organisation : 'apache' , module : 'commons-lang' , revision : '2.1' ,  pathid : classPathRef , inline : 'true' )
-  Ant.javac ( srcdir : sourceDirectory , destdir : buildDirectory , debug : 'true' , classpathref : classPathRef )
-  Ant.java ( classname : 'example.Hello' , classpathref : classPathRef ) {
+  Ivy.cachepath ( organisation : 'apache' , module : 'commons-lang' , revision : '2.3' ,  pathid : classPathRef , inline : 'true' )
+  javac ( srcdir : sourceDirectory , destdir : buildDirectory , debug : 'true' , classpathref : classPathRef )
+  java ( classname : 'example.Hello' , classpathref : classPathRef ) {
     classpath { pathelement ( location : buildDirectory ) }
   }
 }
 
 target ( cleanCache : 'Clean the Ivy cache.' ) { Ant.delete ( dir : System.getenv ( ).HOME + '/.ivy/cache' ) }
 
-target ( 'default' : 'The default target is runTest.' ) { runTest ( ) }
+setDefaultTarget ( runTest )

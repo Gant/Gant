@@ -27,12 +27,12 @@
   <property name="buildDirectory" value="build" />
   <property name="sourceDirectory" value="source" />
 
-  <target name="run" description="--> Resolve dependencies, compile and run the project.">
+  <target name="run" description="Resolve dependencies, compile and run the project.">
     <path id="classpath">
       <fileset dir="${groovyLibraryDirectory}" includes="ivy*.jar"/>
     </path>  
-    <taskdef resource="fr/jayasoft/ivy/ant/antlib.xml" uri="antlib:fr.jayasoft.ivy.ant" classpathref="classpath"/>
-    <ivy:cachepath organisation="apache" module="commons-lang" revision="2.1"  pathid="classpath" inline="true"/>
+    <taskdef resource="org/apache/ivy/ant/antlib.xml" uri="antlib:org.apache.ivy.ant" classpathref="classpath"/>
+    <ivy:cachepath organisation="apache" module="commons-lang" revision="2.3"  pathid="classpath" inline="true"/>
     <mkdir dir="${buildDirectory}" />
     <javac srcdir="${sourceDirectory}" destdir="${buildDirectory}" classpathref="classpath" />
     <java classname="example.Hello">
@@ -43,14 +43,14 @@
     </java>
   </target>
   
-  <target name="clean" description="--> Clean the project.">
+  <target name="clean" description="Clean the project.">
     <delete dir="${buildDirectory}"/>
     <delete>
       <fileset dir="." includes="**/*~" defaultexcludes="false"/>
     </delete>
   </target>
 
-  <target name="cleanCache" description="--> Clean the ivy cache.">
+  <target name="cleanCache" description="Clean the ivy cache.">
     <delete dir="${user.home}/.ivy/cache"/>
   </target>
 </project>
