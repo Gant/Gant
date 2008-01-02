@@ -5,6 +5,8 @@ Added metadata to the Maven target set.
 
 Updated the Ivy example a bit.  Switched to Ivy 2.0.0-beta-1.
 
+Added a Gant Ant Task.  (For supporting continuous integration systems that insist on using Ant.)
+
 
 1.0.2 ( r8867 )
 ---------------
