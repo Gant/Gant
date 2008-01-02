@@ -67,7 +67,7 @@ final class Maven {
     properties.mainCompilePath = "${properties.targetPath}${System.properties.'file.separator'}classes"
     properties.testCompilePath = "${properties.targetPath}${System.properties.'file.separator'}test-classes"
     properties.testReportPath = "${properties.targetPath}${System.properties.'file.separator'}test-reports"
-    properties.metadataPath = "${properties.mainComilePath}${System.properties.'file.separator'}META-INF"
+    properties.metadataPath = "${properties.mainCompilePath}${System.properties.'file.separator'}META-INF"
     try { properties.binding.testFailIgnore }
     catch ( MissingPropertyException mpe ) { properties.binding.testFailIgnore = false }
     properties.binding.target.call ( initialize : 'Ensure all the dependencies can be met and set classpaths accordingly.' ) {
@@ -263,7 +263,7 @@ final class Maven {
         owner.binding.Ant.mkdir ( dir : owner.metadataPath )
         owner.manifestIncludes.each { item ->
           if ( new File ( item ).isDirectory ( ) ) { owner.binding.Ant.copy ( todir : owner.metadataPath ) { fileset ( dir : item , includes : '*' ) } }
-          else {owner.binding.Ant.copy ( todir : owner.metadataPath , file : item ) }
+          else { owner.binding.Ant.copy ( todir : owner.metadataPath , file : item ) }
         }
       }
       switch ( owner.packaging ) {
@@ -324,6 +324,7 @@ final class Maven {
        if ( ! deployURL ) { throw new RuntimeException ( "Maven.${label} must be set to achieve target deploy." ) }
       depends ( owner.binding.install )
       owner.binding.Ant."${owner.antlibXMLns}:install-provider" ( artifactId : 'wagon-webdav' , version : '1.0-beta-2' )
+      //  This task cannot create new directories :-(
       owner.binding.Ant."${owner.antlibXMLns}:deploy" ( file : owner.packagedArtifact  ) {
         pom ( refid : owner.mavenPOMId )
         remoteRepository ( url : deployURL , id : owner.deployId ) 
