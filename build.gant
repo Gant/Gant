@@ -1,6 +1,6 @@
 //  Gant -- A Groovy build framework based on scripting Ant tasks.
 //
-//  Copyright © 2006-7 Russel Winder
+//  Copyright © 2006-8 Russel Winder
 //
 //  Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in
 //  compliance with the License. You may obtain a copy of the License at
@@ -72,35 +72,29 @@ Ant.path ( id : 'compileJarSet' ) {
   fileset ( dir : installationHome + '/lib' , includes : 'groovy*.jar' )
   fileset ( dir : installationHome + '/lib' , includes : 'commons-cli*.jar' )
   fileset ( dir : installationHome + '/lib' , includes : 'asm*.jar' )
-  fileset ( dir : installationHome + '/lib' , includes : 'antlr*.jar' )
-}
-Ant.path ( id : 'testJarSet' ) {
-  path ( refid : 'compileJarSet' )
-  fileset ( dir : installationHome + '/lib' , includes : 'junit*.jar' )
+  fileset ( dir : installationHome + '/lib' , includes : 'ant*.jar' ) // Picks up antlr as well as ant! This is intended.
 }
 Ant.taskdef ( name : 'groovyc' , classname : 'org.codehaus.groovy.ant.Groovyc' , classpathref : 'compileJarSet' )
 
 target ( compile : 'Compile everything needed for a Gant installation.' ) {
   mkdir ( dir : buildClassesDirectory )
-  javac ( srcdir : sourceDirectory , destdir : buildClassesDirectory , source : '1.4' , target : '1.4' , debug : 'on' , classpathref : 'compileJarSet' )
-  groovyc ( srcdir : sourceDirectory , destdir : buildClassesDirectory , classpath : buildClassesDirectory )
+  groovyc ( srcdir : sourceDirectory , destdir : buildClassesDirectory ) {
+    javac ( source : '1.4' , target : '1.4' , debug : 'on' , classpathref : 'compileJarSet' )
+  }
 }
 
 target ( compileTests : 'Compile all the tests for a newly built Gant.' ) {
   depends ( compile )
   mkdir ( dir : buildTestsDirectory )
-  javac ( srcdir : testsDirectory , destdir : buildTestsDirectory , source : '1.4' , target : '1.4' , debug : 'on' ) {
+  groovyc ( srcdir : testsDirectory , destdir : buildTestsDirectory ) {
+    classpath { pathelement ( location : buildClassesDirectory ) }
+  javac ( source : '1.4' , target : '1.4' , debug : 'on' ) {
     classpath {
-      path ( refid : 'testJarSet' )
+      path ( refid : 'compileJarSet' )
       pathelement ( location : buildClassesDirectory )
+      fileset ( dir : installationHome + '/lib' , includes : 'junit*.jar' ) // Irritating that this is needed :-(
     }
   }
-  groovyc ( srcdir : testsDirectory , destdir : buildTestsDirectory ) {
-    classpath {
-      path ( refid : 'testJarSet' )
-      pathelement ( location : buildTestsDirectory )
-      pathelement ( location : buildClassesDirectory )
-    }
   }
 }
 
@@ -115,7 +109,7 @@ target ( test : 'Test a build.' ) {
     classpath {
       pathelement ( location : buildTestsDirectory )
       pathelement ( location : buildClassesDirectory )
-      path ( refid : 'testJarSet' )
+      path ( refid : 'compileJarSet' )
     }
   }
 }
