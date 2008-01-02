@@ -43,6 +43,7 @@ final class Maven {
                                   packaging : 'jar' ,
                                   deployURL : '' ,
                                   deploySnapshotURL : '' ,
+                                  deployId : 'dav.codehaus.org' ,
                                   manifest : [ : ] ,
                                   manifestIncludes :  [ ] ,
                                   ( readOnlyKeys[0] ) : null ,
@@ -322,9 +323,10 @@ final class Maven {
       def deployURL = owner."${label}"
        if ( ! deployURL ) { throw new RuntimeException ( "Maven.${label} must be set to achieve target deploy." ) }
       depends ( owner.binding.install )
+      owner.binding.Ant."${owner.antlibXMLns}:install-provider" ( artifactId : 'wagon-webdav' , version : '1.0-beta-2' )
       owner.binding.Ant."${owner.antlibXMLns}:deploy" ( file : owner.packagedArtifact  ) {
         pom ( refid : owner.mavenPOMId )
-        remoteRepository ( url : deployURL )
+        remoteRepository ( url : deployURL , id : owner.deployId ) 
       }
     }
     properties.binding.target.call ( site : 'Create the website.' ) {
