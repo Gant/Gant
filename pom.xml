@@ -141,6 +141,13 @@
       <scope>compile</scope>
     </dependency>
     <dependency>
+      <!-- For the Gant Ant task only. -->
+      <groupId>org.apache.ant</groupId>
+      <artifactId>ant</artifactId>
+      <version>1.7.0</version>
+      <scope>compile</scope>
+    </dependency>
+    <dependency>
       <groupId>org.apache.maven</groupId>
       <artifactId>maven-ant-tasks</artifactId>
       <version>2.0.8</version>
