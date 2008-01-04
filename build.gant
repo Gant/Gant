@@ -51,8 +51,6 @@ buildTestReportsDirectory = buildDirectory + '/test-reports'
 buildCoberturaClassesDirectory = buildDirectory + '/cobertura-classes' 
 buildCoberturaReportsDirectory = buildDirectory + '/cobertura-reports'
 
-buildJarfilesDirectory = buildDirectory + '/jarfiles'
-
 documentationDirectory = buildDirectory + '/documentation'
 apiDocumentationDirectory = documentationDirectory + '/api'
 
@@ -126,7 +124,7 @@ target ( coberturaTest : 'Test a build using Cobertura to get a coverage report.
   mkdir ( dir : buildCoberturaClassesDirectory )
   mkdir ( dir : buildCoberturaReportsDirectory )
   mkdir ( dir : buildJarfilesDirectory )
-  'antlib:org.apache.maven.artifact.ant:dependencies' ( pathId :  'coberturaPathId' ) {
+  "${antlibXMLns}:dependencies" ( pathId :  'coberturaPathId' ) {
     dependency ( groupId : 'net.sourceforge.cobertura' , artifactId : 'cobertura' , version : '1.9' )
   }
   taskdef ( resource : 'tasks.properties' , classpathref : 'coberturaPathId' )

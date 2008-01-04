@@ -29,8 +29,8 @@ target ( something : "Do something." ) { Ant.echo ( message : "Did something." )
 setDefaultTarget ( something )
 ''' ) )  }
     
-  //  It seems that the same gant.targets.Clean instance is used for all tests in this class whuich is a bit
-  //  sad becaus it means that there is an accumulatiopn of **/*~ patterns, 1 for each test method as
+  //  It seems that the same gant.targets.Clean instance is used for all tests in this class which is a bit
+  //  sad becaus it means that there is an accumulation of **/*~ patterns, 1 for each test method as
   //  addCleanPattern gets executed for each test.  So it is crucial to know when testClean is run to know
   //  what the output will be.  Put it first in the hope it will be run first.
 
@@ -44,14 +44,14 @@ setDefaultTarget ( something )
   }
   void testDefault ( ) {
     assertEquals ( 0 , gant.process ( [ '-f' ,  '-'  ] as String[] ) )
-    assertEquals ( " [property] environment : 'environment'\n     [echo] message : 'Did something.'\n" , output ) 
+    assertEquals ( "     [echo] message : 'Did something.'\n" , output ) 
   }
   void testBlah ( ) {
     assertEquals ( 11 , gant.process ( [ '-f' ,  '-'  , 'blah' ] as String[] ) )
-    assertEquals ( " [property] environment : 'environment'\nTarget blah does not exist.\n" , output ) 
+    assertEquals ( "Target blah does not exist.\n" , output ) 
   }
   void testSomething ( ) {
     assertEquals ( 0 , gant.process ( [ '-f' ,  '-'  , 'something' ] as String[] ) )
-    assertEquals ( " [property] environment : 'environment'\n     [echo] message : 'Did something.'\n" , output ) 
+    assertEquals ( "     [echo] message : 'Did something.'\n" , output ) 
   }
 }
