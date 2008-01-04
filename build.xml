@@ -94,9 +94,9 @@
         <fileset dir="${buildTestsDirectory}" includes="**/*_Test.class"/>
       </batchtest>
       <classpath>
-        <pathelement location="${buildTestsDirectory}"/>
-        <pathelement location="${buildClassesDirectory}"/>
         <path refid="compileJarSet"/>
+        <pathelement location="${buildClassesDirectory}"/>
+        <pathelement location="${buildTestsDirectory}"/>
       </classpath>
     </junit>
   </target>
