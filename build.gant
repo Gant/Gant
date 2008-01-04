@@ -22,16 +22,17 @@ catch ( MissingPropertyException mpe ) { gantVersion = Ant.project.properties.ga
 
 // NB  System.getenv ( ) does not work on Java 1.4 but does on Java 5 or later.
   
-installationHome = System.getenv ( ).'GROOVY_HOME'
+installationHome = System.properties.'groovy.home'
 try { if ( grailsBuild ) { installationHome = System.getenv ( ).'GRAILS_HOME' } }
 catch ( MissingPropertyException mpe ) { grailsBuild = false }
 
 if ( ( installationHome == null ) || ( installationHome == '' ) ) {
-  println ( 'Must set environment variable ' + ( grailsBuild ? 'GRAILS_HOME' : 'GROOVY_HOME' ) + ' to compile Gant.' )
+  if ( grailsBuild ) { println ( 'GRAILS_HOME is not set, so a build cannot happen.' ) }
+  else { println ( 'Real problem: Groovy home is not set and this is Groovy executing.' ) }
   return
 }
 
-//  The versions in the Maven repository to build distribution version of Gant against.
+//  The versions of Gant in the Maven repository to build distribution version of Gant against.
 
 distributionVersions = [
                         [ groupId : 'groovy' , artifactId : 'groovy-all' , version : '1.0' ] ,
@@ -53,7 +54,7 @@ apiDocumentationDirectory = documentationDirectory + '/api'
 buildMetadataDirectory = buildClassesDirectory + '/META-INF'
 
 distributionTopLevelFiles = [
-                             'build.gant' , 'build.properties' , 'build.xml' ,
+                             'build.gant' , 'buildMaven.gant' , 'build.properties' , 'build.xml' ,
                              '.classpath' , '.project' ,
                              'LICENCE.txt' ,
                              'README_Distribution.txt' , 'README_Install.txt' ,
@@ -250,7 +251,7 @@ target ( distribution : 'Create the distribution.' ) {
 includeTool << gant.tools.Execute
 
 target ( uploadDistribution : 'Upload a complete distribution.' ) {
-  //depends ( distribution )
+  depends ( distribution )
   //
   //  It would be nice to programmatically upload things to Codehaus but how to script a WebDAV client?
   //  Cadaver deals with SSL certificates in a way that means it is impossible to do the right thing unless
@@ -262,18 +263,6 @@ target ( uploadDistribution : 'Upload a complete distribution.' ) {
   distributionProducts [ 'distributions' ].each { sourcePath -> println ( 'Upload ' + sourcePath + ' somehow.' ) }
   distributionProducts [ 'jars' ].each { sourcePath -> println ( 'Upload ' + sourcePath + ' somehow.' ) }
   println ( 'Upload pom.xml somehow.' )
-}
-
-target ( mavenInstall : 'Install a Maven build to the local Maven repository.' ) {
-  clean ( )
-  Execute.shell ( 'mvn -Dmaven.test.failure.ignore=true install' )
-  clean ( )
-}
-
-target ( mavenDeploy : 'Upload a Maven build to the remote Maven repository.' ) {
-  clean ( )
-  Execute.shell ( 'mvn -Dmaven.test.failure.ignore=true deploy' )
-  clean ( )
 }
 
 setDefaultTarget ( test )
