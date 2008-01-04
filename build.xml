@@ -157,7 +157,10 @@
   <target name="clean" description="Clean everything up.">
     <delete dir="${buildDirectory}"/>
     <delete>
-      <fileset dir="." includes="**/*~" defaultexcludes="false"/>
+      <fileset dir="." defaultexcludes="false">
+        <include name="**/*~"/>
+        <include name="cobertura.ser"/>
+      </fileset>
     </delete>
   </target>
 
