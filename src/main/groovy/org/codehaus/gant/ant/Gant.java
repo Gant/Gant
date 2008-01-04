@@ -21,9 +21,6 @@ import java.util.ArrayList ;
 import org.apache.tools.ant.BuildException ;
 import org.apache.tools.ant.Task ;
 
-import org.apache.tools.ant.types.Path ;
-import org.apache.tools.ant.types.Reference ;
-
 /**
  *  Execute a Gant script.
  *
