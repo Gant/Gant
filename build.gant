@@ -51,7 +51,7 @@ buildTestReportsDirectory = buildDirectory + '/test-reports'
 buildCoberturaClassesDirectory = buildDirectory + '/cobertura-classes' 
 buildCoberturaReportsDirectory = buildDirectory + '/cobertura-reports'
 
-coberturaHomeDirectory = System.properties.'user.home' + '/lib/Java/cobertura'
+buildJarfilesDirectory = buildDirectory + '/jarfiles'
 
 documentationDirectory = buildDirectory + '/documentation'
 apiDocumentationDirectory = documentationDirectory + '/api'
@@ -125,11 +125,9 @@ target ( coberturaTest : 'Test a build using Cobertura to get a coverage report.
   mkdir ( dir : buildTestReportsDirectory )
   mkdir ( dir : buildCoberturaClassesDirectory )
   mkdir ( dir : buildCoberturaReportsDirectory )
-  path ( id : 'coberturaPathId' ) {
-    fileset ( dir : coberturaHomeDirectory ) {
-      include ( name : 'cobertura.jar' )
-      include ( name : 'lib/**/*.jar' )
-    }
+  mkdir ( dir : buildJarfilesDirectory )
+  'antlib:org.apache.maven.artifact.ant:dependencies' ( pathId :  'coberturaPathId' ) {
+    dependency ( groupId : 'net.sourceforge.cobertura' , artifactId : 'cobertura' , version : '1.9' )
   }
   taskdef ( resource : 'tasks.properties' , classpathref : 'coberturaPathId' )
   'cobertura-instrument' ( todir : buildCoberturaClassesDirectory ) { fileset ( dir : buildClassesDirectory ) }
