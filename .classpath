@@ -6,5 +6,6 @@
 	<classpathentry kind="con" path="org.eclipse.jdt.junit.JUNIT_CONTAINER/3.8.1"/>
 	<classpathentry kind="var" path="GROOVY_ECLIPSE_HOME/groovy-all-1.5.0.jar"/>
 	<classpathentry exported="true" kind="lib" path="bin"/>
+	<classpathentry kind="lib" path="jarfiles/ant-1.7.0.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
