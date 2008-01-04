@@ -16,7 +16,8 @@
 
 Ant.property ( file : 'build.properties' )
 
-gantVersion = Ant.project.properties.gantVersion
+try { gantVersion }
+catch ( MissingPropertyException mpe ) { gantVersion = Ant.project.properties.gantVersion }
 
 includeTargets ** gant.targets.Maven * [
                                         groupId : 'org.codehaus.gant' ,
