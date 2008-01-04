@@ -41,8 +41,8 @@
 
   <property name="buildDirectory" value="target"/>
   <property name="buildClassesDirectory" value="${buildDirectory}/classes"/>
-  <property name="buildTestsDirectory" value="${buildDirectory}/test-classes"/>
-  <property name="buildReportsDirectory" value="${buildDirectory}/reports"/>
+  <property name="buildTestClassesDirectory" value="${buildDirectory}/test-classes"/>
+  <property name="buildTestReportsDirectory" value="${buildDirectory}/test-reports"/>
 
   <property name="buildMetadataDirectory" value="${buildClassesDirectory}/META-INF"/>
 
@@ -72,8 +72,8 @@
   </target>
 
   <target name="compileTests" depends="compile" description="Compile all the tests for a newly built Gant.">
-    <mkdir dir="${buildTestsDirectory}"/>
-    <groovyc srcdir="${testsDirectory}" destdir="${buildTestsDirectory}">
+    <mkdir dir="${buildTestClassesDirectory}"/>
+    <groovyc srcdir="${testsDirectory}" destdir="${buildTestClassesDirectory}">
       <classpath>
         <pathelement location="${buildClassesDirectory}"/>
       </classpath>
@@ -87,16 +87,16 @@
   </target>
 
   <target name="test" depends="compileTests" description="Test a build.">
-    <mkdir dir="${buildReportsDirectory}"/>
+    <mkdir dir="${buildTestReportsDirectory}"/>
     <junit printsummary="yes">
       <formatter type="plain"/>
-      <batchtest fork="yes" todir="${buildReportsDirectory}">
-        <fileset dir="${buildTestsDirectory}" includes="**/*_Test.class"/>
+      <batchtest fork="yes" todir="${buildTestReportsDirectory}">
+        <fileset dir="${buildTestClassesDirectory}" includes="**/*_Test.class"/>
       </batchtest>
       <classpath>
         <path refid="compileJarSet"/>
         <pathelement location="${buildClassesDirectory}"/>
-        <pathelement location="${buildTestsDirectory}"/>
+        <pathelement location="${buildTestClassesDirectory}"/>
       </classpath>
     </junit>
   </target>
