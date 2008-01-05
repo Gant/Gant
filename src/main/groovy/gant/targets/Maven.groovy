@@ -167,47 +167,50 @@ final class Maven {
     properties.binding.target.call ( 'test-compile' : "Compile the test source code in ${properties.testSourcePath} to ${properties.testCompilePath}." ) {
       depends ( owner.binding.compile )
       owner.binding.Ant.mkdir ( dir : owner.testCompilePath  )
-      new File ( owner.testSourcePath ).eachDir { directory ->
-        switch ( directory.name ) {
-         case 'java' :
-          //  Need to use the joint Groovy compiler here to deal wuth the case where Groovy files are in the
-          //  Java hierarchy.
-         owner.binding.Ant.javac ( [ srcdir : owner.testSourcePath + System.properties.'file.separator' + 'java' , destdir : owner.testCompilePath ] + owner.javaCompileProperties ) {
-           classpath {
-             pathelement ( location : owner.mainCompilePath )
-             pathelement ( path : owner.compileClasspath.join ( System.properties.'path.separator' ) )
-             pathelement ( path : owner.testClasspath.join ( System.properties.'path.separator' ) )
-             if ( owner.compileDependencies ) { path ( refid : owner.compileDependenciesClasspathId ) }
-             if ( owner.testDependencies ) { path ( refid : owner.testDependenciesClasspathId ) }
-             path { fileset ( dir : System.properties.'groovy.home' + System.properties.'file.separator' + 'lib' , includes : 'junit*.jar' ) }
-           }
-         }
-         break
-         case 'groovy' :
-         owner.binding.Ant.taskdef ( name : 'groovyc' , classname : 'org.codehaus.groovy.ant.Groovyc' )
-         owner.binding.Ant.groovyc ( [ srcdir : owner.testSourcePath + System.properties.'file.separator' + 'groovy' , destdir : owner.testCompilePath ] + owner.groovyCompileProperties ) {
-           javac ( owner.javaCompileProperties ) {
+      try {
+        new File ( owner.testSourcePath ).eachDir { directory ->
+          switch ( directory.name ) {
+           case 'java' :
+           //  Need to use the joint Groovy compiler here to deal wuth the case where Groovy files are in the
+           //  Java hierarchy.
+           owner.binding.Ant.javac ( [ srcdir : owner.testSourcePath + System.properties.'file.separator' + 'java' , destdir : owner.testCompilePath ] + owner.javaCompileProperties ) {
              classpath {
                pathelement ( location : owner.mainCompilePath )
                pathelement ( path : owner.compileClasspath.join ( System.properties.'path.separator' ) )
                pathelement ( path : owner.testClasspath.join ( System.properties.'path.separator' ) )
                if ( owner.compileDependencies ) { path ( refid : owner.compileDependenciesClasspathId ) }
                if ( owner.testDependencies ) { path ( refid : owner.testDependenciesClasspathId ) }
-               path { fileset ( dir : System.properties.'groovy.home' + System.properties.'file.separator' + 'lib' , includes : '*.jar' ) }
+               path { fileset ( dir : System.properties.'groovy.home' + System.properties.'file.separator' + 'lib' , includes : 'junit*.jar' ) }
              }
            }
-           classpath {
-             pathelement ( location : owner.mainCompilePath )
-             pathelement ( path : owner.compileClasspath.join ( System.properties.'path.separator' ) )
-             pathelement ( path : owner.testClasspath.join ( System.properties.'path.separator' ) )
-             if ( owner.compileDependencies ) { path ( refid : owner.compileDependenciesClasspathId ) }
-             if ( owner.testDependencies ) { path ( refid : owner.testDependenciesClasspathId ) }
-             path { fileset ( dir : System.properties.'groovy.home' + System.properties.'file.separator' + 'lib' , includes : 'junit*.jar' ) }
+           break
+           case 'groovy' :
+           owner.binding.Ant.taskdef ( name : 'groovyc' , classname : 'org.codehaus.groovy.ant.Groovyc' )
+           owner.binding.Ant.groovyc ( [ srcdir : owner.testSourcePath + System.properties.'file.separator' + 'groovy' , destdir : owner.testCompilePath ] + owner.groovyCompileProperties ) {
+             javac ( owner.javaCompileProperties ) {
+               classpath {
+                 pathelement ( location : owner.mainCompilePath )
+                 pathelement ( path : owner.compileClasspath.join ( System.properties.'path.separator' ) )
+                 pathelement ( path : owner.testClasspath.join ( System.properties.'path.separator' ) )
+                 if ( owner.compileDependencies ) { path ( refid : owner.compileDependenciesClasspathId ) }
+                 if ( owner.testDependencies ) { path ( refid : owner.testDependenciesClasspathId ) }
+                 path { fileset ( dir : System.properties.'groovy.home' + System.properties.'file.separator' + 'lib' , includes : '*.jar' ) }
+               }
+             }
+             classpath {
+               pathelement ( location : owner.mainCompilePath )
+               pathelement ( path : owner.compileClasspath.join ( System.properties.'path.separator' ) )
+               pathelement ( path : owner.testClasspath.join ( System.properties.'path.separator' ) )
+               if ( owner.compileDependencies ) { path ( refid : owner.compileDependenciesClasspathId ) }
+               if ( owner.testDependencies ) { path ( refid : owner.testDependenciesClasspathId ) }
+               path { fileset ( dir : System.properties.'groovy.home' + System.properties.'file.separator' + 'lib' , includes : 'junit*.jar' ) }
+             }
            }
-         }
-         break
+           break
+          }
         }
       }
+      catch ( FileNotFoundException fnfe ) { throw new RuntimeException ( 'Error: ' + owner.testSourcePath + ' does not exist.' ) }
     }
     properties.binding.target.call ( test : "Run the tests using the ${properties.testFramework} unit testing framework." ) {
       depends ( owner.binding.'test-compile' )
