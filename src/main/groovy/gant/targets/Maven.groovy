@@ -76,18 +76,18 @@ final class Maven {
         owner.testDependencies.each { dependency -> if ( dependency.artifactId == 'testng' ) { testngInstalled = true } }
         if ( ! testngInstalled ) { owner.testDependencies << [ groupId : 'org.testng' , artifactId : 'testng' , version : '5.7' , scope : 'test' , classifier : 'jdk15' ] }
       }
+      def createDependencyMap = { dependencyMap , map ->
+        [ 'groupId' , 'artifactId' , 'version' , 'classifier' ].each { property -> if ( map [ property ] ) { dependencyMap [ property ] =  map [ property ] } }
+        dependencyMap
+      }
       if ( owner.compileDependencies ) {
         owner.binding.Ant."${owner.antlibXMLns}:dependencies" ( pathId : owner.compileDependenciesClasspathId ) {
-          owner.compileDependencies.each { item ->
-            dependency ( groupId : item.groupId , artifactId : item.artifactId , version : item.version , classifier : item.classifier )
-          }
+          owner.compileDependencies.each { item -> dependency ( createDependencyMap ( [ scope : 'compile' ] , item ) ) }
         }
       }
       if ( owner.testDependencies ) {
         owner.binding.Ant."${owner.antlibXMLns}:dependencies" ( pathId : owner.testDependenciesClasspathId ) {
-          owner.testDependencies.each { item ->
-            dependency ( groupId : item.groupId , artifactId : item.artifactId , version : item.version , classifier : item.classifier )
-          }
+          owner.testDependencies.each { item -> dependency ( createDependencyMap ( [ scope : 'test' ] , item ) ) }
         }
       }
     }
