@@ -94,11 +94,11 @@ import org.apache.commons.cli.OptionBuilder
  */
 final class Gant {
   private buildFileName = 'build.gant'
-  private buildClassName = buildFileName.replaceAll ( '\\.' , '_' ) 
+  private buildClassName = buildFileName.replaceAll ( '\\.' , '_' )
+  private final Binding binding
+  private final ClassLoader classLoader
+  private final GroovyShell groovyShell
   private final targetDescriptions = new TreeMap ( ) 
-  private final binding = new Binding ( )
-  private final groovyShell = new GroovyShell ( binding )
-  private final classLoader = getClass().getClassLoader()
   private final target = { Map map , Closure closure ->
     def targetName = map.keySet ( ).iterator ( ).next ( )
     def targetDescription = map.get ( targetName )
@@ -147,12 +147,13 @@ final class Gant {
     if ( item == null ) { gantLib = [ ] }
     else { gantLib = Arrays.asList ( item.split ( System.properties.'path.separator' ) ) }
   }
+  //public Gant ( ) { this ( new Binding ( ) , getClass ( ).getClassLoader ( ) ) }  
   public Gant ( ) { this ( null , getClass ( ).getClassLoader ( ) ) }  
   public Gant ( Binding b ) { this ( b , getClass ( ).getClassLoader ( ) ) }
   public Gant ( Binding b , ClassLoader cl ) {
-    if ( b ) { this.binding = b }
-    if ( cl ) { this.classLoader = cl }
-    this.groovyShell = new GroovyShell ( this.classLoader , this.binding ) // Appears to assign a final variable :-( cf GROOVY-2302.
+    binding = ( b != null ) ? b : new Binding ( )
+    classLoader = ( cl != null ) ? cl : getClass ( ).getClassLoader ( )
+    groovyShell = new GroovyShell ( classLoader , binding )
     binding.gantLib = gantLib
     binding.Ant = ant
     binding.groovyShell = groovyShell
@@ -240,7 +241,7 @@ final class Gant {
     cli.s ( longOpt : 'silent' , 'Print out nothing when executing.' )
     cli.v ( longOpt : 'verbose' , 'Print lots of extra information.' )
     //  This options should have "args : Option.UNLIMITED_VALUES" but that doesn't work.
-    cli.D (argName : 'name>=<value' , args : 1 , 'Define <name> to have value <value>.  Creates a variable named <name> for use in the scripts and a property named <name> for the Ant tasks.' )
+    cli.D ( argName : 'name>=<value' , args : 1 , 'Define <name> to have value <value>.  Creates a variable named <name> for use in the scripts and a property named <name> for the Ant tasks.' )
     cli.P ( longOpt : 'classpath' , args : 1 , argName : 'path' , 'Adds a path to search for jars and classes.' )
     cli.T ( longOpt : 'targets' , 'Print out a list of the possible targets.' )
     cli.V ( longOpt : 'version' , 'Print the version number and exit.' )
