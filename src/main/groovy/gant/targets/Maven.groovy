@@ -111,38 +111,41 @@ final class Maven {
     properties.binding.target.call ( compile : "Compile the source code in ${properties.mainSourcePath} to ${properties.mainCompilePath}." ) {
       depends ( owner.binding.initialize )
       owner.binding.Ant.mkdir ( dir : owner.mainCompilePath )
-      new File ( owner.mainSourcePath ).eachDir { directory ->
-        switch ( directory.name ) {
-         case 'java' :
-          //  Need to use the joint Groovy compiler here to deal wuth the case where Groovy files are in the
-          //  Java hierarchy.
-         owner.binding.Ant.javac ( [ srcdir : owner.mainSourcePath + System.properties.'file.separator' + 'java' , destdir : owner.mainCompilePath ] + owner.javaCompileProperties ) {
-           classpath {
-             pathelement ( path : owner.compileClasspath.join ( System.properties.'path.separator' ) )
-             if ( owner.compileDependencies ) { path ( refid : owner.compileDependenciesClasspathId ) }
-             path { fileset ( dir : System.properties.'groovy.home' + System.properties.'file.separator' + 'lib' , includes : 'junit*.jar' ) }
-           }
-         }
-         break
-         case 'groovy' :
-         owner.binding.Ant.taskdef ( name : 'groovyc' , classname : 'org.codehaus.groovy.ant.Groovyc' )
-         owner.binding.Ant.groovyc ( [ srcdir : owner.mainSourcePath + System.properties.'file.separator' + 'groovy' , destdir : owner.mainCompilePath ] + owner.groovyCompileProperties ) {
-           javac ( owner.javaCompileProperties ) {
+      try {
+        new File ( owner.mainSourcePath ).eachDir { directory ->
+          switch ( directory.name ) {
+           case 'java' :
+           //  Need to use the joint Groovy compiler here to deal wuth the case where Groovy files are in the
+           //  Java hierarchy.
+           owner.binding.Ant.javac ( [ srcdir : owner.mainSourcePath + System.properties.'file.separator' + 'java' , destdir : owner.mainCompilePath ] + owner.javaCompileProperties ) {
              classpath {
                pathelement ( path : owner.compileClasspath.join ( System.properties.'path.separator' ) )
                if ( owner.compileDependencies ) { path ( refid : owner.compileDependenciesClasspathId ) }
-               path { fileset ( dir : System.properties.'groovy.home' + System.properties.'file.separator' + 'lib' , includes : '*.jar' ) }
+               path { fileset ( dir : System.properties.'groovy.home' + System.properties.'file.separator' + 'lib' , includes : 'junit*.jar' ) }
              }
            }
-           classpath {
-             pathelement ( path : owner.compileClasspath.join ( System.properties.'path.separator' ) )
-             if ( owner.compileDependencies ) { path ( refid : owner.compileDependenciesClasspathId ) }
-             path { fileset ( dir : System.properties.'groovy.home' + System.properties.'file.separator' + 'lib' , includes : 'junit*.jar' ) }
+           break
+           case 'groovy' :
+           owner.binding.Ant.taskdef ( name : 'groovyc' , classname : 'org.codehaus.groovy.ant.Groovyc' )
+           owner.binding.Ant.groovyc ( [ srcdir : owner.mainSourcePath + System.properties.'file.separator' + 'groovy' , destdir : owner.mainCompilePath ] + owner.groovyCompileProperties ) {
+             javac ( owner.javaCompileProperties ) {
+               classpath {
+                 pathelement ( path : owner.compileClasspath.join ( System.properties.'path.separator' ) )
+                 if ( owner.compileDependencies ) { path ( refid : owner.compileDependenciesClasspathId ) }
+                 path { fileset ( dir : System.properties.'groovy.home' + System.properties.'file.separator' + 'lib' , includes : '*.jar' ) }
+               }
+             }
+             classpath {
+               pathelement ( path : owner.compileClasspath.join ( System.properties.'path.separator' ) )
+               if ( owner.compileDependencies ) { path ( refid : owner.compileDependenciesClasspathId ) }
+               path { fileset ( dir : System.properties.'groovy.home' + System.properties.'file.separator' + 'lib' , includes : 'junit*.jar' ) }
+             }
            }
-         }
-         break
-        }
+           break
+          }
+        }        
       }
+      catch ( FileNotFoundException fnfe ) { throw new RuntimeException ( 'Error: ' + owner.mainSourcePath + ' does not exist.' ) }
     }
     /*
     properties.binding.target.call ( 'process-classes' , 'Post-process the generated files from compilation, for example to do bytecode enhancement on Java classes.' ) {
