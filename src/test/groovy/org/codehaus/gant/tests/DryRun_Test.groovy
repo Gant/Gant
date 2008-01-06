@@ -23,8 +23,8 @@ final class DryRun_Test extends GantTestCase {
   void setUp ( ) {
     super.setUp ( )
     System.setIn ( new StringBufferInputStream ( '''
-target ( something : "Do something." ) { Ant.echo ( message : "Did something." ) }
-target ( somethingElse : "Do something else." ) { Ant.echo ( message : "Did something else." ) }
+target ( something : "Do something." ) { echo ( message : "Did something." ) }
+target ( somethingElse : "Do something else." ) { echo ( message : "Did something else." ) }
 ''' ) )  }
     
   void testMissingDefault ( ) {
@@ -33,14 +33,20 @@ target ( somethingElse : "Do something else." ) { Ant.echo ( message : "Did some
   }
   void testMissingNamedTarget ( ) {
     assertEquals ( 11 , gant.process ( [ '-n' ,  '-f' ,  '-'  , 'blah'] as String[] ) )
-    assertEquals ( "Target blah does not exist.\n" , output ) 
+    assertEquals ( ''' [property] environment : 'environment'
+Target blah does not exist.
+''' , output ) 
   }
   void testSomething ( ) {
     assertEquals ( 0 , gant.process ( [ '-n' ,  '-f' ,  '-'  , 'something'] as String[] ) )
-    assertEquals ( "     [echo] message : 'Did something.'\n" , output ) 
+    assertEquals ( ''' [property] environment : 'environment'
+     [echo] message : 'Did something.'
+''' , output ) 
   }
   void testSomethingElse ( ) {
     assertEquals ( 0 , gant.process ( [ '-n' ,  '-f' ,  '-'  , 'somethingElse'] as String[] ) )
-    assertEquals ( "     [echo] message : 'Did something else.'\n" , output ) 
+    assertEquals (  ''' [property] environment : 'environment'
+     [echo] message : 'Did something else.'
+''' , output ) 
   }
 }

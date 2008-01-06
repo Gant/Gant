@@ -44,14 +44,20 @@ setDefaultTarget ( something )
   }
   void testDefault ( ) {
     assertEquals ( 0 , gant.process ( [ '-f' ,  '-'  ] as String[] ) )
-    assertEquals ( "     [echo] message : 'Did something.'\n" , output ) 
+    assertEquals (  ''' [property] environment : 'environment'
+     [echo] message : 'Did something.'
+''' , output ) 
   }
   void testBlah ( ) {
     assertEquals ( 11 , gant.process ( [ '-f' ,  '-'  , 'blah' ] as String[] ) )
-    assertEquals ( "Target blah does not exist.\n" , output ) 
+    assertEquals ( ''' [property] environment : 'environment'
+Target blah does not exist.
+''' , output ) 
   }
   void testSomething ( ) {
     assertEquals ( 0 , gant.process ( [ '-f' ,  '-'  , 'something' ] as String[] ) )
-    assertEquals ( "     [echo] message : 'Did something.'\n" , output ) 
+    assertEquals ( ''' [property] environment : 'environment'
+     [echo] message : 'Did something.'
+''' , output ) 
   }
 }
