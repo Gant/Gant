@@ -134,9 +134,14 @@ final class Gant {
      break 
     }
   }
+  /*
+   *  There are issues with this use of instance initializers in Groovy as at r10228.  Doing a compilation
+   *  from clean means this initializer does not get executed.  Causing this file to be compiled then means
+   *  everything works correctly.  For the moment, as a hack, remove the use of instance initializers in
+   *  favour of putting the code into the constructor.
+   *
   private def ant = new GantBuilder ( ) ; { ant.property ( environment : 'environment' ) }
   private List gantLib ; {
-    //
     //  System.getenv is deprecated on 1.4, so we use Ant to access the environment.  Can remove this once
     //  Groovy depends on 1.5.
     //
@@ -145,9 +150,20 @@ final class Gant {
     if ( item == null ) { gantLib = [ ] }
     else { gantLib = Arrays.asList ( item.split ( System.properties.'path.separator' ) ) }
   }
+  */
+  private def ant = new GantBuilder ( )
+  private List gantLib
+   /*
+    */
   public Gant ( ) { this ( null , null ) }  
   public Gant ( Binding b ) { this ( b , null ) }
   public Gant ( Binding b , ClassLoader cl ) {
+    /*
+     *  Move things here from the instance initializers.
+     */
+    ant.property ( environment : 'environment' )
+    /*
+     */
     binding = ( b != null ) ? b : new Binding ( )
     classLoader = ( cl != null ) ? cl : getClass ( ).getClassLoader ( )
     groovyShell = new GroovyShell ( classLoader , binding )
