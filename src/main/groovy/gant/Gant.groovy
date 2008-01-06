@@ -134,14 +134,12 @@ final class Gant {
      break 
     }
   }
-  private def ant = new GantBuilder ( ) ; {
-    //
-    //  To avoid using System.getenv which is deprecated on 1.4, we use Ant to access the environment.  Can
-    //  remove this once Groovy depends on 1.5.
-    //
-    ant.property ( environment : 'environment' )
-  }
+  private def ant = new GantBuilder ( ) ; { ant.property ( environment : 'environment' ) }
   private List gantLib ; {
+    //
+    //  System.getenv is deprecated on 1.4, so we use Ant to access the environment.  Can remove this once
+    //  Groovy depends on 1.5.
+    //
     // def item = System.getenv ( ).GANTLIB ;
     def item = ant.project.properties.'environment.GANTLIB'
     if ( item == null ) { gantLib = [ ] }
