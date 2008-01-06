@@ -111,9 +111,7 @@ target ( test : 'Test a build.' ) {
   junit ( printsummary : 'yes' , failureproperty : 'testsFailed' , fork : 'yes' ) {
     formatter ( type : 'plain' )
     sysproperty ( key : 'groovy.home' , value : System.properties.'groovy.home' )
-    batchtest ( todir : buildTestReportsDirectory ) {
-      fileset ( dir : buildTestClassesDirectory , includes : '**/*_Test.class' )
-    }
+    batchtest ( todir : buildTestReportsDirectory ) { fileset ( dir : buildTestClassesDirectory , includes : '**/*_Test.class' ) }
     classpath {
       path ( refid : 'compileJarSet' )
       pathelement ( location : buildClassesDirectory )
@@ -127,7 +125,6 @@ target ( coberturaTest : 'Test a build using Cobertura to get a coverage report.
   mkdir ( dir : buildTestReportsDirectory )
   mkdir ( dir : buildCoberturaClassesDirectory )
   mkdir ( dir : buildCoberturaReportsDirectory )
-  mkdir ( dir : buildJarfilesDirectory )
   "${antlibXMLns}:dependencies" ( pathId :  'coberturaPathId' ) {
     dependency ( groupId : 'net.sourceforge.cobertura' , artifactId : 'cobertura' , version : '1.9' )
   }
@@ -136,9 +133,7 @@ target ( coberturaTest : 'Test a build using Cobertura to get a coverage report.
   junit ( printsummary : 'yes' , failureproperty : 'testsFailed' , fork : 'true' ) {
     formatter ( type : 'plain' )
     sysproperty ( key : 'groovy.home' , value : System.properties.'groovy.home' )
-    batchtest ( todir : buildTestReportsDirectory ) {
-      fileset ( dir : buildTestClassesDirectory , includes : '**/*_Test.class' )
-    }
+    batchtest ( todir : buildTestReportsDirectory ) { fileset ( dir : buildTestClassesDirectory , includes : '**/*_Test.class' ) }
     classpath {
       path ( refid : 'compileJarSet' )
       pathelement ( location : buildCoberturaClassesDirectory ) // MUST appear before uninstrumented classes.
