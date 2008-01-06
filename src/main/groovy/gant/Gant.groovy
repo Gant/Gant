@@ -147,9 +147,8 @@ final class Gant {
     if ( item == null ) { gantLib = [ ] }
     else { gantLib = Arrays.asList ( item.split ( System.properties.'path.separator' ) ) }
   }
-  //public Gant ( ) { this ( new Binding ( ) , getClass ( ).getClassLoader ( ) ) }  
-  public Gant ( ) { this ( null , getClass ( ).getClassLoader ( ) ) }  
-  public Gant ( Binding b ) { this ( b , getClass ( ).getClassLoader ( ) ) }
+  public Gant ( ) { this ( null , null ) }  
+  public Gant ( Binding b ) { this ( b , null ) }
   public Gant ( Binding b , ClassLoader cl ) {
     binding = ( b != null ) ? b : new Binding ( )
     classLoader = ( cl != null ) ? cl : getClass ( ).getClassLoader ( )
