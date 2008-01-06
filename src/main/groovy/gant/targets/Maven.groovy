@@ -233,7 +233,7 @@ final class Maven {
        case 'junit' :
        default :
        owner.binding.Ant.mkdir ( dir : owner.testReportPath )
-       owner.binding.Ant.junit ( printsummary : 'yes' , failureproperty : 'testsFailed' ) {
+       owner.binding.Ant.junit ( printsummary : 'yes' , failureproperty : 'testsFailed' , fork : 'true' ) {
          classpath {
            pathelement ( location : owner.mainCompilePath )
            pathelement ( location : owner.testCompilePath )
@@ -244,7 +244,8 @@ final class Maven {
            path { fileset ( dir : System.properties.'groovy.home' + System.properties.'file.separator' + 'lib' , includes : '*.jar' ) }
          }
          formatter ( type : 'plain' )
-         batchtest ( fork : 'true' , todir : owner.testReportPath ) { fileset ( dir : owner.testCompilePath , includes : '**/*Test.class' ) }
+         sysproperty ( key : 'groovy.home' , value : System.properties.'groovy.home' )
+         batchtest ( todir : owner.testReportPath ) { fileset ( dir : owner.testCompilePath , includes : '**/*Test.class' ) }
        }
        break
       }
