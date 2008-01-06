@@ -88,9 +88,10 @@
 
   <target name="test" depends="compileTests" description="Test a build.">
     <mkdir dir="${buildTestReportsDirectory}"/>
-    <junit printsummary="yes">
+    <junit printsummary="yes" fork="true">
       <formatter type="plain"/>
-      <batchtest fork="yes" todir="${buildTestReportsDirectory}">
+      <sysproperty key="groovy.home" value="${environment.GROOVY_HOME}"/>
+      <batchtest todir="${buildTestReportsDirectory}">
         <fileset dir="${buildTestClassesDirectory}" includes="**/*_Test.class"/>
       </batchtest>
       <classpath>
