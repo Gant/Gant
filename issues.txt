@@ -11,7 +11,9 @@ have done the right thing in the first place.
 
 Get the GANTLIB stuff finished so it actually works.
 
-task ( flob : '' , thing : '' ) { . . . } is valid but not handled sensibly.
+target ( flob ) { . . .} does not generate a sane error message.
+
+target ( flob : '' , thing : '' ) { . . . } is valid but not handled sensibly.
 
 Add a --propertyfile <filename> option.
 
