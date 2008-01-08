@@ -19,3 +19,7 @@ Add a --propertyfile <filename> option.
 
 In the Maven target set, the compilation always happens against the Groovy installation that initiated the
 Gant run.  Need to add a way of specifying which Groovy jar to compile against.
+
+The Maven and Ivy target sets assume that System.properties.'groovy.home' is set which is not the case
+always.  In particular, this will only be true when Gant is initiated from the command line, it is not true
+when Gant is initiated via the Ant task.
