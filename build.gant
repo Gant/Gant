@@ -14,7 +14,11 @@
 //
 //  Author : Russel Winder <russel.winder@concertant.com>
 
-distributionURL = 'https://dav.codehaus.org/dist/gant'
+// Jürgen Hermann (email to the Groovy User list 2008-01-08) suggested that the trailing / on the URL stops
+// lots of hassles regarding followRedirects when using WebdavResource.  Only an issue when uploading the
+// distribution using WebDAV.
+
+distributionURL = 'https://dav.codehaus.org/dist/gant/'
 
 Ant.property ( file : 'build.properties' )
 Ant.property ( file : 'local.build.properties' )
@@ -44,8 +48,12 @@ distributionVersions = [
 
 sourceDirectory = 'src/main/groovy'
 testsDirectory = 'src/test/groovy'  
-jarsDirectory = 'jarfiles'
+jarfilesDirectory = 'jarfiles'
 scriptsDirectory = 'scripts'
+
+distributionsDirectory = 'distributions'
+jarsDirectory = 'jars'
+pomsDirectory = 'poms'
 
 buildDirectory = 'target'
 buildClassesDirectory = buildDirectory + '/classes' 
@@ -66,14 +74,14 @@ distributionTopLevelFiles = [
                              'README_Distribution.txt' , 'README_Install.txt' ,
                              'releaseNotes.txt'
                              ]
-distributionDirectories = [ 'documentation' , 'examples' , '.settings' , 'jarfiles' , sourceDirectory , testsDirectory ]
+distributionDirectories = [ 'documentation' , 'examples' , '.settings' , scriptsDirectory , jarfilesDirectory , sourceDirectory , testsDirectory ]
 
 antlibXMLns = 'antlib:org.apache.maven.artifact.ant'
 mavenPOMId = 'maven.pom'
 
 includeTargets << gant.targets.Clean
- cleanPattern <<  [ '**/*~' , 'cobertura.ser' ] 
-cleanDirectory << buildDirectory
+cleanPattern <<  [ '**/*~' , 'cobertura.ser' ] 
+cleanDirectory << [ buildDirectory , distributionsDirectory , jarsDirectory , pomsDirectory ]
 
 Ant.path ( id : 'compileJarSet' ) {
   fileset ( dir : installationHome + '/lib' , includes : 'groovy*.jar' )
@@ -110,7 +118,6 @@ target ( test : 'Test a build.' ) {
   mkdir ( dir : buildTestReportsDirectory )
   junit ( printsummary : 'yes' , failureproperty : 'testsFailed' , fork : 'yes' ) {
     formatter ( type : 'plain' )
-    sysproperty ( key : 'groovy.home' , value : System.properties.'groovy.home' )
     batchtest ( todir : buildTestReportsDirectory ) { fileset ( dir : buildTestClassesDirectory , includes : '**/*_Test.class' ) }
     classpath {
       path ( refid : 'compileJarSet' )
@@ -132,7 +139,6 @@ target ( coberturaTest : 'Test a build using Cobertura to get a coverage report.
   'cobertura-instrument' ( todir : buildCoberturaClassesDirectory ) { fileset ( dir : buildClassesDirectory ) }
   junit ( printsummary : 'yes' , failureproperty : 'testsFailed' , fork : 'true' ) {
     formatter ( type : 'plain' )
-    sysproperty ( key : 'groovy.home' , value : System.properties.'groovy.home' )
     batchtest ( todir : buildTestReportsDirectory ) { fileset ( dir : buildTestClassesDirectory , includes : '**/*_Test.class' ) }
     classpath {
       path ( refid : 'compileJarSet' )
@@ -209,7 +215,7 @@ target ( install : "Compile everything and install it to ${installationHome}" ) 
   copy ( todir : installationHome + '/lib' ) { fileset ( dir : buildDirectory , includes : 'gant*.jar' ) }
   if ( ! grailsBuild ) {
     copy ( todir : installationHome ) { fileset ( dir : scriptsDirectory , includes : 'bin/gant*' ) }
-    copy ( todir : installationHome + '/lib' ) { fileset ( dir : jarsDirectory , includes : 'ivy*.jar,maven*.jar' ) }
+    copy ( todir : installationHome + '/lib' ) { fileset ( dir : jarfilesDirectory , includes : 'ivy*.jar,maven*.jar' ) }
     chmod ( perm : 'a+x' ) { fileset ( dir : installationHome + '/bin' , includes : 'gant*' ) }
   }
 }
@@ -222,8 +228,9 @@ target ( uninstall : "Uninstall Gant from ${installationHome}." ) {
 }
 
 distributionProducts = [
-                        distributions : [ ] ,
-                        jars : [ ]
+                        ( distributionsDirectory ) : [ ] ,
+                        ( jarsDirectory ) : [ ] ,
+                        ( pomsDirectory ) : [ ]
                         ]
 
 target ( distribution : 'Create the distribution.' ) {
@@ -254,7 +261,7 @@ target ( distribution : 'Create the distribution.' ) {
     def jarName = discriminator + '.jar'                    
     def jarPath = buildDirectory + System.properties.'file.separator' + jarName
     Ant.jar ( destfile : jarPath , basedir : buildClassesDirectory , manifest : buildMetadataDirectory + '/MANIFEST.MF' )
-    distributionProducts [ 'jars' ] << jarPath
+    distributionProducts [ jarsDirectory ] << jarPath
     def archiveRoot = buildDirectory + System.properties.'file.separator' + discriminator
     Ant.zip ( destfile : archiveRoot + '.zip' ) {
       zipfileset ( dir : buildDirectory , includes : jarName , prefix : prefix + '/lib' )
@@ -268,7 +275,7 @@ target ( distribution : 'Create the distribution.' ) {
       tarfileset ( dir : 'scripts/install' , includes : 'install.groovy' , prefix : prefix + '/bin' , mode : '755' )
       tarfileset ( dir : '.' , includes : 'README*' , prefix : prefix )
     }
-    distributionProducts [ 'distributions' ] << archiveRoot + '.zip' << archiveRoot + '.tgz'
+    distributionProducts [ distributionsDirectory ] << archiveRoot + '.zip' << archiveRoot + '.tgz'
   }
   archiveRoot = buildDirectory + System.properties.'file.separator' + 'gant_src-' + gantVersion
   zip ( destfile : archiveRoot + '.zip' ) {
@@ -279,13 +286,27 @@ target ( distribution : 'Create the distribution.' ) {
     tarfileset ( dir : '.' , includes : distributionTopLevelFiles.join ( ',' ) , prefix : prefix )
     distributionDirectories.each { directory -> tarfileset ( dir : directory , prefix : prefix + System.properties.'file.separator' + directory ) }
   }
-  distributionProducts [ 'distributions' ] << archiveRoot + '.zip' << archiveRoot + '.tgz'
+  distributionProducts [ distributionsDirectory ] << archiveRoot + '.zip' << archiveRoot + '.tgz'
 }
 
 target ( uploadDistribution : 'Upload a complete distribution.' ) {
   //depends ( distribution )
-  distributionProducts [ 'distributions' ].unique ( )
-  distributionProducts [ 'jars' ].unique ( )
+
+  distributionProducts [  distributionsDirectory ] = [
+                                                'gant-1.0.3-SNAPSHOT_groovy-1.0.tgz' , 'gant-1.0.3-SNAPSHOT_groovy-1.0.zip' ,
+                                                'gant-1.0.3-SNAPSHOT_groovy-1.5.0.tgz' , 'gant-1.0.3-SNAPSHOT_groovy-1.5.0.zip' ,
+                                                'gant-1.0.3-SNAPSHOT_groovy-1.5.1.tgz' , 'gant-1.0.3-SNAPSHOT_groovy-1.5.1.zip' ,
+                                                'gant_src-1.0.3-SNAPSHOT.tgz' , 'gant_src-1.0.3-SNAPSHOT.zip'
+                                                ]
+
+  distributionProducts [ jarsDirectory ] = [
+                                     'gant-1.0.3-SNAPSHOT_groovy-1.0.jar' ,
+                                     'gant-1.0.3-SNAPSHOT_groovy-1.5.0.jar' ,
+                                     'gant-1.0.3-SNAPSHOT_groovy-1.5.1.jar'
+                                     ]
+
+  distributionProducts [ distributionsDirectory ].unique ( )
+  distributionProducts [ jarsDirectory ].unique ( )
   //
   //  Slide has been retired by the Apache Foundation in favour of Jackrabbit, but we use Slide anyway.
   //
@@ -301,32 +322,44 @@ target ( uploadDistribution : 'Upload a complete distribution.' ) {
   def path = Ant.path ( refid : 'slidePathId' )
   ( path.list ( ) as List ).each { location -> loader.addURL ( new URL ( 'file://' + location ) ) }
   def settings =  ( new XmlSlurper ( ) ).parse ( System.properties.'user.home' + '/.m2/settings.xml' ).servers.server.find { item -> item.id == 'dav.codehaus.org' }
-  def credentials = loader.loadClass ( 'org.apache.commons.httpclient.UsernamePasswordCredentials' ).getConstructor ( String , String ).newInstance ( settings.username.toString ( ) , settings.password.toString ( ) )
-  //  Have to put this in the binding so that the Closures can access it.
-
-  /*
-
-  resource = loader.loadClass ( 'org.apache.webdav.lib.WebdavResource' ).getConstructor ( String , loader.loadClass ( 'org.apache.commons.httpclient.Credentials' ) , boolean ).newInstance ( distributionURL , credentials , true )
-  def upload = { sourcePath , destinationPath ->
-                 println ( resource.getHttpURL ( ).toString ( ) + ' : ' + sourcePath + ' -> ' + destinationPath )
-    if ( ! resource.putMethod ( destinationPath , new File ( sourcePath ) ) ) { println ( 'Failed to upload ' + sourcePath + ' to ' + destinationPath + ', status code : ' + resource.statusCode ) }
+  def credentials =  loader.loadClass ( 'org.apache.commons.httpclient.UsernamePasswordCredentials' ).getConstructor ( String , String ).newInstance ( settings.username.toString ( ) , settings.password.toString ( ) )
+  //  Have to put resource in the binding so that the Closures can access it.
+  resource = loader.loadClass ( 'org.apache.webdav.lib.WebdavResource' ).getConstructor ( String ,  loader.loadClass ( 'org.apache.commons.httpclient.Credentials' ) , boolean ).newInstance ( distributionURL , credentials , true )
+  if ( resource.statusCode != 200 ) { println ( 'Failed to open ' + distributionURL ) }
+  else {
+    delete ( dir : pomsDirectory )
+    mkdir ( dir : pomsDirectory )
+    distributionProducts [ pomsDirectory ] << 'gant-' + gantVersion + '.pom'
+    copy ( file : 'pom.xml' , tofile : pomsDirectory + System.properties.'file.separator' + distributionProducts [ pomsDirectory ] [ 0 ] )
+    [ distributionsDirectory , jarsDirectory ].each { type ->
+      Ant.delete ( dir : type )
+      Ant.mkdir ( dir : type )
+      Ant.copy ( todir : type ) { fileset ( dir : buildDirectory ) { distributionProducts [ type ].each { item -> include ( name : item ) } } }
+    }
+    [ distributionsDirectory , jarsDirectory , pomsDirectory ].each { type ->
+      distributionProducts [ type ].each { item ->
+        def itemPath = type + System.properties.'file.separator' + item
+        print ( 'Uploading ' + itemPath + ' : ' )
+        def result = 'Failed.'
+        if ( resource.putMethod ( new File ( itemPath ) ) ) { result = 'OK.' }
+        else {
+          println ( )
+          println ( resource.displayName )
+          println ( resource.followRedirects )
+          println ( resource.getContentLength )
+          println ( resource.getContentType )
+          println ( resource.getEtag )
+          println ( resource.host )
+          println ( resource.httpURL )
+          println ( resource.name )
+          println ( resource.owner )
+          println ( resource.path )
+        }
+        println ( result + ' Status : ' + resource.statusMessage )
+      }
+    }
+    if ( resource != null ) { resource.close ( ) }
   }
-  distributionProducts [ 'distributions' ].each { sourcePath -> upload ( sourcePath , 'distributions/' + sourcePath.replace ( 'target/' , '' ) ) }
-  distributionProducts [ 'jars' ].each { sourcePath -> upload ( sourcePath , 'jars/' + sourcePath.replace ( 'target/' , '' ) ) }
-  upload ( 'pom.xml' , 'poms/gant-' + gantVersion + '.pom' )
-  println ( resource.listWebdavResources ( ) )
-  if ( ! resource.getMethod ( 'poms/gant-1.0.2.pom' , new File ( 'blah' ) ) ) { println ( 'Failed :-( ' + resource.statusCode ) }
-  resource.close ( )
-
-  */
-
-  resource = loader.loadClass ( 'org.apache.webdav.lib.WebdavResource' ).getConstructor ( String , loader.loadClass ( 'org.apache.commons.httpclient.Credentials' ) , boolean ).newInstance ( 'http://dist.codehaus.org/gant' , credentials , true )
-
-  println ( 'Trying to get.' )
-  //if ( ! resource.getMethod ( 'poms/gant-1.0.2.pom' , new File ( 'blah' ) ) ) { println ( 'Failed :-( ' + resource.statusCode ) } else { println ( 'Yay' ) }
-  resource.close ( )
-
-
 }
 
 setDefaultTarget ( test )

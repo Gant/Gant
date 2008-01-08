@@ -21,15 +21,40 @@ package org.codehaus.gant.tests
  */
 final class Environment_Test extends GantTestCase {
   final java5orHigher = System.properties.'java.version'.split ( /\./ )[1] > '4'
-  final groovyHome = System.properties.'groovy.home'
-  void testGroovyHomePropertySet ( ) { assertNotNull ( System.properties.'groovy.home' ) }
-  void testConsistencyIfPossible ( ) {
+   //  Don't use an instance initializer since they do not get compiled properly on first compile only on a
+   //  second separate compile. :-(
+  final String groovyHome ;
+  public Environment_Test ( ) {
+    if ( System.properties.'groovy.home' != null ) { groovyHome = System.properties.'groovy.home' }
+    else if ( java5orHigher ) { groovyHome = System.getenv ( ).'GROOVY_HOME' }
+    else {
+      def ant = new AntBuilder ( )
+      ant.property ( environment : 'environment' )
+      groovyHome = ant.project.properties.'environment.GROOVY_HOME'
+    }
+  } 
+  void testConsistencyJava5OrHigher ( ) {
+
+
+    System.err.println ( groovyHome )
+    System.err.println ( System.properties.'groovy.home' )
+    System.err.println ( System.getenv ( ).'GROOVY_HOME' )
+
     if ( java5orHigher ) { assertEquals ( groovyHome , System.getenv ( ).'GROOVY_HOME' ) }
   }
   void testAntPropertiesSet ( ) {
+    //
+    //  NB System.properties.'groovy.home' is only set if Groovy/Gant is initiated via the standard Groovy
+    //  startup.  The property is set in the shell scripts / native launcher.
+    //
     System.setIn ( new StringBufferInputStream ( '''
 target ( report : '' ) {
-   println ( System.properties.'groovy.home'.equals ( Ant.project.properties.'environment.GROOVY_HOME' ) ? 'true' : 'false' )
+  if ( System.properties.'groovy.home' != null ) {
+    println ( System.properties.'groovy.home'.equals ( Ant.project.properties.'environment.GROOVY_HOME' ) ? 'true' : 'false' )
+  }
+  else {
+    println ( Ant.project.properties.'environment.GROOVY_HOME' != null ? 'true' : 'false' )
+  }
 }
 ''' ) )
     assertEquals ( 0 , gant.process ( [ '-f' , '-' , 'report' ] as String[] ) )
@@ -56,6 +81,6 @@ target ( report : '' ) { print ( System.getenv ( ).'GROOVY_HOME' ) }
 target ( report : '' ) { print ( System.properties.'groovy.home' ) }
 ''' ) )
     assertEquals ( 0 , gant.process ( [ '-f' , '-' , 'report' ] as String[] ) )
-    assertEquals ( groovyHome , output )
+    assertEquals (  ( System.properties.'groovy.home' == null ) ? 'null' : groovyHome , output )
   }
 }
