@@ -79,8 +79,8 @@
       </classpath>
       <javac source="1.4" target="1.4" debug="on">
         <classpath>
-          <path refid="compileJarSet"/>
           <pathelement location="${buildClassesDirectory}"/>
+          <path refid="compileJarSet"/>
         </classpath>
       </javac>
     </groovyc>
@@ -103,9 +103,9 @@
         <fileset dir="${buildTestClassesDirectory}" includes="**/*_Test.class" excludes="**/ant/tests/*"/>
       </batchtest>
       <classpath>
-        <path refid="compileJarSet"/>
-        <pathelement location="${buildClassesDirectory}"/>
         <pathelement location="${buildTestClassesDirectory}"/>
+        <pathelement location="${buildClassesDirectory}"/>
+        <path refid="compileJarSet"/>
       </classpath>
     </junit>
   </target>

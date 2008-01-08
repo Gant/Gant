@@ -108,9 +108,9 @@ target ( compileTests : 'Compile all the tests for a newly built Gant.' ) {
     classpath { pathelement ( location : buildClassesDirectory ) }
     javac ( source : '1.4' , target : '1.4' , debug : 'on' ) {
       classpath {
-        path ( refid : 'compileJarSet' )
         pathelement ( location : buildClassesDirectory )
-        fileset ( dir : installationHome + '/lib' , includes : 'junit*.jar' ) // Irritating that this is needed :-(
+         path ( refid : 'compileJarSet' )
+       fileset ( dir : installationHome + '/lib' , includes : 'junit*.jar' ) // Irritating that this is needed :-(
       }
     }
   }
@@ -142,9 +142,9 @@ target ( test : 'Test a build.' ) {
         pathelement ( location : buildCoberturaClassesDirectory )
         path ( refid : 'coberturaPathId' )
       }
-      path ( refid : 'compileJarSet' )
-      pathelement ( location : buildClassesDirectory )
       pathelement ( location : buildTestClassesDirectory )
+      pathelement ( location : buildClassesDirectory )
+      path ( refid : 'compileJarSet' )
     }
   }
   if ( usingCobertura ) { 'cobertura-report' ( srcdir : sourceDirectory , destdir : buildCoberturaReportsDirectory ) }

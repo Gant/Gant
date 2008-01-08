@@ -60,6 +60,7 @@ public class Gant extends Task {
     parameters.add ( "-f" ) ;
     parameters.add ( file ) ;
     if ( ! target.equals ( "" ) ) { parameters.add ( target ) ; }
-    if ( gant.process ( parameters ) != 0 ) { throw new BuildException ( "Gant execution failed." , getLocation ( ) ) ; }
+    final int returnCode = gant.process ( parameters ) ;
+    if ( returnCode != 0 ) { throw new BuildException ( "Gant execution failed with return code " + Integer.toString ( returnCode ) + "." , getLocation ( ) ) ; }
   }
 }
