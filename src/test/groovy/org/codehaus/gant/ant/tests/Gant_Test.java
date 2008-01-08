@@ -20,14 +20,16 @@ import org.apache.tools.ant.BuildException ;
 import org.apache.tools.ant.Project ;
 import org.apache.tools.ant.ProjectHelper ;
 
-import groovy.util.GroovyTestCase ;
+import junit.framework.TestCase ;
 
 /**
- *  Unit tests for the Gant Ant task.
+ *  Unit tests for the Gant Ant task.  In order to test things appropriately this test must be initiated
+ *  without any of the Groovy, Gant or related jars in the class path.  Also of course it must be a JUnit
+ *  test with no connection to Groovy or Gant.
  *
  *  @author Russel Winder
  */
-public class Gant_Test extends GroovyTestCase {
+public class Gant_Test extends TestCase {
   private final File antFile = new File ( "src/test/groovy/org/codehaus/gant/ant/tests/gantTest.xml" ) ;
   private Project project ;
 
@@ -60,16 +62,22 @@ public class Gant_Test extends GroovyTestCase {
     }
     fail ( "Should have got a BuildException." ) ;
   }
-
   /**
    *  Test the behaviour of a missing target in the Ant XML file.
    */
   public void testUnknownTarget ( ) {
     try { project.executeTarget ( "blahBlahBlahBlah" ) ; }
     catch ( final BuildException be ) {
-      assertEquals ( "Target \"blahBlahBlahBlah\" does not exist in the project \"testGantTask\". " , be.getMessage ( ) ) ;
+      assertEquals ( "Target \"blahBlahBlahBlah\" does not exist in the project \"Gant Ant Task Test\". " , be.getMessage ( ) ) ;
       return ;
     }
     fail ( "Should have got a BuildException." ) ;
+  }
+  /**
+   *  Test for the taskdef-related verify error problem.
+   */
+  public void testTaskdef ( ) {
+    project.executeTarget ( "gantTaskdef" ) ;
+    assertEquals ( "OK." , returnValue ) ;
   }
 }

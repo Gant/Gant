@@ -18,16 +18,22 @@ License.
 
 -->
 
-<project name="testGantTask" default="gantTestDefaultTarget" basedir=".">
+<project name="Gant Ant Task Test" default="gantTestDefaultTarget" basedir=".">
   
   <property name="theDirectory" value="src/test/groovy/org/codehaus/gant/ant/tests"/>
 
-  <taskdef name="gant" classname="org.codehaus.gant.ant.Gant"/>
+  <property environment="environment"/>
 
-  <!--  Cannot test not having a file attribute easily :-( -->
+  <path id="groovyJars">
+    <fileset dir="${environment.GROOVY_HOME}/lib" includes="*.jar"/>
+  </path>
+
+  <taskdef name="gant" classname="org.codehaus.gant.ant.Gant" classpathref="groovyJars"/>
+
+  <!--  Cannot test not having a file attribute easily since the tests are initiated in the project top
+  directory :-( -->
   
   <target name="gantTestDefaultTarget">
-    <echo message="gantTestDefaultTarget"/>
     <gant file="${theDirectory}/build.gant"/>
   </target>
   
@@ -35,12 +41,16 @@ License.
     <gant file="${theDirectory}/build.gant" target="blah"/>
   </target>
 
-  <!-- Ensure there is no file of the name used in the Gant Ant task here. -->
+  <!--  Ensure there is no file of the name used in the Gant Ant task here. -->
 
   <target name="missingGantfile">
     <gant file="blahBlahBlahBlah.blah"/>
   </target>
 
   <!--  Ensure there is no target called blahBlahBlahBlah. -->
-  
+
+  <target name="gantTaskdef">
+    <gant file="${theDirectory}/build.gant" target="gantTaskdef"/>
+  </target>
+
 </project>

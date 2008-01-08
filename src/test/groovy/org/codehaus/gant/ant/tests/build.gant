@@ -18,4 +18,10 @@ target ( test : 'A test target in the default file.' ) { Gant_Test.returnValue =
 
 target ( blah : 'Another target in the default file.' ) { Gant_Test.returnValue = blah_description }
 
+target ( gantTaskdef : 'Check that a taskdef works.' ) {
+  path ( id : 'groovyJars' ) { fileset ( dir : Ant.project.properties.'environment.GROOVY_HOME' + '/lib' , includes : '*.jar' ) }
+  taskdef ( name : 'groovy' , classname: 'org.codehaus.groovy.ant.Groovyc' , classpathref : 'groovyJars' )
+  Gant_Test.returnValue = 'OK.'
+}
+
 setDefaultTarget ( test )
