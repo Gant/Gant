@@ -59,7 +59,7 @@
       <fileset dir="${installationHome}/lib" includes="groovy*.jar"/>
       <fileset dir="${installationHome}/lib" includes="commons-cli*.jar"/>
       <fileset dir="${installationHome}/lib" includes="asm*.jar"/>
-      <fileset dir="${installationHome}/lib" includes="ant*.jar"/> <!-- Picks up antlr as well as ant! This is intended. -->
+      <fileset dir="${installationHome}/lib" includes="ant*.jar"/> <!-- Picks up antlr as well as ant. This is intended. -->
     </path>
     <taskdef name="groovyc" classname="org.codehaus.groovy.ant.Groovyc" classpathref="compileJarSet"/>
   </target>
@@ -91,7 +91,16 @@
     <junit printsummary="yes" fork="true">
       <formatter type="plain"/>
       <batchtest todir="${buildTestReportsDirectory}">
-        <fileset dir="${buildTestClassesDirectory}" includes="**/*_Test.class"/>
+        <fileset dir="${buildTestClassesDirectory}" includes="**/ant/tests/*_Test.class"/>
+      </batchtest>
+      <classpath>
+        <pathelement location="${buildTestClassesDirectory}"/>
+      </classpath>
+    </junit>
+    <junit printsummary="yes" fork="true">
+      <formatter type="plain"/>
+      <batchtest todir="${buildTestReportsDirectory}">
+        <fileset dir="${buildTestClassesDirectory}" includes="**/*_Test.class" excludes="**/ant/tests/*"/>
       </batchtest>
       <classpath>
         <path refid="compileJarSet"/>

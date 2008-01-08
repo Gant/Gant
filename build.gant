@@ -26,6 +26,9 @@ Ant.property ( file : 'local.build.properties' )
 try { gantVersion }
 catch ( MissingPropertyException mpe ) { gantVersion = Ant.project.properties.gantVersion }
 
+try { usingCobertura }
+catch ( MissingPropertyException mpe ) { usingCobertura = false }
+
 // NB  System.getenv ( ) does not work on Java 1.4 but does on Java 5 or later.
   
 installationHome = System.properties.'groovy.home'
@@ -87,7 +90,7 @@ Ant.path ( id : 'compileJarSet' ) {
   fileset ( dir : installationHome + '/lib' , includes : 'groovy*.jar' )
   fileset ( dir : installationHome + '/lib' , includes : 'commons-cli*.jar' )
   fileset ( dir : installationHome + '/lib' , includes : 'asm*.jar' )
-  fileset ( dir : installationHome + '/lib' , includes : 'ant*.jar' )  // Picks up antlr as well as ant! This is intended.
+  fileset ( dir : installationHome + '/lib' , includes : 'ant*.jar' )  // Picks up antlr as well as ant. This is intended.
 }
 Ant.taskdef ( name : 'groovyc' , classname : 'org.codehaus.groovy.ant.Groovyc' , classpathref : 'compileJarSet' )
 
@@ -116,39 +119,40 @@ target ( compileTests : 'Compile all the tests for a newly built Gant.' ) {
 target ( test : 'Test a build.' ) {
   depends ( compileTests )
   mkdir ( dir : buildTestReportsDirectory )
-  junit ( printsummary : 'yes' , failureproperty : 'testsFailed' , fork : 'yes' ) {
+  if ( usingCobertura ) {
+    mkdir ( dir : buildCoberturaClassesDirectory )
+    mkdir ( dir : buildCoberturaReportsDirectory )
+    "${antlibXMLns}:dependencies" ( pathId :  'coberturaPathId' ) {
+      dependency ( groupId : 'net.sourceforge.cobertura' , artifactId : 'cobertura' , version : '1.9' )
+    }
+    taskdef ( resource : 'tasks.properties' , classpathref : 'coberturaPathId' )
+    'cobertura-instrument' ( todir : buildCoberturaClassesDirectory ) { fileset ( dir : buildClassesDirectory ) }
+  }
+  junit ( printsummary : 'yes' , failureproperty : 'testsFailed' , fork : 'true' ) {
     formatter ( type : 'plain' )
-    batchtest ( todir : buildTestReportsDirectory ) { fileset ( dir : buildTestClassesDirectory , includes : '**/*_Test.class' ) }
+    batchtest ( todir : buildTestReportsDirectory ) { fileset ( dir : buildTestClassesDirectory , includes : '**/ant/tests/*_Test.class' ) }
+    classpath { pathelement ( location : buildTestClassesDirectory ) }
+  }
+  junit ( printsummary : 'yes' , failureproperty : 'testsFailed' , fork : 'true' ) {
+    formatter ( type : 'plain' )
+    batchtest ( todir : buildTestReportsDirectory ) { fileset ( dir : buildTestClassesDirectory , includes : '**/*_Test.class' , excludes : '**/ant/tests/*' ) }
     classpath {
+      if ( usingCobertura ) {
+        // MUST appear in classpath before the uninstrumented classes.
+        pathelement ( location : buildCoberturaClassesDirectory )
+        path ( refid : 'coberturaPathId' )
+      }
       path ( refid : 'compileJarSet' )
       pathelement ( location : buildClassesDirectory )
       pathelement ( location : buildTestClassesDirectory )
     }
   }
+  if ( usingCobertura ) { 'cobertura-report' ( srcdir : sourceDirectory , destdir : buildCoberturaReportsDirectory ) }
 }
 
 target ( coberturaTest : 'Test a build using Cobertura to get a coverage report.' ) {
-  depends ( compileTests )
-  mkdir ( dir : buildTestReportsDirectory )
-  mkdir ( dir : buildCoberturaClassesDirectory )
-  mkdir ( dir : buildCoberturaReportsDirectory )
-  "${antlibXMLns}:dependencies" ( pathId :  'coberturaPathId' ) {
-    dependency ( groupId : 'net.sourceforge.cobertura' , artifactId : 'cobertura' , version : '1.9' )
-  }
-  taskdef ( resource : 'tasks.properties' , classpathref : 'coberturaPathId' )
-  'cobertura-instrument' ( todir : buildCoberturaClassesDirectory ) { fileset ( dir : buildClassesDirectory ) }
-  junit ( printsummary : 'yes' , failureproperty : 'testsFailed' , fork : 'true' ) {
-    formatter ( type : 'plain' )
-    batchtest ( todir : buildTestReportsDirectory ) { fileset ( dir : buildTestClassesDirectory , includes : '**/*_Test.class' ) }
-    classpath {
-      path ( refid : 'compileJarSet' )
-      pathelement ( location : buildCoberturaClassesDirectory ) // MUST appear before uninstrumented classes.
-      path ( refid : 'coberturaPathId' )
-      pathelement ( location : buildClassesDirectory )
-      pathelement ( location : buildTestClassesDirectory )
-    }
-  }
-  'cobertura-report' ( srcdir : sourceDirectory , destdir : buildCoberturaReportsDirectory )
+  usingCobertura = true
+  depends ( tests )
 }
 
 makeManifest = { ->
