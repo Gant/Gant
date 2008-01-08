@@ -34,12 +34,6 @@ final class Environment_Test extends GantTestCase {
     }
   } 
   void testConsistencyJava5OrHigher ( ) {
-
-
-    System.err.println ( groovyHome )
-    System.err.println ( System.properties.'groovy.home' )
-    System.err.println ( System.getenv ( ).'GROOVY_HOME' )
-
     if ( java5orHigher ) { assertEquals ( groovyHome , System.getenv ( ).'GROOVY_HOME' ) }
   }
   void testAntPropertiesSet ( ) {
