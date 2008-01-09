@@ -49,8 +49,8 @@ if ( ( installationHome == null ) || ( installationHome == '' ) ) {
 //  The versions of Gant in the Maven repository to build distribution version of Gant against.
 
 distributionVersions = [
-                        //[ groupId : 'groovy' , artifactId : 'groovy-all' , version : '1.0' ] ,
-                        //[ groupId : 'org.codehaus.groovy' , artifactId : 'groovy-all' , version : '1.5.0' ] ,
+                        [ groupId : 'groovy' , artifactId : 'groovy-all' , version : '1.0' ] ,
+                        [ groupId : 'org.codehaus.groovy' , artifactId : 'groovy-all' , version : '1.5.0' ] ,
                         [ groupId : 'org.codehaus.groovy' , artifactId : 'groovy-all' , version : '1.5.1' ]
                         ]
 
