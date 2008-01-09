@@ -100,6 +100,11 @@ final class Gant {
   private final GroovyShell groovyShell
   private final targetDescriptions = new TreeMap ( ) 
   private final target = { Map map , Closure closure ->
+    switch ( map.size ( ) ) {
+     case 0 : throw new RuntimeException ( 'Target specified without a name.' )
+     case 1 : break
+     default : throw new RuntimeException ( 'Target specified with multiple names.' )
+    }
     def targetName = map.keySet ( ).iterator ( ).next ( )
     def targetDescription = map.get ( targetName )
     if ( targetDescription ) { targetDescriptions.put ( targetName , targetDescription ) }

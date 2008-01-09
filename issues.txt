@@ -13,7 +13,8 @@ Get the GANTLIB stuff finished so it actually works.
 
 target ( flob ) { . . .} does not generate a sane error message.
 
-target ( flob : '' , thing : '' ) { . . . } is valid but not handled sensibly.
+target ( flob : '' , thing : '' ) { . . . } is treated as an error but should allow for definition of things
+like dependencies.
 
 Add a --propertyfile <filename> option.
 

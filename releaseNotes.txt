@@ -9,6 +9,8 @@ Added a Gant Ant Task.  (For supporting continuous integration systems that insi
 
 Added creating Cobertura reports via the coberturaTest target in the Gantfile.
 
+Amended some of the error handling, especially target definition.
+
 
 1.0.2 ( r8867 )
 ---------------
