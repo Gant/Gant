@@ -14,9 +14,14 @@
 //
 //  Author : Russel Winder <russel.winder@concertant.com>
 
-// Jürgen Hermann (email to the Groovy User list 2008-01-08) suggested that the trailing / on the URL stops
-// lots of hassles regarding followRedirects when using WebdavResource.  Only an issue when uploading the
-// distribution using WebDAV.
+// Jürgen Hermann suggested that these might help when debugging.  However, they seem to have no effect.
+
+System.setProperty ( 'org.apache.commons.logging.simplelog.log.httpclient.wire' , 'debug' )
+System.setProperty ( 'org.apache.commons.logging.simplelog.log.org.apache.commons.httpclient' , 'debug' )
+
+// Jürgen Hermann suggested that the trailing / on the URL stops lots of hassles regarding followRedirects
+// when using WebdavResource.  Only an issue when uploading the distribution using WebDAV.  It certainly
+// changes the outcome from "Moved Permanently (301)" to "Conflict (409)".
 
 distributionURL = 'https://dav.codehaus.org/dist/gant/'
 
@@ -44,8 +49,8 @@ if ( ( installationHome == null ) || ( installationHome == '' ) ) {
 //  The versions of Gant in the Maven repository to build distribution version of Gant against.
 
 distributionVersions = [
-                        [ groupId : 'groovy' , artifactId : 'groovy-all' , version : '1.0' ] ,
-                        [ groupId : 'org.codehaus.groovy' , artifactId : 'groovy-all' , version : '1.5.0' ] ,
+                        //[ groupId : 'groovy' , artifactId : 'groovy-all' , version : '1.0' ] ,
+                        //[ groupId : 'org.codehaus.groovy' , artifactId : 'groovy-all' , version : '1.5.0' ] ,
                         [ groupId : 'org.codehaus.groovy' , artifactId : 'groovy-all' , version : '1.5.1' ]
                         ]
 
@@ -265,15 +270,16 @@ target ( distribution : 'Create the distribution.' ) {
     def jarName = discriminator + '.jar'                    
     def jarPath = buildDirectory + System.properties.'file.separator' + jarName
     Ant.jar ( destfile : jarPath , basedir : buildClassesDirectory , manifest : buildMetadataDirectory + '/MANIFEST.MF' )
-    distributionProducts [ jarsDirectory ] << jarPath
-    def archiveRoot = buildDirectory + System.properties.'file.separator' + discriminator
-    Ant.zip ( destfile : archiveRoot + '.zip' ) {
+    distributionProducts [ jarsDirectory ] << jarName
+    def archiveRoot = discriminator
+    def archiveRootPath = buildDirectory + System.properties.'file.separator' + archiveRoot
+    Ant.zip ( destfile : archiveRootPath + '.zip' ) {
       zipfileset ( dir : buildDirectory , includes : jarName , prefix : prefix + '/lib' )
       zipfileset ( dir : 'scripts/bin' , includes : 'gant*' , prefix : prefix + '/bin' )
       zipfileset ( dir : 'scripts/install' , includes : 'install.groovy' , prefix : prefix + '/bin' )
       zipfileset ( dir : '.' , includes : 'README*' , prefix : prefix )
     }
-    Ant.tar ( destfile :  archiveRoot + '.tgz' , compression : 'gzip' ) {
+    Ant.tar ( destfile :  archiveRootPath + '.tgz' , compression : 'gzip' ) {
       tarfileset ( dir : buildDirectory , includes : jarName , prefix : prefix + '/lib' )
       tarfileset ( dir : 'scripts/bin' , includes : 'gant*' , prefix : prefix + '/bin' , mode : '755' )
       tarfileset ( dir : 'scripts/install' , includes : 'install.groovy' , prefix : prefix + '/bin' , mode : '755' )
@@ -281,12 +287,13 @@ target ( distribution : 'Create the distribution.' ) {
     }
     distributionProducts [ distributionsDirectory ] << archiveRoot + '.zip' << archiveRoot + '.tgz'
   }
-  archiveRoot = buildDirectory + System.properties.'file.separator' + 'gant_src-' + gantVersion
-  zip ( destfile : archiveRoot + '.zip' ) {
+  archiveRoot = 'gant_src-' + gantVersion
+  archiveRootPath = buildDirectory + System.properties.'file.separator' + archiveRoot
+  zip ( destfile : archiveRootPath + '.zip' ) {
     zipfileset ( dir : '.' , includes : distributionTopLevelFiles.join ( ',' ) , prefix : prefix )
     distributionDirectories.each { directory -> zipfileset ( dir : directory , prefix : prefix + System.properties.'file.separator' + directory ) }
   }
-  tar ( destfile :  archiveRoot + '.tgz' , compression : 'gzip' ) {
+  tar ( destfile :  archiveRootPath + '.tgz' , compression : 'gzip' ) {
     tarfileset ( dir : '.' , includes : distributionTopLevelFiles.join ( ',' ) , prefix : prefix )
     distributionDirectories.each { directory -> tarfileset ( dir : directory , prefix : prefix + System.properties.'file.separator' + directory ) }
   }
@@ -294,21 +301,7 @@ target ( distribution : 'Create the distribution.' ) {
 }
 
 target ( uploadDistribution : 'Upload a complete distribution.' ) {
-  //depends ( distribution )
-
-  distributionProducts [  distributionsDirectory ] = [
-                                                'gant-1.0.3-SNAPSHOT_groovy-1.0.tgz' , 'gant-1.0.3-SNAPSHOT_groovy-1.0.zip' ,
-                                                'gant-1.0.3-SNAPSHOT_groovy-1.5.0.tgz' , 'gant-1.0.3-SNAPSHOT_groovy-1.5.0.zip' ,
-                                                'gant-1.0.3-SNAPSHOT_groovy-1.5.1.tgz' , 'gant-1.0.3-SNAPSHOT_groovy-1.5.1.zip' ,
-                                                'gant_src-1.0.3-SNAPSHOT.tgz' , 'gant_src-1.0.3-SNAPSHOT.zip'
-                                                ]
-
-  distributionProducts [ jarsDirectory ] = [
-                                     'gant-1.0.3-SNAPSHOT_groovy-1.0.jar' ,
-                                     'gant-1.0.3-SNAPSHOT_groovy-1.5.0.jar' ,
-                                     'gant-1.0.3-SNAPSHOT_groovy-1.5.1.jar'
-                                     ]
-
+  depends ( distribution )
   distributionProducts [ distributionsDirectory ].unique ( )
   distributionProducts [ jarsDirectory ].unique ( )
   //
@@ -346,19 +339,6 @@ target ( uploadDistribution : 'Upload a complete distribution.' ) {
         print ( 'Uploading ' + itemPath + ' : ' )
         def result = 'Failed.'
         if ( resource.putMethod ( new File ( itemPath ) ) ) { result = 'OK.' }
-        else {
-          println ( )
-          println ( resource.displayName )
-          println ( resource.followRedirects )
-          println ( resource.getContentLength )
-          println ( resource.getContentType )
-          println ( resource.getEtag )
-          println ( resource.host )
-          println ( resource.httpURL )
-          println ( resource.name )
-          println ( resource.owner )
-          println ( resource.path )
-        }
         println ( result + ' Status : ' + resource.statusMessage )
       }
     }
