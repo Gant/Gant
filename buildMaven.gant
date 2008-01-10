@@ -14,6 +14,9 @@
 //
 //  Author : Russel Winder <russel.winder@concertant.com>
 
+// NB The Gant Ant Task tests are not executed correctly when using this build file.  They pass but the
+// wrong JVM environment gets used for the test.
+  
 Ant.property ( file : 'build.properties' )
 
 try { gantVersion }
