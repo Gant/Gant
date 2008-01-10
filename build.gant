@@ -14,17 +14,6 @@
 //
 //  Author : Russel Winder <russel.winder@concertant.com>
 
-// Jürgen Hermann suggested that these might help when debugging.  However, they seem to have no effect.
-
-System.setProperty ( 'org.apache.commons.logging.simplelog.log.httpclient.wire' , 'debug' )
-System.setProperty ( 'org.apache.commons.logging.simplelog.log.org.apache.commons.httpclient' , 'debug' )
-
-// Jürgen Hermann suggested that the trailing / on the URL stops lots of hassles regarding followRedirects
-// when using WebdavResource.  Only an issue when uploading the distribution using WebDAV.  It certainly
-// changes the outcome from "Moved Permanently (301)" to "Conflict (409)".
-
-distributionURL = 'https://dav.codehaus.org/dist/gant/'
-
 Ant.property ( file : 'build.properties' )
 Ant.property ( file : 'local.build.properties' )
 
@@ -46,22 +35,10 @@ if ( ( installationHome == null ) || ( installationHome == '' ) ) {
   return
 }
 
-//  The versions of Gant in the Maven repository to build distribution version of Gant against.
-
-distributionVersions = [
-                        [ groupId : 'groovy' , artifactId : 'groovy-all' , version : '1.0' ] ,
-                        [ groupId : 'org.codehaus.groovy' , artifactId : 'groovy-all' , version : '1.5.0' ] ,
-                        [ groupId : 'org.codehaus.groovy' , artifactId : 'groovy-all' , version : '1.5.1' ]
-                        ]
-
 sourceDirectory = 'src/main/groovy'
 testsDirectory = 'src/test/groovy'  
 jarfilesDirectory = 'jarfiles'
 scriptsDirectory = 'scripts'
-
-distributionsDirectory = 'distributions'
-jarsDirectory = 'jars'
-pomsDirectory = 'poms'
 
 buildDirectory = 'target'
 buildClassesDirectory = buildDirectory + '/classes' 
@@ -75,6 +52,9 @@ apiDocumentationDirectory = documentationDirectory + '/api'
 
 buildMetadataDirectory = buildClassesDirectory + '/META-INF'
 
+antlibXMLns = 'antlib:org.apache.maven.artifact.ant'
+mavenPOMId = 'maven.pom'
+
 distributionTopLevelFiles = [
                              'build.gant' , 'buildMaven.gant' , 'build.properties' , 'build.xml' ,
                              '.classpath' , '.project' ,
@@ -84,12 +64,30 @@ distributionTopLevelFiles = [
                              ]
 distributionDirectories = [ 'documentation' , 'examples' , '.settings' , scriptsDirectory , jarfilesDirectory , sourceDirectory , testsDirectory ]
 
-antlibXMLns = 'antlib:org.apache.maven.artifact.ant'
-mavenPOMId = 'maven.pom'
+//  The versions of Gant in the Maven repository to build distribution version of Gant against.
+
+distributionVersions = [
+                        [ groupId : 'groovy' , artifactId : 'groovy-all' , version : '1.0' ] ,
+                        [ groupId : 'org.codehaus.groovy' , artifactId : 'groovy-all' , version : '1.5.0' ] ,
+                        [ groupId : 'org.codehaus.groovy' , artifactId : 'groovy-all' , version : '1.5.1' ]
+                        ]
+
+// As Jürgen Hermann pointed out the trailing / on the URL is very important.
+
+distributionURL = 'https://dav.codehaus.org/dist/gant/'
+
+serverDistributionsDirectory = 'distributions'
+serverJarsDirectory = 'jars'
+serverPomsDirectory = 'poms'
+
+//  This is a map with key local source path and value server path.
+
+serverUploadProducts = [ : ]
+
 
 includeTargets << gant.targets.Clean
 cleanPattern <<  [ '**/*~' , 'cobertura.ser' ] 
-cleanDirectory << [ buildDirectory , distributionsDirectory , jarsDirectory , pomsDirectory ]
+cleanDirectory << buildDirectory
 
 Ant.path ( id : 'compileJarSet' ) {
   fileset ( dir : installationHome + '/lib' , includes : 'groovy*.jar' )
@@ -236,13 +234,9 @@ target ( uninstall : "Uninstall Gant from ${installationHome}." ) {
   }
 }
 
-distributionProducts = [
-                        ( distributionsDirectory ) : [ ] ,
-                        ( jarsDirectory ) : [ ] ,
-                        ( pomsDirectory ) : [ ]
-                        ]
-
 target ( distribution : 'Create the distribution.' ) {
+  def zipExtension = '.zip'
+  def tgzExtension = '.tgz'
   //  Use the Ant Maven plugin to ensure that the groovy-all jar of a given release is in the local Maven
   //  repository and ensure that is the only version of Groovy used in the compilation.
   def prefix = 'gant-' + gantVersion
@@ -270,40 +264,40 @@ target ( distribution : 'Create the distribution.' ) {
     def jarName = discriminator + '.jar'                    
     def jarPath = buildDirectory + System.properties.'file.separator' + jarName
     Ant.jar ( destfile : jarPath , basedir : buildClassesDirectory , manifest : buildMetadataDirectory + '/MANIFEST.MF' )
-    distributionProducts [ jarsDirectory ] << jarName
+    serverUploadProducts [ jarPath ] = serverJarsDirectory + '/' + jarName
     def archiveRoot = discriminator
     def archiveRootPath = buildDirectory + System.properties.'file.separator' + archiveRoot
-    Ant.zip ( destfile : archiveRootPath + '.zip' ) {
+    Ant.zip ( destfile : archiveRootPath + zipExtension ) {
       zipfileset ( dir : buildDirectory , includes : jarName , prefix : prefix + '/lib' )
       zipfileset ( dir : 'scripts/bin' , includes : 'gant*' , prefix : prefix + '/bin' )
       zipfileset ( dir : 'scripts/install' , includes : 'install.groovy' , prefix : prefix + '/bin' )
       zipfileset ( dir : '.' , includes : 'README*' , prefix : prefix )
     }
-    Ant.tar ( destfile :  archiveRootPath + '.tgz' , compression : 'gzip' ) {
+    serverUploadProducts [ archiveRootPath + zipExtension ] = serverDistributionsDirectory + '/' +  archiveRoot + zipExtension
+    Ant.tar ( destfile :  archiveRootPath + tgzExtension , compression : 'gzip' ) {
       tarfileset ( dir : buildDirectory , includes : jarName , prefix : prefix + '/lib' )
       tarfileset ( dir : 'scripts/bin' , includes : 'gant*' , prefix : prefix + '/bin' , mode : '755' )
       tarfileset ( dir : 'scripts/install' , includes : 'install.groovy' , prefix : prefix + '/bin' , mode : '755' )
       tarfileset ( dir : '.' , includes : 'README*' , prefix : prefix )
     }
-    distributionProducts [ distributionsDirectory ] << archiveRoot + '.zip' << archiveRoot + '.tgz'
+    serverUploadProducts [ archiveRootPath + tgzExtension ] = serverDistributionsDirectory + '/' +  archiveRoot + tgzExtension
   }
   archiveRoot = 'gant_src-' + gantVersion
   archiveRootPath = buildDirectory + System.properties.'file.separator' + archiveRoot
-  zip ( destfile : archiveRootPath + '.zip' ) {
+  zip ( destfile : archiveRootPath + zipExtension ) {
     zipfileset ( dir : '.' , includes : distributionTopLevelFiles.join ( ',' ) , prefix : prefix )
     distributionDirectories.each { directory -> zipfileset ( dir : directory , prefix : prefix + System.properties.'file.separator' + directory ) }
   }
-  tar ( destfile :  archiveRootPath + '.tgz' , compression : 'gzip' ) {
+  serverUploadProducts [ archiveRootPath + zipExtension ] = serverDistributionsDirectory + '/' +  archiveRoot + zipExtension
+  tar ( destfile :  archiveRootPath + tgzExtension , compression : 'gzip' ) {
     tarfileset ( dir : '.' , includes : distributionTopLevelFiles.join ( ',' ) , prefix : prefix )
     distributionDirectories.each { directory -> tarfileset ( dir : directory , prefix : prefix + System.properties.'file.separator' + directory ) }
   }
-  distributionProducts [ distributionsDirectory ] << archiveRoot + '.zip' << archiveRoot + '.tgz'
+  serverUploadProducts [ archiveRootPath + tgzExtension ] = serverDistributionsDirectory + '/' +  archiveRoot + tgzExtension
 }
 
 target ( uploadDistribution : 'Upload a complete distribution.' ) {
   depends ( distribution )
-  distributionProducts [ distributionsDirectory ].unique ( )
-  distributionProducts [ jarsDirectory ].unique ( )
   //
   //  Slide has been retired by the Apache Foundation in favour of Jackrabbit, but we use Slide anyway.
   //
@@ -324,26 +318,16 @@ target ( uploadDistribution : 'Upload a complete distribution.' ) {
   resource = loader.loadClass ( 'org.apache.webdav.lib.WebdavResource' ).getConstructor ( String ,  loader.loadClass ( 'org.apache.commons.httpclient.Credentials' ) , boolean ).newInstance ( distributionURL , credentials , true )
   if ( resource.statusCode != 200 ) { println ( 'Failed to open ' + distributionURL ) }
   else {
-    delete ( dir : pomsDirectory )
-    mkdir ( dir : pomsDirectory )
-    distributionProducts [ pomsDirectory ] << 'gant-' + gantVersion + '.pom'
-    copy ( file : 'pom.xml' , tofile : pomsDirectory + System.properties.'file.separator' + distributionProducts [ pomsDirectory ] [ 0 ] )
-    [ distributionsDirectory , jarsDirectory ].each { type ->
-      Ant.delete ( dir : type )
-      Ant.mkdir ( dir : type )
-      Ant.copy ( todir : type ) { fileset ( dir : buildDirectory ) { distributionProducts [ type ].each { item -> include ( name : item ) } } }
+    serverUploadProducts [ 'pom.xml' ] = serverPomsDirectory + '/gant-' + gantVersion + '.pom'
+    serverUploadProducts.each { source , destination ->
+      def serverPath = resource.path + '/' + destination
+      print ( 'Uploading ' + source + ' -> ' + destination + ' : ' )
+      def result = 'Failed.'
+      if ( resource.putMethod ( serverPath , new File ( source ) ) ) { result = 'OK.' }
+      println ( result + ' Status : ' + resource.statusMessage )
     }
-    [ distributionsDirectory , jarsDirectory , pomsDirectory ].each { type ->
-      distributionProducts [ type ].each { item ->
-        def itemPath = type + System.properties.'file.separator' + item
-        print ( 'Uploading ' + itemPath + ' : ' )
-        def result = 'Failed.'
-        if ( resource.putMethod ( new File ( itemPath ) ) ) { result = 'OK.' }
-        println ( result + ' Status : ' + resource.statusMessage )
-      }
-    }
-    if ( resource != null ) { resource.close ( ) }
   }
+  if ( resource != null ) { resource.close ( ) }
 }
 
 setDefaultTarget ( test )
