@@ -186,18 +186,19 @@ target ( documentation : 'Create the API documentation.' ) {
   mkdir ( dir : javaApiDocumentationDirectory )
   mkdir ( dir : groovyApiDocumentationDirectory )
   javadoc (
-               destdir : javaApiDocumentationDirectory ,
                sourcepath : sourceDirectory ,
+               destdir : javaApiDocumentationDirectory ,
                packagenames : 'gant.*,org.codehaus.gant.*',
                overview : 'overview.html' ,
-               author : 'true' ,
-               version : 'true' ,
+               'private' : 'true' ,
+               encoding : 'UTF-8' ,
                use : 'true' ,
-               'private' : 'false' ,
+               author : 'true' ,
                windowtitle : "Gant (${gantVersion})" ,
                doctitle : "Gant (${gantVersion})" ,
-               encoding : 'UTF-8' ,
-               footer : 'Copyright &copy; 2006&ndash;8 The Codehaus.  All rights reserved.'
+               header : "Gant (${gantVersion})" ,
+               footer : 'Copyright &copy; 2006&ndash;8 The Codehaus.  All rights reserved.' ,
+               source : 1.4
                ) {
     classpath { fileset ( dir : System.properties.'groovy.home' + '/lib' , includes : '*.jar' ) }
   }    

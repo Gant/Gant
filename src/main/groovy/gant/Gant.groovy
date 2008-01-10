@@ -160,14 +160,50 @@ final class Gant {
   private List gantLib
    /*
     */
+   /**
+    *  Constructor that uses build.gant as the build script, creates a new instance of <code>Binding</code>
+    *  for the script binding, and the default class loader.
+    */
   public Gant ( ) { this ( 'build.gant' , null , null ) }
+   /**
+    *  Constructor that uses build.gant as the build script, the passed <code>Binding</code> for the script
+    *  binding, and the default class loader.
+    */
   public Gant ( Binding b ) { this (  'build.gant' , b , null ) }
+   /**
+    *  Constructor that uses build.gant as the build script, the passed <code>Binding</code> for the script
+    *  binding, and the passed <code>ClassLoader</code> as the class loader.
+    */
   public Gant ( Binding b , ClassLoader cl ) { this (  'build.gant' , b , cl ) }
+   /**
+    *  Constructor that uses the filename passed as a parameter as the build script, creates a new instance
+    *  of <code>Binding</code> for the script binding, and uses the default class loader.
+    */
   public Gant ( File f ) { this ( f.name , null , null ) }  
+   /**
+    *  Constructor that uses the filename passed as a parameter as the build script, the passed
+    *  <code>Binding</code> for the script binding, and the default class loader.
+    */
   public Gant ( File f , Binding b ) { this ( f.name , b , null ) }
+   /**
+    *  Constructor that uses the filename passed as a parameter as the build script, the passed
+    *  <code>Binding</code> for the script binding, the passed <code>ClassLoader</code> as the class loader.
+    */
   public Gant ( File f , Binding b , ClassLoader cl ) { this ( f.name , b , cl ) }
+   /**
+    *  Constructor that uses the filename passed as a parameter as the build script, creates a new instance
+    *  of <code>Binding</code> for the script binding and uses the default class loader.
+    */
   public Gant ( String s ) { this ( s , null , null ) }
+   /**
+    *  Constructor that uses the filename passed as a parameter as the build script, the passed
+    *  <code>Binding</code> for the script binding, and uses the default class loader.
+    */
   public Gant ( String s , Binding b ) { this ( s , b , null ) }  
+   /**
+    *  Constructor that uses the filename passed as a parameter as the build script, the passed
+    *  <code>Binding</code> for the script binding, the passed <code>ClassLoader</code> as the class loader.
+    */
   public Gant ( String s , Binding b , ClassLoader cl ) {
     /*
      *  Move things here from the instance initializers.
@@ -413,5 +449,5 @@ final class Gant {
   /**
    *  The entry point for command line invocation.
    */
-  public static main ( args ) { System.exit ( ( new Gant ( ) ).processArgs ( args ) ) }
+  public static void main ( String[] args ) { System.exit ( ( new Gant ( ) ).processArgs ( args ) ) }
 }

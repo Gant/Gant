@@ -27,16 +27,19 @@ import groovy.lang.MissingPropertyException ;
 import groovy.lang.GroovySystem ;
 
 /**
- *  This class is the custom metaclass used for supporting execution of build descriptions in Gant.
+ *  This class is the metaclass used for target <code>Closure</code>s.
  *
- *  <p>This metaclass is only here to deal with <code>depends</code> method calls.  To process these
- *  properly, all closures from the binding called during execution of the Gant specification must be logged
- *  so that when a depends happens the full closure call hiistory is available.</p>
+ *  <p>This metaclass deals with <code>depends</code> method calls and redirects unknown method calls to the
+ *  instance of <code>GantBuilder</code>.  To process the <codce>depends</code> all closures from the
+ *  binding called during execution of the Gant specification must be logged so that when a depends happens
+ *  the full closure call history is available.</p>
+ *
+ *  <p>Currently no check is made to deal with circular dependencies, this should be added as per
+ *  GANT-9.</p>
  *
  *  @author Russel Winder <russel.winder@concertant.com>
  */
-// Ant and Gant build work without the public, Maven build does not.
-public class GantMetaClass extends DelegatingMetaClass {
+class GantMetaClass extends DelegatingMetaClass {
   private final static HashSet methodsInvoked = new HashSet ( ) ;
   private final Binding binding ;
   public GantMetaClass ( final Class theClass , final Binding binding ) {
