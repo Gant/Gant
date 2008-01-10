@@ -1,6 +1,6 @@
 //  Gant -- A Groovy build framework based on scripting Ant tasks.
 //
-//  Copyright © 2006-7 Russel Winder
+//  Copyright © 2006-8 Russel Winder
 //
 //  Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in
 //  compliance with the License. You may obtain a copy of the License at
@@ -15,27 +15,27 @@
 package org.codehaus.gant.tests
 
 /**
- *  Tests that you can use a custom class loader with Gant programmatically
+ *  Tests that you can use a custom class loader with Gant.
  *
  *  @author Graeme Rocher
+ *  @author Russel Winder
  */
 final class CustomClassLoader_Test extends GantTestCase {
-  def gcl
   void setUp ( ) {
     super.setUp ( )
-    gcl = new GroovyClassLoader ( )
+    def gcl = new GroovyClassLoader ( )
     gcl.parseClass ( '''package helloworld; class Hello {  def say ( ) { "goodbye" } }''' )
-    System.setIn ( new StringBufferInputStream ( '''
-target ( default : "Should resolve this class" ) {
+    script = '''
+target ( "default" : "Should resolve this class" ) {
 	println "Starting"
 	println new helloworld.Hello ( ).say ( )
 	println "Finished"
 }
-''' ) )  
-    gant = new gant.Gant ( null , gcl )
+'''
+    gant = new gant.Gant ( '-' , null , gcl )
   }
   void testDefault ( ) {
-    assertEquals ( 0 , gant.process ( [ '-f' ,  '-'  ] as String[] ) )	
+    assertEquals ( 0 , processTargets ( ) )
     assertEquals ( '''Starting
 goodbye
 Finished

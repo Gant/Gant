@@ -39,62 +39,62 @@ target ( add${name}OptionList : "" ) {
 """
   }
   void testAddLaTeXOption ( ) {
-    System.setIn ( new StringBufferInputStream ( optionTestGantFile ( 'LaTeX' , 'latex' ) ) )
-    assertEquals ( 0 , gant.process ( [ '-f' , '-' , 'addLaTeXOption' ] as String[] ) )
+    script = optionTestGantFile ( 'LaTeX' , 'latex' )
+    assertEquals ( 0 , processTargets ( 'addLaTeXOption' ) )
     assertEquals ( '''[-blah]
 ''' , output ) 
   }
   void testAddLaTeXOptionList ( ) {
-    System.setIn ( new StringBufferInputStream ( optionListTestGantFile ( 'LaTeX' , 'latex' ) ) )
-    assertEquals ( 0 , gant.process ( [ '-f' , '-' , 'addLaTeXOptionList' ] as String[] ) )
+    script = optionListTestGantFile ( 'LaTeX' , 'latex' )
+    assertEquals ( 0 , processTargets ( 'addLaTeXOptionList' ) )
     assertEquals ( '''[-blah, --flobadob]
 ''' , output ) 
   }
   void testAddBibTeXOption ( ) {
-    System.setIn ( new StringBufferInputStream ( optionTestGantFile ( 'BibTeX' , 'bibtex' ) ) )
-    assertEquals ( 0 , gant.process ( [ '-f' , '-' , 'addBibTeXOption' ] as String[] ) )
+    script = optionTestGantFile ( 'BibTeX' , 'bibtex' )
+    assertEquals ( 0 , processTargets ( 'addBibTeXOption' ) )
     assertEquals ( '''[-blah]
 ''' , output ) 
   }
   void testAddBibTeXOptionList ( ) {
-    System.setIn ( new StringBufferInputStream ( optionListTestGantFile ( 'BibTeX' , 'bibtex' ) ) )
-    assertEquals ( 0 , gant.process ( [ '-f' , '-' , 'addBibTeXOptionList' ] as String[] ) )
+    script = optionListTestGantFile ( 'BibTeX' , 'bibtex' )
+    assertEquals ( 0 , processTargets ( 'addBibTeXOptionList' ) )
     assertEquals ( '''[-blah, --flobadob]
 ''' , output ) 
   }
   void testAddMakeindexOption ( ) {
-    System.setIn ( new StringBufferInputStream ( optionTestGantFile ( 'Makeindex' , 'makeindex' ) ) )
-    assertEquals ( 0 , gant.process ( [ '-f' , '-' , 'addMakeindexOption' ] as String[] ) )
+    script = optionTestGantFile ( 'Makeindex' , 'makeindex' )
+    assertEquals ( 0 , processTargets ( 'addMakeindexOption' ) )
     assertEquals ( '''[-blah]
 ''' , output ) 
   }
   void testAddMakeindexOptionList ( ) {
-    System.setIn ( new StringBufferInputStream ( optionListTestGantFile ( 'Makeindex' , 'makeindex' ) ) )
-    assertEquals ( 0 , gant.process ( [ '-f' , '-' , 'addMakeindexOptionList' ] as String[] ) )
+    script = optionListTestGantFile ( 'Makeindex' , 'makeindex' )
+    assertEquals ( 0 , processTargets ( 'addMakeindexOptionList' ) )
     assertEquals ( '''[-blah, --flobadob]
 ''' , output ) 
   }
   void testAddDvipsOption ( ) {
-    System.setIn ( new StringBufferInputStream ( optionTestGantFile ( 'Dvips' , 'dvips' ) ) )
-    assertEquals ( 0 , gant.process ( [ '-f' , '-' , 'addDvipsOption' ] as String[] ) )
+    script = optionTestGantFile ( 'Dvips' , 'dvips' )
+    assertEquals ( 0 , processTargets ( 'addDvipsOption' ) )
     assertEquals ( '''[-blah]
 ''' , output ) 
   }
   void testAddDvipsOptionList ( ) {
-    System.setIn ( new StringBufferInputStream ( optionListTestGantFile ( 'Dvips' , 'dvips' ) ) )
-    assertEquals ( 0 , gant.process ( [ '-f' , '-' , 'addDvipsOptionList' ] as String[] ) )
+    script = optionListTestGantFile ( 'Dvips' , 'dvips' )
+    assertEquals ( 0 , processTargets ( 'addDvipsOptionList' ) )
     assertEquals ( '''[-blah, --flobadob]
 ''' , output ) 
   }
   void testAddPs2pdfOption ( ) {
-    System.setIn ( new StringBufferInputStream ( optionTestGantFile ( 'Ps2pdf' , 'ps2pdf' ) ) )
-    assertEquals ( 0 , gant.process ( [ '-f' , '-' , 'addPs2pdfOption' ] as String[] ) )
+    script = optionTestGantFile ( 'Ps2pdf' , 'ps2pdf' )
+    assertEquals ( 0 , processTargets ( 'addPs2pdfOption' ) )
     assertEquals ( '''[-blah]
 ''' , output ) 
   }
   void testAddPs2pdfOptionList ( ) {
-    System.setIn ( new StringBufferInputStream ( optionListTestGantFile ( 'Ps2pdf' , 'ps2pdf' ) ) )
-    assertEquals ( 0 , gant.process ( [ '-f' , '-' , 'addPs2pdfOptionList' ] as String[] ) )
+    script = optionListTestGantFile ( 'Ps2pdf' , 'ps2pdf' )
+    assertEquals ( 0 , processTargets ( 'addPs2pdfOptionList' ) )
     assertEquals ( '''[-blah, --flobadob]
 ''' , output ) 
   }

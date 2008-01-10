@@ -23,94 +23,94 @@ import org.codehaus.gant.tests.GantTestCase
  */
 final class Clean_Test extends GantTestCase {
   void testCleanDirectoryString ( ) {
-    System.setIn ( new StringBufferInputStream ( """
+    script = """
 includeTargets << gant.targets.Clean
 cleanDirectory << 'target'
 target ( testClean : '' ) {
   println ( cleanDirectory )
 }
-""" ) )
-    assertEquals ( 0 , gant.process ( [ '-f' , '-' , 'testClean' ] as String[] ) )
+"""
+    assertEquals ( 0 , processTargets ( 'testClean' ) )
     assertEquals ( '''[target]
 ''' , output ) 
   }
   void testCleanDirectoryList ( ) {
-    System.setIn ( new StringBufferInputStream ( """
+    script = """
 includeTargets << gant.targets.Clean
 cleanDirectory << [ 'target_a' , 'target_b' ]
 target ( testClean : '' ) {
   println ( cleanDirectory )
 }
-""" ) )
-    assertEquals ( 0 , gant.process ( [ '-f' , '-' , 'testClean' ] as String[] ) )
+""" 
+    assertEquals ( 0 , processTargets ( 'testClean' ) ) 
     assertEquals ( '''[[target_a, target_b]]
 ''' , output ) 
   }
   void testCleanPatternString ( ) {
-    System.setIn ( new StringBufferInputStream ( """
+    script = """
 includeTargets << gant.targets.Clean
 cleanPattern << '**/*~'
 target ( testClean : '' ) {
   println ( cleanPattern )
 }
-""" ) )
-    assertEquals ( 0 , gant.process ( [ '-f' , '-' , 'testClean' ] as String[] ) )
+"""
+    assertEquals ( 0 , processTargets ( 'testClean' ) )
     assertEquals ( '''[**/*~]
 ''' , output ) 
   }
   void testCleanPatternList ( ) {
-    System.setIn ( new StringBufferInputStream ( """
+    script = """
 includeTargets << gant.targets.Clean
 cleanPattern << [ '**/*~' , '**/*.bak' ]
 target ( testClean : '' ) { println ( cleanPattern ) }
-""" ) )
-    assertEquals ( 0 , gant.process ( [ '-f' , '-' , 'testClean' ] as String[] ) )
+"""
+    assertEquals ( 0 , processTargets ( 'testClean' ) )
     assertEquals ( '''[[**/*~, **/*.bak]]
 ''' , output ) 
   }
   void testClobberDirectoryString ( ) {
-    System.setIn ( new StringBufferInputStream ( """
+    script = """
 includeTargets << gant.targets.Clean
 clobberDirectory << 'target'
 target ( testClobber : '' ) {
   println ( clobberDirectory )
 }
-""" ) )
-    assertEquals ( 0 , gant.process ( [ '-f' , '-' , 'testClobber' ] as String[] ) )
+"""
+    assertEquals ( 0 , processTargets ( 'testClobber' ) )
     assertEquals ( '''[target]
 ''' , output ) 
   }
   void testClobberDirectoryList ( ) {
-    System.setIn ( new StringBufferInputStream ( """
+    script = """
 includeTargets << gant.targets.Clean
 clobberDirectory << [ 'target_a' , 'target_b' ]
 target ( testClobber : '' ) {
   println ( clobberDirectory )
 }
-""" ) )
-    assertEquals ( 0 , gant.process ( [ '-f' , '-' , 'testClobber' ] as String[] ) )
+"""
+    assertEquals ( 0 , processTargets ( 'testClobber' ) )
     assertEquals ( '''[[target_a, target_b]]
 ''' , output ) 
   }
   void testClobberPatternString ( ) {
-    System.setIn ( new StringBufferInputStream ( """
+    script = """
 includeTargets << gant.targets.Clean
 clobberPattern << '**/*~'
 target ( testClobber : '' ) {
   println ( clobberPattern )
 }
-""" ) )
-    assertEquals ( 0 , gant.process ( [ '-f' , '-' , 'testClobber' ] as String[] ) )
+"""
+    assertEquals ( 0 , processTargets ( 'testClobber' ) )
     assertEquals ( '''[**/*~]
 ''' , output ) 
   }
   void testClobberPatternList ( ) {
-    System.setIn ( new StringBufferInputStream ( """
+    script = """
 includeTargets << gant.targets.Clean
 clobberPattern << [ '**/*~' , '**/*.bak' ]
 target ( testClobber : '' ) { println ( clobberPattern ) }
-""" ) )
-    assertEquals ( 0 , gant.process ( [ '-f' , '-' , 'testClobber' ] as String[] ) )
+"""
+    assertEquals ( 0 , processTargets ( 'testClobber' ) )
     assertEquals ( '''[[**/*~, **/*.bak]]
 ''' , output ) 
   }

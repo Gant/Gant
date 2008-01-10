@@ -1,6 +1,6 @@
 //  Gant -- A Groovy build framework based on scripting Ant tasks.
 //
-//  Copyright © 2006-7 Russel Winder
+//  Copyright © 2006-8 Russel Winder
 //
 //  Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in
 //  compliance with the License. You may obtain a copy of the License at
@@ -23,29 +23,29 @@ final class Targets_Test extends GantTestCase {
   final result = 'OK.'
    /*
   void testStringParameter ( ) {
-    System.setIn ( new StringBufferInputStream ( "target ( 'string' ) { print ( '${result}' ) }" ) )
-    assertEquals ( 2 , gant.process ( [ '-f' ,  '-' , 'string' ] as String[] ) )
+    script = "target ( 'string' ) { print ( '${result}' ) }"
+    assertEquals ( 2 , processTargets ( 'string' ) )
     assertEquals ( result , output ) 
   }
    */
   void testNoDescription ( ) {
-    System.setIn ( new StringBufferInputStream ( "target ( noDescription : '' ) { print ( '${result}' ) }" ) )
-    assertEquals ( 0 , gant.process ( [ '-f' ,  '-' , 'noDescription' ] as String[] ) )
+    script = "target ( noDescription : '' ) { print ( '${result}' ) }"
+    assertEquals ( 0 , processTargets ( 'noDescription' ) )
     assertEquals ( result , output ) 
   }
   void testWithDescription ( ) {
-    System.setIn ( new StringBufferInputStream ( "target ( withDescription : 'Blah blah' ) { print ( '${result}' ) }" ) )
-    assertEquals ( 0 , gant.process ( [ '-f' ,  '-' , 'withDescription' ] as String[] ) )
+    script = "target ( withDescription : 'Blah blah' ) { print ( '${result}' ) }"
+    assertEquals ( 0 , processTargets ( 'withDescription' ) )
     assertEquals ( result , output ) 
   }
   void testEmptyMap ( ) {
-    System.setIn ( new StringBufferInputStream ( "target ( [ : ] ) { print ( '${result}' ) }" ) )
-    assertEquals ( 2 , gant.process ( [ '-f' ,  '-' , 'withDescription' ] as String[] ) )
+    script = "target ( [ : ] ) { print ( '${result}' ) }"
+    assertEquals ( 2 , processTargets ( 'withDescription' ) )
     assertEquals ( 'Standard input, line 1 -- Error evaluating Gantfile: Target specified without a name.\n' , output ) 
   }
   void testMultipleEntries ( ) {
-    System.setIn ( new StringBufferInputStream ( "target ( fred : '' , debbie : '' ) { print ( '${result}' ) }" ) )
-    assertEquals ( 2 , gant.process ( [ '-f' ,  '-' , 'withDescription' ] as String[] ) )
+    script = "target ( fred : '' , debbie : '' ) { print ( '${result}' ) }"
+    assertEquals ( 2 , processTargets ( 'withDescription' ) )
     assertEquals ( 'Standard input, line 1 -- Error evaluating Gantfile: Target specified with multiple names.\n' , output ) 
   }
 }

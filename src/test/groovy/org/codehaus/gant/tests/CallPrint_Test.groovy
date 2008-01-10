@@ -1,6 +1,6 @@
 //  Gant -- A Groovy build framework based on scripting Ant tasks.
 //
-//  Copyright © 2006-7 Russel Winder
+//  Copyright © 2006-8 Russel Winder
 //
 //  Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in
 //  compliance with the License. You may obtain a copy of the License at
@@ -21,26 +21,26 @@ package org.codehaus.gant.tests
  */
 final class CallPrint_Test extends GantTestCase {
   void testSystemOutPrintln ( ) {
-    System.setIn ( new StringBufferInputStream ( '''
+    script = '''
 target ( systemOutPrintln : "Do something." ) { System.out.println ( "Hello World" ) }
-''' ) )
-    assertEquals ( 0 , gant.process ( [ '-f' , '-' , 'systemOutPrintln' ] as String[] ) )
+'''
+    assertEquals ( 0 , processTargets ( 'systemOutPrintln' ) )
     assertEquals ( '''Hello World
 ''' , output ) 
   }
   void testPrintln ( ) {
-    System.setIn ( new StringBufferInputStream ( '''
+    script = '''
 target ( testPrintln : "Do something." ) { println ( "Hello World" ) }
-''' ) )
-    assertEquals ( 0 , gant.process ( [ '-f' , '-' , 'testPrintln' ] as String[] ) )
+'''
+    assertEquals ( 0 , processTargets ( 'testPrintln' ) )
     assertEquals ( '''Hello World
 ''' , output ) 
   }
   void testMessage ( ) {
-    System.setIn ( new StringBufferInputStream ( '''
+    script = '''
 target ( testMessage : "Do something." ) { message ( 'message' , 'A message.' ) }
-''' ) )
-    assertEquals ( 0 , gant.process ( [ '-f' , '-' , 'testMessage' ] as String[] ) )
+'''
+    assertEquals ( 0 , processTargets ( 'testMessage' ) )
     assertEquals ( '  [message] A message.\n' , output ) 
   }
 }

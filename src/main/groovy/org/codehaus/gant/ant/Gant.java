@@ -16,8 +16,6 @@ package org.codehaus.gant.ant ;
 
 import java.io.File ;
 
-import java.util.ArrayList ;
-
 import org.apache.tools.ant.BuildException ;
 import org.apache.tools.ant.Task ;
 
@@ -55,12 +53,10 @@ public class Gant extends Task {
    */
   public void execute ( ) throws BuildException {
     if ( ! ( new File ( file ) ).exists ( ) ) { throw new BuildException ( "Gantfile does not exist." , getLocation ( ) ) ; }
-    final gant.Gant gant = new gant.Gant ( ) ;
-    final ArrayList parameters = new ArrayList ( ) ;
-    parameters.add ( "-f" ) ;
-    parameters.add ( file ) ;
-    if ( ! target.equals ( "" ) ) { parameters.add ( target ) ; }
-    final int returnCode = gant.process ( parameters ) ;
+    final gant.Gant gant = new gant.Gant ( file ) ;
+    final int returnCode ;
+    if ( target.equals ( "" ) ) { returnCode = gant.processTargets ( ) ; }
+    else { returnCode = gant.processTargets ( target ) ; }
     if ( returnCode != 0 ) { throw new BuildException ( "Gant execution failed with return code " + Integer.toString ( returnCode ) + "." , getLocation ( ) ) ; }
   }
 }

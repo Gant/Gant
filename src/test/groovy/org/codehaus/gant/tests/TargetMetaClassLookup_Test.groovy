@@ -1,6 +1,6 @@
 //  Gant -- A Groovy build framework based on scripting Ant tasks.
 //
-//  Copyright © 2006-7 Russel Winder
+//  Copyright © 2006-8 Russel Winder
 //
 //  Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in
 //  compliance with the License. You may obtain a copy of the License at
@@ -22,12 +22,13 @@ package org.codehaus.gant.tests
 final class TargetMetaClassLookup_Test extends GantTestCase {
   void setUp ( ) {
     super.setUp ( )
-    System.setIn ( new StringBufferInputStream ( '''
+    script = '''
 includeTargets << gant.targets.Clean
 cleanPattern << "**/*~"
 target ( something : "Do something." ) { Ant.echo ( message : "Did something." ) }
 setDefaultTarget ( something )
-''' ) )  }
+''' 
+  }
     
   //  It seems that the same gant.targets.Clean instance is used for all tests in this class which is a bit
   //  sad becaus it means that there is an accumulation of **/*~ patterns, 1 for each test method as
@@ -36,26 +37,25 @@ setDefaultTarget ( something )
 
   void testClean ( ) {
     //  Have to do this dry run or the result is indeterminate.
-    //assertEquals ( 0 , gant.process ( [ '-n' , '-f' ,  '-'  , 'clean' ] as String[] ) )
- gant.process ( [ '-n' , '-f' ,  '-'  , 'clean' ] as String[] )
+    assertEquals ( 0 , gant.processArgs ( [ '-n' , '-f' ,  '-'  , 'clean' ] as String[] ) )
     assertEquals ( '''   [delete] quiet : 'false'
   [fileset] dir : '.' , includes : '**/*~' , defaultexcludes : 'false'
 ''' , output )
   }
   void testDefault ( ) {
-    assertEquals ( 0 , gant.process ( [ '-f' ,  '-'  ] as String[] ) )
+    assertEquals ( 0 , processTargets (  ) )
     assertEquals (  ''' [property] environment : 'environment'
      [echo] message : 'Did something.'
 ''' , output ) 
   }
   void testBlah ( ) {
-    assertEquals ( 11 , gant.process ( [ '-f' ,  '-'  , 'blah' ] as String[] ) )
+    assertEquals ( 11 , processTargets ( 'blah' ) )
     assertEquals ( ''' [property] environment : 'environment'
 Target blah does not exist.
 ''' , output ) 
   }
   void testSomething ( ) {
-    assertEquals ( 0 , gant.process ( [ '-f' ,  '-'  , 'something' ] as String[] ) )
+    assertEquals ( 0 , processTargets ( 'something' ) )
     assertEquals ( ''' [property] environment : 'environment'
      [echo] message : 'Did something.'
 ''' , output ) 

@@ -1,6 +1,6 @@
 //  Gant -- A Groovy build framework based on scripting Ant tasks.
 //
-//  Copyright © 2007 Russel Winder
+//  Copyright © 2007-8 Russel Winder
 //
 //  Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in
 //  compliance with the License. You may obtain a copy of the License at
@@ -21,28 +21,27 @@ package org.codehaus.gant.tests
  */
 final class Options_Test extends GantTestCase {
   void testVersion ( ) {
-    assertEquals ( 0 , gant.process ( [ '-V' ] as String[] ) )
+    assertEquals ( 0 , gant.processArgs ( [ '-V' ] as String[] ) )
     //  It appears that during test, the manifest version number is not actually found so we get <unknown>
     //  returned as the version number.
     assertEquals ( 'Gant version <unknown>' , output.trim ( ) )
   }
   void testDefinitions ( ) {
-    System.setIn ( new StringBufferInputStream ( '''
+    script = '''
 target ( printDefinitions : "Print some definitions" ) {
   println ( first )
   println ( second )
   println ( third )
-}''' ) )
-    assertEquals ( 0 , gant.process ( [ '-f' , '-' , '-Dfirst=tsrif' , '-Dsecond=dnoces' , '-Dthird=driht' , 'printDefinitions' ] as String[] ) )
+}'''
+    assertEquals ( 0 , gant.processArgs ( [ '-f' , '-' , '-Dfirst=tsrif' , '-Dsecond=dnoces' , '-Dthird=driht' , 'printDefinitions' ] as String[] ) )
     assertEquals ( '''tsrif
 dnoces
 driht
 ''' , output )
   }
   void testFileOptionLong ( ) {
-    System.setIn ( new StringBufferInputStream ( '''
-target ( test : "Test entry" ) { println ( "Hello." ) }''' ) )
-    assertEquals ( 0 , gant.process ( [ '--gantfile' , '-' , 'test' ] as String[] ) )
+    script = 'target ( test : "Test entry" ) { println ( "Hello." ) }'
+    assertEquals ( 0 , gant.processArgs ( [ '--gantfile' , '-' , 'test' ] as String[] ) )
     assertEquals ( '''Hello.
 ''' , output )
   }

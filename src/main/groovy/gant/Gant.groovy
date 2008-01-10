@@ -93,8 +93,8 @@ import org.apache.commons.cli.OptionBuilder
  *  @author Graeme Rocher <graeme.rocher@gmail.com>
  */
 final class Gant {
-  private buildFileName = 'build.gant'
-  private buildClassName = buildFileName.replaceAll ( '\\.' , '_' )
+  private buildFileName
+  private buildClassName
   private final Binding binding
   private final ClassLoader classLoader
   private final GroovyShell groovyShell
@@ -160,15 +160,23 @@ final class Gant {
   private List gantLib
    /*
     */
-  public Gant ( ) { this ( null , null ) }  
-  public Gant ( Binding b ) { this ( b , null ) }
-  public Gant ( Binding b , ClassLoader cl ) {
+  public Gant ( ) { this ( 'build.gant' , null , null ) }
+  public Gant ( Binding b ) { this (  'build.gant' , b , null ) }
+  public Gant ( Binding b , ClassLoader cl ) { this (  'build.gant' , b , cl ) }
+  public Gant ( File f ) { this ( f.name , null , null ) }  
+  public Gant ( File f , Binding b ) { this ( f.name , b , null ) }
+  public Gant ( File f , Binding b , ClassLoader cl ) { this ( f.name , b , cl ) }
+  public Gant ( String s ) { this ( s , null , null ) }
+  public Gant ( String s , Binding b ) { this ( s , b , null ) }  
+  public Gant ( String s , Binding b , ClassLoader cl ) {
     /*
      *  Move things here from the instance initializers.
      */
     ant.property ( environment : 'environment' )
     /*
      */
+    buildFileName = s
+    buildClassName = buildFileName.replaceAll ( '\\.' , '_' )
     binding = ( b != null ) ? b : new Binding ( )
     classLoader = ( cl != null ) ? cl : getClass ( ).getClassLoader ( )
     groovyShell = new GroovyShell ( classLoader , binding )
@@ -181,6 +189,7 @@ final class Gant {
     binding.task = { Map map , Closure closure -> System.err.println ( 'Deprecation warning: Use of task instead of target is deprecated.' ) ; target ( map , closure ) }
     binding.message = message
     binding.setDefaultTarget = setDefaultTarget
+    binding.cacheEnabled = false
   }
   private int targetList ( targets ) {
     def max = 0
@@ -230,7 +239,7 @@ final class Gant {
     }
     returnCode
   }
-  public int process ( args ) {
+  public int processArgs ( String[] args ) {
     final rootLoader = classLoader.rootLoader
     //
     //  Commons CLI is broken.  1.0 has one set of ideas about multiple args and is broken.  1.1 has a
@@ -315,6 +324,12 @@ final class Gant {
       def antLib = new File ( antHome + '/lib' )
       if ( antLib.isDirectory ( ) ) { antLib.eachFileMatch ( ~/ant-.*\.jar/ ) { file -> rootLoader?.addURL ( file.toURL ( ) ) } }
     }
+    processTargets ( function , targets )
+  }
+  public int processTargets ( ) { processTargets ( 'dispatch' , [ ] ) }
+  public int processTargets ( String s ) { processTargets ( 'dispatch' , [ s ] ) }
+  public int processTargets ( List l ) { processTargets ( 'dispatch' , l ) }
+  protected int processTargets ( String function , List targets ) {
     def buildFileText = ''
     def buildFileModified = -1  
     def buildFile = null
@@ -379,5 +394,5 @@ final class Gant {
     unit.addSource ( buildClassName , new ByteArrayInputStream ( buildFileText.bytes ) )
     unit.compile ( )				
   }
-  public static main ( args ) { System.exit ( ( new Gant ( ) ).process ( args ) ) }
+  public static main ( args ) { System.exit ( ( new Gant ( ) ).processArgs ( args ) ) }
 }

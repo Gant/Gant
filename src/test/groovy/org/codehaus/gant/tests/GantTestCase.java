@@ -1,6 +1,6 @@
 //  Gant -- A Groovy build framework based on scripting Ant tasks.
 //
-//  Copyright © 2006-7 Russel Winder
+//  Copyright © 2006-8 Russel Winder
 //
 //  Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in
 //  compliance with the License. You may obtain a copy of the License at
@@ -14,8 +14,12 @@
 
 package org.codehaus.gant.tests ;
 
+import java.util.List ;
+
 import java.io.ByteArrayOutputStream ;
 import java.io.PrintStream ;
+import java.io.StringBufferInputStream ;
+
 import groovy.util.GroovyTestCase ;
 
 import gant.Gant ;
@@ -27,6 +31,7 @@ import gant.Gant ;
  *  @author Russel Winder <russel.winder@concertant.com>
  */
 public abstract class GantTestCase extends GroovyTestCase {
+  private String script ;
   private ByteArrayOutputStream output ;
   private PrintStream savedOut ;
   protected Gant gant ;
@@ -34,8 +39,13 @@ public abstract class GantTestCase extends GroovyTestCase {
     savedOut = System.out ;
     output = new ByteArrayOutputStream ( ) ;
     System.setOut ( new PrintStream ( output ) ) ;
-    gant = new Gant ( ) ;
+    gant = new Gant ( "-" ) ;
+    script = "" ;
   }
   protected void tearDown ( ) { System.setOut ( savedOut ) ; }
+  protected void setScript ( final String script ) { System.setIn ( new StringBufferInputStream ( script ) ) ; }
+  protected int processTargets ( ) { return gant.processTargets ( ) ; }
+  protected int processTargets ( final String s ) { return gant.processTargets ( s ) ; }
+  protected int processTargets ( final List l ) { return gant.processTargets ( l ) ; }  
   protected String getOutput ( ) { return output.toString ( ).replace ( "\r" , "" ) ; }
 }

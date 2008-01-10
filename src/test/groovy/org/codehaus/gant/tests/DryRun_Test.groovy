@@ -1,6 +1,6 @@
 //  Gant -- A Groovy build framework based on scripting Ant tasks.
 //
-//  Copyright © 2006-7 Russel Winder
+//  Copyright © 2006-8 Russel Winder
 //
 //  Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in
 //  compliance with the License. You may obtain a copy of the License at
@@ -22,29 +22,29 @@ package org.codehaus.gant.tests
 final class DryRun_Test extends GantTestCase {
   void setUp ( ) {
     super.setUp ( )
-    System.setIn ( new StringBufferInputStream ( '''
+    script = '''
 target ( something : "Do something." ) { echo ( message : "Did something." ) }
 target ( somethingElse : "Do something else." ) { echo ( message : "Did something else." ) }
-''' ) )  }
-    
+'''
+  }
   void testMissingDefault ( ) {
-    assertEquals ( 12 , gant.process ( [ '-n' ,  '-f' ,  '-'  ] as String[] ) )
+    assertEquals ( 12 , gant.processArgs ( [ '-n' ,  '-f' ,  '-'  ] as String[] ) )
     assertEquals ( 'Target default does not exist.\n' , output )
   }
   void testMissingNamedTarget ( ) {
-    assertEquals ( 11 , gant.process ( [ '-n' ,  '-f' ,  '-'  , 'blah'] as String[] ) )
+    assertEquals ( 11 , gant.processArgs ( [ '-n' ,  '-f' ,  '-'  , 'blah'] as String[] ) )
     assertEquals ( ''' [property] environment : 'environment'
 Target blah does not exist.
 ''' , output ) 
   }
   void testSomething ( ) {
-    assertEquals ( 0 , gant.process ( [ '-n' ,  '-f' ,  '-'  , 'something'] as String[] ) )
+    assertEquals ( 0 , gant.processArgs ( [ '-n' ,  '-f' ,  '-'  , 'something'] as String[] ) )
     assertEquals ( ''' [property] environment : 'environment'
      [echo] message : 'Did something.'
 ''' , output ) 
   }
   void testSomethingElse ( ) {
-    assertEquals ( 0 , gant.process ( [ '-n' ,  '-f' ,  '-'  , 'somethingElse'] as String[] ) )
+    assertEquals ( 0 , gant.processArgs ( [ '-n' ,  '-f' ,  '-'  , 'somethingElse'] as String[] ) )
     assertEquals (  ''' [property] environment : 'environment'
      [echo] message : 'Did something else.'
 ''' , output ) 

@@ -1,6 +1,6 @@
 //  Gant -- A Groovy build framework based on scripting Ant tasks.
 //
-//  Copyright © 2007 Russel Winder
+//  Copyright © 2007-8 Russel Winder
 //
 //  Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in
 //  compliance with the License. You may obtain a copy of the License at
@@ -23,93 +23,91 @@ import org.codehaus.gant.tests.GantTestCase
  */
 final class Maven_Test extends GantTestCase {
   void testLoadingTargets ( ) {
-    System.setIn ( new StringBufferInputStream ( """
+    script = """
 includeTargets << gant.targets.Maven
-""" ) )
-    assertEquals ( 0 , gant.process ( [ '-f' , '-' , 'initialize' ] as String[] ) )
+""" 
+    assertEquals ( 0 , processTargets ( 'initialize' ) )
     assertEquals ( '' , output ) 
   }
   void testCompileTarget ( ) {
-    System.setIn ( new StringBufferInputStream ( """
+    script = """
 includeTargets << gant.targets.Maven
-""" ) )
-    assertEquals ( 0 , gant.process ( [ '-f' , '-' , 'compile' ] as String[] ) )
+"""
+    assertEquals ( 0 , processTargets ( 'compile' ) )
     assertEquals ( '''  [groovyc] No sources to compile
 ''' , output ) 
   }
 
 
   void testPackageNoGroupIdLeftShift ( ) {
-    System.setIn ( new StringBufferInputStream ( """
+    script = """
 includeTargets << gant.targets.Maven
-""" ) )
-    assertEquals ( 13 , gant.process ( [ '-f' , '-' , 'package' ] as String[] ) )
+"""
+    assertEquals ( 13 , processTargets ( 'package' ) )
     assertEquals ( '''Maven.groupId must be set to achieve target package.
 ''' , output ) 
   }
   void testPackageNoGroupIdPower ( ) {
-    System.setIn ( new StringBufferInputStream ( """
+    script = """
 includeTargets ** gant.targets.Maven * [ : ]
-""" ) )
-    assertEquals ( 13 , gant.process ( [ '-f' , '-' , 'package' ] as String[] ) )
+"""
+    assertEquals ( 13 , processTargets ( 'package' ) )
     assertEquals ( '''Maven.groupId must be set to achieve target package.
 ''' , output ) 
   }
   void testPackageNoArtifactIdLeftShift ( ) {
-    System.setIn ( new StringBufferInputStream ( """
+    script = """
 includeTargets << gant.targets.Maven
 Maven.groupId = 'flob'
-""" ) )
-    assertEquals ( 13 , gant.process ( [ '-f' , '-' , 'package' ] as String[] ) )
+"""
+    assertEquals ( 13 , processTargets ( 'package' ) )
     assertEquals ( '''Maven.artifactId must be set to achieve target package.
 ''' , output ) 
   }
   void testPackageNoArtifactIdPower ( ) {
-    System.setIn ( new StringBufferInputStream ( """
+    script = """
 includeTargets ** gant.targets.Maven * [ groupId : 'flob' ]
-""" ) )
-    assertEquals ( 13 , gant.process ( [ '-f' , '-' , 'package' ] as String[] ) )
+"""
+    assertEquals ( 13 , processTargets ( 'package' ) )
     assertEquals ( '''Maven.artifactId must be set to achieve target package.
 ''' , output ) 
   }
   void testPackageVersionLeftShift ( ) {
-    System.setIn ( new StringBufferInputStream ( """
+    script = """
 includeTargets << gant.targets.Maven
 Maven.groupId = 'flob'
 Maven.artifactId = 'adob'
-""" ) )
-    assertEquals ( 13 , gant.process ( [ '-f' , '-' , 'package' ] as String[] ) )
+"""
+    assertEquals ( 13 , processTargets ( 'package' ) )
     assertEquals ( '''Maven.version must be set to achieve target package.
 ''' , output ) 
   }
   void testPackageVersionPower ( ) {
-    System.setIn ( new StringBufferInputStream ( """
+    script = """
 includeTargets ** gant.targets.Maven * [ groupId : 'flob' , artifactId : 'adob' ]
-""" ) )
-    assertEquals ( 13 , gant.process ( [ '-f' , '-' , 'package' ] as String[] ) )
+"""
+    assertEquals ( 13 , processTargets ( 'package' ) )
     assertEquals ( '''Maven.version must be set to achieve target package.
 ''' , output ) 
   }
 
   void testBindingPropertyIsReadOnlyLeftShift ( ) {
-    System.setIn ( new StringBufferInputStream ( """
+    script = """
 includeTargets << gant.targets.Maven
 Maven.binding = new Binding ( )
-""" ) )
-    assertEquals ( 2 , gant.process ( [ '-f' , '-' , 'initialize' ] as String[] ) )
+"""
+    assertEquals ( 2 , processTargets ( 'initialize' ) )
     assertEquals ( '''Standard input, line 3 -- Error evaluating Gantfile: Cannot amend the property binding.
 ''' , output ) 
   }
   
 
   void testBindingPropertyIsReadOnlyPower ( ) {
-    System.setIn ( new StringBufferInputStream ( """
+    script = """
 includeTargets ** gant.targets.Maven * [ binding : new Binding ( ) ]
-""" ) )
-    assertEquals ( 2 , gant.process ( [ '-f' , '-' , 'initialize' ] as String[] ) )
-    System.err.println ( gant.process ( [ '-f' , '-' , 'initialize' ] as String[] ) )
+""" 
+    assertEquals ( 2 , processTargets ( 'initialize' ) )
     assertEquals ( '''Standard input, line 2 -- Error evaluating Gantfile: Cannot amend the property binding.
-Target initialize does not exist.
 ''' , output ) 
   }
   

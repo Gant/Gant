@@ -1,6 +1,6 @@
 //  Gant -- A Groovy build framework based on scripting Ant tasks.
 //
-//  Copyright © 2007 Russel Winder
+//  Copyright © 2007-8 Russel Winder
 //
 //  Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in
 //  compliance with the License. You may obtain a copy of the License at
@@ -21,11 +21,11 @@ package org.codehaus.gant.tests
  */
 final class CommentAccess_Test extends GantTestCase {
   void testcommentAccess ( ) {
-    System.setIn ( new StringBufferInputStream ( """
+    script = """
 theComment = 'Some comment.'
 target ( commentAccess : theComment ) { assert commentAccess_description == theComment ; println ( 'Success.' ) }
-""" ) )
-    assertEquals ( 0 , gant.process ( [ '-f' , '-' , 'commentAccess' ] as String[] ) )
+"""
+    assertEquals ( 0 , processTargets ( 'commentAccess' ) )
     assertEquals ( 'Success.\n' , output )
   }
 }

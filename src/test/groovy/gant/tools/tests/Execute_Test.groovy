@@ -23,28 +23,28 @@ import org.codehaus.gant.tests.GantTestCase
  */
 final class Execute_Test extends GantTestCase {
   void testExecutableString ( ) {
-    System.setIn ( new StringBufferInputStream ( '''includeTool << gant.tools.Execute
+    script = '''includeTool << gant.tools.Execute
 target ( testing : '' ) { Execute.executable ( 'echo 1' ) }
-''' ) )
-    assertEquals ( 0 , gant.process ( [ '-f' , '-' , 'testing' ] as String[] ) )
+'''
+    assertEquals ( 0 , processTargets ( 'testing' ) )
     assertEquals ( '''  [execute] echo 1
 1
 ''' , output )
   }
   void testExecutableListOfString ( ) {
-    System.setIn ( new StringBufferInputStream ( '''includeTool << gant.tools.Execute
+    script = '''includeTool << gant.tools.Execute
 target ( testing : '' ) { Execute.executable ( [ 'echo' , '1' ] ) }
-''' ) )
-    assertEquals ( 0 , gant.process ( [ '-f' , '-' , 'testing' ] as String[] ) )
+'''
+    assertEquals ( 0 , processTargets ( 'testing' ) )
     assertEquals ( '''  [execute] [echo, 1]
 1
 ''' , output ) 
   }
   void testShellString ( ) {
-    System.setIn ( new StringBufferInputStream ( '''includeTool << gant.tools.Execute
+    script = '''includeTool << gant.tools.Execute
 target ( testing : '' ) { Execute.shell ( 'echo 1' ) }
-''' ) )
-    assertEquals ( 0 , gant.process ( [ '-f' , '-' , 'testing' ] as String[] ) )
+''' 
+    assertEquals ( 0 , processTargets ( 'testing' ) )
     assertEquals ( '''    [shell] echo 1
 1
 ''' , output ) 

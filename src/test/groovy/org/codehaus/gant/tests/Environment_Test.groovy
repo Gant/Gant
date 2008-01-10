@@ -41,7 +41,7 @@ final class Environment_Test extends GantTestCase {
     //  NB System.properties.'groovy.home' is only set if Groovy/Gant is initiated via the standard Groovy
     //  startup.  The property is set in the shell scripts / native launcher.
     //
-    System.setIn ( new StringBufferInputStream ( '''
+    script = '''
 target ( report : '' ) {
   if ( System.properties.'groovy.home' != null ) {
     println ( System.properties.'groovy.home'.equals ( Ant.project.properties.'environment.GROOVY_HOME' ) ? 'true' : 'false' )
@@ -50,31 +50,31 @@ target ( report : '' ) {
     println ( Ant.project.properties.'environment.GROOVY_HOME' != null ? 'true' : 'false' )
   }
 }
-''' ) )
-    assertEquals ( 0 , gant.process ( [ '-f' , '-' , 'report' ] as String[] ) )
+'''
+    assertEquals ( 0 , processTargets ( 'report' ) )
     assertEquals ( 'true\n' , output )
   }
   void testAntEnvironmentGroovyHome ( ) {
-    System.setIn ( new StringBufferInputStream ( '''
+    script = '''
 target ( report : '' ) { print ( Ant.project.properties.'environment.GROOVY_HOME' ) }
-''' ) )
-    assertEquals ( 0 , gant.process ( [ '-f' , '-' , 'report' ] as String[] ) )
+'''
+    assertEquals ( 0 , processTargets ( 'report' ) )
     assertEquals ( groovyHome , output )
   }
   void testSystemEnvironmentGroovyHome ( ) {
     if ( java5orHigher ) {
-      System.setIn ( new StringBufferInputStream ( '''
+      script = '''
 target ( report : '' ) { print ( System.getenv ( ).'GROOVY_HOME' ) }
-''' ) )
-      assertEquals ( 0 , gant.process ( [ '-f' , '-' , 'report' ] as String[] ) )
+'''
+      assertEquals ( 0 , processTargets ( 'report' ) )
       assertEquals ( groovyHome , output )
     }
   }
   void testSystemPropertiesGroovyHome ( ) {
-    System.setIn ( new StringBufferInputStream ( '''
+    script = '''
 target ( report : '' ) { print ( System.properties.'groovy.home' ) }
-''' ) )
-    assertEquals ( 0 , gant.process ( [ '-f' , '-' , 'report' ] as String[] ) )
+'''
+    assertEquals ( 0 , processTargets ( 'report' ) )
     assertEquals (  ( System.properties.'groovy.home' == null ) ? 'null' : groovyHome , output )
   }
 }

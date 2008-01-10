@@ -1,6 +1,6 @@
 //  Gant -- A Groovy build framework based on scripting Ant tasks.
 //
-//  Copyright © 2007 Russel Winder
+//  Copyright © 2007-8 Russel Winder
 //
 //  Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in
 //  compliance with the License. You may obtain a copy of the License at
@@ -21,19 +21,19 @@ package org.codehaus.gant.tests
  */
 final class NoAntObject_Test extends GantTestCase {
   void testEchoAttribute ( ) {
-    System.setIn ( new StringBufferInputStream ( 'target ( test : "" ) { echo ( message : "Hello." ) } ' ) )
-    assertEquals ( 0 , gant.process ( [ '-f' ,  '-' , 'test' ] as String[] ) )
+    script = 'target ( test : "" ) { echo ( message : "Hello." ) } '
+    assertEquals ( 0 , processTargets ( 'test' ) )
     assertEquals ( '''     [echo] Hello.
 ''' , output ) 
   }
   void testEchoText ( ) {
-    System.setIn ( new StringBufferInputStream ( 'target ( test : "" ) { echo { "Hello." } } ' ) )
-    assertEquals ( 0 , gant.process ( [ '-f' ,  '-' , 'test' ] as String[] ) )
+    script = 'target ( test : "" ) { echo { "Hello." } } '
+    assertEquals ( 0 , processTargets ( 'test' ) )
     assertEquals ( '' , output ) 
   }
   void testEchoMixed ( ) {
-    System.setIn ( new StringBufferInputStream ( 'target ( test : "" ) { echo ( message : "Hello" ) { " World." } } ' ) )
-    assertEquals ( 0 , gant.process ( [ '-f' ,  '-' , 'test' ] as String[] ) )
+    script = 'target ( test : "" ) { echo ( message : "Hello" ) { " World." } } '
+    assertEquals ( 0 , processTargets ( 'test' ) )
     assertEquals ( '''     [echo] Hello
 ''' , output ) 
   }

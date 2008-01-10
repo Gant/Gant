@@ -30,7 +30,7 @@ final class Subdirectories {
     //  If we allowed ourselves Java SE 5.0 then we could use ProcessBuilder but we restrict ourselves to Java 1.4.
     //def process = ( new ProcessBuilder ( [ 'sh' , '-c' , command ] )).directory ( directory ).start ( )
     //
-    //  RC-01 cannot deal with null in the first parameter.
+    //  Groovy 1.0 RC-01 cannot deal with null in the first parameter.
     //def process = command.execute ( null , directory )
     def process = command.execute ( [ ] , directory )
     if ( GantState.verbosity > GantState.QUIET ) {

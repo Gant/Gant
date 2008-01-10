@@ -11,6 +11,9 @@ Added creating Cobertura reports via the coberturaTest target in the Gantfile.
 
 Amended some of the error handling, especially target definition.
 
+Added constructors to allow the Gant script to be a parameter.  This allows programs (including the tests)
+not to have to use a command line apporach to starting Gant.
+
 
 1.0.2 ( r8867 )
 ---------------
