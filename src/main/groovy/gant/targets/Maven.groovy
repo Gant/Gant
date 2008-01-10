@@ -15,7 +15,7 @@
 package gant.targets
 
 /**
- *  A class to provide the lifecycle targets associated with a Maven 2 project.
+ *  A class to provide the Maven 2 style lifecycle targets associated with a project.
  *
  *  @author Russel Winder <russel.winder@concertant.com>
  */

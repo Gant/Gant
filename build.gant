@@ -282,6 +282,7 @@ target ( distribution : 'Create the distribution.' ) {
     }
     serverUploadProducts [ archiveRootPath + tgzExtension ] = serverDistributionsDirectory + '/' +  archiveRoot + tgzExtension
   }
+  //  Create the source distributions.
   archiveRoot = 'gant_src-' + gantVersion
   archiveRootPath = buildDirectory + System.properties.'file.separator' + archiveRoot
   zip ( destfile : archiveRootPath + zipExtension ) {
@@ -292,6 +293,18 @@ target ( distribution : 'Create the distribution.' ) {
   tar ( destfile :  archiveRootPath + tgzExtension , compression : 'gzip' ) {
     tarfileset ( dir : '.' , includes : distributionTopLevelFiles.join ( ',' ) , prefix : prefix )
     distributionDirectories.each { directory -> tarfileset ( dir : directory , prefix : prefix + System.properties.'file.separator' + directory ) }
+  }
+  serverUploadProducts [ archiveRootPath + tgzExtension ] = serverDistributionsDirectory + '/' +  archiveRoot + tgzExtension
+  // Create the API documentation distributions.
+  documentation ( )
+  archiveRoot = 'gant_doc-' + gantVersion
+  archiveRootPath = buildDirectory + System.properties.'file.separator' + archiveRoot
+  zip ( destfile : archiveRootPath + zipExtension ) {
+    zipfileset ( dir : documentationDirectory , prefix : prefix + System.properties.'file.separator' + 'doc' )
+  }
+  serverUploadProducts [ archiveRootPath + zipExtension ] = serverDistributionsDirectory + '/' +  archiveRoot + zipExtension
+  tar ( destfile :  archiveRootPath + tgzExtension , compression : 'gzip' ) {
+    tarfileset ( dir : documentationDirectory , prefix : prefix + System.properties.'file.separator' + 'doc' )
   }
   serverUploadProducts [ archiveRootPath + tgzExtension ] = serverDistributionsDirectory + '/' +  archiveRoot + tgzExtension
 }

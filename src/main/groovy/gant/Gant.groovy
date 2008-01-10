@@ -191,6 +191,9 @@ final class Gant {
     binding.setDefaultTarget = setDefaultTarget
     binding.cacheEnabled = false
   }
+  /**
+   *  The function that implements the creation of the list of targets for the -p and -T options.
+   */
   private int targetList ( targets ) {
     def max = 0
     targetDescriptions.entrySet ( ).each { item ->
@@ -213,6 +216,9 @@ final class Gant {
   private void printDispatchExceptionMessage ( target , method , message ) {
     println ( ( target == method ) ? "Target ${method} does not exist." : "Could not execute method ${method}.\n${message}" )
   }
+  /**
+   *  The function that handles actioning the targets.
+   */
   private int dispatch ( targets ) {
     def returnCode = 0
     try {
@@ -239,6 +245,9 @@ final class Gant {
     }
     returnCode
   }
+  /**
+   *  Process the command line options and then call the function to process the targets.
+   */
   public int processArgs ( String[] args ) {
     final rootLoader = classLoader.rootLoader
     //
@@ -329,6 +338,10 @@ final class Gant {
   public int processTargets ( ) { processTargets ( 'dispatch' , [ ] ) }
   public int processTargets ( String s ) { processTargets ( 'dispatch' , [ s ] ) }
   public int processTargets ( List l ) { processTargets ( 'dispatch' , l ) }
+  /**
+   *  Process the targets, but first deal with getting the build script loaded, either by compiling the text
+   *  of the file or standard input, or using the cached compiled file.
+   */
   protected int processTargets ( String function , List targets ) {
     def buildFileText = ''
     def buildFileModified = -1  
@@ -386,6 +399,9 @@ final class Gant {
     }
     invokeMethod ( function , targets )
   }
+  /**
+   *  Compile a script in the context of dealing with cached compiled build scripts.
+   */
   private void compileScript ( destDir , buildFileText , buildClassName ) {
     if ( ! destDir.exists ( ) ) { destDir.mkdirs ( ) }
     def configuration = new CompilerConfiguration ( )
@@ -394,5 +410,8 @@ final class Gant {
     unit.addSource ( buildClassName , new ByteArrayInputStream ( buildFileText.bytes ) )
     unit.compile ( )				
   }
+  /**
+   *  The entry point for command line invocation.
+   */
   public static main ( args ) { System.exit ( ( new Gant ( ) ).processArgs ( args ) ) }
 }
