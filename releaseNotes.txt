@@ -6,13 +6,15 @@ Added metadata to the Maven target set.
 Updated the Ivy example a bit.  Switched to Ivy 2.0.0-beta-1.
 
 Added a Gant Ant Task.  (For supporting continuous integration systems that insist on using Ant.)
+Unfortunately, there is a problem with loading the Groovyc task in an Gant script executed from an Ant
+script -- see GANT-19. 
 
 Added creating Cobertura reports via the coberturaTest target in the Gantfile.
 
 Amended some of the error handling, especially target definition.
 
 Added constructors to allow the Gant script to be a parameter.  This allows programs (including the tests)
-not to have to use a command line apporach to starting Gant.
+not to have to use a command line apporach to starting Gant.  Many of the tests refactored.
 
 
 1.0.2 ( r8867 )
