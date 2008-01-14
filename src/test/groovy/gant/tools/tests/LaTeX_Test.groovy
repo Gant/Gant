@@ -28,9 +28,7 @@ final class LaTeX_Test extends GantTestCase {
       Runtime.runtime.exec ( 'pdflatex' )
       executablePresent = true
     }
-    catch ( IOException io ) {
-      System.err.println ( 'pdflatex not in search path, not running LaTeX tool execution tests.' ) 
-    }
+    catch ( IOException io ) { }
   }  
   def optionTestGantFile ( name , key ) { """
 includeTool << gant.tools.LaTeX
@@ -125,5 +123,6 @@ LaTeX.intermediateExtensions.each { extension -> cleanPattern << '*' + extension
       assertEquals ( 0 , processTargets ( 'clean' ) )
       filename.delete ( )
     }
+    else { System.err.println ( 'testEmptyFile not run since pdflatex executable is not avaialble.' ) }
   }
 }
