@@ -35,6 +35,8 @@ if ( ( installationHome == null ) || ( installationHome == '' ) ) {
   return
 }
 
+//  The Gant source is structured according to the standard Maven 2 structure.
+
 sourceDirectory = 'src/main/groovy'
 testsDirectory = 'src/test/groovy'  
 jarfilesDirectory = 'jarfiles'
@@ -52,8 +54,12 @@ apiDocumentationDirectory = documentationDirectory + '/api'
 
 buildMetadataDirectory = buildClassesDirectory + '/META-INF'
 
+//  Labels for supporting use of the Maven Ant Task.
+
 antlibXMLns = 'antlib:org.apache.maven.artifact.ant'
 mavenPOMId = 'maven.pom'
+
+//  Details of what is going to appear in the distribution.
 
 distributionTopLevelFiles = [
                              'build.gant' , 'buildMaven.gant' , 'build.properties' , 'build.xml' ,
@@ -81,6 +87,8 @@ distributionVersions = [
 // As Jürgen Hermann pointed out the trailing / on the URL is very important.
 
 distributionURL = 'https://dav.codehaus.org/dist/gant/'
+
+ //  The server hierarchy is fixed and known.
 
 serverDistributionsDirectory = 'distributions'
 serverJarsDirectory = 'jars'
@@ -137,13 +145,13 @@ performTests =  { classpathRef ->
       }
       pathelement ( location : buildTestClassesDirectory )
       //
-      //  So why can these tests execute without these in teh classpath?
+      //  So why can these tests execute without these in the classpath?
       //
       //pathelement ( location : buildClassesDirectory )
       //path ( refid : classpathRef )
     }
   }
-  Ant.junit ( printsummary : 'yes' , failureproperty : 'testsFailed' , fork : 'true' ) {
+                  Ant.junit ( printsummary : 'yes' , failureproperty : 'testsFailed' , fork : 'true' ) {
     formatter ( type : 'plain' )
     batchtest ( todir : buildTestReportsDirectory ) { fileset ( dir : buildTestClassesDirectory , includes : '**/*_Test.class' , excludes : '**/ant/tests/*' ) }
     classpath {
@@ -190,6 +198,8 @@ Ant.path ( id : 'testJarSet' ) {
   path ( refid : 'compileJarSet' )
   fileset ( dir : installationHome + '/lib' , includes : 'junit*.jar' )
 }
+
+//  Set up all the targets.
 
 includeTargets << gant.targets.Clean
 cleanPattern <<  [ '**/*~' , 'cobertura.ser' ] 
@@ -241,7 +251,7 @@ target ( documentation : 'Create the API documentation.' ) {
                footer : 'Copyright &copy; 2006&ndash;8 The Codehaus.  All rights reserved.' ,
                source : 1.4
                ) {
-    classpath { fileset ( dir : System.properties.'groovy.home' + '/lib' , includes : '*.jar' ) }
+    classpath { fileset ( dir : installationHome + '/lib' , includes : '*.jar' ) }
   }    
   groovydoc (
              destdir : groovyApiDocumentationDirectory ,
