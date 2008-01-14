@@ -98,4 +98,20 @@ target ( add${name}OptionList : "" ) {
     assertEquals ( '''[-blah, --flobadob]
 ''' , output ) 
   }
+  final buildScript = '''
+includeTool << gant.tools.LaTeX
+target ( "pdf" : "" ) { LaTeX.generatePDF ( root : "TESTFILENAME" ) }
+includeTargets << gant.targets.Clean
+LaTeX.intermediateExtensions.each { extension -> cleanPattern << '*' + extension }
+'''
+  void testEmptyFile ( ) {
+    def extension = '.ltx'
+    def filename = File.createTempFile ( 'gantLaTeXTest_' , extension , new File ( '.' ) )
+    script = buildScript.replace ( 'TESTFILENAME' , filename.name.replaceAll ( extension , '' ) )
+    assertEquals ( 0 , processTargets ( 'pdf' ) )
+    assertTrue ( output.contains ( '[execute] [pdflatex, -interaction=nonstopmode, -halt-on-error, gantLaTeXTest_' ) )
+    assertTrue ( output.contains ( '!  ==> Fatal error occurred, no output PDF file produced!' ) )
+    assertEquals ( 0 , processTargets ( 'clean' ) )
+    filename.delete ( )
+  }
 }
