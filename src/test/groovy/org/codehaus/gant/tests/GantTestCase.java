@@ -16,9 +16,9 @@ package org.codehaus.gant.tests ;
 
 import java.util.List ;
 
+import java.io.ByteArrayInputStream ;
 import java.io.ByteArrayOutputStream ;
 import java.io.PrintStream ;
-import java.io.StringBufferInputStream ;
 
 import groovy.util.GroovyTestCase ;
 
@@ -43,7 +43,7 @@ public abstract class GantTestCase extends GroovyTestCase {
     script = "" ;
   }
   protected void tearDown ( ) { System.setOut ( savedOut ) ; }
-  protected void setScript ( final String script ) { System.setIn ( new StringBufferInputStream ( script ) ) ; }
+  protected void setScript ( final String script ) { System.setIn ( new ByteArrayInputStream ( script.getBytes ( ) ) ) ; }
   protected int processTargets ( ) { return gant.processTargets ( ) ; }
   protected int processTargets ( final String s ) { return gant.processTargets ( s ) ; }
   protected int processTargets ( final List l ) { return gant.processTargets ( l ) ; }  
