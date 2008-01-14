@@ -31,10 +31,10 @@ import gant.Gant ;
  *  @author Russel Winder <russel.winder@concertant.com>
  */
 public abstract class GantTestCase extends GroovyTestCase {
-  private String script ;
   private ByteArrayOutputStream output ;
   private PrintStream savedOut ;
   protected Gant gant ;
+  protected String script ;
   protected void setUp ( ) {
     savedOut = System.out ;
     output = new ByteArrayOutputStream ( ) ;
