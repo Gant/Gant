@@ -25,6 +25,16 @@ import org.apache.tools.ant.Task ;
  * <p>This Ant task provides a Gant capability for continuous integration systems that do not directly
  * support Gant but only Ant.</p>
  *
+ *  <p>Possible attributes are:</p>
+ *
+ *  <ul>
+ *    <li>file &ndash; the path to the Gant script to execute.</li>
+ *    <li>target &ndash; the target to execute.</li>
+ *  </ul>
+ *
+ *  <p>Both of these are optional.  The file 'build.gant' and the default target are used by default.  An
+ *  error results if there is no default target and no target is specified.</p>
+ *
  * @author Russel Winder
  */
 public class Gant extends Task {
