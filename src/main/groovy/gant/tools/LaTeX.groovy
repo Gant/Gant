@@ -22,12 +22,6 @@ import org.codehaus.gant.GantState
  *  @author Russel Winder <russel.winder@concertant.com>
  */
 class LaTeX {
-  protected final binding
-  protected final executor
-  public LaTeX ( final Binding binding ) {
-    this.binding = binding
-    executor = new Execute ( binding ) 
-  }
   public final ltxExtension = '.ltx'
   public final texExtension = '.tex'
   public final dviExtension = '.dvi'
@@ -43,16 +37,15 @@ class LaTeX {
   public final logExtension = '.log'
   public final tocExtension = '.toc'
   public final pdfBookMarkExtension = '.out'
-   //  As at r5438 super fails to work and so we cannot make this final, we have to make it accesible to subclasses.
   public intermediateExtensions = [
     auxExtension , dviExtension , logExtension , tocExtension ,
     bblExtension , blgExtension ,
     idxExtension , ilgExtension , indExtension ,
     pdfBookMarkExtension
     ]
-  public environment = [
+  public final environment = [
     latexCommand : 'pdflatex' ,
-    latexOptions : [ ] ,
+    latexOptions : [ '-interaction=nonstopmode' , '-halt-on-error' ] ,
     bibtexCommand : 'bibtex' ,
     bibtexOptions : [ ] ,
     makeindexCommand : 'makeindex' ,
@@ -64,6 +57,12 @@ class LaTeX {
     root : '' ,
     dependents : [ ]
     ]
+  protected final binding
+  protected final executor
+  public LaTeX ( final Binding binding ) {
+    this.binding = binding
+    executor = new Execute ( binding ) 
+  }
   private void addOption ( key , option ) {
     if ( option instanceof List ) { environment[ key ] += option }
     else { environment[ key ] << option }

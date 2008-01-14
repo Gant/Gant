@@ -41,13 +41,13 @@ target ( add${name}OptionList : "" ) {
   void testAddLaTeXOption ( ) {
     script = optionTestGantFile ( 'LaTeX' , 'latex' )
     assertEquals ( 0 , processTargets ( 'addLaTeXOption' ) )
-    assertEquals ( '''[-blah]
+    assertEquals ( '''[-interaction=nonstopmode, -halt-on-error, -blah]
 ''' , output ) 
   }
   void testAddLaTeXOptionList ( ) {
     script = optionListTestGantFile ( 'LaTeX' , 'latex' )
     assertEquals ( 0 , processTargets ( 'addLaTeXOptionList' ) )
-    assertEquals ( '''[-blah, --flobadob]
+    assertEquals ( '''[-interaction=nonstopmode, -halt-on-error, -blah, --flobadob]
 ''' , output ) 
   }
   void testAddBibTeXOption ( ) {
