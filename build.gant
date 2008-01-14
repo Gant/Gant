@@ -54,7 +54,8 @@ apiDocumentationDirectory = documentationDirectory + '/api'
 
 buildMetadataDirectory = buildClassesDirectory + '/META-INF'
 
-//  Labels for supporting use of the Maven Ant Task.
+//  Labels for supporting use of the Maven Ant task.  NB Installing Gant installs the Maven and Ivy Ant
+//  tasks jars into the Groovy library.
 
 antlibXMLns = 'antlib:org.apache.maven.artifact.ant'
 mavenPOMId = 'maven.pom'
@@ -106,7 +107,7 @@ serverUploadProducts = [ : ]
 performCompile = { classpathRef ->
   Ant.mkdir ( dir : buildClassesDirectory )
   Ant.taskdef ( name : 'groovyc' , classname : 'org.codehaus.groovy.ant.Groovyc' , classpathref : classpathRef )
-  Ant.groovyc ( srcdir : sourceDirectory , destdir : buildClassesDirectory , classpathref : classpathRef ) {
+  Ant.groovyc ( srcdir : sourceDirectory , destdir : buildClassesDirectory , classpathref : classpathRef ) { // , fork : 'true' ) {
     javac ( source : '1.4' , target : '1.4' , debug : 'on' )
   }
 }
@@ -114,7 +115,7 @@ performCompile = { classpathRef ->
 performCompileTests = { classpathRef ->
   Ant.mkdir ( dir : buildTestClassesDirectory )
   Ant.taskdef ( name : 'groovyc' , classname : 'org.codehaus.groovy.ant.Groovyc' , classpathref : classpathRef )
-  Ant.groovyc ( srcdir : testsDirectory , destdir : buildTestClassesDirectory ) {
+  Ant.groovyc ( srcdir : testsDirectory , destdir : buildTestClassesDirectory ) { // , fork : 'true' ) {
     classpath {
       pathelement ( location : buildClassesDirectory )
       path ( refid : classpathRef )

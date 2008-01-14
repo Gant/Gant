@@ -24,3 +24,5 @@ Gant run.  Need to add a way of specifying which Groovy jar to compile against.
 The Maven and Ivy target sets assume that System.properties.'groovy.home' is set which is not the case
 always.  In particular, this will only be true when Gant is initiated from the command line, it is not true
 when Gant is initiated via the Ant task.
+
+The LaTeX tool does not make use of the return code from (pdf)latex, and it should.
