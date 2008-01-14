@@ -22,6 +22,16 @@ import org.codehaus.gant.tests.GantTestCase
  *  @author Russel Winder <russel.winder@concertant.com>
  */
 final class LaTeX_Test extends GantTestCase {
+  def executablePresent = false
+  public LaTeX_Test ( ) {
+    try {
+      Runtime.runtime.exec ( 'pdflatex' )
+      executablePresent = true
+    }
+    catch ( IOException io ) {
+      System.err.println ( 'pdflatex not in search path, not running LaTeX tool execution tests.' ) 
+    }
+  }  
   def optionTestGantFile ( name , key ) { """
 includeTool << gant.tools.LaTeX
 target ( add${name}Option : "" ) {
@@ -105,13 +115,15 @@ includeTargets << gant.targets.Clean
 LaTeX.intermediateExtensions.each { extension -> cleanPattern << '*' + extension }
 '''
   void testEmptyFile ( ) {
-    def extension = '.ltx'
-    def filename = File.createTempFile ( 'gantLaTeXTest_' , extension , new File ( '.' ) )
-    script = buildScript.replace ( 'TESTFILENAME' , filename.name.replaceAll ( extension , '' ) )
-    assertEquals ( 0 , processTargets ( 'pdf' ) )
-    assertTrue ( output.contains ( '[execute] [pdflatex, -interaction=nonstopmode, -halt-on-error, gantLaTeXTest_' ) )
-    assertTrue ( output.contains ( '!  ==> Fatal error occurred, no output PDF file produced!' ) )
-    assertEquals ( 0 , processTargets ( 'clean' ) )
-    filename.delete ( )
+    if ( executablePresent ) {
+      def extension = '.ltx'
+      def filename = File.createTempFile ( 'gantLaTeXTest_' , extension , new File ( '.' ) )
+      script = buildScript.replace ( 'TESTFILENAME' , filename.name.replaceAll ( extension , '' ) )
+      assertEquals ( 0 , processTargets ( 'pdf' ) )
+      assertTrue ( output.contains ( '[execute] [pdflatex, -interaction=nonstopmode, -halt-on-error, gantLaTeXTest_' ) )
+      assertTrue ( output.contains ( '!  ==> Fatal error occurred, no output PDF file produced!' ) )
+      assertEquals ( 0 , processTargets ( 'clean' ) )
+      filename.delete ( )
+    }
   }
 }
