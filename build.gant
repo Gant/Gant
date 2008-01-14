@@ -23,9 +23,9 @@ catch ( MissingPropertyException mpe ) { gantVersion = Ant.project.properties.ga
 try { usingCobertura }
 catch ( MissingPropertyException mpe ) { usingCobertura = false }
 
-// NB  System.getenv ( ) does not work on Java 1.4 but does on Java 5 or later.
+// NB  System.getenv ( ) is deprecated in Java 1.4 but is undeprecated for Java 5 and later.
   
-installationHome = System.properties.'groovy.home'
+installationHome = System.getenv ( ).'GROOVY_HOME'
 try { if ( grailsBuild ) { installationHome = System.getenv ( ).'GRAILS_HOME' } }
 catch ( MissingPropertyException mpe ) { grailsBuild = false }
 
@@ -67,9 +67,15 @@ distributionDirectories = [ 'documentation' , 'examples' , '.settings' , scripts
 //  The versions of Gant in the Maven repository to build distribution version of Gant against.
 
 distributionVersions = [
-                        [ groupId : 'groovy' , artifactId : 'groovy-all' , version : '1.0' ] ,
-                        [ groupId : 'org.codehaus.groovy' , artifactId : 'groovy-all' , version : '1.5.0' ] ,
+                        //
+                        // Introducing the Gant Ant Task written in Java means we have to use the joint
+                        // compiler and this means we cannot build Gant against Groovy 1.0.
+                        //
+                        //    [ groupId : 'groovy' , artifactId : 'groovy-all' , version : '1.0' ] ,
+                        //
+                        //[ groupId : 'org.codehaus.groovy' , artifactId : 'groovy-all' , version : '1.5.0' ] ,
                         [ groupId : 'org.codehaus.groovy' , artifactId : 'groovy-all' , version : '1.5.1' ]
+                        //[ groupId : 'org.codehaus.groovy' , artifactId : 'groovy-all' , version : '1.5.2' ] ,
                         ]
 
 // As Jürgen Hermann pointed out the trailing / on the URL is very important.
@@ -84,59 +90,60 @@ serverPomsDirectory = 'poms'
 
 serverUploadProducts = [ : ]
 
+//  The various compilation and test actions are parameterized so they can be used with different classpaths.
 
-includeTargets << gant.targets.Clean
-cleanPattern <<  [ '**/*~' , 'cobertura.ser' ] 
-cleanDirectory << buildDirectory
+//  Currently these Closures do not have the GantMetaClass as their metaclass so there is no delegated
+//  lookup on Ant so we have to use it explicitly.
 
-Ant.path ( id : 'compileJarSet' ) {
-  fileset ( dir : installationHome + '/lib' , includes : 'groovy*.jar' )
-  fileset ( dir : installationHome + '/lib' , includes : 'commons-cli*.jar' )
-  fileset ( dir : installationHome + '/lib' , includes : 'asm*.jar' )
-  fileset ( dir : installationHome + '/lib' , includes : 'ant*.jar' )  // Picks up antlr as well as ant. This is intended.
-}
-Ant.taskdef ( name : 'groovyc' , classname : 'org.codehaus.groovy.ant.Groovyc' , classpathref : 'compileJarSet' )
-
-target ( compile : 'Compile everything needed for a Gant installation.' ) {
-  mkdir ( dir : buildClassesDirectory )
-  groovyc ( srcdir : sourceDirectory , destdir : buildClassesDirectory ) {
-    javac ( source : '1.4' , target : '1.4' , debug : 'on' , classpathref : 'compileJarSet' )
+performCompile = { classpathRef ->
+  Ant.mkdir ( dir : buildClassesDirectory )
+  Ant.taskdef ( name : 'groovyc' , classname : 'org.codehaus.groovy.ant.Groovyc' , classpathref : classpathRef )
+  Ant.groovyc ( srcdir : sourceDirectory , destdir : buildClassesDirectory , classpathref : classpathRef ) {
+    javac ( source : '1.4' , target : '1.4' , debug : 'on' )
   }
 }
 
-target ( compileTests : 'Compile all the tests for a newly built Gant.' ) {
-  depends ( compile )
-  mkdir ( dir : buildTestClassesDirectory )
-  groovyc ( srcdir : testsDirectory , destdir : buildTestClassesDirectory ) {
-    classpath { pathelement ( location : buildClassesDirectory ) }
-    javac ( source : '1.4' , target : '1.4' , debug : 'on' ) {
-      classpath {
-        pathelement ( location : buildClassesDirectory )
-         path ( refid : 'compileJarSet' )
-       fileset ( dir : installationHome + '/lib' , includes : 'junit*.jar' ) // Irritating that this is needed :-(
-      }
+performCompileTests = { classpathRef ->
+  Ant.mkdir ( dir : buildTestClassesDirectory )
+  Ant.taskdef ( name : 'groovyc' , classname : 'org.codehaus.groovy.ant.Groovyc' , classpathref : classpathRef )
+  Ant.groovyc ( srcdir : testsDirectory , destdir : buildTestClassesDirectory ) {
+    classpath {
+      pathelement ( location : buildClassesDirectory )
+      path ( refid : classpathRef )
     }
+    javac ( source : '1.4' , target : '1.4' , debug : 'on' ) 
   }
 }
 
-target ( test : 'Test a build.' ) {
-  depends ( compileTests )
-  mkdir ( dir : buildTestReportsDirectory )
+performTests =  { classpathRef ->
+  Ant.mkdir ( dir : buildTestReportsDirectory )
   if ( usingCobertura ) {
-    mkdir ( dir : buildCoberturaClassesDirectory )
-    mkdir ( dir : buildCoberturaReportsDirectory )
-    "${antlibXMLns}:dependencies" ( pathId :  'coberturaPathId' ) {
+    Ant.mkdir ( dir : buildCoberturaClassesDirectory )
+    Ant.mkdir ( dir : buildCoberturaReportsDirectory )
+    Ant."${antlibXMLns}:dependencies" ( pathId :  'coberturaPathId' ) {
       dependency ( groupId : 'net.sourceforge.cobertura' , artifactId : 'cobertura' , version : '1.9' )
     }
-    taskdef ( resource : 'tasks.properties' , classpathref : 'coberturaPathId' )
-    'cobertura-instrument' ( todir : buildCoberturaClassesDirectory ) { fileset ( dir : buildClassesDirectory ) }
+    Ant.taskdef ( resource : 'tasks.properties' , classpathref : 'coberturaPathId' )
+    Ant.'cobertura-instrument' ( todir : buildCoberturaClassesDirectory ) { fileset ( dir : buildClassesDirectory ) }
   }
-  junit ( printsummary : 'yes' , failureproperty : 'testsFailed' , fork : 'true' ) {
+  Ant.junit ( printsummary : 'yes' , failureproperty : 'testsFailed' , fork : 'true' ) {
     formatter ( type : 'plain' )
     batchtest ( todir : buildTestReportsDirectory ) { fileset ( dir : buildTestClassesDirectory , includes : '**/ant/tests/*_Test.class' ) }
-    classpath { pathelement ( location : buildTestClassesDirectory ) }
+    classpath {
+      if ( usingCobertura ) {
+        // MUST appear in classpath before the uninstrumented classes.
+        pathelement ( location : buildCoberturaClassesDirectory )
+        path ( refid : 'coberturaPathId' )
+      }
+      pathelement ( location : buildTestClassesDirectory )
+      //
+      //  So why can these tests execute without these in teh classpath?
+      //
+      //pathelement ( location : buildClassesDirectory )
+      //path ( refid : classpathRef )
+    }
   }
-  junit ( printsummary : 'yes' , failureproperty : 'testsFailed' , fork : 'true' ) {
+  Ant.junit ( printsummary : 'yes' , failureproperty : 'testsFailed' , fork : 'true' ) {
     formatter ( type : 'plain' )
     batchtest ( todir : buildTestReportsDirectory ) { fileset ( dir : buildTestClassesDirectory , includes : '**/*_Test.class' , excludes : '**/ant/tests/*' ) }
     classpath {
@@ -147,15 +154,11 @@ target ( test : 'Test a build.' ) {
       }
       pathelement ( location : buildTestClassesDirectory )
       pathelement ( location : buildClassesDirectory )
-      path ( refid : 'compileJarSet' )
+      path ( refid : classpathRef )
     }
   }
-  if ( usingCobertura ) { 'cobertura-report' ( srcdir : sourceDirectory , destdir : buildCoberturaReportsDirectory ) }
-}
-
-target ( coberturaTest : 'Test a build using Cobertura to get a coverage report.' ) {
-  usingCobertura = true
-  depends ( tests )
+  if ( usingCobertura ) { Ant.'cobertura-report' ( srcdir : sourceDirectory , destdir : buildCoberturaReportsDirectory ) }
+  Ant.project.properties.testsFailed
 }
 
 makeManifest = { ->
@@ -171,6 +174,44 @@ makeManifest = { ->
     attribute ( name : 'Implementation-Version' , value : gantVersion ) 
     attribute ( name : 'Implementation-Vendor' , value : 'The Codehaus' )
   }
+}
+
+//  Create the compilation context of the Groovy into which Gant will be installed.  This is the standard
+//  context but it is not used for the distributions.
+
+Ant.path ( id : 'compileJarSet' ) {
+  fileset ( dir : installationHome + '/lib' , includes : 'groovy*.jar' )
+  fileset ( dir : installationHome + '/lib' , includes : 'commons-cli*.jar' )
+  fileset ( dir : installationHome + '/lib' , includes : 'asm*.jar' )
+  fileset ( dir : installationHome + '/lib' , includes : 'ant*.jar' )  // Picks up antlr as well as ant. This is intended.
+}
+
+Ant.path ( id : 'testJarSet' ) {
+  path ( refid : 'compileJarSet' )
+  fileset ( dir : installationHome + '/lib' , includes : 'junit*.jar' )
+}
+
+includeTargets << gant.targets.Clean
+cleanPattern <<  [ '**/*~' , 'cobertura.ser' ] 
+cleanDirectory << buildDirectory
+
+target ( compile : 'Compile everything needed for a Gant installation.' ) {
+  performCompile ( 'compileJarSet' )
+}
+
+target ( compileTests : 'Compile all the tests for a newly built Gant.' ) {
+  depends ( compile )
+  performCompileTests ( 'testJarSet' )
+}
+
+target ( test : 'Test a build.' ) {
+  depends ( compileTests )
+  println ( 'Tests ' + ( performTests ( 'compileJarSet' ) ? 'failed' : 'succeeded' ) + '.' )
+}
+
+target ( coberturaTest : 'Test a build using Cobertura to get a coverage report.' ) {
+  usingCobertura = true
+  depends ( tests )
 }
 
 target ( 'package' : 'Create the jar file.' ) {
@@ -243,6 +284,7 @@ target ( distribution : 'Create the distribution.' ) {
   def prefix = 'gant-' + gantVersion
   def distributionClasspathId = 'classpath'
   clean ( )
+  testsFailed = false
   distributionVersions.each { item ->
     //  This is a closure that doesn't have the right metaclass so we have to specify Ant.  Need to
     //  rearrange things to deal with this problem as is done in the target Closure.
@@ -251,15 +293,13 @@ target ( distribution : 'Create the distribution.' ) {
       dependency ( groupId : item.groupId , artifactId : item.artifactId , version : item.version )
       dependency ( groupId : 'org.apache.ant' , artifactId : 'ant' , version : '1.7.0' )
       dependency ( groupId : 'commons-cli' , artifactId : 'commons-cli' , version : '1.0' )
+      dependency ( groupId : 'junit' , artifactId : 'junit' , version : '3.8.2' )
     }
-    //  Replicate the build process here as a short term expediant.  Should review the whole build and avoid
-    //  the replication.  Must remember to remove all previously build class files.
+    //  Must remove the compilation products of the last compilation!
     Ant.delete ( dir : buildClassesDirectory )
-    Ant.mkdir ( dir : buildClassesDirectory )
-    //  Which version of Groovy actually gets used here?
-    Ant.groovyc ( srcdir : sourceDirectory , destDir : buildClassesDirectory , /* fork : 'yes' , */ classpathref : pathIdentifier ) {
-      javac ( source : '1.4' , target : '1.4' , debug : 'on' , fork : 'yes' , classpathref : pathIdentifier )
-    }                         
+    performCompile ( pathIdentifier )
+    performCompileTests ( pathIdentifier )
+    if ( ! performTests ( pathIdentifier ) ) { testsFailed = true }                           
     makeManifest ( )
     def discriminator = prefix + '_groovy-' + item.version
     def jarName = discriminator + '.jar'                    
@@ -308,10 +348,16 @@ target ( distribution : 'Create the distribution.' ) {
     tarfileset ( dir : documentationDirectory , prefix : prefix + System.properties.'file.separator' + 'doc' )
   }
   serverUploadProducts [ archiveRootPath + tgzExtension ] = serverDistributionsDirectory + '/' +  archiveRoot + tgzExtension
+  //  Return the result of the test executions so that uploadDistributions can choose not to upload a failed
+  //  compilation.
+  testsFailed
 }
 
 target ( uploadDistribution : 'Upload a complete distribution.' ) {
-  depends ( distribution )
+  if ( ! distribution ( ) ) {
+    println ( 'Not uploading as some tests failed.' )
+    return
+  }
   //
   //  Slide has been retired by the Apache Foundation in favour of Jackrabbit, but we use Slide anyway.
   //
