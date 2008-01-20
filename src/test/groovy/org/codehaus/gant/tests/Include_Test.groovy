@@ -14,9 +14,9 @@
 
 package org.codehaus.gant.tests
 
-////////////////////////////////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////
 //  NB Commented out tests are ones that it is not certain should be supported.
-////////////////////////////////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 /**
  *  A test to ensure that the various include mechanisms work as they should.
@@ -24,49 +24,79 @@ package org.codehaus.gant.tests
  *  @author Russel Winder <russel.winder@concertant.com>
  */
 final class Include_Test extends GantTestCase {
-  def toolClassName = 'ToolClass'
-  def toolClassFilePath = "/tmp/${toolClassName}.groovy"
-  def toolClassText =  """
+
+  ////////////////////////////////////////////////////////////////////////////////////////////////////////////
+  ////  NB Instance initializers do not work properly in Groovy.  This means that fields that depend on the
+  ////  name of the temporary file must be initialized in the constructor.  Remember, variables in GStrings
+  ////  are bound at definition time even though expression execution only occurs at use time.  This means
+  ////  any GString depending on the name of the temporary directory must also be initialized in the
+  ////  constructor to avoid having variable bound to null.
+  ////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+  private final temporaryDirectory
+  private final toolClassName = 'ToolClass'
+  private final toolClassFilePath
+  private final toolClassText =  """
 class ${toolClassName} {
   def ${toolClassName} ( Binding binding ) { }
   def flob ( ) { println ( 'flobbed.' ) }
 }
 """
-  def toolBuildScriptBase =  """
+  private final toolBuildScriptBase =  """
 target ( something : '' ) { ${toolClassName}.flob ( ) }
 target ( 'default' : '' ) { something ( ) }
 """
-  def toolBuildScriptClass =  "includeTool <<  groovyShell.evaluate ( '''${toolClassText} ; return ${toolClassName}''' )\n" + toolBuildScriptBase
-  def toolBuildScriptFile =  "includeTool <<  new File ( '${toolClassFilePath}' )\n" + toolBuildScriptBase
-  def toolBuildScriptString =  "includeTool <<  '''${toolClassText}'''\n" + toolBuildScriptBase
-  def targetsScriptFilePath = '/tmp/targets.gant'
-  def targetsScriptText =  '''
+  private final toolBuildScriptClass =  "includeTool <<  groovyShell.evaluate ( '''${toolClassText} ; return ${toolClassName}''' )\n" + toolBuildScriptBase
+  private final toolBuildScriptFile
+  private final toolBuildScriptString =  "includeTool <<  '''${toolClassText}'''\n" + toolBuildScriptBase
+  private final targetsScriptFilePath
+  private final targetsScriptText =  '''
 target ( flob : '' ) { println ( 'flobbed.' ) }
 ''' 
-  def targetsClassName = 'TargetsClass'
-  def targetsClassFilePath = "/tmp/${targetsClassName}.groovy"
-  def targetsClassText =  """
+  private final targetsClassName = 'TargetsClass'
+  private final targetsClassFilePath
+  private final targetsClassText =  """
 class ${targetsClassName} {
   def ${targetsClassName} ( Binding binding ) {
     binding.target.call ( flob : '' ) { println ( 'flobbed.' ) }
   }
 }
 """
-  def targetsBuildScriptBase =  """
+  private final targetsBuildScriptBase =  """
 target ( something : '' ) { flob ( ) }
 target ( 'default' : '' ) { something ( ) }
 """
-  def targetsBuildScriptClass =  "includeTargets <<  groovyShell.evaluate ( '''${targetsScriptText} ; return ${targetsClassName}''' , ${targetsClassName} )\n" + targetsBuildScriptBase
-  def targetsBuildScriptFile =  "includeTargets <<  new File ( '${targetsScriptFilePath}' )\n" + targetsBuildScriptBase
-  def targetsBuildScriptString =  "includeTargets <<  '''${targetsScriptText}'''\n" + targetsBuildScriptBase
-  def targetsBuildClassClass =  "includeTargets <<  groovyShell.evaluate ( '''${targetsClassText} ; return ${targetsClassName}''' )\n" + targetsBuildScriptBase
-  def targetsBuildClassFile =  "includeTargets <<  new File ( '${targetsClassFilePath}' )\n" + targetsBuildScriptBase
-  def targetsBuildClassString =  "includeTargets <<  '''${targetsClassText}'''\n" + targetsBuildScriptBase
-  def nonExistentFilePath = '/tmp/tmp/tmp'
+  private final targetsBuildScriptClass =  "includeTargets <<  groovyShell.evaluate ( '''${targetsScriptText} ; return ${targetsClassName}''' , ${targetsClassName} )\n" + targetsBuildScriptBase
+  private final targetsBuildScriptFile
+  private final targetsBuildScriptString =  "includeTargets <<  '''${targetsScriptText}'''\n" + targetsBuildScriptBase
+  private final targetsBuildClassClass =  "includeTargets <<  groovyShell.evaluate ( '''${targetsClassText} ; return ${targetsClassName}''' )\n" + targetsBuildScriptBase
+  private final targetsBuildClassFile
+  private final targetsBuildClassString =  "includeTargets <<  '''${targetsClassText}'''\n" + targetsBuildScriptBase
+  private final nonExistentFilePath
   Include_Test ( ) {
-    ( new File ( toolClassFilePath ) ).write( toolClassText )
-    ( new File ( targetsScriptFilePath ) ).write( targetsScriptText )
-    ( new File ( targetsClassFilePath ) ).write( targetsClassText )
+    temporaryDirectory = File.createTempFile ( 'gant-includeTest-' ,  '-directory' )
+    toolClassFilePath = temporaryDirectory.path + System.properties.'file.separator' + toolClassName + '.groovy'
+    toolBuildScriptFile =  "includeTool <<  new File ( '${toolClassFilePath}' )\n" + toolBuildScriptBase
+    targetsScriptFilePath = temporaryDirectory.path + System.properties.'file.separator' + 'targets.gant'
+    targetsClassFilePath = temporaryDirectory.path + System.properties.'file.separator' + targetsClassName + '.groovy'
+    targetsBuildScriptFile =  "includeTargets <<  new File ( '${targetsScriptFilePath}' )\n" + targetsBuildScriptBase
+    targetsBuildClassFile =  "includeTargets <<  new File ( '${targetsClassFilePath}' )\n" + targetsBuildScriptBase
+    nonExistentFilePath = temporaryDirectory.path + System.properties.'file.separator' + 'tmp' + System.properties.'file.separator' + 'tmp' + System.properties.'file.separator' + 'tmp'
+  }  
+  void setUp ( ) {
+    super.setUp ( )
+    temporaryDirectory.delete ( )
+    temporaryDirectory.mkdirs ( )
+    ( new File ( toolClassFilePath ) ).write ( toolClassText )
+    ( new File ( targetsScriptFilePath ) ).write ( targetsScriptText )
+    ( new File ( targetsClassFilePath ) ).write ( targetsClassText )
+  }
+  void tearDown ( ) {
+    ( new File ( toolClassFilePath ) ).delete ( )
+    ( new File ( targetsScriptFilePath ) ).delete ( )
+    ( new File ( targetsClassFilePath ) ).delete ( )
+    temporaryDirectory.delete ( )
+    super.tearDown ( )
   }
   void testToolDefaultClass ( ) {
     script = toolBuildScriptClass
