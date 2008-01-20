@@ -34,8 +34,7 @@ includeTargets << gant.targets.Maven
 includeTargets << gant.targets.Maven
 """
     assertEquals ( 0 , processTargets ( 'compile' ) )
-    assertEquals ( '''  [groovyc] No sources to compile
-''' , output ) 
+    assertEquals ( '' , output ) 
   }
 
 

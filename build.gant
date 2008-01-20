@@ -107,8 +107,8 @@ serverUploadProducts = [ : ]
 performCompile = { classpathRef ->
   Ant.mkdir ( dir : buildClassesDirectory )
   Ant.taskdef ( name : 'groovyc' , classname : 'org.codehaus.groovy.ant.Groovyc' , classpathref : classpathRef )
-  Ant.groovyc ( srcdir : sourceDirectory , destdir : buildClassesDirectory , classpathref : classpathRef ) { // , fork : 'true' ) {
-    javac ( source : '1.4' , target : '1.4' , debug : 'on' )
+  Ant.groovyc ( srcdir : sourceDirectory , destdir : buildClassesDirectory ) { //, fork : 'true' ) {
+    javac ( source : '1.4' , target : '1.4' , debug : 'on' , classpathref : classpathRef )
   }
 }
 
@@ -116,11 +116,13 @@ performCompileTests = { classpathRef ->
   Ant.mkdir ( dir : buildTestClassesDirectory )
   Ant.taskdef ( name : 'groovyc' , classname : 'org.codehaus.groovy.ant.Groovyc' , classpathref : classpathRef )
   Ant.groovyc ( srcdir : testsDirectory , destdir : buildTestClassesDirectory ) { // , fork : 'true' ) {
-    classpath {
-      pathelement ( location : buildClassesDirectory )
-      path ( refid : classpathRef )
+    classpath { pathelement ( location : buildClassesDirectory ) }
+    javac ( source : '1.4' , target : '1.4' , debug : 'on' ) {
+      classpath {
+        pathelement ( location : buildClassesDirectory )
+        path ( refid : classpathRef )
+        }
     }
-    javac ( source : '1.4' , target : '1.4' , debug : 'on' ) 
   }
 }
 
@@ -145,14 +147,9 @@ performTests =  { classpathRef ->
         path ( refid : 'coberturaPathId' )
       }
       pathelement ( location : buildTestClassesDirectory )
-      //
-      //  So why can these tests execute without these in the classpath?
-      //
-      //pathelement ( location : buildClassesDirectory )
-      //path ( refid : classpathRef )
     }
   }
-                  Ant.junit ( printsummary : 'yes' , failureproperty : 'testsFailed' , fork : 'true' ) {
+  Ant.junit ( printsummary : 'yes' , failureproperty : 'testsFailed' , fork : 'true' ) {
     formatter ( type : 'plain' )
     batchtest ( todir : buildTestReportsDirectory ) { fileset ( dir : buildTestClassesDirectory , includes : '**/*_Test.class' , excludes : '**/ant/tests/*' ) }
     classpath {
