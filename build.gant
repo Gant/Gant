@@ -104,25 +104,23 @@ serverUploadProducts = [ : ]
 //  Currently these Closures do not have the GantMetaClass as their metaclass so there is no delegated
 //  lookup on Ant so we have to use it explicitly.
 
-performCompile = { classpathRef ->
+ performCompile = { classpathRef , boolean fork ->
   Ant.mkdir ( dir : buildClassesDirectory )
   Ant.taskdef ( name : 'groovyc' , classname : 'org.codehaus.groovy.ant.Groovyc' , classpathref : classpathRef )
-  Ant.groovyc ( srcdir : sourceDirectory , destdir : buildClassesDirectory ) { //, fork : 'true' ) {
-    javac ( source : '1.4' , target : '1.4' , debug : 'on' , classpathref : classpathRef )
+  Ant.groovyc ( srcdir : sourceDirectory , destdir : buildClassesDirectory , classpathref : classpathRef , fork : fork ? 'true' : 'false' ) {
+    javac ( source : '1.4' , target : '1.4' , debug : 'on' )
   }
 }
 
-performCompileTests = { classpathRef ->
+performCompileTests = { classpathRef , boolean fork ->
   Ant.mkdir ( dir : buildTestClassesDirectory )
   Ant.taskdef ( name : 'groovyc' , classname : 'org.codehaus.groovy.ant.Groovyc' , classpathref : classpathRef )
-  Ant.groovyc ( srcdir : testsDirectory , destdir : buildTestClassesDirectory ) { // , fork : 'true' ) {
-    classpath { pathelement ( location : buildClassesDirectory ) }
-    javac ( source : '1.4' , target : '1.4' , debug : 'on' ) {
-      classpath {
-        pathelement ( location : buildClassesDirectory )
-        path ( refid : classpathRef )
-        }
+  Ant.groovyc ( srcdir : testsDirectory , destdir : buildTestClassesDirectory , fork : fork ? 'true' : 'false' ) {
+    classpath {
+      pathelement ( location : buildClassesDirectory )
+      path ( refid : classpathRef )
     }
+    javac ( source : '1.4' , target : '1.4' , debug : 'on' )
   }
 }
 
@@ -204,12 +202,12 @@ cleanPattern <<  [ '**/*~' , 'cobertura.ser' ]
 cleanDirectory << buildDirectory
 
 target ( compile : 'Compile everything needed for a Gant installation.' ) {
-  performCompile ( 'compileJarSet' )
+  performCompile ( 'compileJarSet' , false )
 }
 
 target ( compileTests : 'Compile all the tests for a newly built Gant.' ) {
   depends ( compile )
-  performCompileTests ( 'testJarSet' )
+  performCompileTests ( 'testJarSet' , false )
 }
 
 target ( test : 'Test a build.' ) {
@@ -305,8 +303,8 @@ target ( distribution : 'Create the distribution.' ) {
     }
     //  Must remove the compilation products of the last compilation!
     Ant.delete ( dir : buildClassesDirectory )
-    performCompile ( pathIdentifier )
-    performCompileTests ( pathIdentifier )
+    performCompile ( pathIdentifier , true )
+    performCompileTests ( pathIdentifier , true )
     if ( ! performTests ( pathIdentifier ) ) { testsFailed = true }                           
     makeManifest ( )
     def discriminator = prefix + '_groovy-' + item.version

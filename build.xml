@@ -77,9 +77,6 @@
       <classpath>
         <pathelement location="${buildClassesDirectory}"/>
         <path refid="compileJarSet"/>
-<!--  Need this if using fork mode.
-        <fileset dir="${installationHome}/lib" includes="junit*.jar"/>
--->
       </classpath>
       <javac source="1.4" target="1.4" debug="on"/>
     </groovyc>
