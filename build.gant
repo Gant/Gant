@@ -77,15 +77,18 @@ distributionVersions = [
                         //
                         // Introducing the Gant Ant Task written in Java means we have to use the joint
                         // compiler to compile Gant and this means we cannot build Gant against Groovy 1.0
-                        // since the joint compiler only arrived with 1.5.0.
+                        // since the joint compiler only arrived with 1.5.0.  Opinion on the user list
+                        // indicated that it seemed reasonable to drop support for Groovy 1.0.
                         //
                         //[ groupId : 'groovy' , artifactId : 'groovy' , version : '1.0' ] ,
                         //
                         //  The distribution target assumes that the groovyc fork mode works, which means
-                        //  we cannot build against any version prior to 1.6.0 -- or 1.5.2 if the change is
-                        //  merged into the 1.5.2 branch from trunk.  Using a forked Java task is not an
+                        //  we cannot build against any version prior to 1.5.2.  Using a forked Java task is not an
                         //  option because there is no --classpath option in the 1.5.0 and 1.5.1 versions of
-                        //  Groovyc and this is essential to get things to work.
+                        //  Groovyc and this is essential to get things to work correctly.
+                        //
+                        //  Gant can still be built and distributed against Groovy 1.5.0 and 1.5.1 but it
+                        //  has to be done the hard way.
                         //
                         //[ groupId : 'org.codehaus.groovy' , artifactId : 'groovy' , version : '1.5.0' ] ,
                         //[ groupId : 'org.codehaus.groovy' , artifactId : 'groovy' , version : '1.5.1' ]
