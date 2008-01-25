@@ -131,7 +131,7 @@
     <dependency>
       <groupId>org.codehaus.groovy</groupId>
       <artifactId>groovy-all</artifactId>
-      <version>1.5.1</version>
+      <version>1.5.2-SNAPSHOT</version>
       <scope>compile</scope>
     </dependency>
     <dependency>
@@ -148,12 +148,14 @@
       <scope>compile</scope>
     </dependency>
     <dependency>
+      <!-- For the Maven target set only, though it is used for some build targets of Gant using Gant. -->
       <groupId>org.apache.maven</groupId>
       <artifactId>maven-ant-tasks</artifactId>
       <version>2.0.8</version>
       <scope>runtime</scope>
     </dependency>
     <dependency>
+      <!-- For the Ivy tool only. -->
       <groupId>org.apache.ivy</groupId>
       <artifactId>ivy</artifactId>
       <version>2.0.0-beta1</version>

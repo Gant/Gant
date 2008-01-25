@@ -117,28 +117,20 @@ final class Maven {
            case 'java' :
            //  Need to use the joint Groovy compiler here to deal wuth the case where Groovy files are in the
            //  Java hierarchy.
-           owner.binding.Ant.javac ( [ srcdir : owner.mainSourcePath + System.properties.'file.separator' + 'java' , destdir : owner.mainCompilePath ] + owner.javaCompileProperties ) {
+           owner.binding.Ant.javac ( [ srcdir : owner.mainSourcePath + System.properties.'file.separator' + 'java' , destdir : owner.mainCompilePath , fork : 'true' ] + owner.javaCompileProperties ) {
              classpath {
                pathelement ( path : owner.compileClasspath.join ( System.properties.'path.separator' ) )
                if ( owner.compileDependencies ) { path ( refid : owner.compileDependenciesClasspathId ) }
-               path { fileset ( dir : System.properties.'groovy.home' + System.properties.'file.separator' + 'lib' , includes : 'junit*.jar' ) }
              }
            }
            break
            case 'groovy' :
            owner.binding.Ant.taskdef ( name : 'groovyc' , classname : 'org.codehaus.groovy.ant.Groovyc' )
-           owner.binding.Ant.groovyc ( [ srcdir : owner.mainSourcePath + System.properties.'file.separator' + 'groovy' , destdir : owner.mainCompilePath ] + owner.groovyCompileProperties ) {
-             javac ( owner.javaCompileProperties ) {
-               classpath {
-                 pathelement ( path : owner.compileClasspath.join ( System.properties.'path.separator' ) )
-                 if ( owner.compileDependencies ) { path ( refid : owner.compileDependenciesClasspathId ) }
-                 path { fileset ( dir : System.properties.'groovy.home' + System.properties.'file.separator' + 'lib' , includes : '*.jar' ) }
-               }
-             }
+           owner.binding.Ant.groovyc ( [ srcdir : owner.mainSourcePath + System.properties.'file.separator' + 'groovy' , destdir : owner.mainCompilePath , fork : 'true' ] + owner.groovyCompileProperties ) {
+             javac ( owner.javaCompileProperties )
              classpath {
                pathelement ( path : owner.compileClasspath.join ( System.properties.'path.separator' ) )
                if ( owner.compileDependencies ) { path ( refid : owner.compileDependenciesClasspathId ) }
-               path { fileset ( dir : System.properties.'groovy.home' + System.properties.'file.separator' + 'lib' , includes : 'junit*.jar' ) }
              }
            }
            break
@@ -171,39 +163,28 @@ final class Maven {
         new File ( owner.testSourcePath ).eachDir { directory ->
           switch ( directory.name ) {
            case 'java' :
-           //  Need to use the joint Groovy compiler here to deal wuth the case where Groovy files are in the
+           //  Need to use the joint Groovy compiler here to deal with the case where Groovy files are in the
            //  Java hierarchy.
-           owner.binding.Ant.javac ( [ srcdir : owner.testSourcePath + System.properties.'file.separator' + 'java' , destdir : owner.testCompilePath ] + owner.javaCompileProperties ) {
+           owner.binding.Ant.javac ( [ srcdir : owner.testSourcePath + System.properties.'file.separator' + 'java' , destdir : owner.testCompilePath , fork : 'true' ] + owner.javaCompileProperties ) {
              classpath {
                pathelement ( location : owner.mainCompilePath )
                pathelement ( path : owner.compileClasspath.join ( System.properties.'path.separator' ) )
                pathelement ( path : owner.testClasspath.join ( System.properties.'path.separator' ) )
                if ( owner.compileDependencies ) { path ( refid : owner.compileDependenciesClasspathId ) }
                if ( owner.testDependencies ) { path ( refid : owner.testDependenciesClasspathId ) }
-               path { fileset ( dir : System.properties.'groovy.home' + System.properties.'file.separator' + 'lib' , includes : 'junit*.jar' ) }
              }
            }
            break
            case 'groovy' :
            owner.binding.Ant.taskdef ( name : 'groovyc' , classname : 'org.codehaus.groovy.ant.Groovyc' )
-           owner.binding.Ant.groovyc ( [ srcdir : owner.testSourcePath + System.properties.'file.separator' + 'groovy' , destdir : owner.testCompilePath ] + owner.groovyCompileProperties ) {
-             javac ( owner.javaCompileProperties ) {
-               classpath {
-                 pathelement ( location : owner.mainCompilePath )
-                 pathelement ( path : owner.compileClasspath.join ( System.properties.'path.separator' ) )
-                 pathelement ( path : owner.testClasspath.join ( System.properties.'path.separator' ) )
-                 if ( owner.compileDependencies ) { path ( refid : owner.compileDependenciesClasspathId ) }
-                 if ( owner.testDependencies ) { path ( refid : owner.testDependenciesClasspathId ) }
-                 path { fileset ( dir : System.properties.'groovy.home' + System.properties.'file.separator' + 'lib' , includes : '*.jar' ) }
-               }
-             }
+           owner.binding.Ant.groovyc ( [ srcdir : owner.testSourcePath + System.properties.'file.separator' + 'groovy' , destdir : owner.testCompilePath , fork : 'true' ] + owner.groovyCompileProperties ) {
+             javac ( owner.javaCompileProperties )
              classpath {
                pathelement ( location : owner.mainCompilePath )
                pathelement ( path : owner.compileClasspath.join ( System.properties.'path.separator' ) )
                pathelement ( path : owner.testClasspath.join ( System.properties.'path.separator' ) )
                if ( owner.compileDependencies ) { path ( refid : owner.compileDependenciesClasspathId ) }
                if ( owner.testDependencies ) { path ( refid : owner.testDependenciesClasspathId ) }
-               path { fileset ( dir : System.properties.'groovy.home' + System.properties.'file.separator' + 'lib' , includes : 'junit*.jar' ) }
              }
            }
            break
@@ -241,7 +222,6 @@ final class Maven {
            pathelement ( path : owner.testClasspath.join ( System.properties.'path.separator' ) )
            if ( owner.compileDependencies ) { path ( refid : owner.compileDependenciesClasspathId ) }
            if ( owner.testDependencies ) { path ( refid : owner.testDependenciesClasspathId ) }
-           path { fileset ( dir : System.properties.'groovy.home' + System.properties.'file.separator' + 'lib' , includes : '*.jar' ) }
          }
          formatter ( type : 'plain' )
          sysproperty ( key : 'groovy.home' , value : System.properties.'groovy.home' )
@@ -312,7 +292,7 @@ final class Maven {
       owner.binding.Ant.echo ( '${blahblah.version}' )
       println ( owner.binding.Ant.project.properties.'blahblah.version' )
 
-      * prints out the version umber from Ant but null from Groovy :-(  This means we cannot run the consistency checks between POM and Gant file.
+      * prints out the version number from Ant but null from Groovy :-(  This means we cannot run the consistency checks between POM and Gant file.
       */
       /*
       [ 'groupId' , 'artifactId' , ' version' ].each { item ->
