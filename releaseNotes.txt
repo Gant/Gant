@@ -1,0 +1,157 @@
+1.1.0 ( rXXXX )
+---------------
+
+Added metadata to the Maven target set.
+
+Updated the Ivy example a bit.  Switched to Ivy 2.0.0-beta-1.
+
+Added a Gant Ant Task.  (For supporting continuous integration systems that insist on using Ant.)
+Unfortunately, there is a problem with loading the Groovyc task in an Gant script executed from an Ant
+script -- see GANT-19.   The Gant Ant task is written in Java which leads to the build requiring the use of
+the joint Groovy compiler.  This means it is not possible to build Gant using Groovy 1.0.
+
+Added creating Cobertura reports via the coberturaTest target in the Gantfile.
+
+Amended some of the error handling, especially target definition.
+
+Added constructors to allow the Gant script to be a parameter.  This allows programs (including the tests)
+not to have to use a command line approach to starting Gant.  Many of the tests refactored.
+
+Added extra options in the LaTeX tool execution to avoid any interactive mode of LaTeX.
+
+
+1.0.2 ( r8867 )
+---------------
+
+Fixed bug in parameter types of message Closure in gant.Gant.
+
+Declared this release and eradicated 1.0.1 to avoid any hassles with the above bug.
+
+1.0.1 ( r8861 )
+---------------
+
+Amended and extended the Maven target set so that it actually works well enough to be useful.
+
+Change the return codes so as to provide easier discrimination of error cases.
+
+Removed --lib option and replaced with --classpath | -P option.  Takes a path not a single jar.
+
+Added setDefaultTarget function to make setting up the default target easier.  Also the help output for the
+target default assumes that the description string is just the name of the default target.
+
+Rearranged the filestore to work better for command line working, Eclipse, and the Maven target set.
+
+Gant now compiles in Eclipse 3.2.2 with Groovy plugin 1.5.0.200712080221. 
+
+
+1.0.0 ( r8816 )
+---------------
+
+Changed the lookup sequence in GantMetaClass adding lookup in the Ant object for a method call as a final
+attempt to resolve a name.  This makes Ant. completely optional as requested in GANT-10.
+
+Rearranged the constructors so as to allow for a custom class loader when calling Gant programmatically.
+
+Reverted to -D processing as in 0.3.1 which actually works with Commons CLI 1.0 even though it is a bug.
+0.3.2 and 0.3.3 were broken as -D processing did not work at all.
+
+Added the ** * mechanism for creating target set and tool objects using constructor parameters.
+
+Stopped Gant from issuing FileNotFoundException.
+
+Released to coincide with release of Groovy 1.5.0.
+
+0.3.3 ( r8490 )
+---------------
+
+Created a new option (-d,--cachedir) to specify a cache directory for the caching system.  This is used by
+Grails.  Gant release rushed out for the Grails 1.0 release.
+
+Formally announced deprecation of task, should now use target.
+
+
+0.3.2 (r8191)
+-------------
+
+Fixed problem with -V option.
+
+Started a Maven 2 build capability -- this is work in progress and not complete.
+
+Restructured source to fit better with the Maven 2 directory structure.
+
+Corrected various problems with return values.
+
+Changed the location of the repository to http://svn.codehaus.org/groovy/gant
+
+0.3.1 (r6962)
+-------------
+
+Added returning a sensible return code -- 0 for success and 1 for failure.
+
+Added extending of the classpath:
+      --lib <path> for individual jars.
+      Searching ~/.ant/lib for user collections of jar files.
+      Searching ANT_HOME/lib for jar files if ANT_HOME is defined.
+
+0.3.0 (r6320)
+-------------
+
+Works with both Groovy 1.0 release and the Groovy 1.1-beta-1 release.
+
+Changed from using `task' to using `target' as the string introducing a target.
+
+Added a Maven project processing tool.
+
+Added a mechanism for accessing the documentation string of a target.
+
+Improved the error reporting.
+
+
+0.2.4 (r5374)
+-------------
+
+Use System.properties.'file.separator' instead of / so things work on Windows.
+
+Added the ability to have multiple -D options so as to be able to define any number of variables/properties
+on the command line.
+
+Added specialized Grails build infrastructure.
+
+Implemented local caching of .class files to improve performance when executing scripts. This is an optional
+feature (disabled by default) and is enabled using the -c option of gant.
+
+Added the a LaTeX processing tool.
+
+0.2.3 (r4761)
+-------------
+
+Updated to use and work with Groovy 1.0 release.
+
+
+0.2.2 (r4329)
+-------------
+
+Licence changed from LGPL to ASL 2.0.
+
+Updated to use and work with Groovy 1.0 RC-1.
+
+Added gant.tool.Execute, works on Linux, Solaris and Mac OS X, not tested on Windows.
+
+Tidied up code and removed redundant bits.
+
+Package structure of the code changed.
+
+Enforced 1.4 class files.
+
+(There appears never to have been a version 0.2.1.)
+
+0.2.0 (r4160)
+------------
+
+First release of Gant.
+
+
+The Epoch (r3965)
+-----------------
+
+No release of 0.1.x of Gant ever made.

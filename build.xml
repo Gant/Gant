@@ -1,0 +1,172 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!--
+
+  Gant - A Groovy build framework based on scripting Ant tasks.
+
+  Copyright © 2006-8 Russel Winder
+
+  Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in
+  compliance with the License. You may obtain a copy of the License at
+
+      http://www.apache.org/licenses/LICENSE-2.0
+
+  Unless required by applicable law or agreed to in writing, software distributed under the License is
+  distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or
+  implied. See the License for the specific language governing permissions and limitations under the
+  License.
+
+  Author : Russel Winder <russel.winder@concertant.com>
+
+  This Ant script provides the bootstrap capability to install Gant for the first time for those people
+  installing from a Subversion checkout.
+
+  There are two possibilities: install into a Groovy installation or install into a Grails installation.  The
+  latter only installs the jar file.  If the property grailsBuild is defined then it is a Grails build
+  otherwise it is a Groovy build. 
+
+-->
+
+<project name="Gant" default="compile" basedir=".">
+
+  <property file="build.properties"/>
+  <property file="local.build.properties"/>
+
+  <property environment="environment"/>
+
+  <property name="sourceDirectory" value="src/main/groovy"/>
+  <property name="testsDirectory" value="src/test/groovy"/>
+  <property name="jarsDirectory" value="jarfiles"/>
+  <property name="scriptsDirectory" value="scripts"/>
+
+  <property name="buildDirectory" value="target"/>
+  <property name="buildClassesDirectory" value="${buildDirectory}/classes"/>
+  <property name="buildTestClassesDirectory" value="${buildDirectory}/test-classes"/>
+  <property name="buildTestReportsDirectory" value="${buildDirectory}/test-reports"/>
+
+  <property name="buildMetadataDirectory" value="${buildClassesDirectory}/META-INF"/>
+
+  <target name="-forGroovy" unless="grailsBuild">
+    <property name="installationHome" value="${environment.GROOVY_HOME}"/>
+  </target>
+
+  <target name="-forGrails" if="grailsBuild">
+    <property name="installationHome" value="${environment.GRAILS_HOME}"/>
+  </target>
+
+  <target name="-initialize" depends="-forGroovy,-forGrails">
+    <path id="compileJarSet">
+      <fileset dir="${installationHome}/lib" includes="groovy*.jar"/>
+      <fileset dir="${installationHome}/lib" includes="commons-cli*.jar"/>
+      <fileset dir="${installationHome}/lib" includes="asm*.jar"/>
+      <fileset dir="${installationHome}/lib" includes="ant*.jar"/> <!-- Picks up antlr as well as ant. This is intended. -->
+    </path>
+    <taskdef name="groovyc" classname="org.codehaus.groovy.ant.Groovyc" classpathref="compileJarSet"/>
+  </target>
+
+  <target name="compile" depends="-initialize" description="Compile everything needed for a Gant installation.">
+    <mkdir dir="${buildClassesDirectory}"/>
+    <groovyc srcdir="${sourceDirectory}" destdir="${buildClassesDirectory}" classpathref="compileJarSet">
+      <javac source="1.4" target="1.4" debug="on"/>
+    </groovyc>
+  </target>
+
+  <target name="compileTests" depends="compile" description="Compile all the tests for a newly built Gant.">
+    <mkdir dir="${buildTestClassesDirectory}"/>
+    <groovyc srcdir="${testsDirectory}" destdir="${buildTestClassesDirectory}">
+      <classpath>
+        <pathelement location="${buildClassesDirectory}"/>
+        <path refid="compileJarSet"/>
+      </classpath>
+      <javac source="1.4" target="1.4" debug="on"/>
+    </groovyc>
+  </target>
+
+  <target name="test" depends="compileTests" description="Test a build.">
+    <mkdir dir="${buildTestReportsDirectory}"/>
+    <junit printsummary="yes" fork="true">
+      <formatter type="plain"/>
+      <batchtest todir="${buildTestReportsDirectory}">
+        <fileset dir="${buildTestClassesDirectory}" includes="**/ant/tests/*_Test.class"/>
+      </batchtest>
+      <classpath>
+        <pathelement location="${buildTestClassesDirectory}"/>
+      </classpath>
+    </junit>
+    <junit printsummary="yes" fork="true">
+      <formatter type="plain"/>
+      <batchtest todir="${buildTestReportsDirectory}">
+        <fileset dir="${buildTestClassesDirectory}" includes="**/*_Test.class" excludes="**/ant/tests/*"/>
+      </batchtest>
+      <classpath>
+        <pathelement location="${buildTestClassesDirectory}"/>
+        <pathelement location="${buildClassesDirectory}"/>
+        <path refid="compileJarSet"/>
+      </classpath>
+    </junit>
+  </target>
+
+  <target name="-makeManifest">
+    <mkdir dir="${buildMetadataDirectory}"/>
+    <copy todir="${buildMetadataDirectory}" file="LICENCE.txt"/>
+    <manifest file="${buildMetadataDirectory}/MANIFEST.MF">
+      <attribute name="Built-By" value="${user.name}"/>
+      <attribute name="Extension-Name" value="gant"/>
+      <attribute name="Specification-Title" value="Gant: scripting Ant tasks with Groovy."/>
+      <attribute name="Specification-Version" value="${gantVersion}"/>
+      <attribute name="Specification-Vendor" value="The Codehaus"/>
+      <attribute name="Implementation-Title" value="Gant: Scripting Ant tasks with Groovy."/>
+      <attribute name="Implementation-Version" value="${gantVersion}"/> 
+      <attribute name="Implementation-Vendor" value="The Codehaus"/>
+    </manifest>
+  </target>
+
+  <target name="package" depends="compile,-makeManifest" description="Create the jar file.">
+    <jar destfile="${buildDirectory}/gant-${gantVersion}.jar" basedir="${buildClassesDirectory}" manifest="${buildMetadataDirectory}/MANIFEST.MF"/>
+  </target>
+
+  <target name="-installExecutables" unless="grailsBuild">
+    <copy todir="${installationHome}">
+      <fileset dir="${scriptsDirectory}" includes="bin/gant*"/>
+    </copy>
+    <chmod perm="a+x">
+      <fileset dir="${installationHome}/bin" includes="gant*"/>
+    </chmod>
+  </target>
+
+  <target name="-installJar">
+    <copy todir="${installationHome}/lib">
+      <fileset dir="${buildDirectory}" includes="gant*.jar"/>
+    </copy>
+    <copy todir="${installationHome}/lib">
+      <fileset dir="${jarsDirectory}" includes="ivy*.jar,maven*.jar"/>
+    </copy>
+  </target>
+
+  <target name="install" depends="-initialize,package,-installJar,-installExecutables" description="Package and then install to installation destination."/>
+
+  <target name="-uninstallExecutables" unless="grailsBuild">
+    <delete>
+      <fileset dir="${installationHome}/bin" includes="gant*"/>
+    </delete>
+  </target>
+
+  <target name="-uninstallJar">
+    <delete>
+      <fileset dir="${installationHome}/lib" includes="gant*.jar"/>  
+    </delete>
+  </target>
+
+  <target name="uninstall" depends="-initialize,-uninstallJar,-uninstallExecutables" description="Uninstall Gant from installation destination."/>
+
+  <target name="clean" description="Clean everything up.">
+    <delete dir="${buildDirectory}"/>
+    <delete>
+      <fileset dir="." defaultexcludes="false">
+        <include name="**/*~"/>
+        <include name="cobertura.ser"/>
+      </fileset>
+    </delete>
+  </target>
+
+</project>

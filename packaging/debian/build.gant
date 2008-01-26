@@ -1,0 +1,69 @@
+//  Gant -- A Groovy build framework based on scripting Ant tasks.
+//
+//  Copyright © 2007 Russel Winder
+//
+//  Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in
+//  compliance with the License. You may obtain a copy of the License at
+//
+//    http://www.apache.org/licenses/LICENSE-2.0
+//
+//  Unless required by applicable law or agreed to in writing, software distributed under the License is
+//  distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or
+//  implied. See the License for the specific language governing permissions and limitations under the
+//  License.
+//
+//  Author : Russel Winder <russel.winder@concertant.com>
+
+rootDirectory = '..' + System.properties.'file.separator' + '..'
+buildDirectory = rootDirectory + System.properties.'file.separator' + 'target'
+
+Ant.property ( file : rootDirectory + System.properties.'file.separator' + 'build.properties' )
+Ant.property ( file : rootDirectory + System.properties.'file.separator' + 'local.build.properties' )
+
+try { gantVersion }
+catch ( MissingPropertyException mpe ) { gantVersion = Ant.project.properties.gantVersion }
+
+//  Use the ant-deb-task from Marius Scurtescu <marius.scurtescu@gmail.com> to create a deb file.
+//  Assume the ant-deb.jar file is in ~/.groovy/lib.
+
+Ant.taskdef ( resource : 'ant_deb_task.properties' , classpath : [ System.properties.'user.home' , '.groovy' , 'lib' , 'ant-deb.jar' ].join ( System.properties.'file.separator' ) )
+
+debsDirectory = 'debs'
+
+includeTargets << gant.targets.Clean
+cleanDirectory << debsDirectory
+
+includeTool << gant.tools.Execute
+
+target ( debFiles : 'Create the deb file of the distribution.' ) {
+  //  Need to avoid recursive Gant.  Fix this.
+  Execute.shell ( "cd ${rootDirectory} && gant distribution" )
+  // Create a deb for each jar in the distribution.  The jar should contain Gant and Groovy version information.
+  (new File ( buildDirectory ).listFiles ( { it ==~ '.*.jar' } as java.io.FileFilter ) as List ).each { item ->
+    def jarName = item.name
+    def matcher = jarName =~ /gant-([0-9.]*(?:-SNAPSHOT)?)_groovy-([0-9.]*(?:-SNAPSHOT)?)\.jar/
+    if ( matcher.matches ( ) ) {
+      gantVersionJar = matcher.group ( 1)
+      groovyVersion = matcher.group ( 2 )
+    }
+    assert gantVersion == gantVersionJar
+    def targetDirectory = debsDirectory + System.properties.'file.separator' + groovyVersion
+    //
+    //  Have to use Ant. as we are in a Closure :-(
+    //
+    Ant.mkdir ( dir : targetDirectory )
+    Ant.deb ( todir : targetDirectory , 'package' : 'gant' , section : 'devel' , depends : 'groovy-' + groovyVersion ) {
+      version ( upstream : gantVersion )
+      maintainer ( name : 'Russel Winder' , email : 'russel.winder@concertant.com' )
+      description ( synopsis : 'Ant task scripting using Groovy' , '''
+Gant is a way of using Groovy instead of XML to manage a build using Ant tasks.
+
+http://gant.codehaus.org
+''' )
+      tarfileset ( file : [ rootDirectory , 'scripts' , 'bin' , 'gant' ].join ( System.properties.'file.separator' ) , prefix : 'usr/bin' , filemode : '755' )
+      tarfileset ( file : buildDirectory + System.properties.'file.separator' + jarName , prefix : 'usr/share/groovy' )
+    }              
+  }
+}
+
+setDefaultTarget ( debFiles )

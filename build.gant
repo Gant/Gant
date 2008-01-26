@@ -1,0 +1,413 @@
+//  Gant -- A Groovy build framework based on scripting Ant tasks.
+//
+//  Copyright © 2006-8 Russel Winder
+//
+//  Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in
+//  compliance with the License. You may obtain a copy of the License at
+//
+//    http://www.apache.org/licenses/LICENSE-2.0
+//
+//  Unless required by applicable law or agreed to in writing, software distributed under the License is
+//  distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or
+//  implied. See the License for the specific language governing permissions and limitations under the
+//  License.
+//
+//  Author : Russel Winder <russel.winder@concertant.com>
+
+Ant.property ( file : 'build.properties' )
+Ant.property ( file : 'local.build.properties' )
+
+try { gantVersion }
+catch ( MissingPropertyException mpe ) { gantVersion = Ant.project.properties.gantVersion }
+
+try { usingCobertura }
+catch ( MissingPropertyException mpe ) { usingCobertura = false }
+
+// NB  System.getenv ( ) is deprecated in Java 1.4 but is undeprecated for Java 5 and later.
+  
+installationHome = System.getenv ( ).'GROOVY_HOME'
+try { if ( grailsBuild ) { installationHome = System.getenv ( ).'GRAILS_HOME' } }
+catch ( MissingPropertyException mpe ) { grailsBuild = false }
+
+if ( ( installationHome == null ) || ( installationHome == '' ) ) {
+  if ( grailsBuild ) { println ( 'GRAILS_HOME is not set, so a build cannot happen.' ) }
+  else { println ( 'Real problem: Groovy home is not set and this is Groovy executing.' ) }
+  return
+}
+
+//  The Gant source is structured according to the standard Maven 2 structure.
+
+sourceDirectory = 'src/main/groovy'
+testsDirectory = 'src/test/groovy'  
+jarfilesDirectory = 'jarfiles'
+scriptsDirectory = 'scripts'
+
+buildDirectory = 'target'
+buildClassesDirectory = buildDirectory + '/classes' 
+buildTestClassesDirectory = buildDirectory + '/test-classes' 
+buildTestReportsDirectory = buildDirectory + '/test-reports'
+buildCoberturaClassesDirectory = buildDirectory + '/cobertura-classes' 
+buildCoberturaReportsDirectory = buildDirectory + '/cobertura-reports'
+
+documentationDirectory = buildDirectory + '/documentation'
+apiDocumentationDirectory = documentationDirectory + '/api'
+
+buildMetadataDirectory = buildClassesDirectory + '/META-INF'
+
+//  Labels for supporting use of the Maven Ant task.  NB Installing Gant installs the Maven and Ivy Ant
+//  tasks jars into the Groovy library.
+
+antlibXMLns = 'antlib:org.apache.maven.artifact.ant'
+mavenPOMId = 'maven.pom'
+
+//  Details of what is going to appear in the distribution.
+
+distributionTopLevelFiles = [
+                             'build.gant' , 'buildMaven.gant' , 'build.properties' , 'build.xml' ,
+                             '.classpath' , '.project' ,
+                             'LICENCE.txt' ,
+                             'README_Distribution.txt' , 'README_Install.txt' ,
+                             'releaseNotes.txt'
+                             ]
+distributionDirectories = [ 'documentation' , 'examples' , '.settings' , scriptsDirectory , jarfilesDirectory , sourceDirectory , testsDirectory ]
+
+//  The versions of Gant in the Maven repository to build distribution version of Gant against.
+
+distributionVersions = [
+                        //  Introducing the Gant Ant Task written in Java means we have to use the joint
+                        //  compiler to compile Gant and this means we cannot build Gant against Groovy 1.0
+                        //  since the joint compiler only arrived with 1.5.0.  Opinion on the user list
+                        //  indicated that it seemed reasonable to drop support for Groovy 1.0.
+                        //
+                        ////[ groupId : 'groovy' , artifactId : 'groovy' , version : '1.0' ] ,
+                        //
+                        //  The target distribution assumes that the groovyc fork mode works, which means we
+                        //  cannot build against any version prior to 1.5.2.  Using a forked Java task is
+                        //  not an option because there is no --classpath option in the 1.5.0 and 1.5.1
+                        //  versions of Groovyc and this is essential to get things to work correctly.
+                        //
+                        //  Gant can still be built and distributed against Groovy 1.5.0 and 1.5.1 but it
+                        //  has to be done the hard (manual) way.
+                        //
+                        ////[ groupId : 'org.codehaus.groovy' , artifactId : 'groovy' , version : '1.5.0' ] ,
+                        ////[ groupId : 'org.codehaus.groovy' , artifactId : 'groovy' , version : '1.5.1' ]
+                        [ groupId : 'org.codehaus.groovy' , artifactId : 'groovy' , version : '1.5.2-SNAPSHOT' ]
+                        ]
+
+// As Jürgen Hermann pointed out the trailing / on the URL is very important.
+
+distributionURL = 'https://dav.codehaus.org/dist/gant/'
+
+ //  The server hierarchy is fixed and known.
+
+serverDistributionsDirectory = 'distributions'
+serverJarsDirectory = 'jars'
+serverPomsDirectory = 'poms'
+
+//  This is a map with key local source path and value server path.
+
+serverUploadProducts = [ : ]
+
+//  The various compilation and test actions are parameterized so they can be used with different classpaths.
+
+//  Currently these Closures do not have the GantMetaClass as their metaclass so there is no delegated
+//  lookup on Ant so we have to use it explicitly.
+
+performCompile = { classpathRef , boolean fork ->
+  Ant.mkdir ( dir : buildClassesDirectory )
+  Ant.taskdef ( name : 'groovyc' , classname : 'org.codehaus.groovy.ant.Groovyc' , classpathref : classpathRef )
+  Ant.groovyc ( srcdir : sourceDirectory , destdir : buildClassesDirectory , classpathref : classpathRef , fork : fork ? 'true' : 'false' , failonerror : 'true' ) {
+    javac ( source : '1.4' , target : '1.4' , debug : 'on' )
+  }
+}
+
+performCompileTests = { classpathRef , boolean fork ->
+  Ant.mkdir ( dir : buildTestClassesDirectory )
+  Ant.taskdef ( name : 'groovyc' , classname : 'org.codehaus.groovy.ant.Groovyc' , classpathref : classpathRef )
+  Ant.groovyc ( srcdir : testsDirectory , destdir : buildTestClassesDirectory , fork : fork ? 'true' : 'false' , failonerror : 'true' ) {
+    classpath {
+      pathelement ( location : buildClassesDirectory )
+      path ( refid : classpathRef )
+    }
+    javac ( source : '1.4' , target : '1.4' , debug : 'on' )
+  }
+}
+
+performTests =  { classpathRef ->
+  Ant.mkdir ( dir : buildTestReportsDirectory )
+  if ( usingCobertura ) {
+    Ant.mkdir ( dir : buildCoberturaClassesDirectory )
+    Ant.mkdir ( dir : buildCoberturaReportsDirectory )
+    Ant."${antlibXMLns}:dependencies" ( pathId :  'coberturaPathId' ) {
+      dependency ( groupId : 'net.sourceforge.cobertura' , artifactId : 'cobertura' , version : '1.9' )
+    }
+    Ant.taskdef ( resource : 'tasks.properties' , classpathref : 'coberturaPathId' )
+    Ant.'cobertura-instrument' ( todir : buildCoberturaClassesDirectory ) { fileset ( dir : buildClassesDirectory ) }
+  }
+  Ant.junit ( printsummary : 'yes' , failureproperty : 'testsFailed' , fork : 'true' ) {
+    formatter ( type : 'plain' )
+    batchtest ( todir : buildTestReportsDirectory ) { fileset ( dir : buildTestClassesDirectory , includes : '**/ant/tests/*_Test.class' ) }
+    classpath {
+      if ( usingCobertura ) {
+        // MUST appear in classpath before the uninstrumented classes.
+        pathelement ( location : buildCoberturaClassesDirectory )
+        path ( refid : 'coberturaPathId' )
+      }
+      pathelement ( location : buildTestClassesDirectory )
+    }
+  }
+  Ant.junit ( printsummary : 'yes' , failureproperty : 'testsFailed' , fork : 'true' ) {
+    formatter ( type : 'plain' )
+    batchtest ( todir : buildTestReportsDirectory ) { fileset ( dir : buildTestClassesDirectory , includes : '**/*_Test.class' , excludes : '**/ant/tests/*' ) }
+    classpath {
+      if ( usingCobertura ) {
+        // MUST appear in classpath before the uninstrumented classes.
+        pathelement ( location : buildCoberturaClassesDirectory )
+        path ( refid : 'coberturaPathId' )
+      }
+      pathelement ( location : buildTestClassesDirectory )
+      pathelement ( location : buildClassesDirectory )
+      path ( refid : classpathRef )
+    }
+  }
+  if ( usingCobertura ) { Ant.'cobertura-report' ( srcdir : sourceDirectory , destdir : buildCoberturaReportsDirectory ) }
+  Ant.project.properties.testsFailed == null
+}
+
+makeManifest = { ->
+  Ant.mkdir ( dir : buildMetadataDirectory )
+  Ant.copy ( todir : buildMetadataDirectory ,  file : 'LICENCE.txt' )
+  Ant.manifest ( file : buildMetadataDirectory + '/MANIFEST.MF' ) {
+    attribute ( name : 'Built-By' , value : System.properties.'user.name' )
+    attribute ( name : 'Extension-Name' , value : 'gant' )
+    attribute ( name : 'Specification-Title' , value : 'Gant: scripting Ant tasks with Groovy.' )
+    attribute ( name : 'Specification-Version' , value : gantVersion )
+    attribute ( name : 'Specification-Vendor' , value : 'The Codehaus' )
+    attribute ( name : 'Implementation-Title' , value : 'Gant: Scripting Ant tasks with Groovy.' )
+    attribute ( name : 'Implementation-Version' , value : gantVersion ) 
+    attribute ( name : 'Implementation-Vendor' , value : 'The Codehaus' )
+  }
+}
+
+//  Create the compilation context of the Groovy into which Gant will be installed.  This is the standard
+//  context but it is not used for the distributions.
+
+Ant.path ( id : 'compileJarSet' ) {
+  fileset ( dir : installationHome + '/lib' , includes : 'groovy*.jar' )
+  fileset ( dir : installationHome + '/lib' , includes : 'commons-cli*.jar' )
+  fileset ( dir : installationHome + '/lib' , includes : 'asm*.jar' )
+  fileset ( dir : installationHome + '/lib' , includes : 'ant*.jar' )  // Picks up antlr as well as ant. This is intended.
+}
+
+Ant.path ( id : 'testJarSet' ) {
+  path ( refid : 'compileJarSet' )
+  fileset ( dir : installationHome + '/lib' , includes : 'junit*.jar' )
+}
+
+//  Set up all the targets.
+
+includeTargets << gant.targets.Clean
+cleanPattern <<  [ '**/*~' , 'cobertura.ser' ] 
+cleanDirectory << buildDirectory
+
+target ( compile : 'Compile everything needed for a Gant installation.' ) {
+  performCompile ( 'compileJarSet' , false )
+}
+
+target ( compileTests : 'Compile all the tests for a newly built Gant.' ) {
+  depends ( compile )
+  performCompileTests ( 'testJarSet' , false )
+}
+
+target ( test : 'Test a build.' ) {
+  depends ( compileTests )
+  println ( 'Tests ' + ( performTests ( 'compileJarSet' ) ? 'failed' : 'succeeded' ) + '.' )
+}
+
+target ( coberturaTest : 'Test a build using Cobertura to get a coverage report.' ) {
+  usingCobertura = true
+  depends ( tests )
+}
+
+target ( 'package' : 'Create the jar file.' ) {
+  depends ( compile )
+  makeManifest ( )
+  jar ( destfile : buildDirectory + "/gant-${gantVersion}.jar" , basedir : buildClassesDirectory , manifest : buildMetadataDirectory + '/MANIFEST.MF' )
+}
+
+target ( documentation : 'Create the API documentation.' ) {
+  taskdef ( name : 'groovydoc' , classname : 'org.codehaus.groovy.ant.Groovydoc' )
+  def javaApiDocumentationDirectory = apiDocumentationDirectory + '/java'
+  def groovyApiDocumentationDirectory = apiDocumentationDirectory + '/groovy'
+  mkdir ( dir : javaApiDocumentationDirectory )
+  mkdir ( dir : groovyApiDocumentationDirectory )
+  javadoc (
+               sourcepath : sourceDirectory ,
+               destdir : javaApiDocumentationDirectory ,
+               packagenames : 'gant.*,org.codehaus.gant.*',
+               overview : 'overview.html' ,
+               'private' : 'true' ,
+               encoding : 'UTF-8' ,
+               use : 'true' ,
+               author : 'true' ,
+               windowtitle : "Gant (${gantVersion})" ,
+               doctitle : "Gant (${gantVersion})" ,
+               header : "Gant (${gantVersion})" ,
+               footer : 'Copyright &copy; 2006&ndash;8 The Codehaus.  All rights reserved.' ,
+               source : 1.4
+               ) {
+    classpath { fileset ( dir : installationHome + '/lib' , includes : '*.jar' ) }
+  }    
+  groovydoc (
+             destdir : groovyApiDocumentationDirectory ,
+             sourcepath : sourceDirectory ,
+             packagenames : 'gant.*,org.codehaus.gant.*' ,
+             //overview : 'overview.html' ,
+             //author : 'true' ,
+             //version : 'true' ,
+             use : 'true' ,
+             'private' : 'false' ,
+             windowtitle : "Gant (${gantVersion})" ,
+             //doctitle : "Gant (${gantVersion})" ,
+             //encoding : 'UTF-8' ,
+             //footer : 'Copyright &copy; 2006&ndash;8 The Codehaus.  All rights reserved.'
+             )
+}
+
+target ( install : "Compile everything and install it to ${installationHome}" ) {
+  depends ( 'package' )
+  copy ( todir : installationHome + '/lib' ) { fileset ( dir : buildDirectory , includes : 'gant*.jar' ) }
+  if ( ! grailsBuild ) {
+    copy ( todir : installationHome ) { fileset ( dir : scriptsDirectory , includes : 'bin/gant*' ) }
+    copy ( todir : installationHome + '/lib' ) { fileset ( dir : jarfilesDirectory , includes : 'ivy*.jar,maven*.jar' ) }
+    chmod ( perm : 'a+x' ) { fileset ( dir : installationHome + '/bin' , includes : 'gant*' ) }
+  }
+}
+
+target ( uninstall : "Uninstall Gant from ${installationHome}." ) {
+  delete {
+    if ( ! grailsBuild ) { fileset ( dir : installationHome + '/bin' , includes : 'gant*' ) }
+    fileset ( dir : installationHome + '/lib' , includes : 'gant*.jar' )
+  }
+}
+
+//  Returns a boolean stating whether there were any test failures.
+
+target ( distribution : 'Create the distribution.' ) {
+  def zipExtension = '.zip'
+  def tgzExtension = '.tgz'
+  //  Use the Ant Maven plugin to ensure that the groovy-all jar of a given release is in the local Maven
+  //  repository and ensure that is the only version of Groovy used in the compilation.
+  def prefix = 'gant-' + gantVersion
+  def distributionClasspathId = 'classpath'
+  clean ( )
+  someTestsFailed = false
+  distributionVersions.each { item ->
+    //  This is a closure that doesn't have the right metaclass so we have to specify Ant.  Need to
+    //  rearrange things to deal with this problem as is done in the target Closure.
+    def pathIdentifier = distributionClasspathId + item.version
+    Ant."${antlibXMLns}:dependencies" ( pathId : pathIdentifier ) {
+      dependency ( groupId : item.groupId , artifactId : item.artifactId , version : item.version )
+      dependency ( groupId : 'org.apache.ant' , artifactId : 'ant' , version : '1.7.0' )
+      dependency ( groupId : 'commons-cli' , artifactId : 'commons-cli' , version : '1.0' )
+      dependency ( groupId : 'junit' , artifactId : 'junit' , version : '3.8.2' )
+    }
+    //  Must remove the compilation products of the last compilation!
+    Ant.delete ( dir : buildClassesDirectory )
+    performCompile ( pathIdentifier , true )
+    performCompileTests ( pathIdentifier , true )
+    //  NB Tests will fail on version < 1.6.0 dues to trivial inconsequential issues. So it is probably a
+    //  bad idea to implement not creating the distribution on a failed test.  Definitely do not do an
+    //  upload though.
+    if ( ! performTests ( pathIdentifier ) ) { someTestsFailed = true }
+    makeManifest ( )
+    def discriminator = prefix + '_groovy-' + item.version
+    def jarName = discriminator + '.jar'                    
+    def jarPath = buildDirectory + System.properties.'file.separator' + jarName
+    Ant.jar ( destfile : jarPath , basedir : buildClassesDirectory , manifest : buildMetadataDirectory + '/MANIFEST.MF' )
+    serverUploadProducts [ jarPath ] = serverJarsDirectory + '/' + jarName
+    def archiveRoot = discriminator
+    def archiveRootPath = buildDirectory + System.properties.'file.separator' + archiveRoot
+    Ant.zip ( destfile : archiveRootPath + zipExtension ) {
+      zipfileset ( dir : buildDirectory , includes : jarName , prefix : prefix + '/lib' )
+      zipfileset ( dir : 'scripts/bin' , includes : 'gant*' , prefix : prefix + '/bin' )
+      zipfileset ( dir : 'scripts/install' , includes : 'install.groovy' , prefix : prefix + '/bin' )
+      zipfileset ( dir : '.' , includes : 'README*' , prefix : prefix )
+    }
+    serverUploadProducts [ archiveRootPath + zipExtension ] = serverDistributionsDirectory + '/' +  archiveRoot + zipExtension
+    Ant.tar ( destfile :  archiveRootPath + tgzExtension , compression : 'gzip' ) {
+      tarfileset ( dir : buildDirectory , includes : jarName , prefix : prefix + '/lib' )
+      tarfileset ( dir : 'scripts/bin' , includes : 'gant*' , prefix : prefix + '/bin' , mode : '755' )
+      tarfileset ( dir : 'scripts/install' , includes : 'install.groovy' , prefix : prefix + '/bin' , mode : '755' )
+      tarfileset ( dir : '.' , includes : 'README*' , prefix : prefix )
+    }
+    serverUploadProducts [ archiveRootPath + tgzExtension ] = serverDistributionsDirectory + '/' +  archiveRoot + tgzExtension
+  }
+  //  Create the source distributions.
+  archiveRoot = 'gant_src-' + gantVersion
+  archiveRootPath = buildDirectory + System.properties.'file.separator' + archiveRoot
+  zip ( destfile : archiveRootPath + zipExtension ) {
+    zipfileset ( dir : '.' , includes : distributionTopLevelFiles.join ( ',' ) , prefix : prefix )
+    distributionDirectories.each { directory -> zipfileset ( dir : directory , prefix : prefix + System.properties.'file.separator' + directory ) }
+  }
+  serverUploadProducts [ archiveRootPath + zipExtension ] = serverDistributionsDirectory + '/' +  archiveRoot + zipExtension
+  tar ( destfile :  archiveRootPath + tgzExtension , compression : 'gzip' ) {
+    tarfileset ( dir : '.' , includes : distributionTopLevelFiles.join ( ',' ) , prefix : prefix )
+    distributionDirectories.each { directory -> tarfileset ( dir : directory , prefix : prefix + System.properties.'file.separator' + directory ) }
+  }
+  serverUploadProducts [ archiveRootPath + tgzExtension ] = serverDistributionsDirectory + '/' +  archiveRoot + tgzExtension
+  // Create the API documentation distributions.
+  documentation ( )
+  archiveRoot = 'gant_doc-' + gantVersion
+  archiveRootPath = buildDirectory + System.properties.'file.separator' + archiveRoot
+  zip ( destfile : archiveRootPath + zipExtension ) {
+    zipfileset ( dir : documentationDirectory , prefix : prefix + System.properties.'file.separator' + 'doc' )
+  }
+  serverUploadProducts [ archiveRootPath + zipExtension ] = serverDistributionsDirectory + '/' +  archiveRoot + zipExtension
+  tar ( destfile :  archiveRootPath + tgzExtension , compression : 'gzip' ) {
+    tarfileset ( dir : documentationDirectory , prefix : prefix + System.properties.'file.separator' + 'doc' )
+  }
+  serverUploadProducts [ archiveRootPath + tgzExtension ] = serverDistributionsDirectory + '/' +  archiveRoot + tgzExtension
+  //  Return the result of the test executions so that uploadDistributions can choose not to upload a failed
+  //  compilation.
+  ! someTestsFailed
+}
+
+target ( uploadDistribution : 'Upload a complete distribution.' ) {
+  if ( ! distribution ( ) ) {
+    println ( 'Not uploading as some tests failed.' )
+    return
+  }
+  //
+  //  Slide has been retired by the Apache Foundation in favour of Jackrabbit, but we use Slide anyway.
+  //
+  "${antlibXMLns}:dependencies" ( pathId :  'slidePathId' ) {
+    //dependency ( groupId : 'org.apache.jackrabbit' , artifactId : 'jackrabbit-webdav' , version : '1.3.3' )
+    dependency ( groupId : 'slide' , artifactId : 'slide-webdavlib' , version : '2.1' )
+  }
+  //
+  //  Is there a way of extracting the username and password information from the Maven Ant Task?  For the
+  //  moment simply read the ~/.m2/settings.xml file.
+  //
+  def loader = getClass ( ).getClassLoader ( )
+  def path = Ant.path ( refid : 'slidePathId' )
+  ( path.list ( ) as List ).each { location -> loader.addURL ( new URL ( 'file://' + location ) ) }
+  def settings =  ( new XmlSlurper ( ) ).parse ( System.properties.'user.home' + '/.m2/settings.xml' ).servers.server.find { item -> item.id == 'dav.codehaus.org' }
+  def credentials =  loader.loadClass ( 'org.apache.commons.httpclient.UsernamePasswordCredentials' ).getConstructor ( String , String ).newInstance ( settings.username.toString ( ) , settings.password.toString ( ) )
+  //  Have to put resource in the binding so that the Closures can access it.
+  resource = loader.loadClass ( 'org.apache.webdav.lib.WebdavResource' ).getConstructor ( String ,  loader.loadClass ( 'org.apache.commons.httpclient.Credentials' ) , boolean ).newInstance ( distributionURL , credentials , true )
+  if ( resource.statusCode != 200 ) { println ( 'Failed to open ' + distributionURL ) }
+  else {
+    serverUploadProducts [ 'pom.xml' ] = serverPomsDirectory + '/gant-' + gantVersion + '.pom'
+    serverUploadProducts.each { source , destination ->
+      def serverPath = resource.path + '/' + destination
+      print ( 'Uploading ' + source + ' -> ' + destination + ' : ' )
+      def result = 'Failed.'
+      if ( resource.putMethod ( serverPath , new File ( source ) ) ) { result = 'OK.' }
+      println ( result + ' Status : ' + resource.statusMessage )
+    }
+  }
+  if ( resource != null ) { resource.close ( ) }
+}
+
+setDefaultTarget ( test )

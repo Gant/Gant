@@ -1,0 +1,54 @@
+//  Gant -- A Groovy build framework based on scripting Ant tasks.
+//
+//  Copyright © 2006-8 Russel Winder
+//
+//  Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in
+//  compliance with the License. You may obtain a copy of the License at
+//
+//    http://www.apache.org/licenses/LICENSE-2.0
+//
+//  Unless required by applicable law or agreed to in writing, software distributed under the License is
+//  distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or
+//  implied. See the License for the specific language governing permissions and limitations under the
+//  License.
+//
+//  Author : Russel Winder <russel.winder@concertant.com>
+  
+Ant.property ( file : 'build.properties' )
+
+try { gantVersion }
+catch ( MissingPropertyException mpe ) { gantVersion = Ant.project.properties.gantVersion }
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////
+//  It is imperative that the same compilation dependencies are used here as are specified in the POM.  Why?
+//  This file is not just an example of Gant's Maven target set, it is also used to create and upload Gant
+//  to the Maven repository -- due to problems with the Maven Groovy plugin, Maven cannot build Gant.
+//
+//  The question is why isn't Ant needed as a dependency in order to build?
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+includeTargets ** gant.targets.Maven * [
+                                        groupId : 'org.codehaus.gant' ,
+                                        artifactId : 'gant' ,
+                                        version : gantVersion ,
+                                        compileDependencies : [
+                                                               [ groupId : 'org.codehaus.groovy' , artifactId : 'groovy-all' , version : '1.5.2-SNAPSHOT' ] ,
+                                                               [  groupId : 'commons-cli' , artifactId : 'commons-cli' , version : '1.0' ]
+                                                               ] ,
+                                        javaCompileProperties : [ source : '1.4' , target : '1.4' , debug : 'true' ] ,
+                                        deployURL : 'https://dav.codehaus.org/repository/gant' ,
+                                        deploySnapshotURL : 'https://dav.codehaus.org/snapshots.repository/gant' ,
+                                        manifest : [
+                                                    'Built-By' : System.properties.'user.name' ,
+                                                    'Extension-Name' : 'gant' ,
+                                                    'Specification-Title' : 'Gant: scripting Ant tasks with Groovy.' ,
+                                                    'Specification-Version' : gantVersion ,
+                                                    'Specification-Vendor' : 'The Codehaus' ,
+                                                    'Implementation-Title' : 'Gant: Scripting Ant tasks with Groovy.' ,
+                                                    'Implementation-Version' : gantVersion , 
+                                                    'Implementation-Vendor' : 'The Codehaus' ,
+                                                    ] ,
+                                        manifestInclude : [ 'LICENCE.txt' ]
+                                        ]
+
+setDefaultTarget ( install )

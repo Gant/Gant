@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+
+<!--
+
+Gant - A Groovy build framework based on scripting Ant tasks.
+
+Copyright © 2008 Russel Winder
+
+Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in
+compliance with the License. You may obtain a copy of the License at
+
+  http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software distributed under the License is
+distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or
+implied. See the License for the specific language governing permissions and limitations under the
+License.
+
+-->
+
+<project name="Gant Ant Task Test" default="gantTestDefaultTarget" basedir=".">
+  
+  <property name="theDirectory" value="src/test/groovy/org/codehaus/gant/ant/tests"/>
+
+  <property environment="environment"/>
+
+  <taskdef name="gant" classname="org.codehaus.gant.ant.Gant">
+    <classpath>
+      <pathelement location="../../../../../../../../target/classes"/>
+      <fileset dir="${environment.GROOVY_HOME}/lib" includes="groovy*.jar"/>
+      <fileset dir="${environment.GROOVY_HOME}/lib" includes="asm*.jar"/>
+      <fileset dir="${environment.GROOVY_HOME}/lib" includes="commons*.jar"/>
+      <fileset dir="${environment.GROOVY_HOME}/lib" includes="antlr*.jar"/>
+    </classpath>
+  </taskdef>
+
+  <!--  Cannot test not having a file attribute easily since the tests are initiated in the project top
+  directory :-(  -->
+  
+  <target name="gantTestDefaultTarget">
+    <gant file="${theDirectory}/build.gant"/>
+  </target>
+  
+  <target name="gantTestNamedTarget">
+    <gant file="${theDirectory}/build.gant" target="blah"/>
+  </target>
+
+  <!--  Ensure there is no file of the name used in the Gant Ant task here. -->
+
+  <target name="missingGantfile">
+    <gant file="blahBlahBlahBlah.blah"/>
+  </target>
+
+  <!--  Ensure there is no target called blahBlahBlahBlah. -->
+
+  <target name="gantTaskdef">
+    <gant file="${theDirectory}/build.gant" target="gantTaskdef"/>
+  </target>
+
+</project>

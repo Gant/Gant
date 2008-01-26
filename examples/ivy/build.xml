@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!--
+
+  Gant - A Groovy build framework based on scripting Ant tasks.
+
+  Copyright © 2006-8 Russel Winder
+
+  Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in
+  compliance with the License. You may obtain a copy of the License at
+
+      http://www.apache.org/licenses/LICENSE-2.0
+
+  Unless required by applicable law or agreed to in writing, software distributed under the License is
+  distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or
+  implied. See the License for the specific language governing permissions and limitations under the
+  License.
+
+  Author : Russel Winder <russel.winder@concertant.com>
+
+-->
+
+<project name="Ivy_Hello" default="run" xmlns:ivy="antlib:org.apache.ivy.ant">
+
+  <property environment="environment"/>
+  <property name="groovyLibraryDirectory" value="${environment.GROOVY_HOME}/lib" />
+  
+  <property name="buildDirectory" value="build" />
+  <property name="sourceDirectory" value="source" />
+
+  <path id="ivy.lib.path">
+    <fileset dir="${groovyLibraryDirectory}" includes="ivy*.jar"/>
+  </path>  
+  <taskdef resource="org/apache/ivy/ant/antlib.xml" uri="antlib:org.apache.ivy.ant" classpathref="ivy.lib.path"/>
+
+  <target name="run" description="Resolve dependencies, compile and run the project.">
+    <ivy:cachepath organisation="commons-lang" module="commons-lang" revision="2.3"  pathid="lib.path.id" inline="true"/>
+    <mkdir dir="${buildDirectory}" />
+    <javac srcdir="${sourceDirectory}" destdir="${buildDirectory}" classpathref="lib.path.id" />
+    <java classname="example.Hello">
+      <classpath>
+        <path refid="lib.path.id" />
+        <path location="${buildDirectory}" />
+      </classpath>
+    </java>
+  </target>
+  
+  <target name="clean" description="Clean the project.">
+    <delete dir="${buildDirectory}"/>
+    <delete>
+      <fileset dir="." includes="**/*~" defaultexcludes="false"/>
+    </delete>
+  </target>
+
+  <target name="cleanCache" description="Clean the ivy cache.">
+    <ivy:cleancache/>
+  </target>
+</project>

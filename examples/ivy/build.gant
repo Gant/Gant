@@ -1,0 +1,47 @@
+//  Gant -- A Groovy build framework based on scripting Ant tasks.
+//
+//  Copyright © 2006-8 Russel Winder
+//
+//  Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in
+//  compliance with the License. You may obtain a copy of the License at
+//
+//    http://www.apache.org/licenses/LICENSE-2.0
+//
+//  Unless required by applicable law or agreed to in writing, software distributed under the License is
+//  distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or
+//  implied. See the License for the specific language governing permissions and limitations under the
+//  License.
+//
+//  Author : Russel Winder <russel.winder@concertant.com>
+
+//  Must be in the binding not be local variables so they are available to the closures.
+
+buildDirectory = 'build'
+sourceDirectory = 'source'
+exampleDirectory = sourceDirectory + '/example' 
+
+ //  The standard cleaning tool.
+
+includeTargets << gant.targets.Clean
+cleanDirectory << buildDirectory
+cleanPattern << [ '**/*~' , '**/*.bak' ]
+
+//  We are testing the Ivy tool so we need to include it.
+
+includeTool << gant.tools.Ivy
+
+//  Cannot have a target called run as it creates an infinite mutual recursion. :-(
+
+target ( runTest : 'Run the Ivy "Hello" test.' ) {
+  def classpathRef = 'libraryClasspath'
+  Ivy.cachepath ( organisation : 'commons-lang' , module : 'commons-lang' , revision : '2.3' ,  pathid : classpathRef , inline : 'true' )
+  mkdir ( dir : buildDirectory )
+  javac ( srcdir : sourceDirectory , destdir : buildDirectory , debug : 'true' , classpathref : classpathRef )
+  java ( classname : 'example.Hello' , classpathref : classpathRef ) {
+    classpath { pathelement ( location : buildDirectory ) }
+  }
+}
+
+target ( cleanCache : 'Clean the Ivy cache.' ) { Ivy.cleancache ( ) }
+
+setDefaultTarget ( runTest )

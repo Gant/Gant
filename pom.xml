@@ -1,0 +1,297 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!--
+
+  Gant - A Groovy build framework based on scripting Ant tasks.
+
+  Copyright © 2007-8 Russel Winder.
+
+  Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in
+  compliance with the License.  You may obtain a copy of the License at
+
+      http://www.apache.org/licenses/LICENSE-2.0
+
+  Unless required by applicable law or agreed to in writing, software distributed under the License is
+  distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or
+  implied. See the License for the specific language governing permissions and limitations under the
+  License.
+
+  Author : Russel Winder <russel.winder@concertant.com>
+
+-->
+
+<project
+  xmlns="http://maven.apache.org/POM/4.0.0"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd"
+>
+
+  <modelVersion>4.0.0</modelVersion>
+
+  <groupId>org.codehaus.gant</groupId>
+  <artifactId>gant</artifactId>
+  <packaging>jar</packaging>
+  <name>Gant</name>
+  <version>1.1.0-SNAPSHOT</version>
+  <description>
+    Gant is a Groovy-based build framework that provides a scripting system for Ant tasks.  With Ant the
+    build specification is an XML file, with Gant the build specification is a Groovy script.  All the
+    underlying Ant tasks are used in the same way in Gant as with Ant, but using a programming language
+    rather than XML to specify the process means that imperative and declarative expression is possible,
+    without any hacking.
+  </description>
+  <url>http://gant.codehaus.org/</url>
+  <inceptionYear>2006</inceptionYear>
+
+  <organization>
+    <name>Russel Winder</name>
+    <url>http://www.russel.org.uk</url>
+  </organization>
+  
+  <prerequisites>
+    <maven>2.0.5</maven>
+  </prerequisites>
+
+  <issueManagement>
+    <system>jira</system>
+    <url>http://jira.codehaus.org/browse/GANT</url>
+  </issueManagement>
+
+  <!--ciManagement>
+  </ciManagement-->
+
+  <mailingLists>
+    <mailingList>
+      <name>Gant Users</name>
+      <subscribe>http://xircles.codehaus.org/manage_email</subscribe>
+      <unsubscribe>http://xircles.codehaus.org/manage_email</unsubscribe>
+      <post>user@gant.codehaus.org</post>
+      <archive>http://archive.gant.codehaus.org/user</archive>
+    </mailingList>
+    <mailingList>
+      <name>Gant Developers</name>
+      <subscribe>http://xircles.codehaus.org/manage_email</subscribe>
+      <unsubscribe>http://xircles.codehaus.org/manage_email</unsubscribe>
+      <post>dev@gant.codehaus.org</post>
+      <archive>http://archive.gant.codehaus.org/dev</archive>
+    </mailingList>
+  </mailingLists>
+
+  <licenses>
+    <license>
+      <name>The Apache Software License, Version 2.0</name>
+      <url>http://www.apache.org/licenses/LICENSE-2.0.txt</url>
+      <distribution>repo</distribution>
+    </license>
+  </licenses>
+
+  <scm>
+    <connection>scm:svn:http://svn.codehaus.org/gant/gant/trunk</connection>
+    <developerConnection>scm:svn:https://svn.codehaus.org/gant/gant/trunk</developerConnection>
+    <url>http://fisheye.codehaus.org/browse/gant/gant/trunk</url>
+  </scm>
+
+  <distributionManagement>
+    <repository>
+      <id>codehaus.org</id>
+      <name>Gant Central Repository</name>
+      <url>dav:https://dav.codehaus.org/repository/gant</url>
+    </repository>
+    <snapshotRepository>
+      <id>codehaus.org</id>
+      <name>Gant Snapshot Repository</name>
+      <url>dav:https://dav.codehaus.org/snapshots.repository/gant</url>
+    </snapshotRepository>
+    <!--  The website is created using Confluence. -->
+    <!--site>
+      <id>codehaus.org</id>
+      <name>Gant Web Site</name>
+       <url>dav:https://dav.codehaus.org/gant</url>
+    </site-->
+  </distributionManagement>
+  
+  <developers>
+    <developer>
+      <id>russel</id>
+      <name>Russel Winder</name>
+      <url>http://www.russel.org.uk</url>
+      <email>russel.winder@concertant.com</email>
+      <organization>Concertant LLP</organization>
+      <organizationUrl>http://www.concertant.com</organizationUrl>
+    </developer>
+  </developers>
+
+  <contributors>
+    <contributor>
+      <name>Hans Dockter</name>
+    </contributor>
+  </contributors>
+
+  <dependencies>
+    <dependency>
+      <groupId>org.codehaus.groovy</groupId>
+      <artifactId>groovy-all</artifactId>
+      <version>1.5.2-SNAPSHOT</version>
+      <scope>compile</scope>
+    </dependency>
+    <dependency>
+      <groupId>commons-cli</groupId>
+      <artifactId>commons-cli</artifactId>
+      <version>1.0</version>
+      <scope>compile</scope>
+    </dependency>
+    <dependency>
+      <!-- For the Gant Ant task only. -->
+      <groupId>org.apache.ant</groupId>
+      <artifactId>ant</artifactId>
+      <version>1.7.0</version>
+      <scope>compile</scope>
+    </dependency>
+    <dependency>
+      <!-- For the Maven target set only, though it is used for some build targets of Gant using Gant. -->
+      <groupId>org.apache.maven</groupId>
+      <artifactId>maven-ant-tasks</artifactId>
+      <version>2.0.8</version>
+      <scope>runtime</scope>
+    </dependency>
+    <dependency>
+      <!-- For the Ivy tool only. -->
+      <groupId>org.apache.ivy</groupId>
+      <artifactId>ivy</artifactId>
+      <version>2.0.0-beta1</version>
+      <scope>runtime</scope>
+    </dependency>
+  </dependencies>
+  
+  <build>
+    <defaultGoal>install</defaultGoal>
+    <plugins>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-enforcer-plugin</artifactId>
+        <executions>
+          <execution>
+            <phase>validate</phase>
+            <goals>
+              <goal>enforce</goal>
+            </goals>
+            <configuration>
+              <rules>
+                <requireJavaVersion>
+                  <version>[1.4,)</version>
+                </requireJavaVersion>
+                <requireMavenVersion>
+                  <version>[2.0.5,)</version>
+                </requireMavenVersion>
+              </rules>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-compiler-plugin</artifactId>
+        <configuration>
+          <source>1.4</source>
+          <target>1.4</target>
+          <debug>on</debug>
+        </configuration>
+      </plugin>
+      <plugin>
+        <groupId>org.codehaus.mojo.groovy</groupId>
+        <artifactId>groovy-maven-plugin</artifactId>
+        <executions>
+          <execution>
+            <goals>
+              <goal>generateStubs</goal>
+              <goal>compile</goal>
+              <goal>generateTestStubs</goal>
+              <goal>testCompile</goal>
+            </goals>
+          </execution>
+        </executions>
+      </plugin>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-surefire-plugin</artifactId>
+        <configuration>
+          <redirectTestOutputToFile>true</redirectTestOutputToFile>
+        </configuration>
+      </plugin>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-jar-plugin</artifactId>
+        <configuration>
+          <archive>
+            <manifestEntries>
+              <Extension-Name>gant</Extension-Name>
+              <Specification-Title>Gant: Scripting Ant tasks with Groovy.</Specification-Title>
+              <Specification-Version>${pom.version}</Specification-Version>
+              <Specification-Vendor>The Codehaus</Specification-Vendor>
+              <Implementation-Title>Gant: Scripting Ant tasks with Groovy.</Implementation-Title>
+              <Implementation-Version>${pom.version}</Implementation-Version>
+              <Implementation-Vendor>The Codehaus</Implementation-Vendor>
+              <url>${pom.url}</url>
+            </manifestEntries>
+          </archive>
+        </configuration>
+      </plugin>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-javadoc-plugin</artifactId>
+        <configuration>
+          <source>1.4</source>
+        </configuration>
+      </plugin>
+       <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-clean-plugin</artifactId>
+        <configuration>
+          <filesets>
+            <fileset>
+              <directory>.</directory>
+              <includes>
+                <include>**/*~</include>
+              </includes>
+              <followSymlinks>false</followSymlinks>
+            </fileset>
+          </filesets>
+        </configuration>
+      </plugin>
+    </plugins>
+
+    <!-- It seems that Maven (at least up to 2.0.8) doesn't download this artefact which is needed for
+    deployment as a matter of course.  So unless we specify it here then the WebDAV stuff doesn't work. -->
+
+    <extensions>
+      <extension>
+        <groupId>org.apache.maven.wagon</groupId>
+        <artifactId>wagon-webdav</artifactId>
+        <version>1.0-beta-2</version>
+      </extension>
+    </extensions>
+  </build>
+  
+  <reporting>
+    <plugins>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-javadoc-plugin</artifactId>
+        <configuration>
+          <packageNames>Gant</packageNames>
+          <overview>${basedir}/overview.html</overview>
+          <private>yes</private>
+          <author>true</author>
+          <version>true</version>
+          <use>true</use>
+          <locale>en_GB</locale>
+          <source>1.4</source>
+          <bottom>Copyright &copy; 2006&ndash;2007 Russel Winder.  All rights reserved.</bottom>
+          <charset>UTF-8</charset>
+          <breakIterator>yes</breakIterator>
+        </configuration>
+      </plugin>          
+    </plugins>
+  </reporting>
+  
+</project>
