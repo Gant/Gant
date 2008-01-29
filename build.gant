@@ -91,7 +91,7 @@ distributionVersions = [
                         //  has to be done the hard way.
                         //
                         //[ groupId : 'org.codehaus.groovy' , artifactId : 'groovy' , version : '1.5.0' ] ,
-                        //[ groupId : 'org.codehaus.groovy' , artifactId : 'groovy' , version : '1.5.1' ]
+                        //[ groupId : 'org.codehaus.groovy' , artifactId : 'groovy' , version : '1.5.1' ] ,
                         [ groupId : 'org.codehaus.groovy' , artifactId : 'groovy' , version : '1.5.2' ] ,
                         [ groupId : 'org.codehaus.groovy' , artifactId : 'groovy' , version : '1.6-beta-1-SNAPSHOT' ] ,
                         ]
