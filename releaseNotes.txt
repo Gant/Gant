@@ -1,4 +1,7 @@
-1.1.0 ( rXXXX )
+1.1.1 ( rXXXX )
+---------------
+
+1.1.0 ( r8964 )
 ---------------
 
 Added metadata to the Maven target set.
