@@ -14,6 +14,9 @@
 //
 //  Author : Russel Winder <russel.winder@concertant.com>
 
+final zipExtension = '.zip'
+final tgzExtension = '.tgz'
+
 Ant.property ( file : 'build.properties' )
 Ant.property ( file : 'local.build.properties' )
 
@@ -37,139 +40,93 @@ if ( ( installationHome == null ) || ( installationHome == '' ) ) {
 
 //  The Gant source is structured according to the standard Maven 2 structure.
 
-sourceDirectory = 'src/main/groovy'
-testsDirectory = 'src/test/groovy'  
-jarfilesDirectory = 'jarfiles'
-scriptsDirectory = 'scripts'
+final sourceDirectory = 'src/main/groovy'
+final testsDirectory = 'src/test/groovy'  
+final jarfilesDirectory = 'jarfiles'
+final scriptsDirectory = 'scripts'
 
-buildDirectory = 'target'
-buildClassesDirectory = buildDirectory + '/classes' 
-buildTestClassesDirectory = buildDirectory + '/test-classes' 
-buildTestReportsDirectory = buildDirectory + '/test-reports'
-buildCoberturaClassesDirectory = buildDirectory + '/cobertura-classes' 
-buildCoberturaReportsDirectory = buildDirectory + '/cobertura-reports'
+final buildDirectory = 'target'
+final buildClassesDirectory = buildDirectory + '/classes' 
+final buildTestClassesDirectory = buildDirectory + '/test-classes' 
+final buildTestReportsDirectory = buildDirectory + '/test-reports'
+final buildCoberturaClassesDirectory = buildDirectory + '/cobertura-classes' 
+final buildCoberturaReportsDirectory = buildDirectory + '/cobertura-reports'
 
-documentationDirectory = buildDirectory + '/documentation'
-apiDocumentationDirectory = documentationDirectory + '/api'
+final documentationDirectory = buildDirectory + '/documentation'
+final apiDocumentationDirectory = documentationDirectory + '/api'
 
-buildMetadataDirectory = buildClassesDirectory + '/META-INF'
+final buildMetadataDirectory = buildClassesDirectory + '/META-INF'
 
 //  Labels for supporting use of the Maven Ant task.  NB Installing Gant installs the Maven and Ivy Ant
 //  tasks jars into the Groovy library.
 
-antlibXMLns = 'antlib:org.apache.maven.artifact.ant'
-mavenPOMId = 'maven.pom'
+final antlibXMLns = 'antlib:org.apache.maven.artifact.ant'
+final mavenPOMId = 'maven.pom'
 
 //  Details of what is going to appear in the distribution.
 
-distributionTopLevelFiles = [
+final distributionTopLevelFiles = [
                              'build.gant' , 'buildMaven.gant' , 'build.properties' , 'build.xml' ,
                              '.classpath' , '.project' ,
                              'LICENCE.txt' ,
                              'README_Distribution.txt' , 'README_Install.txt' ,
                              'releaseNotes.txt'
                              ]
-distributionDirectories = [ 'documentation' , 'examples' , '.settings' , scriptsDirectory , jarfilesDirectory , sourceDirectory , testsDirectory ]
+final distributionDirectories = [ 'documentation' , 'examples' , '.settings' , scriptsDirectory , jarfilesDirectory , sourceDirectory , testsDirectory ]
 
 //  The versions of Gant in the Maven repository to build distribution version of Gant against.
 
-distributionVersions = [
+final distributionVersions = [
+                        //  Introducing the Gant Ant Task written in Java means we have to use the joint
+                        //  compiler to compile Gant and this means we cannot build Gant against Groovy 1.0
+                        //  since the joint compiler only arrived with 1.5.0.  Opinion on the user list
+                        //  indicated that it seemed reasonable to drop support for Groovy 1.0.
                         //
-                        // Introducing the Gant Ant Task written in Java means we have to use the joint
-                        // compiler to compile Gant and this means we cannot build Gant against Groovy 1.0
-                        // since the joint compiler only arrived with 1.5.0.  Opinion on the user list
-                        // indicated that it seemed reasonable to drop support for Groovy 1.0.
+                        ////[ groupId : 'groovy' , artifactId : 'groovy' , version : '1.0' ] ,
                         //
-                        //[ groupId : 'groovy' , artifactId : 'groovy' , version : '1.0' ] ,
-                        //
-                        //  The distribution target assumes that the groovyc fork mode works, which means
-                        //  we cannot build against any version prior to 1.5.2.  Using a forked Java task is not an
-                        //  option because there is no --classpath option in the 1.5.0 and 1.5.1 versions of
-                        //  Groovyc and this is essential to get things to work correctly.
+                        //  The target distribution assumes that the groovyc fork mode works, which means we
+                        //  cannot build against any version prior to 1.5.2.  Using a forked Java task is
+                        //  not an option because there is no --classpath option in the 1.5.0 and 1.5.1
+                        //  versions of Groovyc and this is essential to get things to work correctly.
                         //
                         //  Gant can still be built and distributed against Groovy 1.5.0 and 1.5.1 but it
-                        //  has to be done the hard way.
+                        //  has to be done the hard (manual) way.
                         //
-                        //[ groupId : 'org.codehaus.groovy' , artifactId : 'groovy' , version : '1.5.0' ] ,
-                        //[ groupId : 'org.codehaus.groovy' , artifactId : 'groovy' , version : '1.5.1' ] ,
+                        ////[ groupId : 'org.codehaus.groovy' , artifactId : 'groovy' , version : '1.5.0' ] ,
+                        ////[ groupId : 'org.codehaus.groovy' , artifactId : 'groovy' , version : '1.5.1' ] ,
                         [ groupId : 'org.codehaus.groovy' , artifactId : 'groovy' , version : '1.5.2' ] ,
-                        [ groupId : 'org.codehaus.groovy' , artifactId : 'groovy' , version : '1.6-beta-1-SNAPSHOT' ] ,
+                        //[ groupId : 'org.codehaus.groovy' , artifactId : 'groovy' , version : '1.6-beta-1-SNAPSHOT' ] ,
                         ]
 
 // As Jürgen Hermann pointed out the trailing / on the URL is very important.
 
-distributionURL = 'https://dav.codehaus.org/dist/gant/'
+final distributionURL = 'https://dav.codehaus.org/dist/gant/'
 
  //  The server hierarchy is fixed and known.
 
-serverDistributionsDirectory = 'distributions'
-serverJarsDirectory = 'jars'
-serverPomsDirectory = 'poms'
+final serverDistributionsDirectory = 'distributions'
+final serverJarsDirectory = 'jars'
+final serverPomsDirectory = 'poms'
 
 //  This is a map with key local source path and value server path.
 
-serverUploadProducts = [ : ]
+final serverUploadProducts = [ : ]
 
 //  The various compilation and test actions are parameterized so they can be used with different classpaths.
-
-//  This function is (was) used for experimenting to see if there is a way around the groovyc lack of fork
-//  for 1.5.x.  It failed because those versions fail to have a --classpath option and so cannot use the
-//  right classpath.  Leave it here for a while as documentation, but it is scheduled for deletion
-
-performForkedCompile = { String what , javaClasspath , groovyClasspath , sourceDirectory , destinationDirectory ->
-  Ant.java ( classname : 'org.codehaus.groovy.ant.Groovyc' , fork : 'true' , classpath : javaClasspath , resultproperty : 'groovyc-result' , outputproperty : 'groovy-output' ) {
-    arg ( value : '-j' )
-    arg ( value : '-Jsource=1.4' )
-    arg ( value : '-Jtarget=1.4' )
-    arg ( value : '-Fg' )
-    arg ( value :  '--classpath' )
-    arg ( value : groovyClasspath )
-    arg ( value : destinationDirectory )
-    arg ( value : sourceDirectory )
-  }
-  if ( Ant.project.properties.'groovyc-result' != '0' ) {
-    println ( 'Groovy compilation failed with code ' + Ant.project.properties.'groovyc-result' )
-    println ( Ant.project.properties.'groovy-output' )
-    System.exit ( 1 )
-  }
-}
 
 //  Currently these Closures do not have the GantMetaClass as their metaclass so there is no delegated
 //  lookup on Ant so we have to use it explicitly.
 
- performCompile = { classpathRef , boolean fork ->
+final performCompile = { classpathRef , boolean fork ->
   Ant.mkdir ( dir : buildClassesDirectory )
-
-                    /*
-                    if ( fork ) {
-                      def classpath = Ant.path ( refid : classpathRef ).toString ( )
-                      performForkedCompile ( 'sources' , classpath , classpath , sourceDirectory , buildClassesDirectory )
-                    }
-                    else {
-                    */
-
   Ant.taskdef ( name : 'groovyc' , classname : 'org.codehaus.groovy.ant.Groovyc' , classpathref : classpathRef )
   Ant.groovyc ( srcdir : sourceDirectory , destdir : buildClassesDirectory , classpathref : classpathRef , fork : fork ? 'true' : 'false' , failonerror : 'true' ) {
     javac ( source : '1.4' , target : '1.4' , debug : 'on' )
   }
-
-                    //}
 }
 
-performCompileTests = { classpathRef , boolean fork ->
+final performCompileTests = { classpathRef , boolean fork ->
   Ant.mkdir ( dir : buildTestClassesDirectory )
-
-                        /*
-                    if ( fork ) {
-                      def classpath = Ant.path {
-                          pathelement ( location : buildClassesDirectory )
-                          path ( refid : classpathRef )
-                      }.toString ( )
-                      performForkedCompile ( 'tests' , classpath , classpath , testsDirectory , buildTestClassesDirectory )
-                    }
-                    else {
-                        */
-
   Ant.taskdef ( name : 'groovyc' , classname : 'org.codehaus.groovy.ant.Groovyc' , classpathref : classpathRef )
   Ant.groovyc ( srcdir : testsDirectory , destdir : buildTestClassesDirectory , fork : fork ? 'true' : 'false' , failonerror : 'true' ) {
     classpath {
@@ -178,11 +135,9 @@ performCompileTests = { classpathRef , boolean fork ->
     }
     javac ( source : '1.4' , target : '1.4' , debug : 'on' )
   }
-
-                        //}
 }
 
-performTests =  { classpathRef ->
+final performTests =  { classpathRef ->
   Ant.mkdir ( dir : buildTestReportsDirectory )
   if ( usingCobertura ) {
     Ant.mkdir ( dir : buildCoberturaClassesDirectory )
@@ -223,7 +178,7 @@ performTests =  { classpathRef ->
   Ant.project.properties.testsFailed == null
 }
 
-makeManifest = { ->
+final makeManifest = { ->
   Ant.mkdir ( dir : buildMetadataDirectory )
   Ant.copy ( todir : buildMetadataDirectory ,  file : 'LICENCE.txt' )
   Ant.manifest ( file : buildMetadataDirectory + '/MANIFEST.MF' ) {
@@ -340,11 +295,11 @@ target ( uninstall : "Uninstall Gant from ${installationHome}." ) {
   }
 }
 
+//  Returns a boolean stating whether there were any test failures.
+
 target ( distribution : 'Create the distribution.' ) {
-  def zipExtension = '.zip'
-  def tgzExtension = '.tgz'
-  //  Use the Ant Maven plugin to ensure that the groovy-all jar of a given release is in the local Maven
-  //  repository and ensure that is the only version of Groovy used in the compilation.
+  //  Use the Ant Maven plugin to ensure that the groovy jar of a given release is in the local Maven
+  //  repository and ensure that it is the only version of Groovy used in the compilation.
   def prefix = 'gant-' + gantVersion
   def distributionClasspathId = 'classpath'
   clean ( )
@@ -417,7 +372,7 @@ target ( distribution : 'Create the distribution.' ) {
   serverUploadProducts [ archiveRootPath + tgzExtension ] = serverDistributionsDirectory + '/' +  archiveRoot + tgzExtension
   //  Return the result of the test executions so that uploadDistributions can choose not to upload a failed
   //  compilation.
-  someTestsFailed
+  ! someTestsFailed
 }
 
 target ( uploadDistribution : 'Upload a complete distribution.' ) {
