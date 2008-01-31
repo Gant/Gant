@@ -34,11 +34,11 @@
   <name>Gant</name>
   <version>1.2.0-SNAPSHOT</version>
   <description>
-    Gant is a Groovy-based build framework that provides a scripting system for Ant tasks.  With Ant the
-    build specification is an XML file, with Gant the build specification is a Groovy script.  All the
-    underlying Ant tasks are used in the same way in Gant as with Ant, but using a programming language
-    rather than XML to specify the process means that imperative and declarative expression is possible,
-    without any hacking.
+    Gant is a build tool for scripting Ant tasks using Groovy instead of XML to specify the build logic. A
+    Gant build specification is just a Groovy script and so can bring all the power of Groovy to bear
+    directly, something not possible with Ant scripts. Whilst it might be seen as a competitor to Ant, Gant
+    relies on all the Ant tasks for actually doing things, so it is really an alternative way of doing
+    builds using Ant, but using a programming language rather than XML to specify the build rules.
   </description>
   <url>http://gant.codehaus.org/</url>
   <inceptionYear>2006</inceptionYear>
