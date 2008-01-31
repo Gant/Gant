@@ -48,17 +48,22 @@ target ( debFiles : 'Create the deb file of the distribution.' ) {
     }
     assert gantVersion == gantVersionJar
     def targetDirectory = debsDirectory + System.properties.'file.separator' + groovyVersion
-    //
     //  Have to use Ant. as we are in a Closure :-(
-    //
     Ant.mkdir ( dir : targetDirectory )
     Ant.deb ( todir : targetDirectory , 'package' : 'gant' , section : 'devel' , depends : 'groovy-' + groovyVersion ) {
       version ( upstream : gantVersion )
       maintainer ( name : 'Russel Winder' , email : 'russel.winder@concertant.com' )
-      description ( synopsis : 'Ant task scripting using Groovy' , '''
-Gant is a way of using Groovy instead of XML to manage a build using Ant tasks.
-
-http://gant.codehaus.org
+      description ( synopsis : 'Groovy scripting of Ant tasks.' , '''
+Gant is a build tool for scripting Ant tasks using Groovy instead of XML
+to specify the build logic. A Gant build specification is just a Groovy
+script and so can bring all the power of Groovy to bear directly,
+something not possible with Ant scripts. Whilst it might be seen as a
+competitor to Ant, Gant relies on all the Ant  tasks for actually doing
+things, so it is really an alternative way of doing builds using Ant,
+but using a programming language rather than XML to specify the build
+rules.
+.
+Home page: http://gant.codehaus.org/
 ''' )
       tarfileset ( file : [ rootDirectory , 'scripts' , 'bin' , 'gant' ].join ( System.properties.'file.separator' ) , prefix : 'usr/bin' , filemode : '755' )
       tarfileset ( file : buildDirectory + System.properties.'file.separator' + jarName , prefix : 'usr/share/groovy' )
