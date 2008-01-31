@@ -14,8 +14,8 @@
 //
 //  Author : Russel Winder <russel.winder@concertant.com>
 
-rootDirectory = '..' + System.properties.'file.separator' + '..'
-buildDirectory = rootDirectory + System.properties.'file.separator' + 'target'
+final rootDirectory = '..' + System.properties.'file.separator' + '..'
+final buildDirectory = rootDirectory + System.properties.'file.separator' + 'target'
 
 Ant.property ( file : rootDirectory + System.properties.'file.separator' + 'build.properties' )
 Ant.property ( file : rootDirectory + System.properties.'file.separator' + 'local.build.properties' )
@@ -28,7 +28,7 @@ catch ( MissingPropertyException mpe ) { gantVersion = Ant.project.properties.ga
 
 Ant.taskdef ( resource : 'ant_deb_task.properties' , classpath : [ System.properties.'user.home' , '.groovy' , 'lib' , 'ant-deb.jar' ].join ( System.properties.'file.separator' ) )
 
-debsDirectory = 'debs'
+final debsDirectory = 'debs'
 
 includeTargets << gant.targets.Clean
 cleanDirectory << debsDirectory
@@ -39,11 +39,11 @@ target ( debFiles : 'Create the deb file of the distribution.' ) {
   //  Need to avoid recursive Gant.  Fix this.
   Execute.shell ( "cd ${rootDirectory} && gant distribution" )
   // Create a deb for each jar in the distribution.  The jar should contain Gant and Groovy version information.
-  (new File ( buildDirectory ).listFiles ( { it ==~ '.*.jar' } as java.io.FileFilter ) as List ).each { item ->
+  ( new File ( buildDirectory ).listFiles ( { it ==~ '.*.jar' } as java.io.FileFilter ) as List ).each { item ->
     def jarName = item.name
     def matcher = jarName =~ /gant-([0-9.]*(?:-SNAPSHOT)?)_groovy-([0-9.]*(?:-SNAPSHOT)?)\.jar/
     if ( matcher.matches ( ) ) {
-      gantVersionJar = matcher.group ( 1)
+      gantVersionJar = matcher.group ( 1 )
       groovyVersion = matcher.group ( 2 )
     }
     assert gantVersion == gantVersionJar
