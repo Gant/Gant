@@ -92,9 +92,7 @@ final distributionVersions = [
                         //  Gant can still be built and distributed against Groovy 1.5.0 and 1.5.1 but it
                         //  has to be done the hard (manual) way.
                         //
-                        ////[ groupId : 'org.codehaus.groovy' , artifactId : 'groovy' , version : '1.5.0' ] ,
-                        ////[ groupId : 'org.codehaus.groovy' , artifactId : 'groovy' , version : '1.5.1' ] ,
-                        [ groupId : 'org.codehaus.groovy' , artifactId : 'groovy' , version : '1.5.2' ]
+                        [ groupId : 'org.codehaus.groovy' , artifactId : 'groovy' , version : '1.5.4' ]
                         ]
 
 // As Jürgen Hermann pointed out the trailing / on the URL is very important.
