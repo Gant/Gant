@@ -211,6 +211,13 @@ includeTargets << gant.targets.Clean
 cleanPattern <<  [ '**/*~' , 'cobertura.ser' ] 
 cleanDirectory << buildDirectory
 
+includeTool << gant.tools.Execute
+
+target ( reallyClean : 'Ensure all clean operations for the entire tree get actioned.' ) {
+  clobber ( )
+  Execute.shell ( "cd packaging/debian && gant clobber" ) 
+}
+
 target ( compile : 'Compile everything needed for a Gant installation.' ) {
   performCompile ( 'compileJarSet' , false )
 }
@@ -329,6 +336,7 @@ target ( distribution : 'Create the distribution.' ) {
     def archiveRootPath = buildDirectory + System.properties.'file.separator' + archiveRoot
     Ant.zip ( destfile : archiveRootPath + zipExtension ) {
       zipfileset ( dir : buildDirectory , includes : jarName , prefix : prefix + '/lib' )
+      zipfileset ( dir : jarfilesDirectory , prefix : prefix + '/lib' )
       zipfileset ( dir : 'scripts/bin' , includes : 'gant*' , prefix : prefix + '/bin' )
       zipfileset ( dir : 'scripts/install' , includes : 'install.groovy' , prefix : prefix + '/bin' )
       zipfileset ( dir : '.' , includes : 'README*' , prefix : prefix )
@@ -336,6 +344,7 @@ target ( distribution : 'Create the distribution.' ) {
     serverUploadProducts [ archiveRootPath + zipExtension ] = serverDistributionsDirectory + '/' +  archiveRoot + zipExtension
     Ant.tar ( destfile :  archiveRootPath + tgzExtension , compression : 'gzip' ) {
       tarfileset ( dir : buildDirectory , includes : jarName , prefix : prefix + '/lib' )
+      tarfileset ( dir : jarfilesDirectory , prefix : prefix + '/lib' )
       tarfileset ( dir : 'scripts/bin' , includes : 'gant*' , prefix : prefix + '/bin' , mode : '755' )
       tarfileset ( dir : 'scripts/install' , includes : 'install.groovy' , prefix : prefix + '/bin' , mode : '755' )
       tarfileset ( dir : '.' , includes : 'README*' , prefix : prefix )
