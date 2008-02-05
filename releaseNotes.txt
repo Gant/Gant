@@ -4,6 +4,8 @@
 1.1.1 ( rXXXX )
 ---------------
 
+Added the Ivy and Maven Ant Tasks jars to the binary distribution.
+
 1.1.0 ( r8964 )
 ---------------
 
