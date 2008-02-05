@@ -212,6 +212,13 @@ includeTargets << gant.targets.Clean
 cleanPattern <<  [ '**/*~' , 'cobertura.ser' ] 
 cleanDirectory << buildDirectory
 
+includeTool << gant.tools.Execute
+
+target ( reallyClean : 'Ensure all clean operations for the entire tree get actioned.' ) {
+  clobber ( )
+  Execute.shell ( "cd packaging/debian && gant clobber" ) 
+}
+
 target ( compile : 'Compile everything needed for a Gant installation.' ) {
   performCompile ( 'compileJarSet' , false )
 }
