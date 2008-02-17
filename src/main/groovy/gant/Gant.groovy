@@ -120,23 +120,23 @@ final class Gant {
   private final setDefaultTarget = { defaultTarget -> // Deal with Closure or String arguments.
     switch ( defaultTarget.getClass ( ) ) {
      case Closure :
-     def targetName = null
-     binding.variables.each { key , value -> if ( value.is ( defaultTarget ) ) { targetName = key } }
-     if ( targetName == null ) { throw new RuntimeException ( 'Parameter to setDefaultTarget method is not a known target.  This can never happen!' ) }
-     target ( 'default' : targetName ) { defaultTarget ( ) }
-     break
+      def targetName = null
+      binding.variables.each { key , value -> if ( value.is ( defaultTarget ) ) { targetName = key } }
+      if ( targetName == null ) { throw new RuntimeException ( 'Parameter to setDefaultTarget method is not a known target.  This can never happen!' ) }
+      target ( 'default' : targetName ) { defaultTarget ( ) }
+      break
      case String :
-     def failed = true
-     try {
-       def targetClosure = binding.getVariable ( defaultTarget )
-       if ( targetClosure != null ) { target ( 'default' : defaultTarget ) { targetClosure ( ) } ; failed = false }
-     }
-     catch ( MissingPropertyException mpe ) { }
-     if ( failed ) { throw new RuntimeException ( "Target ${defaultTarget} does not exist so cannot be made the default." ) }
-     break
+      def failed = true
+      try {
+        def targetClosure = binding.getVariable ( defaultTarget )
+        if ( targetClosure != null ) { target ( 'default' : defaultTarget ) { targetClosure ( ) } ; failed = false }
+      }
+      catch ( MissingPropertyException mpe ) { }
+      if ( failed ) { throw new RuntimeException ( "Target ${defaultTarget} does not exist so cannot be made the default." ) }
+      break
      default :
-     throw new RuntimeException ( 'Parameter to setDefaultTarget is of the wrong type -- must be a target reference or a string.' )
-     break 
+      throw new RuntimeException ( 'Parameter to setDefaultTarget is of the wrong type -- must be a target reference or a string.' )
+      break 
     }
   }
   /*
