@@ -26,3 +26,8 @@ always.  In particular, this will only be true when Gant is initiated from the c
 when Gant is initiated via the Ant task.
 
 The LaTeX tool does not make use of the return code from (pdf)latex, and it should.
+
+The Maven target set has TestNG version 5.7 hardwired into the code.  This has to be parameterized so as to
+get the latest version from Maven.
+
+Using a target of target gives a very weird error message.

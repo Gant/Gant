@@ -26,8 +26,8 @@ final class Maven {
                                   artifactId : '' ,
                                   version : '' ,
                                   sourcePath : 'src' ,
-                                  mainSourcePath : '' , // Set in constructor since it uses a GString dependent on a value in the map.
-                                  testSourcePath : '' , // Set in constructor since it uses a GString dependent on a value in the map.
+                                  mainSourcePath : '' , // Defaults to standard Maven 2 convention
+                                  testSourcePath : '' , // Defaults to standard Maven 2 convention
                                   targetPath : 'target' ,
                                   mainCompilePath : '' , // Set in constructor since it uses a GString dependent on a value in the map.
                                   testCompilePath : '' , // Set in constructor since it uses a GString dependent on a value in the map.
@@ -62,8 +62,8 @@ final class Maven {
      constructMavenObject ( )
    }
   def constructMavenObject ( ) {
-    properties.mainSourcePath = "${properties.sourcePath}${System.properties.'file.separator'}main"
-    properties.testSourcePath = "${properties.sourcePath}${System.properties.'file.separator'}test"
+    properties.default_mainSourcePath = "${properties.sourcePath}${System.properties.'file.separator'}main"
+    properties.default_testSourcePath = "${properties.sourcePath}${System.properties.'file.separator'}test"
     properties.mainCompilePath = "${properties.targetPath}${System.properties.'file.separator'}classes"
     properties.testCompilePath = "${properties.targetPath}${System.properties.'file.separator'}test-classes"
     properties.testReportPath = "${properties.targetPath}${System.properties.'file.separator'}test-reports"
@@ -108,36 +108,49 @@ final class Maven {
       throw new RuntimeException ( 'Process-resources not implemented as yet.' )
     }
     */
-    properties.binding.target.call ( compile : "Compile the source code in ${properties.mainSourcePath} to ${properties.mainCompilePath}." ) {
+    properties.binding.target.call ( compile : "Compile the source code in ${properties.mainSourcePath ? properties.mainSourcePath : properties.default_mainSourcePath } to ${properties.mainCompilePath}." ) {
       depends ( owner.binding.initialize )
       owner.binding.Ant.mkdir ( dir : owner.mainCompilePath )
-      try {
-        new File ( owner.mainSourcePath ).eachDir { directory ->
-          switch ( directory.name ) {
-           case 'java' :
-           //  Need to use the joint Groovy compiler here to deal wuth the case where Groovy files are in the
-           //  Java hierarchy.
-           owner.binding.Ant.javac ( [ srcdir : owner.mainSourcePath + System.properties.'file.separator' + 'java' , destdir : owner.mainCompilePath , fork : 'true' ] + owner.javaCompileProperties ) {
-             classpath {
-               pathelement ( path : owner.compileClasspath.join ( System.properties.'path.separator' ) )
-               if ( owner.compileDependencies ) { path ( refid : owner.compileDependenciesClasspathId ) }
-             }
-           }
-           break
-           case 'groovy' :
-           owner.binding.Ant.taskdef ( name : 'groovyc' , classname : 'org.codehaus.groovy.ant.Groovyc' )
-           owner.binding.Ant.groovyc ( [ srcdir : owner.mainSourcePath + System.properties.'file.separator' + 'groovy' , destdir : owner.mainCompilePath , fork : 'true' ] + owner.groovyCompileProperties ) {
-             javac ( owner.javaCompileProperties )
-             classpath {
-               pathelement ( path : owner.compileClasspath.join ( System.properties.'path.separator' ) )
-               if ( owner.compileDependencies ) { path ( refid : owner.compileDependenciesClasspathId ) }
-             }
-           }
-           break
+      //  If a source path has been explicitly specified then compile everything in it.  Otherwise assume Maven 2 rules.
+      if ( owner.mainSourcePath ) {
+        owner.binding.Ant.taskdef ( name : 'groovyc' , classname : 'org.codehaus.groovy.ant.Groovyc' )
+        owner.binding.Ant.groovyc ( [ srcdir : owner.mainSourcePath , destdir : owner.mainCompilePath , fork : 'true' ] + owner.groovyCompileProperties ) {
+          javac ( owner.javaCompileProperties )
+          classpath {
+            pathelement ( path : owner.compileClasspath.join ( System.properties.'path.separator' ) )
+            if ( owner.compileDependencies ) { path ( refid : owner.compileDependenciesClasspathId ) }
           }
-        }        
+        }
       }
-      catch ( FileNotFoundException fnfe ) { throw new RuntimeException ( 'Error: ' + owner.mainSourcePath + ' does not exist.' ) }
+      else {
+        try {
+          new File ( owner.default_mainSourcePath ).eachDir { directory ->
+            switch ( directory.name ) {
+             case 'java' :
+             //  Need to use the joint Groovy compiler here to deal wuth the case where Groovy files are in the
+             //  Java hierarchy.
+             owner.binding.Ant.javac ( [ srcdir : owner.default_mainSourcePath + System.properties.'file.separator' + 'java' , destdir : owner.mainCompilePath , fork : 'true' ] + owner.javaCompileProperties ) {
+               classpath {
+                 pathelement ( path : owner.compileClasspath.join ( System.properties.'path.separator' ) )
+                 if ( owner.compileDependencies ) { path ( refid : owner.compileDependenciesClasspathId ) }
+               }
+             }
+             break
+             case 'groovy' :
+             owner.binding.Ant.taskdef ( name : 'groovyc' , classname : 'org.codehaus.groovy.ant.Groovyc' )
+             owner.binding.Ant.groovyc ( [ srcdir : owner.default_mainSourcePath + System.properties.'file.separator' + 'groovy' , destdir : owner.mainCompilePath , fork : 'true' ] + owner.groovyCompileProperties ) {
+               javac ( owner.javaCompileProperties )
+               classpath {
+                 pathelement ( path : owner.compileClasspath.join ( System.properties.'path.separator' ) )
+                 if ( owner.compileDependencies ) { path ( refid : owner.compileDependenciesClasspathId ) }
+               }
+             }
+             break
+            }
+          }        
+        }
+        catch ( FileNotFoundException fnfe ) { throw new RuntimeException ( 'Error: ' + owner.default_mainSourcePath + ' does not exist.' ) }
+      }
     }
     /*
     properties.binding.target.call ( 'process-classes' , 'Post-process the generated files from compilation, for example to do bytecode enhancement on Java classes.' ) {
@@ -159,39 +172,58 @@ final class Maven {
     properties.binding.target.call ( 'test-compile' : "Compile the test source code in ${properties.testSourcePath} to ${properties.testCompilePath}." ) {
       depends ( owner.binding.compile )
       owner.binding.Ant.mkdir ( dir : owner.testCompilePath  )
-      try {
-        new File ( owner.testSourcePath ).eachDir { directory ->
-          switch ( directory.name ) {
-           case 'java' :
-           //  Need to use the joint Groovy compiler here to deal with the case where Groovy files are in the
-           //  Java hierarchy.
-           owner.binding.Ant.javac ( [ srcdir : owner.testSourcePath + System.properties.'file.separator' + 'java' , destdir : owner.testCompilePath , fork : 'true' ] + owner.javaCompileProperties ) {
-             classpath {
-               pathelement ( location : owner.mainCompilePath )
-               pathelement ( path : owner.compileClasspath.join ( System.properties.'path.separator' ) )
-               pathelement ( path : owner.testClasspath.join ( System.properties.'path.separator' ) )
-               if ( owner.compileDependencies ) { path ( refid : owner.compileDependenciesClasspathId ) }
-               if ( owner.testDependencies ) { path ( refid : owner.testDependenciesClasspathId ) }
-             }
-           }
-           break
-           case 'groovy' :
-           owner.binding.Ant.taskdef ( name : 'groovyc' , classname : 'org.codehaus.groovy.ant.Groovyc' )
-           owner.binding.Ant.groovyc ( [ srcdir : owner.testSourcePath + System.properties.'file.separator' + 'groovy' , destdir : owner.testCompilePath , fork : 'true' ] + owner.groovyCompileProperties ) {
-             javac ( owner.javaCompileProperties )
-             classpath {
-               pathelement ( location : owner.mainCompilePath )
-               pathelement ( path : owner.compileClasspath.join ( System.properties.'path.separator' ) )
-               pathelement ( path : owner.testClasspath.join ( System.properties.'path.separator' ) )
-               if ( owner.compileDependencies ) { path ( refid : owner.compileDependenciesClasspathId ) }
-               if ( owner.testDependencies ) { path ( refid : owner.testDependenciesClasspathId ) }
-             }
-           }
-           break
+      if ( owner.testSourcePath ) {
+        if ( ( new File ( owner.testSourcePath ) ).isDirectory ( ) ) {
+          owner.binding.Ant.taskdef ( name : 'groovyc' , classname : 'org.codehaus.groovy.ant.Groovyc' )
+          owner.binding.Ant.groovyc ( [ srcdir : owner.testSourcePath , destdir : owner.testCompilePath , fork : 'true' ] + owner.groovyCompileProperties ) {
+            javac ( owner.javaCompileProperties )
+            classpath {
+              pathelement ( location : owner.mainCompilePath )
+              pathelement ( path : owner.compileClasspath.join ( System.properties.'path.separator' ) )
+              pathelement ( path : owner.testClasspath.join ( System.properties.'path.separator' ) )
+              if ( owner.compileDependencies ) { path ( refid : owner.compileDependenciesClasspathId ) }
+              if ( owner.testDependencies ) { path ( refid : owner.testDependenciesClasspathId ) }
+            }
           }
         }
       }
-      catch ( FileNotFoundException fnfe ) { throw new RuntimeException ( 'Error: ' + owner.testSourcePath + ' does not exist.' ) }
+      else {
+        if ( ( new File ( owner.default_testSourcePath ) ).isDirectory ( ) ) {
+          try {
+            new File ( owner.default_testSourcePath ).eachDir { directory ->
+              switch ( directory.name ) {
+               case 'java' :
+               //  Need to use the joint Groovy compiler here to deal with the case where Groovy files are in the
+               //  Java hierarchy.
+               owner.binding.Ant.javac ( [ srcdir : owner.default_testSourcePath + System.properties.'file.separator' + 'java' , destdir : owner.testCompilePath , fork : 'true' ] + owner.javaCompileProperties ) {
+                 classpath {
+                   pathelement ( location : owner.mainCompilePath )
+                   pathelement ( path : owner.compileClasspath.join ( System.properties.'path.separator' ) )
+                   pathelement ( path : owner.testClasspath.join ( System.properties.'path.separator' ) )
+                   if ( owner.compileDependencies ) { path ( refid : owner.compileDependenciesClasspathId ) }
+                   if ( owner.testDependencies ) { path ( refid : owner.testDependenciesClasspathId ) }
+                 }
+               }
+               break
+               case 'groovy' :
+               owner.binding.Ant.taskdef ( name : 'groovyc' , classname : 'org.codehaus.groovy.ant.Groovyc' )
+               owner.binding.Ant.groovyc ( [ srcdir : owner.default_testSourcePath + System.properties.'file.separator' + 'groovy' , destdir : owner.testCompilePath , fork : 'true' ] + owner.groovyCompileProperties ) {
+                 javac ( owner.javaCompileProperties )
+                 classpath {
+                   pathelement ( location : owner.mainCompilePath )
+                   pathelement ( path : owner.compileClasspath.join ( System.properties.'path.separator' ) )
+                   pathelement ( path : owner.testClasspath.join ( System.properties.'path.separator' ) )
+                   if ( owner.compileDependencies ) { path ( refid : owner.compileDependenciesClasspathId ) }
+                   if ( owner.testDependencies ) { path ( refid : owner.testDependenciesClasspathId ) }
+                 }
+               }
+               break
+              }
+            }
+          }
+          catch ( FileNotFoundException fnfe ) { throw new RuntimeException ( 'Error: ' + owner.default_testSourcePath + ' does not exist.' ) }
+        }
+      }
     }
     properties.binding.target.call ( test : "Run the tests using the ${properties.testFramework} unit testing framework." ) {
       depends ( owner.binding.'test-compile' )
