@@ -31,3 +31,5 @@ The Maven target set has TestNG version 5.7 hardwired into the code.  This has t
 get the latest version from Maven.
 
 Using a target of target gives a very weird error message.
+
+How to add compilerarg tags to the Maven target set?
