@@ -1,0 +1,4 @@
+#!/bin/bash
+
+cd /usr/bin
+ln -s /usr/share/groovy/bin/gant gant

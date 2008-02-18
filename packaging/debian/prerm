@@ -1,0 +1,6 @@
+#!/bin/bash
+
+rm /usr/bin/gant
+rm /usr/share/groovy/bin/gant*
+rm /usr/share/groovy/lib/gant*
+rm /usr/share/groovy/bin/install.groovy
