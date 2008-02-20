@@ -33,6 +33,7 @@ final class AntFile {
     binding.Ant.project.targets.each { key , value ->
       assert key == value.name
       binding.setProperty ( key , { value.execute ( ) } )
+      if ( value.description ) { binding.targetDescriptions.put ( key , value.description ) }
     }
   }
 }
