@@ -6,9 +6,12 @@
 
 Added the Ivy and Maven Ant Tasks jars to the binary distribution.
 
-Amend the Maven target set to add explicit specification of the source and test directories.  This applied
+Amend the Maven target set to add explicit specification of the source and test directories.  This applies
 the Groovy joint compiler to everything in that directory, i.e. the Maven 2 split of language specific
 directories is not applied.
+
+Amended the Execute tool adding multi-threading of the process output streams to avoid blocking due to
+overful buffers.  cf. GANT-22. 
 
 1.1.0 ( r8964 )
 ---------------
