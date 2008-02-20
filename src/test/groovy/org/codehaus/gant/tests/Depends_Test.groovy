@@ -138,4 +138,18 @@ target ( stringParameter : '' ) { depends ( 'anotherTarget' ) }
     assertEquals ( 0 , processTargets ( 'stringParameter' ) )
     assertEquals ( 'done.\n' , output )
   }
+  void testCircularDependency ( ) {
+    //  Should this actually fail? cf. GANT-9
+    script = '''
+target ( A : '' ) { depends ( B ) ; println ( 'A' ) }
+target ( B : '' ) { depends ( C )  ; println ( 'B' ) }
+target ( C : '' ) { depends ( A )  ; println ( 'C' ) }
+'''
+    assertEquals ( 0 , processTargets ( 'A' ) )    
+    assertEquals ( '''A
+C
+B
+A
+''' , output )    
+  }
 }
