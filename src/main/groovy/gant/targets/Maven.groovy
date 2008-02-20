@@ -61,7 +61,7 @@ final class Maven {
      map.each { key , value -> owner.setProperty ( key , value ) }
      constructMavenObject ( )
    }
-  def constructMavenObject ( ) {
+  void constructMavenObject ( ) {
     properties.default_mainSourcePath = "${properties.sourcePath}${System.properties.'file.separator'}main"
     properties.default_testSourcePath = "${properties.sourcePath}${System.properties.'file.separator'}test"
     properties.mainCompilePath = "${properties.targetPath}${System.properties.'file.separator'}classes"
