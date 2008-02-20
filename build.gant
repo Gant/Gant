@@ -230,7 +230,7 @@ target ( compileTests : 'Compile all the tests for a newly built Gant.' ) {
 
 target ( test : 'Test a build.' ) {
   depends ( compileTests )
-  println ( 'Tests ' + ( performTests ( 'compileJarSet' ) ? 'failed' : 'succeeded' ) + '.' )
+  println ( 'Tests ' + ( performTests ( 'compileJarSet' ) ? 'suceeded' : 'failed' ) + '.' )
 }
 
 target ( coberturaTest : 'Test a build using Cobertura to get a coverage report.' ) {
