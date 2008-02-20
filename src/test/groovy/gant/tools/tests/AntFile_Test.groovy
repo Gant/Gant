@@ -40,4 +40,26 @@ setDefaultTarget ( 'execute' )
 ''' , output )
     temporaryFile.delete ( )
   }
+  void testListing ( ) {
+    def temporaryFile = File.createTempFile ( 'gant-antFile-' ,  '-executable' )
+    temporaryFile.write ( '''
+<project name="Gant Ant Use Test" default="execute">
+  <target name="execute" description="Do something.">
+    <echo message="Hello world."/>
+  </target>
+</project>
+''' )
+    script = """includeTool << gant.tools.AntFile
+AntFile.includeTargets ( '${temporaryFile.path}' )
+setDefaultTarget ( 'execute' )
+"""
+    assertEquals ( 0 , gant.processArgs ( [ '-p' , '-f' , '-' ] as String[] ) )
+    assertEquals ( '''
+ execute  Do something.
+
+Default target is execute.
+
+''' , output )
+    temporaryFile.delete ( )
+  }
 }

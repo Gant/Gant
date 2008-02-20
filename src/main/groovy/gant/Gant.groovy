@@ -221,6 +221,7 @@ final class Gant {
     binding.groovyShell = groovyShell
     binding.includeTargets = new IncludeTargets ( binding )
     binding.includeTool = new IncludeTool ( binding )
+    binding.targetDescriptions = targetDescriptions
     binding.target = target
     binding.task = { Map map , Closure closure -> System.err.println ( 'Deprecation warning: Use of task instead of target is deprecated.' ) ; target ( map , closure ) }
     binding.message = message
