@@ -359,13 +359,13 @@ final class Gant {
         binding.setVariable ( pair[0] , pair[1] )
       }
     }
-    if ( options.L ) { options.Ls.each { directoryName ->
+    if ( options.L ) {
+      options.Ls.each { directoryName ->
         def directory = new File ( directoryName )
         if ( directory.isDirectory ( ) ) { directory.eachFile { item -> rootLoader?.addURL ( item.toURL ( ) ) } }
-        else {
-          println ( 'Parameter to -L|--lib option is not a directory: ' + directory.name )
-        }
-      } }
+        else { println ( 'Parameter to -L|--lib option is not a directory: ' + directory.name ) }
+      }
+    }
     if ( options.P ) { options.P.split ( System.properties.'path.separator' ).each { pathitem -> rootLoader?.addURL ( ( new File ( pathitem ) ).toURL ( ) ) } }
     if ( options.V ) {
       def version = ''
