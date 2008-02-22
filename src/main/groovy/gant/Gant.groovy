@@ -215,10 +215,6 @@ final class Gant {
     //  that it has the right classpath.
     //
     final classLoader = getClass ( ).classLoader
-
-    System.err.println ( classLoader.class.name )
-    System.err.println ( classLoader )
-
     if ( classLoader.class.name == "org.apache.tools.ant.AntClassLoader" ) {
       //final project = classLoader.forceLoadClass ( 'org.apache.tools.ant.Project' ).newInstance ( )
       //project.init ( )
