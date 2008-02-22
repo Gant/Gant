@@ -49,4 +49,21 @@ target ( testing : '' ) { Execute.shell ( 'echo 1' ) }
 1
 ''' , output ) 
   }
+  void testExecuteReturnCodeCorrect ( ) {
+    script = '''includeTool << gant.tools.Execute
+target ( testing : '' ) { assert Execute.executable ( 'echo 1' ) == 0 }
+'''
+    assertEquals ( 0 , processTargets ( 'testing' ) )
+    assertEquals ( '''  [execute] echo 1
+1
+''' , output )
+  }
+  void testExecuteReturnCodeError ( ) {
+    script = '''includeTool << gant.tools.Execute
+target ( testing : '' ) { assert Execute.executable ( 'false' ) == 1 }
+'''
+    assertEquals ( 0 , processTargets ( 'testing' ) )
+    assertEquals ( '''  [execute] false
+''' , output )
+  }
 }

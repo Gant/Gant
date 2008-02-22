@@ -11,7 +11,8 @@ the Groovy joint compiler to everything in that directory, i.e. the Maven 2 spli
 directories is not applied.
 
 Amended the Execute tool adding multi-threading of the process output streams to avoid blocking due to
-overful buffers.  cf. GANT-22. 
+overful buffers.  cf. GANT-22.  Altered return type of methods so as to return the return code of the
+executed process.
 
 Add a new tool AntFile for reading an Ant XML file and presenting all the targets as targets in a Gant file.
 

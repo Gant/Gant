@@ -25,7 +25,19 @@ final class Execute {
   //
   //  Don't use the Elvis operator since that would mean the code would not compile in Groovy 1.0.
   //
-  private void manageProcess ( final Process process , final Closure errProcessing , final Closure outProcessing , final Object command , final String tag ) {
+  /**
+   *  Handle the output and error streams from the already initializaed and started process to ensure the
+   *  buffers are never filled, and block waiting termination of the process.
+   *
+   *  @param process the executing process.
+   *  @param errProcessing the <code>Closure</code> to process the error stream.
+   *  @param outProcessing the <code>Closure</code> to process the output stream.
+   *  @param command the command used to start the executing process.
+   *  @param tag the tag to print.
+   *
+   *  @return the return code of the process.
+   */
+  private manageProcess ( final Process process , final Closure errProcessing , final Closure outProcessing , final Object command , final String tag ) {
     //  Command can either be a String or a List.
     binding.getVariable ( 'message' ) ( tag , command )
     def errThread = Thread.start { process.err.eachLine ( errProcessing ) }
@@ -41,9 +53,11 @@ final class Execute {
    *  lines from standard out; <code>errProcessing is a <code>Closure</code> used to process lines from
    *  standard error.
    *
-   *  @parameter command the command as a single <code>String</code>.
+   *  @param command the command as a single <code>String</code>.
+   *
+   *  @return the return code of the process.
    */
-  void executable ( final Map keywordParameters = [:] , final String command ) {
+  def executable ( final Map keywordParameters = [:] , final String command ) {
     manageProcess ( command.execute ( ) ,
                     keywordParameters['errProcessing'] ? keywordParameters['errProcessing'] : { System.err.println ( it ) },
                     keywordParameters['outProcessing'] ? keywordParameters['outProcessing'] : { println ( it ) } ,
@@ -57,9 +71,11 @@ final class Execute {
    *  lines from standard out; <code>errProcessing</code> is a <code>Closure</code> used to process lines
    *  from standard error.
    *
-   *  @parameter command the command as a  list of <code>String</code>s.
+   *  @param command the command as a  list of <code>String</code>s.
+   *
+   *  @return the return code of the process.
    */
-  void executable ( final Map keywordParameters = [:] , final List command ) {
+  def executable ( final Map keywordParameters = [:] , final List command ) {
     manageProcess ( command.execute ( ) ,
                     keywordParameters['errProcessing'] ? keywordParameters['errProcessing'] : { System.err.println ( it ) },
                     keywordParameters['outProcessing'] ? keywordParameters['outProcessing'] : { println ( it ) } ,
@@ -73,9 +89,11 @@ final class Execute {
    *  lines from standard out; <code>errProcessing</code> is a <code>Closure</code> used to process lines
    *  from standard error.
    *
-   *  @parameter command the command as a single <code>String</code>.
+   *  @param command the command as a single <code>String</code>.
+   *
+   *  @return the return code of the process.
    */
-  void shell ( final Map keywordParameters = [:] , final String command ) {
+  def shell ( final Map keywordParameters = [:] , final String command ) {
     manageProcess ( [ 'sh' , '-c' , command ].execute ( ) ,
                     keywordParameters['errProcessing'] ? keywordParameters['errProcessing'] : { System.err.println ( it ) },
                     keywordParameters['outProcessing'] ? keywordParameters['outProcessing'] : { println ( it ) } ,
