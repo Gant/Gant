@@ -16,6 +16,11 @@ executed process. cf. GANT-23.
 
 Add a new tool AntFile for reading an Ant XML file and presenting all the targets as targets in a Gant file.
 
+Added a -L|--lib <directory-path> options in the same style as Ant's at the request of Adam DesJardin.
+cf. GANT-24.
+
+Added $HOME/.gant/lib as a repository of jar files as well as $HOME/.ant/lib.
+
 1.1.0 ( r8964 )
 ---------------
 

@@ -139,14 +139,14 @@ final class Gant {
       break 
     }
   }
+  private final ant
   /*
    *  There are issues with this use of instance initializers in Groovy as at r10228.  Doing a compilation
    *  from clean means this initializer does not get executed.  Causing this file to be compiled then means
    *  everything works correctly.  For the moment, as a hack, remove the use of instance initializers in
    *  favour of putting the code into the constructor.
    *
-  private def ant = new GantBuilder ( ) ; { ant.property ( environment : 'environment' ) }
-  private List gantLib ; {
+  private final List gantLib ; {
     //  System.getenv is deprecated on 1.4, so we use Ant to access the environment.  Can remove this once
     //  Groovy depends on 1.5.
     //
@@ -156,8 +156,7 @@ final class Gant {
     else { gantLib = Arrays.asList ( item.split ( System.properties.'path.separator' ) ) }
   }
   */
-  private def ant = new GantBuilder ( )
-  private List gantLib
+  private final List gantLib = [ ]
    /*
     */
    /**
@@ -205,6 +204,28 @@ final class Gant {
     *  <code>Binding</code> for the script binding, the passed <code>ClassLoader</code> as the class loader.
     */
   public Gant ( String s , Binding b , ClassLoader cl ) {
+    //
+    //  When this class is instantiated from a Gant command line or via a Groovy script then the classloader
+    //  is a org.codehaus.groovy.tools.RootLoader, and is used to load all the Ant related classes.  This
+    //  means that all Ant classes already know about all the Groovy jars in the classpath.  When this class is
+    //  instantiated from the Gant Ant Task, all the Ant classes have already been loaded using an instance
+    //  of URLLoader and have no knowledge of the Groovy jars.  Fortunately, this class has to have been
+    //  loaded by an org.apache.tools.ant.AntClassLoader which does have all the necessary classpath
+    //  information.  In this situation we must force a reload of the org.apache.tools.ant.Project class so
+    //  that it has the right classpath.
+    //
+    final classLoader = getClass ( ).classLoader
+
+    System.err.println ( classLoader.class.name )
+    System.err.println ( classLoader )
+
+    if ( classLoader.class.name == "org.apache.tools.ant.AntClassLoader" ) {
+      //final project = classLoader.forceLoadClass ( 'org.apache.tools.ant.Project' ).newInstance ( )
+      //project.init ( )
+      //ant = new GantBuilder ( project )
+      ant = new GantBuilder ( )
+    }
+    else { ant = new GantBuilder ( ) } 
     /*
      *  Move things here from the instance initializers.
      */
@@ -214,8 +235,8 @@ final class Gant {
     buildFileName = s
     buildClassName = buildFileName.replaceAll ( '\\.' , '_' )
     binding = ( b != null ) ? b : new Binding ( )
-    classLoader = ( cl != null ) ? cl : getClass ( ).getClassLoader ( )
-    groovyShell = new GroovyShell ( classLoader , binding )
+    this.classLoader = ( cl != null ) ? cl : classLoader
+    groovyShell = new GroovyShell ( this.classLoader , binding )
     binding.gantLib = gantLib
     binding.Ant = ant
     binding.groovyShell = groovyShell
@@ -315,7 +336,8 @@ final class Gant {
     cli.v ( longOpt : 'verbose' , 'Print lots of extra information.' )
     //  This options should have "args : Option.UNLIMITED_VALUES" but that doesn't work.
     cli.D ( argName : 'name>=<value' , args : 1 , 'Define <name> to have value <value>.  Creates a variable named <name> for use in the scripts and a property named <name> for the Ant tasks.' )
-    cli.P ( longOpt : 'classpath' , args : 1 , argName : 'path' , 'Adds a path to search for jars and classes.' )
+    cli.L ( longOpt : 'lib' , args : 1 , argName : 'path' , 'Add a directory to search for jars and classes.' )
+    cli.P ( longOpt : 'classpath' , args : 1 , argName : 'path' , 'Specify a path to search for jars and classes.' )
     cli.T ( longOpt : 'targets' , 'Print out a list of the possible targets.' )
     cli.V ( longOpt : 'version' , 'Print the version number and exit.' )
     def options = cli.parse ( args )
@@ -327,7 +349,7 @@ final class Gant {
       buildClassName = buildFileName.replaceAll ( '\\.' , '_' ) 
     }
     if ( options.h ) { cli.usage ( ) ; return 0 }
-    if ( options.l ) { gantLib = options.l.split ( System.properties.'path.separator' ) }
+    if ( options.l ) { gantLib << options.l.split ( System.properties.'path.separator' ) }
     if ( options.n ) { GantState.dryRun = true }
     def function =  ( options.p || options.T ) ? 'targetList' : 'dispatch'
     if ( options.q ) { GantState.verbosity = GantState.QUIET }
@@ -341,6 +363,13 @@ final class Gant {
         binding.setVariable ( pair[0] , pair[1] )
       }
     }
+    if ( options.L ) { options.Ls.each { directoryName ->
+        def directory = new File ( directoryName )
+        if ( directory.isDirectory ( ) ) { directory.eachFile { item -> rootLoader?.addURL ( item.toURL ( ) ) } }
+        else {
+          println ( 'Parameter to -L|--lib option is not a directory: ' + directory.name )
+        }
+      } }
     if ( options.P ) { options.P.split ( System.properties.'path.separator' ).each { pathitem -> rootLoader?.addURL ( ( new File ( pathitem ) ).toURL ( ) ) } }
     if ( options.V ) {
       def version = ''
@@ -364,6 +393,8 @@ final class Gant {
     if ( gotUnknownOptions ) { cli.usage ( ) ; return 1 ; }
     def userAntLib = new File ( "${System.properties.'user.home'}/.ant/lib" )
     if ( userAntLib.isDirectory ( ) ) { userAntLib.eachFile { file -> rootLoader?.addURL ( file.toURL ( ) ) } }
+    def userGantLib = new File ( "${System.properties.'user.home'}/.gant/lib" )
+    if ( userGantLib.isDirectory ( ) ) { userGantLib.eachFile { file -> rootLoader?.addURL ( file.toURL ( ) ) } }
     //def antHome = System.getenv ( ).'ANT_HOME'
     def antHome = ant.project.properties.'environment.ANT_HOME'
     if ( ( antHome != null ) && ( antHome != '' ) ) {
