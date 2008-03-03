@@ -120,7 +120,7 @@ final performCompile = { classpathRef , boolean fork ->
       pathelement ( location : buildClassesDirectory )
       path ( refid : classpathRef )
     }
-    javac ( source : '1.5' , target : '1.5' , debug : 'on' )
+    javac ( source : '1.4' , target : '1.4' , debug : 'on' )
   }
 }
 
