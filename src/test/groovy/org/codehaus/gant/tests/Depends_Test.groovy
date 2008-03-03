@@ -87,7 +87,7 @@ datum = 1
 target ( notClosure : '' ) { depends ( datum ) }
 '''
     assertEquals ( 13 , processTargets ( 'notClosure' ) )
-    assertEquals ( 'depends called with an argument (1) that is not appropriate.\n' , output )
+    assertEquals ( 'depends called with an argument (1) that is not a known target or list of targets.\n' , output )
   }
   void testNotListClosure ( ) {
     script = '''
@@ -95,7 +95,7 @@ datum = 1
 target ( notListClosure : '' ) { depends ( [ datum ] ) }
 '''
     assertEquals ( 13 , processTargets ( 'notListClosure' ) )
-    assertEquals ( 'depends called with List argument that contains an item (1) that is not appropriate.\n' , output )
+    assertEquals ( 'depends called with an argument (1) that is not a known target or list of targets.\n' , output )
   }
   void testOutOfOrder ( ) {
     script = '''
@@ -137,6 +137,24 @@ target ( stringParameter : '' ) { depends ( 'anotherTarget' ) }
 '''
     assertEquals ( 0 , processTargets ( 'stringParameter' ) )
     assertEquals ( 'done.\n' , output )
+  }
+  void testStringListParameter ( ) {
+    script = '''
+target ( aTarget : '' ) { println ( 'done.' ) }
+target ( anotherTarget : '' ) { println ( 'done.' ) }
+target ( stringListParameter : '' ) { depends ( [ 'aTarget' , 'anotherTarget' ] ) }
+'''
+    assertEquals ( 0 , processTargets ( 'stringListParameter' ) )
+    assertEquals ( 'done.\ndone.\n' , output )
+  }
+  void testMixedListParameter ( ) {
+    script = '''
+target ( aTarget : '' ) { println ( 'done.' ) }
+target ( anotherTarget : '' ) { println ( 'done.' ) }
+target ( mixedListParameter : '' ) { depends ( [ aTarget , 'anotherTarget' ] ) }
+'''
+    assertEquals ( 0 , processTargets ( 'mixedListParameter' ) )
+    assertEquals ( 'done.\ndone.\n' , output )
   }
   void testCircularDependency ( ) {
     //  Should this actually fail? cf. GANT-9

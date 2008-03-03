@@ -1,6 +1,8 @@
 1.2.0 ( rXXXX )
 ---------------
 
+Require Java 1.5 or higher and Groovy 1.6 or higher.  Introduce generics and remove casts wherever sensible.
+
 1.1.1 ( rXXXX )
 ---------------
 
@@ -20,6 +22,8 @@ Added a -L|--lib <directory-path> options in the same style as Ant's at the requ
 cf. GANT-24.
 
 Added $HOME/.gant/lib as a repository of jar files as well as $HOME/.ant/lib.
+
+Amended the depends processing to deal with lists of mixed Strings and Closures.
 
 1.1.0 ( r8964 )
 ---------------
