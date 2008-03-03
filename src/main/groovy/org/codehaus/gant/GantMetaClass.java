@@ -53,25 +53,27 @@ class GantMetaClass extends DelegatingMetaClass {
     }
     return null ;
   }
+  private Object processArgument ( final Object argument ) {
+    Object returnObject = null ;
+    final String errorReport = "depends called with an argument (" + argument + ") that is not a known target or list of targets." ;
+    if ( argument instanceof Closure ) { returnObject = processClosure ( (Closure) argument ) ; }
+    else if ( argument instanceof String ) {
+      final Object entry = binding.getVariable ( (String) argument ) ;
+      if ( ( entry != null ) && ( entry instanceof Closure ) ) { returnObject = processClosure ( (Closure) entry ) ; }
+      else { throw new RuntimeException ( errorReport ) ; }
+    }
+    else { throw new RuntimeException ( errorReport ) ; }
+    return returnObject ;
+  }
   public Object invokeMethod ( final Object object , final String methodName , final Object[] arguments ) {
     Object returnObject = null ;
     if ( methodName.equals ( "depends" ) ) {
       for ( int i = 0 ; i < arguments.length ; ++i ) {
-        if ( arguments[i] instanceof Closure ) { returnObject = processClosure ( (Closure) arguments[i] ) ; }
-        else if ( arguments[i] instanceof String ) {
-          final Object entry = binding.getVariable ( (String) arguments[i] ) ;
-          if ( ( entry != null ) && ( entry instanceof Closure ) ) { returnObject = processClosure ( (Closure) entry ) ; }
-          else { throw new RuntimeException ( "depends called with a String argument (" + arguments[i] + ") that is not a known target." ) ; }
-        }
-        else if ( arguments[i] instanceof List ) {
+        if ( arguments[i] instanceof List ) {
           Iterator iterator = ( (List) arguments[i] ).iterator ( ) ;
-          while ( iterator.hasNext ( ) ) {
-            Object item = iterator.next ( ) ;
-            if ( item instanceof Closure ) { returnObject = processClosure ( (Closure) item ) ; }
-            else { throw new RuntimeException ( "depends called with List argument that contains an item (" + item + ") that is not appropriate." ) ; }
-          }
+          while ( iterator.hasNext ( ) ) { returnObject = processArgument ( iterator.next ( ) ) ; }
         }
-        else { throw new RuntimeException ( "depends called with an argument (" + arguments[i] + ") that is not appropriate." ) ; }
+        else { returnObject = processArgument ( arguments[i] ) ; }
       }
     }
     else {

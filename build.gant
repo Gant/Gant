@@ -26,8 +26,6 @@ catch ( MissingPropertyException mpe ) { gantVersion = Ant.project.properties.ga
 try { usingCobertura }
 catch ( MissingPropertyException mpe ) { usingCobertura = false }
 
-// NB  System.getenv ( ) is deprecated in Java 1.4 but is undeprecated for Java 5 and later.
-  
 installationHome = System.getenv ( ).'GROOVY_HOME'
 try { if ( grailsBuild ) { installationHome = System.getenv ( ).'GRAILS_HOME' } }
 catch ( MissingPropertyException mpe ) { grailsBuild = false }
@@ -117,8 +115,12 @@ final serverUploadProducts = [ : ]
 final performCompile = { classpathRef , boolean fork ->
   Ant.mkdir ( dir : buildClassesDirectory )
   Ant.taskdef ( name : 'groovyc' , classname : 'org.codehaus.groovy.ant.Groovyc' , classpathref : classpathRef )
-  Ant.groovyc ( srcdir : sourceDirectory , destdir : buildClassesDirectory , classpathref : classpathRef , fork : fork ? 'true' : 'false' , failonerror : 'true' ) {
-    javac ( source : '1.4' , target : '1.4' , debug : 'on' )
+  Ant.groovyc ( srcdir : sourceDirectory , destdir : buildClassesDirectory , fork : fork ? 'true' : 'false' , failonerror : 'true' ) {
+    classpath {
+      pathelement ( location : buildClassesDirectory )
+      path ( refid : classpathRef )
+    }
+    javac ( source : '1.5' , target : '1.5' , debug : 'on' )
   }
 }
 
