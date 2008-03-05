@@ -2,7 +2,7 @@
 
 //  Gant -- A Groovy build framework based on scripting Ant tasks.
 //
-//  Copyright © 2006-7 Russel Winder
+//  Copyright © 2006-8 Russel Winder
 //
 //  Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in
 //  compliance with the License. You may obtain a copy of the License at
@@ -21,6 +21,7 @@
 
 def ant = new AntBuilder ( )
 def groovyHome = System.properties.'groovy.home'
+
 ant.copy ( todir : groovyHome ) {
   fileset ( dir : '.' , includes : 'bin' + System.properties.'file.separator' + 'gant*' )
   fileset ( dir : '.' , includes : 'lib' + System.properties.'file.separator' + 'gant*.jar' )
@@ -30,3 +31,22 @@ ant.copy ( todir : groovyHome ) {
 ant.chmod ( perm : 'a+x' ) {
   fileset ( dir : groovyHome + System.properties.'file.separator' + 'bin' , includes : 'gant*' )
 }
+
+def returnCode = 0
+
+if ( ! ( new File ( groovyHome + System.properties.'file.separator' + 'bin' + System.properties.'file.separator' + 'gant' ) ).isFile ( ) ) {
+  println ( 'Gant executable script not correctly installed.' )
+  returnCode |= 1
+}
+if ( ! ( new File ( groovyHome + System.properties.'file.separator' + 'bin' + System.properties.'file.separator' + 'gant.bat' ) ).isFile ( ) ) {
+  println ( 'Gant executable batch file not correctly installed.' )
+  returnCode |= 2
+}
+( new File ( 'lib' ) ).eachFileMatch ( ~'gant.*.jar' ) { item ->
+  if ( ! ( new File ( groovyHome + System.properties.'file.separator' + item ) ).isFile ( ) ) {
+    println ( 'Gant jar not correctly installed.' )
+    returnCode |= 4
+  }
+}
+
+System.exit ( returnCode )
