@@ -3,7 +3,10 @@
 
 Require Java 1.5 or higher and Groovy 1.6 or higher.  Introduce generics and remove casts wherever sensible.
 
-1.1.1 ( rXXXX )
+1.1.2 ( rXXXX )
+---------------
+
+1.1.1 ( r9027 )
 ---------------
 
 Added the Ivy and Maven Ant Tasks jars to the binary distribution.
