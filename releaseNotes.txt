@@ -6,6 +6,9 @@ Require Java 1.5 or higher and Groovy 1.6 or higher.  Introduce generics and rem
 1.1.2 ( rXXXX )
 ---------------
 
+Updated to using Ivy 2.0.0-beta2.
+
+
 1.1.1 ( r9027 )
 ---------------
 
