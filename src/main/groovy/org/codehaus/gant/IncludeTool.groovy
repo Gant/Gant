@@ -1,6 +1,6 @@
 //  Gant -- A Groovy build framework based on scripting Ant tasks.
 //
-//  Copyright © 2006-7 Russel Winder
+//  Copyright © 2006-8 Russel Winder
 //
 //  Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in
 //  compliance with the License. You may obtain a copy of the License at
@@ -16,25 +16,14 @@ package org.codehaus.gant
 
 /**
  *  An instance of this class is provided to each Gant script for including tools.  A tool is a class that
- *  provides Gant related facilities.  The class must has a single parameter constructor which is a
- *  <code>Map</code>.  The map contains a binding of various useful things, in particualr there is always an
+ *  provides Gant related facilities.  The class must have a single parameter constructor which is a
+ *  <code>Map</code>.  The map contains a binding of various useful things, in particular there is always an
  *  entry 'Ant' to give access to the global static instance of <code>AntBuilder</code>.
  *
  *  @author Russel Winder <russel.winder@concertant.com>
  */
 class IncludeTool extends AbstractInclude {
-  def loadedClasses = [ ]
-  def pendingClass = null
-  IncludeTool ( binding ) { super ( binding  ) }
-  def leftShift ( Class theClass ) {
-    def className = theClass.name
-    if ( ! ( className in loadedClasses ) ) {
-      def index = className.lastIndexOf ( '.' ) + 1
-      binding.setVariable ( className[index..-1] , createInstance ( theClass ) )
-      loadedClasses << className
-    }
-    this
-  }
+  IncludeTool ( Binding binding ) { super ( binding  ) }
   def leftShift ( File file ) {
     def className = file.name
     if ( ! ( className in loadedClasses ) ) {
@@ -58,27 +47,6 @@ class IncludeTool extends AbstractInclude {
       loadedClasses << className
       def theClass = binding.groovyShell.evaluate ( script + " ; return ${className}" )
       binding.setVariable ( className , createInstance ( theClass ) )
-    }
-    this
-  }
-  def leftShift ( List l ) { l.each { item -> this << item } ; this }
-  def leftShift ( Object o ) {
-    throw new RuntimeException ( 'Ignoring includeTool of type ' + o.class.name )
-    this
-  }
-  def power ( Class theClass ) {
-    pendingClass = theClass
-    this
-  }
-  def multiply ( Map keywordParameters ) {
-    if ( pendingClass != null ) {
-      def className = pendingClass.name
-      if ( ! ( className in loadedClasses ) ) {
-        def index = className.lastIndexOf ( '.' ) + 1
-        binding.setVariable ( className[index..-1] , createInstance ( pendingClass , keywordParameters ) )
-        loadedClasses << className
-      }
-      pendingClass = null
     }
     this
   }
