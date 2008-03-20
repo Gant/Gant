@@ -26,9 +26,6 @@ abstract class AbstractInclude {
   protected AbstractInclude ( Binding binding ) { this.binding = binding }
   public leftShift ( Class theClass ) {
     def className = theClass.name
-
-    System.err.println ( 'Loading ' + className + ' for object of type ' + this.class )
-
     if ( ! ( className in loadedClasses ) ) {
       def index = className.lastIndexOf ( '.' ) + 1
       binding.setVariable ( className[index..-1] , createInstance ( theClass ) )
@@ -67,12 +64,12 @@ abstract class AbstractInclude {
     try { return theClass.getConstructor ( Binding , Map ).newInstance ( [ binding , keywordParameters ] as Object[] ) }
     catch ( NoSuchMethodException nsme ) { throw new RuntimeException ( 'Could not initialize ' + theClass.name , nsme ) }
   }
-  private Class attemptRead ( File file , boolean asClass ) {
+  private attemptRead ( File file , boolean asClass ) {
     if ( asClass ) { return binding.groovyShell.evaluate ( file.text + " ; return ${file.name.replace('.groovy', '' )}" ) }
     binding.groovyShell.evaluate ( file )
     null
   }
-  protected Class readFile ( File file , boolean asClass = false ) {
+  protected readFile ( File file , boolean asClass = false ) {
     try { return attemptRead ( file , asClass ) }
     catch ( FileNotFoundException fnfe ) {
       for ( directory in binding.gantLib ) {

@@ -16,7 +16,7 @@ package org.codehaus.gant
 
 /**
  *  An instance of this class is provided to each Gant script for including targets.  Targets can be
- *  provided by Gant (sub)scripts or Groovy or Java classes.
+ *  provided by Gant (sub)scripts, Groovy classes, or Java classes.
  *
  *  @author Russel Winder <russel.winder@concertant.com> 
  *  @author Graeme Rocher <graeme.rocher@gmail.com>        
@@ -27,9 +27,10 @@ class IncludeTargets extends AbstractInclude {
     def className = file.name
     if ( ! ( className in loadedClasses ) ) {
       if ( binding.cacheEnabled ) {
-        className = className.replaceAll ( /\./ , '_' )
-        binding.loadClassFromCache.call ( className , file.lastModified ( ) , file )
-      }   
+        //  Class name will likely have packages, but this is not acceptable for a single name in the
+        //  binding, so convert any dots to underscores.
+        binding.loadClassFromCache.call ( className.replaceAll ( /\./ , '_' ) , file.lastModified ( ) , file )
+      }
       else { readFile ( file ) }
       loadedClasses << className
     }
