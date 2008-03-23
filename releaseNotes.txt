@@ -6,12 +6,19 @@ Require Java 1.5 or higher and Groovy 1.6 or higher.  Introduce generics and rem
 1.2.0 ( rXXXX )
 ---------------
 
+(Has the tests that work with Groovy 1.6 and fail with Groovy 1.5.)
+
 Introduce the GantBinding class to ensure various things that are needed for Gant to work and to allow more
 efficient cloning for multi-threading builds.
 
 Remove the inserting of the class name for targets classes into the binding.  Change from Maven.<property>
 to maven.<property>.  This is a breaking change, all uses of Maven as a reference from teh binding must be
 replaced by maven.
+
+Add in checks for duplicate symbols in the binding.
+
+Make the symbols created by the tools lowercase rather than upper case.  Add in checks for adding an
+overwrite in the binding.
 
 
 1.1.2 ( rXXXX )
