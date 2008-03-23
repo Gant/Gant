@@ -24,7 +24,7 @@ import org.codehaus.gant.tests.GantTestCase
 final class Execute_Test extends GantTestCase {
   void testExecutableString ( ) {
     script = '''includeTool << gant.tools.Execute
-target ( testing : '' ) { Execute.executable ( 'echo 1' ) }
+target ( testing : '' ) { execute.executable ( 'echo 1' ) }
 '''
     assertEquals ( 0 , processTargets ( 'testing' ) )
     assertEquals ( '''  [execute] echo 1
@@ -33,7 +33,7 @@ target ( testing : '' ) { Execute.executable ( 'echo 1' ) }
   }
   void testExecutableListOfString ( ) {
     script = '''includeTool << gant.tools.Execute
-target ( testing : '' ) { Execute.executable ( [ 'echo' , '1' ] ) }
+target ( testing : '' ) { execute.executable ( [ 'echo' , '1' ] ) }
 '''
     assertEquals ( 0 , processTargets ( 'testing' ) )
     assertEquals ( '''  [execute] [echo, 1]
@@ -42,7 +42,7 @@ target ( testing : '' ) { Execute.executable ( [ 'echo' , '1' ] ) }
   }
   void testShellString ( ) {
     script = '''includeTool << gant.tools.Execute
-target ( testing : '' ) { Execute.shell ( 'echo 1' ) }
+target ( testing : '' ) { execute.shell ( 'echo 1' ) }
 ''' 
     assertEquals ( 0 , processTargets ( 'testing' ) )
     assertEquals ( '''    [shell] echo 1
@@ -51,7 +51,7 @@ target ( testing : '' ) { Execute.shell ( 'echo 1' ) }
   }
   void testExecuteReturnCodeCorrect ( ) {
     script = '''includeTool << gant.tools.Execute
-target ( testing : '' ) { assert Execute.executable ( 'echo 1' ) == 0 }
+target ( testing : '' ) { assert execute.executable ( 'echo 1' ) == 0 }
 '''
     assertEquals ( 0 , processTargets ( 'testing' ) )
     assertEquals ( '''  [execute] echo 1
@@ -60,7 +60,7 @@ target ( testing : '' ) { assert Execute.executable ( 'echo 1' ) == 0 }
   }
   void testExecuteReturnCodeError ( ) {
     script = '''includeTool << gant.tools.Execute
-target ( testing : '' ) { assert Execute.executable ( 'false' ) == 1 }
+target ( testing : '' ) { assert execute.executable ( 'false' ) == 1 }
 '''
     assertEquals ( 0 , processTargets ( 'testing' ) )
     assertEquals ( '''  [execute] false

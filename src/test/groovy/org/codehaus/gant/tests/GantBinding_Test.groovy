@@ -39,4 +39,17 @@ final class GantBinding_Test extends GantTestCase {
     assertTrue ( object.cacheEnabled instanceof Boolean )
     assertTrue ( object.gantLib instanceof List )
   }
+  void testOverwriting ( ) {
+    //
+    //  Until changed, creating a new symbol in the binding using a target overwrites the old symbol.  This
+    //  is clearly wrong behaviour and needs amending.
+    //
+    script = '''
+target ( hello : '' ) { println ( 'Hello 1' ) }
+target ( hello : '' ) { println ( 'Hello 2' ) }
+'''
+    System.err.println ( 'testOverwriting: This test is wrong.' )
+    assertEquals ( 0 , processTargets ( 'hello' ) )
+    assertEquals ( 'Hello 2\n' , output )
+  }
 }

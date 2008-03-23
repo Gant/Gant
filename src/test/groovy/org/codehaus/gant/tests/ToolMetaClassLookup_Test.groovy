@@ -24,7 +24,7 @@ final class ToolMetaClassLookup_Test extends GantTestCase {
     super.setUp ( )
     script = '''
 includeTool << gant.tools.Subdirectories
-target ( something : 'Do something.' ) { Subdirectories.runSubprocess ( "echo yes" , new File ( "src" ) ) }
+target ( something : 'Do something.' ) { subdirectories.runSubprocess ( "echo yes" , new File ( "src" ) ) }
 target ( "default" : "something" ) { something ( ) }
 ''' 
   }

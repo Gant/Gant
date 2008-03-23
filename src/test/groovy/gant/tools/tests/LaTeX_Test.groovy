@@ -33,16 +33,16 @@ final class LaTeX_Test extends GantTestCase {
   def optionTestGantFile ( name , key ) { """
 includeTool << gant.tools.LaTeX
 target ( add${name}Option : "" ) {
-  LaTeX.add${name}Option ( "-blah" )
-  println ( LaTeX.environment[ "${key}Options" ] )
+  laTeX.add${name}Option ( "-blah" )
+  println ( laTeX.environment[ "${key}Options" ] )
 }
 """
   }
   def optionListTestGantFile ( name , key ) { """
 includeTool << gant.tools.LaTeX
 target ( add${name}OptionList : "" ) {
-  LaTeX.add${name}Option ( [ "-blah" , "--flobadob" ] )
-  println ( LaTeX.environment[ "${key}Options" ] )
+  laTeX.add${name}Option ( [ "-blah" , "--flobadob" ] )
+  println ( laTeX.environment[ "${key}Options" ] )
 }
 """
   }
@@ -108,9 +108,9 @@ target ( add${name}OptionList : "" ) {
   }
   final buildScript = '''
 includeTool << gant.tools.LaTeX
-target ( "pdf" : "" ) { LaTeX.generatePDF ( root : "TESTFILENAME" ) }
+target ( "pdf" : "" ) { laTeX.generatePDF ( root : "TESTFILENAME" ) }
 includeTargets << gant.targets.Clean
-LaTeX.intermediateExtensions.each { extension -> cleanPattern << '*' + extension }
+laTeX.intermediateExtensions.each { extension -> cleanPattern << '*' + extension }
 '''
   void testEmptyFile ( ) {
     if ( executablePresent ) {

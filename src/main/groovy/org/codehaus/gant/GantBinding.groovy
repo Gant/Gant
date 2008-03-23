@@ -58,6 +58,18 @@ public class GantBinding extends Binding {
        default : throw new RuntimeException ( 'Target specified with multiple names.' )
       }
       def targetName = map.keySet ( ).iterator ( ).next ( )
+      try {
+        owner.getVariable ( targetName )
+        //
+        //  Exceptions thrown in this Closure appear not to cause execution to enter an error path.  Must
+        //  find out how to throw an exception from a Closure.
+        //
+        //throw new RuntimeException ( "Attempt to redefine " + targetName )
+        //
+        System.err.println ( 'Warning, target causing name overwriting of name ' + targetName )
+        //System.exit ( 101 ) 
+      }
+      catch ( MissingPropertyException ) { }         
       def targetDescription = map.get ( targetName )
       if ( targetDescription ) { targetDescriptions.put ( targetName , targetDescription ) }
       closure.metaClass = new GantMetaClass ( closure.class , owner )
@@ -65,7 +77,7 @@ public class GantBinding extends Binding {
       owner.setVariable ( targetName + '_description' , targetDescription )
     }
     task = { Map map , Closure closure ->
-      System.err.println ( 'Deprecation warning: Use of task instead of target is deprecated.' )
+      System.err.println ( 'Deprecation warning: Use of task instead of target is deprecated and will be removed in version 1.3.' )
       target ( map , closure )
     }
     targetDescriptions = new TreeMap ( )
@@ -80,12 +92,6 @@ public class GantBinding extends Binding {
         def targetName = null
         owner.variables.each { key , value -> if ( value.is ( defaultTarget ) ) { targetName = key } }
         if ( targetName == null ) { throw new RuntimeException ( 'Parameter to setDefaultTarget method is not a known target.  This can never happen!' ) }
-
-       System.err.println ( "Owner is " + owner )
-       System.err.println ( "Owner type is " + ( owner instanceof GantBinding ) )
-       System.err.println ( "Target is " + owner.target )
-       System.err.println ( "Target type is " + ( owner.target instanceof Closure ) )
-
         owner.target.call ( 'default' : targetName ) { defaultTarget ( ) }
         break
        case String :

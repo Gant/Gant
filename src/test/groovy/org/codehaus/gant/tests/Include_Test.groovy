@@ -35,15 +35,16 @@ final class Include_Test extends GantTestCase {
 
   private final temporaryDirectory
   private final toolClassName = 'ToolClass'
+  private final toolBindingName = 'toolClass'
   private final toolClassFilePath
   private final toolClassText =  """
 class ${toolClassName} {
-  def ${toolClassName} ( Binding binding ) { }
+  ${toolClassName} ( Binding binding ) { }
   def flob ( ) { println ( 'flobbed.' ) }
 }
 """
   private final toolBuildScriptBase =  """
-target ( something : '' ) { ${toolClassName}.flob ( ) }
+target ( something : '' ) { ${toolBindingName}.flob ( ) }
 target ( 'default' : '' ) { something ( ) }
 """
   private final toolBuildScriptClass =  "includeTool <<  groovyShell.evaluate ( '''${toolClassText} ; return ${toolClassName}''' )\n" + toolBuildScriptBase
@@ -57,7 +58,7 @@ target ( flob : '' ) { println ( 'flobbed.' ) }
   private final targetsClassFilePath
   private final targetsClassText =  """
 class ${targetsClassName} {
-  def ${targetsClassName} ( Binding binding ) {
+  ${targetsClassName} ( Binding binding ) {
     binding.target.call ( flob : '' ) { println ( 'flobbed.' ) }
   }
 }
@@ -357,12 +358,13 @@ target ( 'default' : '' ) { something ( ) }
 
   void testUsingParameterConstructor ( ) {
     def theToolClassName = 'TheTool'
+    def theToolBindingName = 'theTool'
     def theToolClassText = """class ${theToolClassName} {
   ${theToolClassName} ( Binding binding , Map map ) { }
   def flob ( ) { println ( 'flobbed.' ) }
 }"""
     script = """includeTool ** groovyShell.evaluate ( '''${theToolClassText} ; return ${theToolClassName}''' ) * [ flob : 'adob' , foo : 'bar' ]
-target ( something : '' ) { ${theToolClassName}.flob ( ) }
+target ( something : '' ) { ${theToolBindingName}.flob ( ) }
 """
     assertEquals ( 0 , processTargets ( 'something' ) )    
     assertEquals ( 'flobbed.\n' , output )

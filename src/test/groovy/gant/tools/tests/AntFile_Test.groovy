@@ -32,7 +32,7 @@ final class AntFile_Test extends GantTestCase {
 </project>
 ''' )
     script = """includeTool << gant.tools.AntFile
-AntFile.includeTargets ( '${temporaryFile.path}' )
+antFile.includeTargets ( '${temporaryFile.path}' )
 setDefaultTarget ( 'execute' )
 """
     assertEquals ( 0 , processTargets ( ) )
@@ -50,7 +50,7 @@ setDefaultTarget ( 'execute' )
 </project>
 ''' )
     script = """includeTool << gant.tools.AntFile
-AntFile.includeTargets ( '${temporaryFile.path}' )
+antFile.includeTargets ( '${temporaryFile.path}' )
 setDefaultTarget ( 'execute' )
 """
     assertEquals ( 0 , gant.processArgs ( [ '-p' , '-f' , '-' ] as String[] ) )

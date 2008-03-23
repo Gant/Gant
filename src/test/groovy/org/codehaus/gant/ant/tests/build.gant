@@ -22,10 +22,10 @@ target ( gantTaskdef : 'Check that a taskdef works.' ) {
   taskdef ( name : 'groovy' , classname: 'org.codehaus.groovy.ant.Groovyc' ) {
     classpath {
       pathelement ( location : '../../../../../../../../target/classes' )
-      fileset ( dir : Ant.project.properties.'environment.GROOVY_HOME' + '/lib' , includes : 'groovy*.jar' )
-      fileset ( dir : Ant.project.properties.'environment.GROOVY_HOME' + '/lib' , includes : 'asm*.jar' )
-      fileset ( dir : Ant.project.properties.'environment.GROOVY_HOME' + '/lib' , includes : 'commons*.jar' )
-      fileset ( dir : Ant.project.properties.'environment.GROOVY_HOME' + '/lib' , includes : 'antlr*.jar' )
+      fileset ( dir : ant.project.properties.'environment.GROOVY_HOME' + '/lib' , includes : 'groovy*.jar' )
+      fileset ( dir : ant.project.properties.'environment.GROOVY_HOME' + '/lib' , includes : 'asm*.jar' )
+      fileset ( dir : ant.project.properties.'environment.GROOVY_HOME' + '/lib' , includes : 'commons*.jar' )
+      fileset ( dir : ant.project.properties.'environment.GROOVY_HOME' + '/lib' , includes : 'antlr*.jar' )
     }
   }
   Gant_Test.returnValue = 'OK.'

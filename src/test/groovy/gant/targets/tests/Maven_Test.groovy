@@ -36,8 +36,6 @@ includeTargets << gant.targets.Maven
     assertEquals ( 0 , processTargets ( 'compile' ) )
     assertEquals ( '' , output ) 
   }
-
-
   void testPackageNoGroupIdLeftShift ( ) {
     script = """
 includeTargets << gant.targets.Maven

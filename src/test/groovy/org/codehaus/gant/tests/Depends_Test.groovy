@@ -172,12 +172,8 @@ A
   }
   void testMultipleIndependentTargets ( ) {
     script = '''
-target ( one : 'One Target' ) {
-  println 'Running one...'
-}
-target ( two : 'Two Target' ) {
-  println 'Running two...'
-}
+target ( one : 'One Target' ) { println 'Running one...' }
+target ( two : 'Two Target' ) { println 'Running two...' }
 '''
     assertEquals ( 0 , processTargets ( [ 'one' , 'two' ] ) )
     assertEquals ( '''Running one...
@@ -191,9 +187,7 @@ target ( one : 'One Target' ) {
   depends ( two )
   println 'Running one...'
 }
-target ( two : 'Two Target' ) {
-  println 'Running two...'
-}
+target ( two : 'Two Target' ) { println 'Running two...' }
 '''
     assertEquals ( 0 , processTargets ( [ 'one' , 'two' ] ) )
     assertEquals ( '''Running two...

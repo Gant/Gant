@@ -28,7 +28,7 @@ class IncludeTool extends AbstractInclude {
     def className = theClass.name
     if ( ! ( className in loadedClasses ) ) {
       def index = className.lastIndexOf ( '.' ) + 1
-      binding.setVariable ( className[index..-1] , createInstance ( theClass ) )
+      makeBindingEntry ( className[index..-1] , createInstance ( theClass ) )
       loadedClasses << className
     }
     this
@@ -38,7 +38,7 @@ class IncludeTool extends AbstractInclude {
     if ( ! ( className in loadedClasses ) ) {
       className = className[ 0 ..< className.lastIndexOf ( '.' ) ]
       def theClass = readFile ( file , true )
-      binding.setVariable ( className , createInstance ( theClass ) )
+      makeBindingEntry ( className , createInstance ( theClass ) )
       loadedClasses << className
     }
     this
@@ -55,7 +55,7 @@ class IncludeTool extends AbstractInclude {
     if ( ! ( className in loadedClasses ) ) {
       loadedClasses << className
       def theClass = binding.groovyShell.evaluate ( script + " ; return ${className}" )
-      binding.setVariable ( className , createInstance ( theClass ) )
+      makeBindingEntry ( className , createInstance ( theClass ) )
     }
     this
   }
@@ -64,11 +64,22 @@ class IncludeTool extends AbstractInclude {
       def className = pendingClass.name
       if ( ! ( className in loadedClasses ) ) {
         def index = className.lastIndexOf ( '.' ) + 1
-        binding.setVariable ( className[index..-1] , createInstance ( pendingClass , keywordParameters ) )
+        makeBindingEntry ( className[index..-1] , createInstance ( pendingClass , keywordParameters ) )
         loadedClasses << className
       }
       pendingClass = null
     }
     this
+  }
+private void makeBindingEntry ( String name , object ) {
+    def initialLetter = name[0] as Character
+    def transformedName = ( Character.toLowerCase ( initialLetter ) as String ) + name[1..-1]
+    try {
+      binding.getVariable ( transformedName )
+      throw new RuntimeException ( "Attempt to redefine name " + transformedName ) 
+    }
+    catch ( MissingPropertyException nspe ) {
+      binding.setVariable ( transformedName , object )
+    }
   }
 }

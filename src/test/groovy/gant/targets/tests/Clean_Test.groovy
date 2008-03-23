@@ -26,9 +26,7 @@ final class Clean_Test extends GantTestCase {
     script = """
 includeTargets << gant.targets.Clean
 cleanDirectory << 'target'
-target ( testClean : '' ) {
-  println ( cleanDirectory )
-}
+target ( testClean : '' ) { println ( cleanDirectory ) }
 """
     assertEquals ( 0 , processTargets ( 'testClean' ) )
     assertEquals ( '''[target]
@@ -38,9 +36,7 @@ target ( testClean : '' ) {
     script = """
 includeTargets << gant.targets.Clean
 cleanDirectory << [ 'target_a' , 'target_b' ]
-target ( testClean : '' ) {
-  println ( cleanDirectory )
-}
+target ( testClean : '' ) { println ( cleanDirectory ) }
 """ 
     assertEquals ( 0 , processTargets ( 'testClean' ) ) 
     assertEquals ( '''[[target_a, target_b]]
@@ -50,9 +46,7 @@ target ( testClean : '' ) {
     script = """
 includeTargets << gant.targets.Clean
 cleanPattern << '**/*~'
-target ( testClean : '' ) {
-  println ( cleanPattern )
-}
+target ( testClean : '' ) {println ( cleanPattern ) }
 """
     assertEquals ( 0 , processTargets ( 'testClean' ) )
     assertEquals ( '''[**/*~]
@@ -72,9 +66,7 @@ target ( testClean : '' ) { println ( cleanPattern ) }
     script = """
 includeTargets << gant.targets.Clean
 clobberDirectory << 'target'
-target ( testClobber : '' ) {
-  println ( clobberDirectory )
-}
+target ( testClobber : '' ) { println ( clobberDirectory ) }
 """
     assertEquals ( 0 , processTargets ( 'testClobber' ) )
     assertEquals ( '''[target]
@@ -84,9 +76,7 @@ target ( testClobber : '' ) {
     script = """
 includeTargets << gant.targets.Clean
 clobberDirectory << [ 'target_a' , 'target_b' ]
-target ( testClobber : '' ) {
-  println ( clobberDirectory )
-}
+target ( testClobber : '' ) { println ( clobberDirectory ) }
 """
     assertEquals ( 0 , processTargets ( 'testClobber' ) )
     assertEquals ( '''[[target_a, target_b]]

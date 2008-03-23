@@ -56,7 +56,7 @@ target ( report : '' ) {
   }
   void testAntEnvironmentGroovyHome ( ) {
     script = '''
-target ( report : '' ) { print ( Ant.project.properties.'environment.GROOVY_HOME' ) }
+target ( report : '' ) { print ( ant.project.properties.'environment.GROOVY_HOME' ) }
 '''
     assertEquals ( 0 , processTargets ( 'report' ) )
     assertEquals ( groovyHome , output )
