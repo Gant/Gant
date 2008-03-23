@@ -24,15 +24,7 @@ abstract class AbstractInclude {
   protected loadedClasses = [ ]
   protected pendingClass = null
   protected AbstractInclude ( Binding binding ) { this.binding = binding }
-  public leftShift ( Class theClass ) {
-    def className = theClass.name
-    if ( ! ( className in loadedClasses ) ) {
-      def index = className.lastIndexOf ( '.' ) + 1
-      binding.setVariable ( className[index..-1] , createInstance ( theClass ) )
-      loadedClasses << className
-    }
-    this
-  }
+  public abstract leftShift ( Class theClass )
   public abstract leftShift ( File file )
   public abstract leftShift ( String s )
   public leftShift ( List l ) { l.each { item -> this << item } ; this }
@@ -44,18 +36,7 @@ abstract class AbstractInclude {
     pendingClass = theClass
     this
   }
-  public multiply ( Map keywordParameters ) {
-    if ( pendingClass != null ) {
-      def className = pendingClass.name
-      if ( ! ( className in loadedClasses ) ) {
-        def index = className.lastIndexOf ( '.' ) + 1
-        binding.setVariable ( className[index..-1] , createInstance ( pendingClass , keywordParameters ) )
-        loadedClasses << className
-      }
-      pendingClass = null
-    }
-    this
-  }
+  public abstract multiply ( Map keywordParameters )
   protected createInstance ( Class theClass ) {
     try { return theClass.getConstructor ( Binding ).newInstance ( [ binding ] as Object[] ) }
     catch ( NoSuchMethodException nsme ) { throw new RuntimeException ( 'Could not initialize ' + theClass.name , nsme ) }

@@ -23,6 +23,14 @@ package org.codehaus.gant
  */
 class IncludeTargets extends AbstractInclude {
   IncludeTargets ( Binding binding ) { super ( binding ) }
+  def leftShift ( Class theClass ) {
+    def className = theClass.name
+    if ( ! ( className in loadedClasses ) ) {
+      createInstance ( theClass )
+      loadedClasses << className
+    }
+    this
+  }
   def leftShift ( File file ) { 
     def className = file.name
     if ( ! ( className in loadedClasses ) ) {
@@ -37,4 +45,15 @@ class IncludeTargets extends AbstractInclude {
     this 		
   }
   def leftShift ( String s ) { binding.groovyShell.evaluate ( s ) ; this }
+  def multiply ( Map keywordParameters ) {
+    if ( pendingClass != null ) {
+      def className = pendingClass.name
+      if ( ! ( className in loadedClasses ) ) {
+        createInstance ( pendingClass , keywordParameters )
+        loadedClasses << className
+      }
+      pendingClass = null
+    }
+    this
+  }
 }

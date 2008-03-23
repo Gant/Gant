@@ -62,6 +62,7 @@ final class Maven {
      constructMavenObject ( )
    }
   void constructMavenObject ( ) {
+    properties.binding.maven = this
     properties.default_mainSourcePath = "${properties.sourcePath}${System.properties.'file.separator'}main"
     properties.default_testSourcePath = "${properties.sourcePath}${System.properties.'file.separator'}test"
     properties.mainCompilePath = "${properties.targetPath}${System.properties.'file.separator'}classes"
@@ -269,7 +270,7 @@ final class Maven {
     }
     properties.binding.target.call ( 'package' : "Package the artefact as a ${properties.packaging} in ${properties.mainCompilePath}." ) {
       [ 'groupId' , 'artifactId' , 'version' ].each { item ->
-        if ( ! owner."${item}" ) { throw new RuntimeException ( "Maven.${item} must be set to achieve target package." ) }
+        if ( ! owner."${item}" ) { throw new RuntimeException ( "maven.${item} must be set to achieve target package." ) }
       }
       depends ( owner.binding.test )
       if ( owner.manifest ) {
@@ -340,7 +341,7 @@ final class Maven {
       def label = 'deployURL'
       if ( owner.version =~ 'SNAPSHOT' ) { label = 'deploySnapshotURL' }
       def deployURL = owner."${label}"
-       if ( ! deployURL ) { throw new RuntimeException ( "Maven.${label} must be set to achieve target deploy." ) }
+       if ( ! deployURL ) { throw new RuntimeException ( "maven.${label} must be set to achieve target deploy." ) }
       depends ( owner.binding.install )
       owner.binding.Ant."${owner.antlibXMLns}:install-provider" ( artifactId : 'wagon-webdav' , version : '1.0-beta-2' )
       //  This task cannot create new directories :-(

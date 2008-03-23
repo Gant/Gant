@@ -43,7 +43,7 @@ includeTargets << gant.targets.Maven
 includeTargets << gant.targets.Maven
 """
     assertEquals ( 13 , processTargets ( 'package' ) )
-    assertEquals ( '''Maven.groupId must be set to achieve target package.
+    assertEquals ( '''maven.groupId must be set to achieve target package.
 ''' , output ) 
   }
   void testPackageNoGroupIdPower ( ) {
@@ -51,16 +51,16 @@ includeTargets << gant.targets.Maven
 includeTargets ** gant.targets.Maven * [ : ]
 """
     assertEquals ( 13 , processTargets ( 'package' ) )
-    assertEquals ( '''Maven.groupId must be set to achieve target package.
+    assertEquals ( '''maven.groupId must be set to achieve target package.
 ''' , output ) 
   }
   void testPackageNoArtifactIdLeftShift ( ) {
     script = """
 includeTargets << gant.targets.Maven
-Maven.groupId = 'flob'
+maven.groupId = 'flob'
 """
     assertEquals ( 13 , processTargets ( 'package' ) )
-    assertEquals ( '''Maven.artifactId must be set to achieve target package.
+    assertEquals ( '''maven.artifactId must be set to achieve target package.
 ''' , output ) 
   }
   void testPackageNoArtifactIdPower ( ) {
@@ -68,17 +68,17 @@ Maven.groupId = 'flob'
 includeTargets ** gant.targets.Maven * [ groupId : 'flob' ]
 """
     assertEquals ( 13 , processTargets ( 'package' ) )
-    assertEquals ( '''Maven.artifactId must be set to achieve target package.
+    assertEquals ( '''maven.artifactId must be set to achieve target package.
 ''' , output ) 
   }
   void testPackageVersionLeftShift ( ) {
     script = """
 includeTargets << gant.targets.Maven
-Maven.groupId = 'flob'
-Maven.artifactId = 'adob'
+maven.groupId = 'flob'
+maven.artifactId = 'adob'
 """
     assertEquals ( 13 , processTargets ( 'package' ) )
-    assertEquals ( '''Maven.version must be set to achieve target package.
+    assertEquals ( '''maven.version must be set to achieve target package.
 ''' , output ) 
   }
   void testPackageVersionPower ( ) {
@@ -86,21 +86,18 @@ Maven.artifactId = 'adob'
 includeTargets ** gant.targets.Maven * [ groupId : 'flob' , artifactId : 'adob' ]
 """
     assertEquals ( 13 , processTargets ( 'package' ) )
-    assertEquals ( '''Maven.version must be set to achieve target package.
+    assertEquals ( '''maven.version must be set to achieve target package.
 ''' , output ) 
   }
-
   void testBindingPropertyIsReadOnlyLeftShift ( ) {
     script = """
 includeTargets << gant.targets.Maven
-Maven.binding = new Binding ( )
+maven.binding = new Binding ( )
 """
     assertEquals ( 2 , processTargets ( 'initialize' ) )
     assertEquals ( '''Standard input, line 3 -- Error evaluating Gantfile: Cannot amend the property binding.
 ''' , output ) 
   }
-  
-
   void testBindingPropertyIsReadOnlyPower ( ) {
     script = """
 includeTargets ** gant.targets.Maven * [ binding : new Binding ( ) ]
@@ -109,11 +106,4 @@ includeTargets ** gant.targets.Maven * [ binding : new Binding ( ) ]
     assertEquals ( '''Standard input, line 2 -- Error evaluating Gantfile: Cannot amend the property binding.
 ''' , output ) 
   }
-  
-
-
-
-
-
-
 }

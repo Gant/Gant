@@ -24,6 +24,15 @@ package org.codehaus.gant
  */
 class IncludeTool extends AbstractInclude {
   IncludeTool ( Binding binding ) { super ( binding  ) }
+  def leftShift ( Class theClass ) {
+    def className = theClass.name
+    if ( ! ( className in loadedClasses ) ) {
+      def index = className.lastIndexOf ( '.' ) + 1
+      binding.setVariable ( className[index..-1] , createInstance ( theClass ) )
+      loadedClasses << className
+    }
+    this
+  }
   def leftShift ( File file ) {
     def className = file.name
     if ( ! ( className in loadedClasses ) ) {
@@ -47,6 +56,18 @@ class IncludeTool extends AbstractInclude {
       loadedClasses << className
       def theClass = binding.groovyShell.evaluate ( script + " ; return ${className}" )
       binding.setVariable ( className , createInstance ( theClass ) )
+    }
+    this
+  }
+  def multiply ( Map keywordParameters ) {
+    if ( pendingClass != null ) {
+      def className = pendingClass.name
+      if ( ! ( className in loadedClasses ) ) {
+        def index = className.lastIndexOf ( '.' ) + 1
+        binding.setVariable ( className[index..-1] , createInstance ( pendingClass , keywordParameters ) )
+        loadedClasses << className
+      }
+      pendingClass = null
     }
     this
   }
