@@ -355,7 +355,6 @@ target ( 'default' : '' ) { something ( ) }
     assertEquals ( 0 , processTargets ( 'flob' ) )
     assertEquals ( 'flobbed.\n' , output )
   }
-
   void testUsingParameterConstructor ( ) {
     def theToolClassName = 'TheTool'
     def theToolBindingName = 'theTool'
@@ -369,5 +368,22 @@ target ( something : '' ) { ${theToolBindingName}.flob ( ) }
     assertEquals ( 0 , processTargets ( 'something' ) )    
     assertEquals ( 'flobbed.\n' , output )
   }
-  
+  //  cf. GANT-29
+  void testInlineToolClass ( ) {
+    script = '''
+class SampleTool {
+  private final Map properties = [name : '' ]
+  SampleTool ( Binding binding ) { properties.binding = binding }
+  public getProperty ( String name ) { properties[name] }
+  public void setProperty ( String name , value ) { properties[name] = value }  
+}
+includeTool << SampleTool
+target ( doit : '' ) {
+  sampleTool.name = 'name'
+  println ( sampleTool.name )
+}
+'''
+    assertEquals ( 0 , processTargets ( 'doit' ) )
+    assertEquals ( 'name\n' , output )
+  }
 }
