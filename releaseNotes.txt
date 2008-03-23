@@ -1,7 +1,14 @@
-1.2.0 ( rXXXX )
+1.3.0 ( rXXXX )
 ---------------
 
 Require Java 1.5 or higher and Groovy 1.6 or higher.  Introduce generics and remove casts wherever sensible.
+
+1.2.0 ( rXXXX )
+---------------
+
+Introduce the GantBinding class to ensure various things that are needed for Gant to work and to allow more
+efficient cloning for multi-threading builds.
+
 
 1.1.2 ( rXXXX )
 ---------------

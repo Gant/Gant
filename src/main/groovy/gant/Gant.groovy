@@ -20,11 +20,8 @@ import org.codehaus.groovy.control.MultipleCompilationErrorsException
 import org.codehaus.groovy.control.CompilerConfiguration
 import org.codehaus.groovy.control.CompilationUnit
 
-import org.codehaus.gant.GantBuilder
-import org.codehaus.gant.GantMetaClass
+import org.codehaus.gant.GantBinding
 import org.codehaus.gant.GantState
-import org.codehaus.gant.IncludeTargets
-import org.codehaus.gant.IncludeTool
 
 import org.apache.commons.cli.GnuParser
 import org.apache.commons.cli.Option
@@ -95,175 +92,78 @@ import org.apache.commons.cli.OptionBuilder
 final class Gant {
   private buildFileName
   private buildClassName
-  private final Binding binding
-  private final ClassLoader classLoader
-  private final GroovyShell groovyShell
-  private final targetDescriptions = new TreeMap ( ) 
-  private final target = { Map map , Closure closure ->
-    switch ( map.size ( ) ) {
-     case 0 : throw new RuntimeException ( 'Target specified without a name.' )
-     case 1 : break
-     default : throw new RuntimeException ( 'Target specified with multiple names.' )
-    }
-    def targetName = map.keySet ( ).iterator ( ).next ( )
-    def targetDescription = map.get ( targetName )
-    if ( targetDescription ) { targetDescriptions.put ( targetName , targetDescription ) }
-    closure.metaClass = new GantMetaClass ( closure.class , binding )
-    binding.setVariable ( targetName , closure )
-    binding.setVariable ( targetName + '_description' , targetDescription )
-  }
-  private final message = { String tag , Object message ->
-    def padding = 9 - tag.length ( )
-    if ( padding < 0 ) { padding = 0 }
-    println ( "           ".substring ( 0 , padding ) + '[' + tag + '] ' + message )
-  }
-  private final setDefaultTarget = { defaultTarget -> // Deal with Closure or String arguments.
-    switch ( defaultTarget.getClass ( ) ) {
-     case Closure :
-      def targetName = null
-      binding.variables.each { key , value -> if ( value.is ( defaultTarget ) ) { targetName = key } }
-      if ( targetName == null ) { throw new RuntimeException ( 'Parameter to setDefaultTarget method is not a known target.  This can never happen!' ) }
-      target ( 'default' : targetName ) { defaultTarget ( ) }
-      break
-     case String :
-      def failed = true
-      try {
-        def targetClosure = binding.getVariable ( defaultTarget )
-        if ( targetClosure != null ) { target ( 'default' : defaultTarget ) { targetClosure ( ) } ; failed = false }
-      }
-      catch ( MissingPropertyException mpe ) { }
-      if ( failed ) { throw new RuntimeException ( "Target ${defaultTarget} does not exist so cannot be made the default." ) }
-      break
-     default :
-      throw new RuntimeException ( 'Parameter to setDefaultTarget is of the wrong type -- must be a target reference or a string.' )
-      break 
-    }
-  }
-  private final ant
-  /*
-   *  There are issues with this use of instance initializers in Groovy as at r10228.  Doing a compilation
-   *  from clean means this initializer does not get executed.  Causing this file to be compiled then means
-   *  everything works correctly.  For the moment, as a hack, remove the use of instance initializers in
-   *  favour of putting the code into the constructor.
-   *
-  private final List gantLib ; {
-    //  System.getenv is deprecated on 1.4, so we use Ant to access the environment.  Can remove this once
-    //  Groovy depends on 1.5.
-    //
-    // def item = System.getenv ( ).GANTLIB ;
-    def item = ant.project.properties.'environment.GANTLIB'
-    if ( item == null ) { gantLib = [ ] }
-    else { gantLib = Arrays.asList ( item.split ( System.properties.'path.separator' ) ) }
-  }
-  */
-  private final List gantLib = [ ]
-   /*
-    */
+  private final GantBinding binding
    /**
-    *  Constructor that uses build.gant as the build script, creates a new instance of <code>Binding</code>
-    *  for the script binding, and the default class loader.
+    *  Constructor that uses build.gant as the build script, creates a new instance of
+    *  <code>GantBinding</code> for the script binding, and the default class loader.
     */
   public Gant ( ) { this ( 'build.gant' , null , null ) }
    /**
-    *  Constructor that uses build.gant as the build script, the passed <code>Binding</code> for the script
-    *  binding, and the default class loader.
+    *  Constructor that uses build.gant as the build script, the passed <code>GantBinding</code> for the
+    *  script binding, and the default class loader.
     */
-  public Gant ( Binding b ) { this (  'build.gant' , b , null ) }
+  public Gant ( GantBinding b ) { this (  'build.gant' , b , null ) }
    /**
-    *  Constructor that uses build.gant as the build script, the passed <code>Binding</code> for the script
-    *  binding, and the passed <code>ClassLoader</code> as the class loader.
+    *  Constructor that uses build.gant as the build script, the passed <code>GantBinding</code> for the
+    *  script binding, and the passed <code>ClassLoader</code> as the class loader.
     */
-  public Gant ( Binding b , ClassLoader cl ) { this (  'build.gant' , b , cl ) }
+  public Gant ( GantBinding b , ClassLoader cl ) { this (  'build.gant' , b , cl ) }
    /**
     *  Constructor that uses the filename passed as a parameter as the build script, creates a new instance
-    *  of <code>Binding</code> for the script binding, and uses the default class loader.
+    *  of <code>GantBinding</code> for the script binding, and uses the default class loader.
     */
   public Gant ( File f ) { this ( f.name , null , null ) }  
    /**
     *  Constructor that uses the filename passed as a parameter as the build script, the passed
-    *  <code>Binding</code> for the script binding, and the default class loader.
+    *  <code>GantBinding</code> for the script binding, and the default class loader.
     */
-  public Gant ( File f , Binding b ) { this ( f.name , b , null ) }
+  public Gant ( File f , GantBinding b ) { this ( f.name , b , null ) }
    /**
     *  Constructor that uses the filename passed as a parameter as the build script, the passed
-    *  <code>Binding</code> for the script binding, the passed <code>ClassLoader</code> as the class loader.
+    *  <code>GantBinding</code> for the script binding, the passed <code>ClassLoader</code> as the class
+    *  loader.
     */
-  public Gant ( File f , Binding b , ClassLoader cl ) { this ( f.name , b , cl ) }
+  public Gant ( File f , GantBinding b , ClassLoader cl ) { this ( f.name , b , cl ) }
    /**
     *  Constructor that uses the filename passed as a parameter as the build script, creates a new instance
-    *  of <code>Binding</code> for the script binding and uses the default class loader.
+    *  of <code>GantBinding</code> for the script binding and uses the default class loader.
     */
   public Gant ( String s ) { this ( s , null , null ) }
    /**
     *  Constructor that uses the filename passed as a parameter as the build script, the passed
-    *  <code>Binding</code> for the script binding, and uses the default class loader.
+    *  <code>GantBinding</code> for the script binding, and uses the default class loader.
     */
-  public Gant ( String s , Binding b ) { this ( s , b , null ) }  
+  public Gant ( String s , GantBinding b ) { this ( s , b , null ) }  
    /**
     *  Constructor that uses the filename passed as a parameter as the build script, the passed
-    *  <code>Binding</code> for the script binding, the passed <code>ClassLoader</code> as the class loader.
+    *  <code>GantBinding</code> for the script binding, the passed <code>ClassLoader</code> as the class loader.
     */
-  public Gant ( String s , Binding b , ClassLoader cl ) {
-    //
-    //  When this class is instantiated from a Gant command line or via a Groovy script then the classloader
-    //  is a org.codehaus.groovy.tools.RootLoader, and is used to load all the Ant related classes.  This
-    //  means that all Ant classes already know about all the Groovy jars in the classpath.  When this class is
-    //  instantiated from the Gant Ant Task, all the Ant classes have already been loaded using an instance
-    //  of URLLoader and have no knowledge of the Groovy jars.  Fortunately, this class has to have been
-    //  loaded by an org.apache.tools.ant.AntClassLoader which does have all the necessary classpath
-    //  information.  In this situation we must force a reload of the org.apache.tools.ant.Project class so
-    //  that it has the right classpath.
-    //
-    final classLoader = getClass ( ).classLoader
-    if ( classLoader.class.name == "org.apache.tools.ant.AntClassLoader" ) {
-      //final project = classLoader.forceLoadClass ( 'org.apache.tools.ant.Project' ).newInstance ( )
-      //project.init ( )
-      //ant = new GantBuilder ( project )
-      ant = new GantBuilder ( )
-    }
-    else { ant = new GantBuilder ( ) } 
-    /*
-     *  Move things here from the instance initializers.
-     */
-    ant.property ( environment : 'environment' )
-    /*
-     */
+  public Gant ( String s , GantBinding b , ClassLoader cl ) {
     buildFileName = s
     buildClassName = buildFileName.replaceAll ( '\\.' , '_' )
-    binding = ( b != null ) ? b : new Binding ( )
-    this.classLoader = ( cl != null ) ? cl : classLoader
-    groovyShell = new GroovyShell ( this.classLoader , binding )
-    binding.gantLib = gantLib
-    binding.Ant = ant
-    binding.groovyShell = groovyShell
-    binding.includeTargets = new IncludeTargets ( binding )
-    binding.includeTool = new IncludeTool ( binding )
-    binding.targetDescriptions = targetDescriptions
-    binding.target = target
-    binding.task = { Map map , Closure closure -> System.err.println ( 'Deprecation warning: Use of task instead of target is deprecated.' ) ; target ( map , closure ) }
-    binding.message = message
-    binding.setDefaultTarget = setDefaultTarget
-    binding.cacheEnabled = false
+    binding = ( b != null ) ? b : new GantBinding ( )
+    binding.classLoader = ( cl != null ) ? cl : getClass ( ).classLoader
+    binding.groovyShell = new GroovyShell ( binding.classLoader , binding )
   }
   /**
    *  The function that implements the creation of the list of targets for the -p and -T options.
    */
   private int targetList ( targets ) {
     def max = 0
-    targetDescriptions.entrySet ( ).each { item ->
+    binding.targetDescriptions.entrySet ( ).each { item ->
       if ( item.key != 'default' ) {
         def size = item.key.size ( )
         if ( size > max ) { max = size }
       }
     }
     println ( )
-    targetDescriptions.entrySet ( ).each { item ->
+    binding.targetDescriptions.entrySet ( ).each { item ->
       if ( item.key != 'default' ) {
         println ( ' ' + item.key + ' ' * ( max - item.key.size ( ) ) + '  ' + item.value )
       }
     }
     println ( )
-    def message = targetDescriptions [ 'default' ]
+    def message = binding.targetDescriptions [ 'default' ]
     if ( message != null ) { println ( 'Default target is ' + message + '.' ) ; println ( ) }
     0
   }
@@ -303,7 +203,7 @@ final class Gant {
    *  Process the command line options and then call the function to process the targets.
    */
   public int processArgs ( String[] args ) {
-    final rootLoader = classLoader.rootLoader
+    final rootLoader = binding.classLoader.rootLoader
     //
     //  Commons CLI is broken.  1.0 has one set of ideas about multiple args and is broken.  1.1 has a
     //  different set of ideas about multiple args and is broken.  For the moment we leave things so that
@@ -345,7 +245,7 @@ final class Gant {
       buildClassName = buildFileName.replaceAll ( '\\.' , '_' ) 
     }
     if ( options.h ) { cli.usage ( ) ; return 0 }
-    if ( options.l ) { gantLib << options.l.split ( System.properties.'path.separator' ) }
+    if ( options.l ) { binding.gantLib << options.l.split ( System.properties.'path.separator' ) }
     if ( options.n ) { GantState.dryRun = true }
     def function =  ( options.p || options.T ) ? 'targetList' : 'dispatch'
     if ( options.q ) { GantState.verbosity = GantState.QUIET }
@@ -355,7 +255,7 @@ final class Gant {
       options.Ds.each { definition ->
         def pair = definition.split ( '=' ) as List
         if ( pair.size ( ) < 2 ) { pair << '' }
-        binding.Ant.property ( name : pair[0] , value : pair[1] )
+        binding.ant.property ( name : pair[0] , value : pair[1] )
         binding.setVariable ( pair[0] , pair[1] )
       }
     }
@@ -392,7 +292,7 @@ final class Gant {
     def userGantLib = new File ( "${System.properties.'user.home'}/.gant/lib" )
     if ( userGantLib.isDirectory ( ) ) { userGantLib.eachFile { file -> rootLoader?.addURL ( file.toURL ( ) ) } }
     //def antHome = System.getenv ( ).'ANT_HOME'
-    def antHome = ant.project.properties.'environment.ANT_HOME'
+    def antHome = binding.ant.project.properties.'environment.ANT_HOME'
     if ( ( antHome != null ) && ( antHome != '' ) ) {
       def antLib = new File ( antHome + '/lib' )
       if ( antLib.isDirectory ( ) ) { antLib.eachFileMatch ( ~/ant-.*\.jar/ ) { file -> rootLoader?.addURL ( file.toURL ( ) ) } }
@@ -424,24 +324,24 @@ final class Gant {
     if ( binding.cacheEnabled ) {       
       if ( buildFile == null ) { println 'Caching can only be used in combination with the -f option.' ; return 1 }
       def cacheDirectory = binding.cacheDirectory
-      if ( classLoader instanceof URLClassLoader ) { classLoader.addURL ( cacheDirectory.toURL ( ) ) }
+      if ( binding.classLoader instanceof URLClassLoader ) { binding.classLoader.addURL ( cacheDirectory.toURL ( ) ) }
       else { rootLoader?.addURL ( cacheDirectory.toURL ( ) ) }      
       def loadClassFromCache = { className , fileLastModified , file  ->
         try {      
-          def url = classLoader.getResource ( "${className}.class" )
+          def url = binding.classLoader.getResource ( "${className}.class" )
           if ( url ) {
             if ( fileLastModified > url.openConnection ( ).lastModified ) {
               compileScript ( cacheDirectory , file.text , className )
             }
           }
-          def script = classLoader.loadClass ( className ).newInstance ( )
+          def script = binding.classLoader.loadClass ( className ).newInstance ( )
           script.binding = binding
           script.run ( )
         }
         catch ( Exception e) {
           def fileText = file.text
           compileScript ( cacheDirectory , fileText , className )
-          groovyShell.evaluate ( fileText , className )			
+          binding.groovyShell.evaluate ( fileText , className )			
         }
       }
       binding.loadClassFromCache =  loadClassFromCache
@@ -449,7 +349,7 @@ final class Gant {
     }
     else {
       if ( buildFile )  { buildFileText = buildFile.text }
-      try { groovyShell.evaluate ( buildFileText , buildClassName ) }
+      try { binding.groovyShell.evaluate ( buildFileText , buildClassName ) }
       catch ( Exception e ) {
         for ( stackEntry in e.stackTrace ) {
           if ( stackEntry.fileName == buildClassName ) {
@@ -470,7 +370,7 @@ final class Gant {
     if ( ! destDir.exists ( ) ) { destDir.mkdirs ( ) }
     def configuration = new CompilerConfiguration ( )
     configuration.setTargetDirectory ( destDir )
-    def unit = new CompilationUnit ( configuration , null , new GroovyClassLoader ( classLoader ) )
+    def unit = new CompilationUnit ( configuration , null , new GroovyClassLoader ( binding.classLoader ) )
     unit.addSource ( buildClassName , new ByteArrayInputStream ( buildFileText.bytes ) )
     unit.compile ( )				
   }
