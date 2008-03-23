@@ -40,7 +40,8 @@ import groovy.lang.GroovySystem ;
  *  @author Russel Winder <russel.winder@concertant.com>
  */
 class GantMetaClass extends DelegatingMetaClass {
-  private final static HashSet<Closure> methodsInvoked = new HashSet<Closure> ( ) ;
+  //private final static HashSet<Closure> methodsInvoked = new HashSet<Closure> ( ) ;
+  private final static HashSet methodsInvoked = new HashSet ( ) ;
   private final Binding binding ;
   public GantMetaClass ( final Class theClass , final Binding binding ) {
     super ( GroovySystem.getMetaClassRegistry ( ).getMetaClass ( theClass ) ) ;
@@ -70,7 +71,8 @@ class GantMetaClass extends DelegatingMetaClass {
     if ( methodName.equals ( "depends" ) ) {
       for ( int i = 0 ; i < arguments.length ; ++i ) {
         if ( arguments[i] instanceof List ) {
-          Iterator<Object> iterator = ( (List) arguments[i] ).iterator ( ) ;
+          //Iterator<Object> iterator = ( (List) arguments[i] ).iterator ( ) ;
+          Iterator iterator = ( (List) arguments[i] ).iterator ( ) ;
           while ( iterator.hasNext ( ) ) { returnObject = processArgument ( iterator.next ( ) ) ; }
         }
         else { returnObject = processArgument ( arguments[i] ) ; }

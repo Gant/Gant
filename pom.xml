@@ -179,7 +179,8 @@
             <configuration>
               <rules>
                 <requireJavaVersion>
-                  <version>[1.5,)</version>
+                  <!--version>[1.5,)</version-->
+                  <version>[1.4,)</version>
                 </requireJavaVersion>
                 <requireMavenVersion>
                   <version>[2.0.5,)</version>
@@ -193,8 +194,10 @@
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-compiler-plugin</artifactId>
         <configuration>
-          <source>1.5</source>
-          <target>1.5</target>
+          <!--source>1.5</source>
+          <target>1.5</target-->
+          <source>1.4</source>
+          <target>1.4</target>
           <debug>on</debug>
         </configuration>
       </plugin>
@@ -241,7 +244,8 @@
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-javadoc-plugin</artifactId>
         <configuration>
-          <source>1.5</source>
+          <!--source>1.5</source-->
+          <source>1.4</source>
         </configuration>
       </plugin>
        <plugin>
@@ -286,8 +290,9 @@
           <version>true</version>
           <use>true</use>
           <locale>en_GB</locale>
-          <source>1.5</source>
-          <bottom>Copyright &copy; 2006&ndash;2007 Russel Winder.  All rights reserved.</bottom>
+          <!--source>1.5</source-->
+          <source>1.4</source>
+          <bottom>Copyright &copy; 2006&ndash;2008 Russel Winder.  All rights reserved.</bottom>
           <charset>UTF-8</charset>
           <breakIterator>yes</breakIterator>
         </configuration>

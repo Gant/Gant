@@ -121,7 +121,8 @@ final performCompile = { classpathRef , boolean fork ->
       pathelement ( location : buildClassesDirectory )
       path ( refid : classpathRef )
     }
-    javac ( source : '1.5' , target : '1.5' , debug : 'on' )
+    //javac ( source : '1.5' , target : '1.5' , debug : 'on' )
+    javac ( source : '1.4' , target : '1.4' , debug : 'on' )
   }
 }
 
@@ -133,7 +134,8 @@ final performCompileTests = { classpathRef , boolean fork ->
       pathelement ( location : buildClassesDirectory )
       path ( refid : classpathRef )
     }
-    javac ( source : '1.5' , target : '1.5' , debug : 'on' )
+    //javac ( source : '1.5' , target : '1.5' , debug : 'on' )
+    javac ( source : '1.4' , target : '1.4' , debug : 'on' )
   }
 }
 
@@ -265,7 +267,8 @@ target ( documentation : 'Create the API documentation.' ) {
                doctitle : "Gant (${gantVersion})" ,
                header : "Gant (${gantVersion})" ,
                footer : 'Copyright &copy; 2006&ndash;8 The Codehaus.  All rights reserved.' ,
-               source : 1.5
+               //source : 1.5
+               source : 1.4
                ) {
     classpath { fileset ( dir : installationHome + '/lib' , includes : '*.jar' ) }
   }    
