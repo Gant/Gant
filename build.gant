@@ -391,7 +391,7 @@ target ( distribution : 'Create the distribution.' ) {
 }
 
 target ( uploadDistribution : 'Upload a complete distribution.' ) {
-  if ( ! ignoreTestFailures && ! distribution ( ) ) {
+  if (  ! distribution ( ) && ! ignoreTestFailures ) {
     println ( 'Not uploading as some tests failed.' )
     return
   }

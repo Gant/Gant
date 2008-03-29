@@ -28,8 +28,11 @@ Updated to using Ivy 2.0.0-beta2.
 
 Corrected the bug that the Ivy tool was not operating in the correct namespace.  This removes the spurious
 message: "Trying to override old definition of task buildnumber" that used to happen.
+
 Refactored the IncludeTarget and IncludeTool classes to move replicated code into the common superclass
 AbstractTool.
+
+Corrected the way that jars are included on the classpath from ~/.gant/lib, ~/.ant/lib and $ANT_HOME/lib.
 
 
 1.1.1 ( r9027 )

@@ -1,4 +1,4 @@
-Need some better documentation -- in the source, as manual pages and on the Groovy website.
+Need some better documentation -- in the source, as manual pages and on the Gant website.
 
 In an include statement, if the class name cannot be found then you get a weird error message:
 
@@ -9,12 +9,19 @@ If there are compilation errors in the Gant file then sometimes the proper error
 just an exception stack trace.  Using groovy on the Gant file generally shows the errors but Gant should
 have done the right thing in the first place.
 
-Get the GANTLIB stuff finished so it actually works.
+Get the GANTLIB stuff finished so it actually works.  First of all decide what it is all for :-)
 
-target ( flob ) { . . .} does not generate a sane error message.
+target ( flob ) { . . .} does not generate a sane error message.  Yes, it does. :-)
 
 target ( flob : '' , thing : '' ) { . . . } is treated as an error but should allow for definition of things
-like dependencies.
+like dependencies.  Pick off the special names that are understood such as dependencies and then error if
+there is more than one left.
+
+Error messages for things like:
+
+      target ( a , '' ) { . . . }
+
+are not good.  Need to provide error handling versions of target.
 
 Add a --propertyfile <filename> option.
 
@@ -33,3 +40,12 @@ get the latest version from Maven.
 Using a target of target gives a very weird error message.
 
 How to add compilerarg tags to the Maven target set?
+
+Should there be a build of Gant that is stand alone rather than being an insert to Groovy?  This would allow
+people to use Gant but not install Groovy.
+
+Put all the above in as JIRA issues.
+
+Experiment with a two-phase system instead of the one-phase system.  Phase 1 build a graph of the build
+specification and reflect on it for errors and problems.  Phase 2 execute the necessary actions in sequence
+to achieve all the targets.
