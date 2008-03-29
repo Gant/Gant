@@ -9,6 +9,8 @@ message: "Trying to override old definition of task buildnumber" that used to ha
 Refactored the IncludeTarget and IncludeTool classes to move replicated code into the common superclass
 AbstractTool.
 
+Corrected the way that jars are included on the classpath from ~/.gant/lib, ~/.ant/lib and $ANT_HOME/lib.
+
 
 1.1.1 ( r9027 )
 ---------------

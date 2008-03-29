@@ -323,14 +323,14 @@ final class Gant {
     cli.d ( longOpt : 'cachedir' , args : 1 , argName : 'cache-file' , 'The directory where to cache generated classes to.' )
     cli.f ( longOpt : 'gantfile' , args : 1 , argName : 'build-file' , 'Use the named build file instead of the default, build.gant.' )
     cli.h ( longOpt : 'help' , 'Print out this message.' )
-    //  This options should have "args : Option.UNLIMITED_VALUES" but that doesn't work.
+    //  This option should have "args : Option.UNLIMITED_VALUES" but that doesn't work.
     cli.l ( longOpt : 'gantlib' , args : 1 , argName : 'library' , 'A directory that contains classes to be used as extra Gant modules,' )
     cli.n ( longOpt : 'dry-run' , 'Do not actually action any tasks.' )
     cli.p ( longOpt : 'projecthelp' , 'Print out a list of the possible targets.' )
     cli.q ( longOpt : 'quiet' , 'Do not print out much when executing.' )
     cli.s ( longOpt : 'silent' , 'Print out nothing when executing.' )
     cli.v ( longOpt : 'verbose' , 'Print lots of extra information.' )
-    //  This options should have "args : Option.UNLIMITED_VALUES" but that doesn't work.
+    //  This option should have "args : Option.UNLIMITED_VALUES" but that doesn't work.
     cli.D ( argName : 'name>=<value' , args : 1 , 'Define <name> to have value <value>.  Creates a variable named <name> for use in the scripts and a property named <name> for the Ant tasks.' )
     cli.L ( longOpt : 'lib' , args : 1 , argName : 'path' , 'Add a directory to search for jars and classes.' )
     cli.P ( longOpt : 'classpath' , args : 1 , argName : 'path' , 'Specify a path to search for jars and classes.' )
@@ -387,15 +387,16 @@ final class Gant {
       }
     }
     if ( gotUnknownOptions ) { cli.usage ( ) ; return 1 ; }
+	def jarPattern = ~/.*\.jar/
     def userAntLib = new File ( "${System.properties.'user.home'}/.ant/lib" )
-    if ( userAntLib.isDirectory ( ) ) { userAntLib.eachFile { file -> rootLoader?.addURL ( file.toURL ( ) ) } }
+    if ( userAntLib.isDirectory ( ) ) { userAntLib.eachFileMatch ( jarPattern ) { file -> rootLoader?.addURL ( file.toURL ( ) ) } }
     def userGantLib = new File ( "${System.properties.'user.home'}/.gant/lib" )
-    if ( userGantLib.isDirectory ( ) ) { userGantLib.eachFile { file -> rootLoader?.addURL ( file.toURL ( ) ) } }
+    if ( userGantLib.isDirectory ( ) ) { userGantLib.eachFileMatch ( jarPattern ) { file -> rootLoader?.addURL ( file.toURL ( ) ) } }
     //def antHome = System.getenv ( ).'ANT_HOME'
     def antHome = ant.project.properties.'environment.ANT_HOME'
     if ( ( antHome != null ) && ( antHome != '' ) ) {
       def antLib = new File ( antHome + '/lib' )
-      if ( antLib.isDirectory ( ) ) { antLib.eachFileMatch ( ~/ant-.*\.jar/ ) { file -> rootLoader?.addURL ( file.toURL ( ) ) } }
+      if ( antLib.isDirectory ( ) ) { antLib.eachFileMatch ( jarPattern ) { file -> rootLoader?.addURL ( file.toURL ( ) ) } }
     }
     processTargets ( function , targets )
   }
