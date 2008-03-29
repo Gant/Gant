@@ -343,7 +343,9 @@ final class Maven {
        if ( ! deployURL ) { throw new RuntimeException ( "Maven.${label} must be set to achieve target deploy." ) }
       depends ( owner.binding.install )
       owner.binding.Ant."${owner.antlibXMLns}:install-provider" ( artifactId : 'wagon-webdav' , version : '1.0-beta-2' )
-      //  This task cannot create new directories :-(
+      //
+      //  This task does not create new directories on the server if they are needed :-(
+      //
       owner.binding.Ant."${owner.antlibXMLns}:deploy" ( file : owner.packagedArtifact  ) {
         pom ( refid : owner.mavenPOMId )
         remoteRepository ( url : deployURL , id : owner.deployId ) 

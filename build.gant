@@ -26,6 +26,9 @@ catch ( MissingPropertyException mpe ) { gantVersion = Ant.project.properties.ga
 try { usingCobertura }
 catch ( MissingPropertyException mpe ) { usingCobertura = false }
 
+try { ignoreTestFailures }
+catch ( MissingPropertyException mpe ) { ignoreTestFailures = false }
+
 installationHome = System.getenv ( ).'GROOVY_HOME'
 try { if ( grailsBuild ) { installationHome = System.getenv ( ).'GRAILS_HOME' } }
 catch ( MissingPropertyException mpe ) { grailsBuild = false }
@@ -384,7 +387,7 @@ target ( distribution : 'Create the distribution.' ) {
 }
 
 target ( uploadDistribution : 'Upload a complete distribution.' ) {
-  if ( ! distribution ( ) ) {
+  if (  ! distribution ( ) && ! ignoreTestFailures ) {
     println ( 'Not uploading as some tests failed.' )
     return
   }
