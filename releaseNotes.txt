@@ -34,6 +34,7 @@ AbstractTool.
 
 Corrected the way that jars are included on the classpath from ~/.gant/lib, ~/.ant/lib and $ANT_HOME/lib.
 
+Updated TestNG from 5.7 to 5.8 in Maven target set.
 
 1.1.1 ( r9027 )
 ---------------

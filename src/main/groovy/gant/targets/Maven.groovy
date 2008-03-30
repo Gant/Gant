@@ -75,7 +75,7 @@ final class Maven {
       if ( owner.testFramework == 'testng' ) {
         testngInstalled = false
         owner.testDependencies.each { dependency -> if ( dependency.artifactId == 'testng' ) { testngInstalled = true } }
-        if ( ! testngInstalled ) { owner.testDependencies << [ groupId : 'org.testng' , artifactId : 'testng' , version : '5.7' , scope : 'test' , classifier : 'jdk15' ] }
+        if ( ! testngInstalled ) { owner.testDependencies << [ groupId : 'org.testng' , artifactId : 'testng' , version : '5.8' , scope : 'test' , classifier : 'jdk15' ] }
       }
       def createDependencyMap = { dependencyMap , map ->
         [ 'groupId' , 'artifactId' , 'version' , 'classifier' ].each { property -> if ( map [ property ] ) { dependencyMap [ property ] =  map [ property ] } }
