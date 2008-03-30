@@ -40,6 +40,8 @@ final class Maven {
                                   compileDependencies : [ ] ,
                                   testDependencies : [ ] ,
                                   testFramework : 'junit' ,
+                                  testFrameworkVersion : '3.8.2' ,
+                                  testFrameworkClassifier : 'jdk15' ,
                                   packaging : 'jar' ,
                                   deployURL : '' ,
                                   deploySnapshotURL : '' ,
@@ -73,8 +75,19 @@ final class Maven {
     properties.binding.target.call ( initialize : 'Ensure all the dependencies can be met and set classpaths accordingly.' ) {
       if ( owner.testFramework == 'testng' ) {
         testngInstalled = false
+        //
+        //  Need to find a better way of working with the JUnit and TestNG version numbers.  There is to much "magic" here.
+        //
+        if ( owner.testFrameworkVersion == '3.8.2' ) { owner.testFrameworkVersion = '5.8' }
         owner.testDependencies.each { dependency -> if ( dependency.artifactId == 'testng' ) { testngInstalled = true } }
-        if ( ! testngInstalled ) { owner.testDependencies << [ groupId : 'org.testng' , artifactId : 'testng' , version : '5.8' , scope : 'test' , classifier : 'jdk15' ] }
+        if ( ! testngInstalled ) {
+          owner.testDependencies << [
+                                     groupId : 'org.testng' ,
+                                     artifactId : 'testng' ,
+                                     version : owner.testFrameworkVersion ,
+                                     scope : 'test' ,
+                                     classifier : owner.testFrameworkClassifier
+                                     ] }
       }
       def createDependencyMap = { dependencyMap , map ->
         [ 'groupId' , 'artifactId' , 'version' , 'classifier' ].each { property -> if ( map [ property ] ) { dependencyMap [ property ] =  map [ property ] } }
