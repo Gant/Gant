@@ -23,9 +23,32 @@ final class Ivy {
   private final Binding binding ;
   private final ivyURI = 'antlib:org.apache.ivy.ant'
   private final classpathRef = 'ivy.class.path'
+  private String ivyJarPath = null
   Ivy ( final Binding binding ) {
     this.binding = binding
-    binding.Ant.path ( id : classpathRef ) { binding.Ant.fileset ( dir : System.properties.'groovy.home' + System.properties.'file.separator' + 'lib' , includes : 'ivy*.jar' ) }
+    if ( System.properties.'groovy.home' ) {
+      ivyJarPath = System.properties.'groovy.home' + System.properties.'file.separator' + 'lib'
+    }
+    else {
+      throw new RuntimeException ( 'groovy.home property not set, and cannot guess location of Ivy jar.' )
+    }
+    constructIvyTask ( )
+  }
+  Ivy ( final Binding binding , final Map map ) {
+    this.binding = binding
+    if ( map.containsKey ( 'ivyJarPath' ) ) { ivyJarPath = map.ivyJarPath }
+    else {
+      if ( System.properties.'groovy.home' ) {
+        ivyJarPath = System.properties.'groovy.home' + System.properties.'file.separator' + 'lib'
+      }
+      else {
+        throw new RuntimeException ( 'Neither ivyJarPath or groovy.home set, and cannot guess location of Ivy jar.' )
+      }
+    }
+    constructIvyTask ( )
+  }
+  private void constructIvyTask ( ) {
+    binding.Ant.path ( id : classpathRef ) { binding.Ant.fileset ( dir : ivyJarPath , includes : 'ivy*.jar' ) }
     binding.Ant.taskdef ( resource : 'org/apache/ivy/ant/antlib.xml' , uri : ivyURI , classpathref : classpathRef )
   }
   //  To save having to maintain lists of the functions available, simply redirect all method calls to the Ant object.
