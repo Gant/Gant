@@ -29,8 +29,8 @@ final class AntFile {
     includeTargets ( map.filename )
   }
   void includeTargets ( String fileName ) {
-    ProjectHelper.configureProject ( binding.Ant.project , new File ( fileName ) )
-    binding.Ant.project.targets.each { key , value ->
+    ProjectHelper.configureProject ( binding.ant.project , new File ( fileName ) )
+    binding.ant.project.targets.each { key , value ->
       assert key == value.name
       binding.setProperty ( key , { value.execute ( ) } )
       if ( value.description ) { binding.targetDescriptions.put ( key , value.description ) }

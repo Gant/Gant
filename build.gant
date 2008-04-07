@@ -329,6 +329,7 @@ target ( distribution : 'Create the distribution.' ) {
     }
     //  Must remove the compilation products of the last compilation!
     Ant.delete ( dir : buildClassesDirectory )
+    Ant.delete ( dir : buildTestClassesDirectory )
     performCompile ( pathIdentifier , true )
     performCompileTests ( pathIdentifier , true )
     //  NB Tests will fail on version < 1.6.0 dues to trivial inconsequential issues. So it is probably a

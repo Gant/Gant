@@ -25,13 +25,13 @@ final class Clean {
   private Binding binding
   private performPatternAction ( List l ) {
     if ( l.size ( ) > 0 ) {
-      binding.Ant.delete ( quiet : 'false' ) {
-        binding.Ant.fileset ( dir : '.' , includes : l.flatten ( ).join ( ',' ) , defaultexcludes : 'false' )
+      binding.ant.delete ( quiet : 'false' ) {
+        binding.ant.fileset ( dir : '.' , includes : l.flatten ( ).join ( ',' ) , defaultexcludes : 'false' )
       }
     }
   }
   private performDirectoryAction ( List l ) {
-    l.flatten ( ).each { item -> binding.Ant.delete ( dir : item , quiet : 'false' ) }
+    l.flatten ( ).each { item -> binding.ant.delete ( dir : item , quiet : 'false' ) }
   }
   Clean ( Binding binding ) {
     this.binding = binding

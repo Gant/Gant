@@ -12,7 +12,7 @@ Introduce the GantBinding class to ensure various things that are needed for Gan
 efficient cloning for multi-threading builds.
 
 Remove the inserting of the class name for targets classes into the binding.  Change from Maven.<property>
-to maven.<property>.  This is a breaking change, all uses of Maven as a reference from teh binding must be
+to maven.<property>.  This is a breaking change, all uses of Maven as a reference from the binding must be
 replaced by maven.
 
 Add in checks for duplicate symbols in the binding.
@@ -37,6 +37,8 @@ Corrected the way that jars are included on the classpath from ~/.gant/lib, ~/.a
 Updated TestNG from 5.7 to 5.8 in Maven target set. Amended the properties set so that the TestNG version
 number and and classifier can be set by the user instead of being only hardwired.  The defaults are still
 hardwired in an ugly way though.
+
+Extended the Ivy tool to allow the path to the Ivy jar to be specified using the ** * notation.
 
 1.1.1 ( r9027 )
 ---------------

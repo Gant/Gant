@@ -35,16 +35,16 @@ import org.apache.commons.cli.OptionBuilder
  *
  *  <p>A Gant build specification file (default name build.gant) is assumed to contain one or more targets.
  *  Dependencies between targets are handled as function calls within functions, or by use of the depends
- *  function. Execution of Ant tasks is by calling methods on the object called `Ant', which is predefined
- *  as an <code>GantBuilder</code> instance.</p>
+ *  function. Execution of Ant tasks is by calling methods on the object referred to by `ant', which is
+ *  predefined as a <code>GantBuilder</code> instance.</p>
  *
  *  <p>On execution of the gant command, the Gant build specification is read and executed in the context of
- *  a predefined binding.  An object called `Ant' is part of the binding so methods can use this object to
- *  get access to the Ant tasks without having to create an object explicitly.  A method called `target' is
- *  part of the predefined binding.  A target has two parameters, a single item map and a closure.  The
- *  single item map has the target name as the key and the documentation about the target as the value.
- *  This documentation is used by the `gant -T' / `gant --targets' / `gant -p' command to present a list of
- *  all the documented targets.</p>
+ *  a predefined binding.  An object referred to by `ant' is part of the binding so methods can use this
+ *  object to get access to the Ant tasks without having to create an object explicitly.  A method called
+ *  `target' is part of the predefined binding.  A target has two parameters, a single item map and a
+ *  closure.  The single item map has the target name as the key and the documentation about the target as
+ *  the value.  This documentation is used by the `gant -T' / `gant --targets' / `gant -p' command to
+ *  present a list of all the documented targets.</p>
  *
  *  <p>NB In the following example some extra spaces have had to be introduced because some of the patterns
  *  look like comment ends:-(</p>

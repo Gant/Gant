@@ -63,7 +63,7 @@ final class Maven {
      map.each { key , value -> owner.setProperty ( key , value ) }
      constructMavenObject ( )
    }
-  void constructMavenObject ( ) {
+  private void constructMavenObject ( ) {
     properties.binding.maven = this
     properties.default_mainSourcePath = "${properties.sourcePath}${System.properties.'file.separator'}main"
     properties.default_testSourcePath = "${properties.sourcePath}${System.properties.'file.separator'}test"
@@ -95,12 +95,12 @@ final class Maven {
         dependencyMap
       }
       if ( owner.compileDependencies ) {
-        owner.binding.Ant."${owner.antlibXMLns}:dependencies" ( pathId : owner.compileDependenciesClasspathId ) {
+        owner.binding.ant."${owner.antlibXMLns}:dependencies" ( pathId : owner.compileDependenciesClasspathId ) {
           owner.compileDependencies.each { item -> dependency ( createDependencyMap ( [ scope : 'compile' ] , item ) ) }
         }
       }
       if ( owner.testDependencies ) {
-        owner.binding.Ant."${owner.antlibXMLns}:dependencies" ( pathId : owner.testDependenciesClasspathId ) {
+        owner.binding.ant."${owner.antlibXMLns}:dependencies" ( pathId : owner.testDependenciesClasspathId ) {
           owner.testDependencies.each { item -> dependency ( createDependencyMap ( [ scope : 'test' ] , item ) ) }
         }
       }
@@ -124,11 +124,11 @@ final class Maven {
     */
     properties.binding.target.call ( compile : "Compile the source code in ${properties.mainSourcePath ? properties.mainSourcePath : properties.default_mainSourcePath } to ${properties.mainCompilePath}." ) {
       depends ( owner.binding.initialize )
-      owner.binding.Ant.mkdir ( dir : owner.mainCompilePath )
+      owner.binding.ant.mkdir ( dir : owner.mainCompilePath )
       //  If a source path has been explicitly specified then compile everything in it.  Otherwise assume Maven 2 rules.
       if ( owner.mainSourcePath ) {
-        owner.binding.Ant.taskdef ( name : 'groovyc' , classname : 'org.codehaus.groovy.ant.Groovyc' )
-        owner.binding.Ant.groovyc ( [ srcdir : owner.mainSourcePath , destdir : owner.mainCompilePath , fork : 'true' ] + owner.groovyCompileProperties ) {
+        owner.binding.ant.taskdef ( name : 'groovyc' , classname : 'org.codehaus.groovy.ant.Groovyc' )
+        owner.binding.ant.groovyc ( [ srcdir : owner.mainSourcePath , destdir : owner.mainCompilePath , fork : 'true' ] + owner.groovyCompileProperties ) {
           javac ( owner.javaCompileProperties )
           classpath {
             pathelement ( path : owner.compileClasspath.join ( System.properties.'path.separator' ) )
@@ -143,7 +143,7 @@ final class Maven {
              case 'java' :
              //  Need to use the joint Groovy compiler here to deal wuth the case where Groovy files are in the
              //  Java hierarchy.
-             owner.binding.Ant.javac ( [ srcdir : owner.default_mainSourcePath + System.properties.'file.separator' + 'java' , destdir : owner.mainCompilePath , fork : 'true' ] + owner.javaCompileProperties ) {
+             owner.binding.ant.javac ( [ srcdir : owner.default_mainSourcePath + System.properties.'file.separator' + 'java' , destdir : owner.mainCompilePath , fork : 'true' ] + owner.javaCompileProperties ) {
                classpath {
                  pathelement ( path : owner.compileClasspath.join ( System.properties.'path.separator' ) )
                  if ( owner.compileDependencies ) { path ( refid : owner.compileDependenciesClasspathId ) }
@@ -151,8 +151,8 @@ final class Maven {
              }
              break
              case 'groovy' :
-             owner.binding.Ant.taskdef ( name : 'groovyc' , classname : 'org.codehaus.groovy.ant.Groovyc' )
-             owner.binding.Ant.groovyc ( [ srcdir : owner.default_mainSourcePath + System.properties.'file.separator' + 'groovy' , destdir : owner.mainCompilePath , fork : 'true' ] + owner.groovyCompileProperties ) {
+             owner.binding.ant.taskdef ( name : 'groovyc' , classname : 'org.codehaus.groovy.ant.Groovyc' )
+             owner.binding.ant.groovyc ( [ srcdir : owner.default_mainSourcePath + System.properties.'file.separator' + 'groovy' , destdir : owner.mainCompilePath , fork : 'true' ] + owner.groovyCompileProperties ) {
                javac ( owner.javaCompileProperties )
                classpath {
                  pathelement ( path : owner.compileClasspath.join ( System.properties.'path.separator' ) )
@@ -185,11 +185,11 @@ final class Maven {
     */
     properties.binding.target.call ( 'test-compile' : "Compile the test source code in ${properties.testSourcePath} to ${properties.testCompilePath}." ) {
       depends ( owner.binding.compile )
-      owner.binding.Ant.mkdir ( dir : owner.testCompilePath  )
+      owner.binding.ant.mkdir ( dir : owner.testCompilePath  )
       if ( owner.testSourcePath ) {
         if ( ( new File ( owner.testSourcePath ) ).isDirectory ( ) ) {
-          owner.binding.Ant.taskdef ( name : 'groovyc' , classname : 'org.codehaus.groovy.ant.Groovyc' )
-          owner.binding.Ant.groovyc ( [ srcdir : owner.testSourcePath , destdir : owner.testCompilePath , fork : 'true' ] + owner.groovyCompileProperties ) {
+          owner.binding.ant.taskdef ( name : 'groovyc' , classname : 'org.codehaus.groovy.ant.Groovyc' )
+          owner.binding.ant.groovyc ( [ srcdir : owner.testSourcePath , destdir : owner.testCompilePath , fork : 'true' ] + owner.groovyCompileProperties ) {
             javac ( owner.javaCompileProperties )
             classpath {
               pathelement ( location : owner.mainCompilePath )
@@ -209,7 +209,7 @@ final class Maven {
                case 'java' :
                //  Need to use the joint Groovy compiler here to deal with the case where Groovy files are in the
                //  Java hierarchy.
-               owner.binding.Ant.javac ( [ srcdir : owner.default_testSourcePath + System.properties.'file.separator' + 'java' , destdir : owner.testCompilePath , fork : 'true' ] + owner.javaCompileProperties ) {
+               owner.binding.ant.javac ( [ srcdir : owner.default_testSourcePath + System.properties.'file.separator' + 'java' , destdir : owner.testCompilePath , fork : 'true' ] + owner.javaCompileProperties ) {
                  classpath {
                    pathelement ( location : owner.mainCompilePath )
                    pathelement ( path : owner.compileClasspath.join ( System.properties.'path.separator' ) )
@@ -220,8 +220,8 @@ final class Maven {
                }
                break
                case 'groovy' :
-               owner.binding.Ant.taskdef ( name : 'groovyc' , classname : 'org.codehaus.groovy.ant.Groovyc' )
-               owner.binding.Ant.groovyc ( [ srcdir : owner.default_testSourcePath + System.properties.'file.separator' + 'groovy' , destdir : owner.testCompilePath , fork : 'true' ] + owner.groovyCompileProperties ) {
+               owner.binding.ant.taskdef ( name : 'groovyc' , classname : 'org.codehaus.groovy.ant.Groovyc' )
+               owner.binding.ant.groovyc ( [ srcdir : owner.default_testSourcePath + System.properties.'file.separator' + 'groovy' , destdir : owner.testCompilePath , fork : 'true' ] + owner.groovyCompileProperties ) {
                  javac ( owner.javaCompileProperties )
                  classpath {
                    pathelement ( location : owner.mainCompilePath )
@@ -243,8 +243,8 @@ final class Maven {
       depends ( owner.binding.'test-compile' )
       switch ( owner.testFramework ) {
        case 'testng' :
-       owner.binding.Ant.taskdef ( resource : 'testngtasks' ) { classpath { path ( refid : owner.testDependenciesClasspathId ) } }
-       owner.binding.Ant.testng ( outputdir : owner.testReportPath ) {
+       owner.binding.ant.taskdef ( resource : 'testngtasks' ) { classpath { path ( refid : owner.testDependenciesClasspathId ) } }
+       owner.binding.ant.testng ( outputdir : owner.testReportPath ) {
          classpath {
            fileset ( dir : System.properties.'groovy.home' + System.properties.'file.separator' + 'lib' , includes : '*.jar' )
            pathelement ( location : owner.mainCompilePath )
@@ -259,8 +259,8 @@ final class Maven {
        break
        case 'junit' :
        default :
-       owner.binding.Ant.mkdir ( dir : owner.testReportPath )
-       owner.binding.Ant.junit ( printsummary : 'yes' , failureproperty : 'testsFailed' , fork : 'true' ) {
+       owner.binding.ant.mkdir ( dir : owner.testReportPath )
+       owner.binding.ant.junit ( printsummary : 'yes' , failureproperty : 'testsFailed' , fork : 'true' ) {
          classpath {
            pathelement ( location : owner.mainCompilePath )
            pathelement ( location : owner.testCompilePath )
@@ -276,8 +276,8 @@ final class Maven {
        break
       }
       try {
-        // owner.binding.Ant.project.properties.testsFailed may not exist, hence the MissingPropertyException capture.
-        if ( ! owner.binding.testFailIgnore && owner.binding.Ant.project.properties.testsFailed ) { throw new RuntimeException ( 'Tests failed, execution terminating.' ) }
+        // owner.binding.ant.project.properties.testsFailed may not exist, hence the MissingPropertyException capture.
+        if ( ! owner.binding.testFailIgnore && owner.binding.ant.project.properties.testsFailed ) { throw new RuntimeException ( 'Tests failed, execution terminating.' ) }
       }
       catch ( MissingPropertyException mpe ) { }
     }
@@ -287,32 +287,32 @@ final class Maven {
       }
       depends ( owner.binding.test )
       if ( owner.manifest ) {
-        owner.binding.Ant.mkdir ( dir : owner.metadataPath )
-        owner.binding.Ant.manifest ( file : owner.metadataPath + System.properties.'file.separator' + 'MANIFEST.MF' ) {
+        owner.binding.ant.mkdir ( dir : owner.metadataPath )
+        owner.binding.ant.manifest ( file : owner.metadataPath + System.properties.'file.separator' + 'MANIFEST.MF' ) {
           owner.manifest.each { key , value -> attribute ( name : key , value : value ) }
         }
       }
       if ( owner.manifestIncludes ) {
-        owner.binding.Ant.mkdir ( dir : owner.metadataPath )
+        owner.binding.ant.mkdir ( dir : owner.metadataPath )
         owner.manifestIncludes.each { item ->
-          if ( new File ( item ).isDirectory ( ) ) { owner.binding.Ant.copy ( todir : owner.metadataPath ) { fileset ( dir : item , includes : '*' ) } }
-          else { owner.binding.Ant.copy ( todir : owner.metadataPath , file : item ) }
+          if ( new File ( item ).isDirectory ( ) ) { owner.binding.ant.copy ( todir : owner.metadataPath ) { fileset ( dir : item , includes : '*' ) } }
+          else { owner.binding.ant.copy ( todir : owner.metadataPath , file : item ) }
         }
       }
       switch ( owner.packaging ) {
        case 'war' :
        def artifactPath = owner.targetPath + System.properties.'file.separator' + owner.artifactId + '-' + owner.version
        owner.packagedArtifact = artifactPath + '.war'
-       owner.binding.Ant.mkdir ( dir : artifactPath )
-       owner.binding.Ant.copy ( todir : artifactPath ) {
+       owner.binding.ant.mkdir ( dir : artifactPath )
+       owner.binding.ant.copy ( todir : artifactPath ) {
          fileset ( dir : classesDir )
          fileset ( dir : [ 'src' , 'main' , 'webapp' ].join ( System.properties.'file.separator' ) )
        }
-       owner.binding.Ant.jar ( destfile : owner.packagedArtifact ) { fileset ( dir : artifactPath ) }
+       owner.binding.ant.jar ( destfile : owner.packagedArtifact ) { fileset ( dir : artifactPath ) }
        break
        case 'jar' :
        owner.packagedArtifact = owner.targetPath + System.properties.'file.separator' + owner.artifactId + '-' + owner.version + '.jar'
-       owner.binding.Ant.jar ( destfile : owner.packagedArtifact ) { fileset ( dir : owner.mainCompilePath ) }
+       owner.binding.ant.jar ( destfile : owner.packagedArtifact ) { fileset ( dir : owner.mainCompilePath ) }
       }
     }
     /*
@@ -324,31 +324,31 @@ final class Maven {
     }
     */
     properties.binding.target.call ( install : 'Install the artefact into the local repository.' ) {
-      owner.binding.Ant."${owner.antlibXMLns}:pom" ( id : mavenPOMId , file : 'pom.xml' )
+      owner.binding.ant."${owner.antlibXMLns}:pom" ( id : mavenPOMId , file : 'pom.xml' )
       /*
        *  It seems that there is a wierd problem.  
         
-      owner.binding.Ant.property ( name : 'flob.adob' , value : 'weed' )
-      owner.binding.Ant.echo ( '${flob.adob}' )
-      println ( owner.binding.Ant.project.properties.'flob.adob' )
+      owner.binding.ant.property ( name : 'flob.adob' , value : 'weed' )
+      owner.binding.ant.echo ( '${flob.adob}' )
+      println ( owner.binding.ant.project.properties.'flob.adob' )
 
       *  does exactly what you would expect, weed is printed out in both cases.  However:
 
-      owner.binding.Ant.'antlib:org.apache.maven.artifact.ant:pom' ( id : 'blahblah' , file : 'pom.xml' )
-      owner.binding.Ant.echo ( '${blahblah.version}' )
-      println ( owner.binding.Ant.project.properties.'blahblah.version' )
+      owner.binding.ant.'antlib:org.apache.maven.artifact.ant:pom' ( id : 'blahblah' , file : 'pom.xml' )
+      owner.binding.ant.echo ( '${blahblah.version}' )
+      println ( owner.binding.ant.project.properties.'blahblah.version' )
 
-      * prints out the version number from Ant but null from Groovy :-(  This means we cannot run the consistency checks between POM and Gant file.
+      * prints out the version number from ant but null from Groovy :-(  This means we cannot run the consistency checks between POM and Gant file.
       */
       /*
       [ 'groupId' , 'artifactId' , ' version' ].each { item ->
-                                                       if ( owner.binding.Ant.project.properties."${owner.mavenPOMId}.${item}" != owner."${item}" ) {
+                                                       if ( owner.binding.ant.project.properties."${owner.mavenPOMId}.${item}" != owner."${item}" ) {
                                                          throw new RuntimeException ( "${item} in build file and POM not the same." )
                                                        }
       }
       */
       depends ( owner.binding.'package' )
-      owner.binding.Ant."${owner.antlibXMLns}:install" ( file : owner.packagedArtifact  ) { pom ( refid : mavenPOMId ) }
+      owner.binding.ant."${owner.antlibXMLns}:install" ( file : owner.packagedArtifact  ) { pom ( refid : mavenPOMId ) }
     }
     properties.binding.target.call ( deploy : "Deploy the artefact: copy the artefact to the remote repository ${ properties.version =~ 'SNAPSHOT' ? properties.deploySnapshotURL : properties.deployURL }." ) {
       def label = 'deployURL'
@@ -356,11 +356,11 @@ final class Maven {
       def deployURL = owner."${label}"
        if ( ! deployURL ) { throw new RuntimeException ( "maven.${label} must be set to achieve target deploy." ) }
       depends ( owner.binding.install )
-      owner.binding.Ant."${owner.antlibXMLns}:install-provider" ( artifactId : 'wagon-webdav' , version : '1.0-beta-2' )
+      owner.binding.ant."${owner.antlibXMLns}:install-provider" ( artifactId : 'wagon-webdav' , version : '1.0-beta-2' )
       //
       //  This task does not create new directories on the server if they are needed :-(
       //
-      owner.binding.Ant."${owner.antlibXMLns}:deploy" ( file : owner.packagedArtifact  ) {
+      owner.binding.ant."${owner.antlibXMLns}:deploy" ( file : owner.packagedArtifact  ) {
         pom ( refid : owner.mavenPOMId )
         remoteRepository ( url : deployURL , id : owner.deployId ) 
       }
