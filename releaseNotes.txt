@@ -18,7 +18,7 @@ replaced by maven.
 Add in checks for duplicate symbols in the binding.
 
 Make the symbols created by the tools lowercase rather than upper case.  Add in checks for adding an
-overwrite in the binding.
+overwrite in the binding.  cf. GANT-29.
 
 
 1.1.2 ( rXXXX )
