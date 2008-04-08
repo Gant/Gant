@@ -14,10 +14,6 @@
 
 package org.codehaus.gant.tests
 
-//////////////////////////////////////////////////////////////////////////////////////////////////////////////
-//  NB Commented out tests are ones that it is not certain should be supported.
-//////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
 /**
  *  A test to ensure that the various include mechanisms work as they should.
  *
@@ -38,8 +34,8 @@ final class Include_Test extends GantTestCase {
   private final toolClassFilePath
   private final toolClassText =  """
 class ${toolClassName} {
-  def ${toolClassName} ( Binding binding ) { }
-  def flob ( ) { println ( 'flobbed.' ) }
+  ${toolClassName} ( Binding binding ) { }
+  void flob ( ) { println ( 'flobbed.' ) }
 }
 """
   private final toolBuildScriptBase =  """
@@ -57,9 +53,7 @@ target ( flob : '' ) { println ( 'flobbed.' ) }
   private final targetsClassFilePath
   private final targetsClassText =  """
 class ${targetsClassName} {
-  def ${targetsClassName} ( Binding binding ) {
-    binding.target.call ( flob : '' ) { println ( 'flobbed.' ) }
-  }
+  ${targetsClassName} ( Binding binding ) { binding.target.call ( flob : '' ) { println ( 'flobbed.' ) } }
 }
 """
   private final targetsBuildScriptBase =  """
@@ -81,7 +75,7 @@ target ( 'default' : '' ) { something ( ) }
     targetsClassFilePath = temporaryDirectory.path + System.properties.'file.separator' + targetsClassName + '.groovy'
     targetsBuildScriptFile =  "includeTargets <<  new File ( '${targetsScriptFilePath}' )\n" + targetsBuildScriptBase
     targetsBuildClassFile =  "includeTargets <<  new File ( '${targetsClassFilePath}' )\n" + targetsBuildScriptBase
-    nonExistentFilePath = temporaryDirectory.path + System.properties.'file.separator' + 'tmp' + System.properties.'file.separator' + 'tmp' + System.properties.'file.separator' + 'tmp'
+    nonExistentFilePath = temporaryDirectory.path + ( System.properties.'file.separator' + 'tmp' ) * 3
   }  
   void setUp ( ) {
     super.setUp ( )
@@ -168,82 +162,72 @@ target ( 'default' : '' ) { something ( ) }
     assertEquals ( 0 , processTargets ( ) )
     assertEquals ( 'flobbed.\n' , output ) 
   }
-  /*
   void testTargetsDefaultClassFile ( ) {
     script = targetsBuildClassFile
-    assertEquals ( 0 , processTargets ( ) )
-    assertEquals ( 'flobbed.\n' , output ) 
+    assertEquals ( 2 , processTargets ( ) )
+    assertEquals ( "Standard input, line 1 -- Error evaluating Gantfile: ${targetsClassName}\n" , output ) 
   }
   void testTargetsDefaultClassString ( ) {
     script = targetsBuildClassString
-    assertEquals ( 0 , processTargets ( ) )
-    assertEquals ( 'flobbed.\n' , output ) 
+    assertEquals ( 2 , processTargets ( ) )
+    assertEquals ( "Standard input, line 1 -- Error evaluating Gantfile: ${targetsClassName}\n" , output ) 
   }
-  */
   void testTargetsFlobClassClass ( ) {
     script = targetsBuildClassClass
     assertEquals ( 0 , processTargets ( 'flob') )
     assertEquals ( 'flobbed.\n' , output ) 
   }
-  /*
   void testTargetsFlobClassFile ( ) {
     script = targetsBuildClassFile
-    assertEquals ( 0 , processTargets ( 'flob') )
-    assertEquals ( 'flobbed.\n' , output ) 
+    assertEquals ( 2 , processTargets ( 'flob') )
+    assertEquals ( "Standard input, line 1 -- Error evaluating Gantfile: ${targetsClassName}\n" , output ) 
   }
   void testTargetsFlobClassString ( ) {
     script = targetsBuildClassString
-    assertEquals ( 0 , processTargets ( 'flob') )
-    assertEquals ( 'flobbed.\n' , output ) 
+    assertEquals ( 2 , processTargets ( 'flob') )
+    assertEquals ( "Standard input, line 1 -- Error evaluating Gantfile: ${targetsClassName}\n" , output ) 
   }
-  */
   void testTargetsBurbleClassClass ( ) {
     script = targetsBuildClassClass
-    assertEquals ( 11 , processTargets ( 'burble') )
+    assertEquals ( 11 , processTargets ( 'burble' ) )
     assertEquals ( 'Target burble does not exist.\n' , output ) 
   }
-  /*
   void testTargetsBurbleClassFile ( ) {
     script = targetsBuildClassFile
-    assertEquals ( 11 , processTargets ( 'burble') )
-    assertEquals ( 'Target burble does not exist.\n' , output ) 
+    assertEquals ( 2 , processTargets ( 'burble') )
+    assertEquals ( "Standard input, line 1 -- Error evaluating Gantfile: ${targetsClassName}\n" , output ) 
   }
   void testTargetsBurbleClassString ( ) {
     script = targetsBuildClassString
-    assertEquals ( 11 , processTargets ( 'burble') )
-    assertEquals ( 'Target burble does not exist.\n' , output ) 
+    assertEquals ( 2 , processTargets ( 'burble') )
+    assertEquals ( "Standard input, line 1 -- Error evaluating Gantfile: ${targetsClassName}\n" , output ) 
   }
-  */
   void testTargetsSomethingClassClass ( ) {
     script = targetsBuildClassClass
     assertEquals ( 0 , processTargets ( 'something') )
     assertEquals ( 'flobbed.\n' , output ) 
   }
-  /*
   void testTargetsSomethingClassFile ( ) {
     script = targetsBuildClassFile
-    assertEquals ( 0 , processTargets ( 'something') )
-    assertEquals ( 'flobbed.\n' , output ) 
+    assertEquals ( 2 , processTargets ( 'something') )
+    assertEquals ( "Standard input, line 1 -- Error evaluating Gantfile: ${targetsClassName}\n", output ) 
   }
   void testTargetsSomethingClassString ( ) {
     script = targetsBuildClassString
-    assertEquals ( 0 , processTargets ( 'something') )
-    assertEquals ( 'flobbed.\n' , output ) 
+    assertEquals ( 2 , processTargets ( 'something') )
+    assertEquals ( "Standard input, line 1 -- Error evaluating Gantfile: ${targetsClassName}\n", output ) 
   }
-  */
   void testTargetsClassNoFile ( ) {
     script = targetsBuildClassFile.replace ( targetsClassFilePath , nonExistentFilePath )
     assertEquals ( 2 , processTargets ( 'flob') )
     //  This is a weird message, should be better than this.
     assertEquals ( 'Standard input, line 1 -- Error evaluating Gantfile: ' + nonExistentFilePath + ' (' + nonExistentFilePath + ')\n' , output )
   }
-  /*
   void testTargetsDefaultScriptClass ( ) {
     script = targetsBuildScriptClass
-    assertEquals ( 0 , processTargets ( ) )
-    assertEquals ( 'flobbed.\n' , output ) 
+    assertEquals ( 2 , processTargets ( ) )
+    assertEquals ( "Standard input, line 6 -- Error evaluating Gantfile: No such property: ${targetsClassName} for class: standard_input\n" , output ) 
   }
-  */
   void testTargetsDefaultScriptFile ( ) {
     script = targetsBuildScriptFile
     assertEquals ( 0 , processTargets ( ) )
@@ -254,13 +238,11 @@ target ( 'default' : '' ) { something ( ) }
     assertEquals ( 0 , processTargets ( ) )
     assertEquals ( 'flobbed.\n' , output ) 
   }
-  /*
   void testTargetsFlobScriptClass ( ) {
     script = targetsBuildScriptClass
-    assertEquals ( 0 , processTargets ( 'flob') )
-    assertEquals ( 'flobbed.\n' , output ) 
+    assertEquals ( 2 , processTargets ( 'flob') )
+    assertEquals ( "Standard input, line 6 -- Error evaluating Gantfile: No such property: ${targetsClassName} for class: standard_input\n" , output ) 
   }
-  */
   void testTargetsFlobScriptFile ( ) {
     script = targetsBuildScriptFile
     assertEquals ( 0 , processTargets ( 'flob') )
@@ -271,13 +253,11 @@ target ( 'default' : '' ) { something ( ) }
     assertEquals ( 0 , processTargets ( 'flob') )
     assertEquals ( 'flobbed.\n' , output ) 
   }
-  /*
   void testTargetsBurbleScriptClass ( ) {
     script = targetsBuildScriptClass
-    assertEquals ( 11 , processTargets ( 'burble') )
-    assertEquals ( 'Target burble does not exist.\n' , output ) 
+    assertEquals ( 2 , processTargets ( 'burble') )
+    assertEquals ( "Standard input, line 6 -- Error evaluating Gantfile: No such property: ${targetsClassName} for class: standard_input\n" , output ) 
   }
-  */
   void testTargetsBurbleScriptFile ( ) {
     script = targetsBuildScriptFile
     assertEquals ( 11 , processTargets ( 'burble') )
@@ -288,13 +268,11 @@ target ( 'default' : '' ) { something ( ) }
     assertEquals ( 11 , processTargets ( 'burble') )
     assertEquals ( 'Target burble does not exist.\n' , output ) 
   }
-  /*
   void testTargetsSomethingScriptClass ( ) {
     script = targetsBuildScriptClass
-    assertEquals ( 11 , processTargets ( 'something') )
-    assertEquals ( 'flobbed.\n' , output ) 
+    assertEquals ( 2 , processTargets ( 'something') )
+    assertEquals ( "Standard input, line 6 -- Error evaluating Gantfile: No such property: ${targetsClassName} for class: standard_input\n" , output ) 
   }
-  */
   void testTargetsSomethingScriptFile ( ) {
     script = targetsBuildScriptFile
     assertEquals ( 0 , processTargets ( 'something') )
@@ -354,18 +332,19 @@ target ( 'default' : '' ) { something ( ) }
     assertEquals ( 0 , processTargets ( 'flob' ) )
     assertEquals ( 'flobbed.\n' , output )
   }
-
   void testUsingParameterConstructor ( ) {
     def theToolClassName = 'TheTool'
-    def theToolClassText = """class ${theToolClassName} {
+    def theToolClassText = """
+class ${theToolClassName} {
   ${theToolClassName} ( Binding binding , Map map ) { }
-  def flob ( ) { println ( 'flobbed.' ) }
-}"""
-    script = """includeTool ** groovyShell.evaluate ( '''${theToolClassText} ; return ${theToolClassName}''' ) * [ flob : 'adob' , foo : 'bar' ]
+  void flob ( ) { println ( 'flobbed.' ) }
+}
+"""
+    script = """
+includeTool ** groovyShell.evaluate ( '''${theToolClassText} ; return ${theToolClassName}''' ) * [ flob : 'adob' , foo : 'bar' ]
 target ( something : '' ) { ${theToolClassName}.flob ( ) }
 """
     assertEquals ( 0 , processTargets ( 'something' ) )    
     assertEquals ( 'flobbed.\n' , output )
   }
-  
 }
