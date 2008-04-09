@@ -17,6 +17,9 @@ hardwired in an ugly way though.
 
 Extended the Ivy tool to allow the path to the Ivy jar to be specified using the ** * notation.
 
+Ensured the AntFile and Include tests work on Windows as well as Ubuntu, Solaris, and Mac OS X.
+
+
 1.1.1 ( r9027 )
 ---------------
 
@@ -38,6 +41,7 @@ cf. GANT-24.
 Added $HOME/.gant/lib as a repository of jar files as well as $HOME/.ant/lib.
 
 Amended the depends processing to deal with lists of mixed Strings and Closures.
+
 
 1.1.0 ( r8964 )
 ---------------
@@ -67,6 +71,7 @@ Added extra options in the LaTeX tool execution to avoid any interactive mode of
 Fixed bug in parameter types of message Closure in gant.Gant.
 
 Declared this release and eradicated 1.0.1 to avoid any hassles with the above bug.
+
 
 1.0.1 ( r8861 )
 ---------------
@@ -102,6 +107,7 @@ Stopped Gant from issuing FileNotFoundException.
 
 Released to coincide with release of Groovy 1.5.0.
 
+
 0.3.3 ( r8490 )
 ---------------
 
@@ -124,6 +130,7 @@ Corrected various problems with return values.
 
 Changed the location of the repository to http://svn.codehaus.org/groovy/gant
 
+
 0.3.1 (r6962)
 -------------
 
@@ -133,6 +140,7 @@ Added extending of the classpath:
       --lib <path> for individual jars.
       Searching ~/.ant/lib for user collections of jar files.
       Searching ANT_HOME/lib for jar files if ANT_HOME is defined.
+
 
 0.3.0 (r6320)
 -------------
@@ -163,6 +171,7 @@ feature (disabled by default) and is enabled using the -c option of gant.
 
 Added the a LaTeX processing tool.
 
+
 0.2.3 (r4761)
 -------------
 
@@ -185,6 +194,7 @@ Package structure of the code changed.
 Enforced 1.4 class files.
 
 (There appears never to have been a version 0.2.1.)
+
 
 0.2.0 (r4160)
 ------------
