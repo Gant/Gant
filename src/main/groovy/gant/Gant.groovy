@@ -248,9 +248,9 @@ final class Gant {
     if ( options.l ) { binding.gantLib << options.l.split ( System.properties.'path.separator' ) }
     if ( options.n ) { GantState.dryRun = true }
     def function =  ( options.p || options.T ) ? 'targetList' : 'dispatch'
-    if ( options.q ) { GantState.verbosity = GantState.QUIET }
-    if ( options.s ) { GantState.verbosity = GantState.SILENT }
-    if ( options.v ) { GantState.verbosity = GantState.VERBOSE }
+    if ( options.q ) { GantState.verbosity = GantState.QUIET ; binding.ant.setMessageOutputLevel ( ) }
+    if ( options.s ) { GantState.verbosity = GantState.SILENT  ; binding.ant.setMessageOutputLevel ( ) }
+    if ( options.v ) { GantState.verbosity = GantState.VERBOSE  ; binding.ant.setMessageOutputLevel ( ) }
     if ( options.D ) {
       options.Ds.each { definition ->
         def pair = definition.split ( '=' ) as List

@@ -43,6 +43,8 @@ Extended the Ivy tool to allow the path to the Ivy jar to be specified using the
 
 Ensured the AntFile and Include tests work on Windows as well as Ubuntu, Solaris, and Mac OS X.
 
+Modified the verbosity level stuff so as to set the verbosity understood by the Ant tasks that get called. 
+
 
 1.1.1 ( r9027 )
 ---------------

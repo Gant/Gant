@@ -34,7 +34,7 @@ includeTool << gant.tools.Ivy
 
 target ( runTest : 'Run the Ivy "Hello" test.' ) {
   def classpathRef = 'libraryClasspath'
-  Ivy.cachepath ( organisation : 'commons-lang' , module : 'commons-lang' , revision : '2.3' ,  pathid : classpathRef , inline : 'true' )
+  ivy.cachepath ( organisation : 'commons-lang' , module : 'commons-lang' , revision : '2.3' ,  pathid : classpathRef , inline : 'true' )
   mkdir ( dir : buildDirectory )
   javac ( srcdir : sourceDirectory , destdir : buildDirectory , debug : 'true' , classpathref : classpathRef )
   java ( classname : 'example.Hello' , classpathref : classpathRef ) {
