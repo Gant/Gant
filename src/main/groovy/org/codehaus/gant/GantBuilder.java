@@ -14,12 +14,16 @@
 
 package org.codehaus.gant ;
 
+import java.lang.reflect.Field ;
+
 import java.util.Iterator ;
+import java.util.List ;
 import java.util.Map ;
 
 import groovy.lang.Closure ;
 import groovy.util.AntBuilder ;
 
+import org.apache.tools.ant.BuildLogger ;
 import org.apache.tools.ant.Project ;
 
 /**
@@ -64,5 +68,28 @@ public class GantBuilder extends AntBuilder {
       return null ;
     }
     return super.invokeMethod ( name , arguments ) ;
+  }
+  /**
+   *  Method to be called to trigger setting of the message output level on the <code>AntBuilder</code>
+   *  project.  The verbosity level is determined from <code>GantState</code>.
+   */
+  public void setMessageOutputLevel ( ) {
+    try {
+      //  The project is a private field in AntBuilder so we have to use reflection to get at it.  Maybe it
+      //  would be easier if this were a Groovy class :-)
+      final Field field = getClass ( ).getSuperclass ( ).getDeclaredField ( "project" ) ;
+      field.setAccessible ( true ) ;
+      final Project project = (Project) field.get ( this ) ;
+      final List listeners = project.getBuildListeners ( ) ;
+      assert listeners.size ( ) == 1 ;
+      final BuildLogger logger = (BuildLogger) listeners.get ( 0 ) ;
+      logger.setMessageOutputLevel ( GantState.verbosity ) ;
+    }
+    catch ( final NoSuchFieldException nsfe ) {
+      throw new RuntimeException ( "No field named project in GantBuilder." ) ;
+    }
+    catch ( final IllegalAccessException iae ) {
+      throw new RuntimeException ( "Unable to access field project in GantBuilder." ) ;
+    }
   }
 }
