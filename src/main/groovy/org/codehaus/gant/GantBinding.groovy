@@ -21,7 +21,7 @@ package org.codehaus.gant
  *
  *  @author Russel Winder <russel.winder@concertant.com>
  */
-public class GantBinding extends Binding {
+public class GantBinding extends Binding implements Cloneable {
   public GantBinding ( ) { initializeGantBinding ( ) }
   public GantBinding ( final Binding binding ) {
     super ( binding.variables )
