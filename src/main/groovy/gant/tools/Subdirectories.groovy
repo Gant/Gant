@@ -34,8 +34,8 @@ final class Subdirectories {
     //def process = command.execute ( null , directory )
     def process = command.execute ( [ ] , directory )
     if ( GantState.verbosity > GantState.QUIET ) {
-      process.err.eachLine { line -> System.err.println ( line ) }
-      process.in.eachLine { line -> println ( line ) }
+      ( new InputStreamReader ( process.err ) ).eachLine { line -> System.err.println ( line ) }
+      ( new InputStreamReader ( process.in ) ).eachLine { line -> println ( line ) }
     }
     process.waitFor ( )
   }
