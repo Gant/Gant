@@ -88,7 +88,7 @@ class GantMetaClass extends DelegatingMetaClass {
         catch ( final MissingPropertyException mpe ) { }
       }
       catch ( final MissingMethodException mme ) {
-        returnObject = ( (GantBuilder) ( binding.getVariable ( "Ant" ) ) ).invokeMethod ( methodName , arguments ) ;
+        returnObject = ( (GantBuilder) ( binding.getVariable ( "ant" ) ) ).invokeMethod ( methodName , arguments ) ;
       }
     }
     return returnObject ;
