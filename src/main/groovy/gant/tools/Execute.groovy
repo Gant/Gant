@@ -40,8 +40,8 @@ final class Execute {
   private manageProcess ( final Process process , final Closure errProcessing , final Closure outProcessing , final Object command , final String tag ) {
     //  Command can either be a String or a List.
     binding.getVariable ( 'message' ) ( tag , command )
-    def errThread = Thread.start { process.err.eachLine ( errProcessing ) }
-    def inThread = Thread.start { process.in.eachLine ( outProcessing ) }
+    def errThread = Thread.start { ( new InputStreamReader ( process.err ) ).eachLine ( errProcessing ) }
+    def inThread = Thread.start { ( new InputStreamReader ( process.in ) ).eachLine ( outProcessing ) }
     errThread.join ( )
     inThread.join ( )
     process.waitFor ( )
