@@ -75,12 +75,11 @@ public class Gant_Test extends TestCase {
     fail ( "Should have got a BuildException." ) ;
   }
   /**
-   *  Test for the taskdef-related verify error problem.
+   *  Test for the taskdef-related verify error problem.  Whatever it was supposed to do it passes now,
+   *  2008-04-14.
    */
-  /*
   public void testTaskdef ( ) {
     project.executeTarget ( "gantTaskdef" ) ;
     assertEquals ( "OK." , returnValue ) ;
   }
-  */
 }
