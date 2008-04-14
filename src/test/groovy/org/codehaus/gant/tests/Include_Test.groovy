@@ -69,7 +69,7 @@ target ( 'default' : '' ) { something ( ) }
   private final String nonExistentFilePath
   private final resultFlobbed = 'flobbed.\n'
   private final resultErrorEvaluatingLineOne = "Standard input, line 1 -- Error evaluating Gantfile: ${targetsClassName}\n"
-  private final resultErrorEvaluatingLineSix = "Error evaluating Gantfile: No such property: ${targetsClassName} for class: standard_input\n"
+  private final resultErrorEvaluatingLineSix = "Standard input, line 1 -- Error evaluating Gantfile: No such property: ${targetsClassName} for class: standard_input\n"
   private final String resultErrorEvaluatingWeirdLineOne
   private final Boolean isWindows
   Include_Test ( ) {
