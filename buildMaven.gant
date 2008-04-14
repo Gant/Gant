@@ -32,7 +32,8 @@ includeTargets ** gant.targets.Maven * [
                                         artifactId : 'gant' ,
                                         version : gantVersion ,
                                         compileDependencies : [
-                                                               [ groupId : 'org.codehaus.groovy' , artifactId : 'groovy-all' , version : '1.5.4' ] ,
+                                                               //[ groupId : 'org.codehaus.groovy' , artifactId : 'groovy-all' , version : '1.5.4' ] ,
+                                                               [ groupId : 'org.codehaus.groovy' , artifactId : 'groovy-all' , version : '1.5.5' ] ,
                                                                [  groupId : 'commons-cli' , artifactId : 'commons-cli' , version : '1.0' ]
                                                                ] ,
                                         javaCompileProperties : [ source : '1.4' , target : '1.4' , debug : 'true' ] ,
