@@ -25,7 +25,7 @@ catch ( MissingPropertyException mpe ) { gantVersion = Ant.project.properties.ga
 
 //
 
-final groovyVersion = '1.5.4'
+final groovyVersion = '1.5.5'
 
 final packageName = 'gant'
 final section = 'devel'

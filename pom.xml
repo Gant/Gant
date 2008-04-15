@@ -131,7 +131,7 @@
     <dependency>
       <groupId>org.codehaus.groovy</groupId>
       <artifactId>groovy-all</artifactId>
-      <version>1.5.4</version>
+      <version>1.5.5</version>
       <!--version>1.6-beta-1-SNAPSHOT</version-->
       <scope>compile</scope>
     </dependency>
