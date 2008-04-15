@@ -21,8 +21,12 @@ Add in checks for duplicate symbols in the binding.
 Make the symbols created by the tools lowercase rather than upper case.  Add in checks for adding an
 overwrite in the binding.  cf. GANT-29.
 
+1.1.3 ( rXXXX )
+---------------
 
-1.1.2 ( rXXXX )
+
+
+1.1.2 ( r9087 )
 ---------------
 
 Updated to using Ivy 2.0.0-beta2.
