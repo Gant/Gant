@@ -56,8 +56,27 @@ target ( '${targetName}' : '' ) {
 """
     buildFile.write ( buildScript )
     script = buildScript
-    //assertEquals ( 0 , processTargets ( targetName ) )
-    System.err.println ( processTargets ( targetName ) )
+    assertEquals ( 0 , processTargets ( targetName ) )
     assertEquals ( resultMessage + '\n' , output )
   }
+  /*
+  public void testSettingBindingVariable ( ) {
+    def buildScript = '''
+target ( doOutput : '' ) {
+  println ( 'flobadob = ' + flobadob )
+}
+target ( doSubGant : '' ) {
+  def newBinding = binding.clone ( )
+  newBinding.flobadob = 'weed'
+  newthing = new gant.Gant ( 'build.gant' , newBinding )
+  newthing.processTargets ( 'doOutput' )
+}
+'''
+    buildFile.write ( buildScript )
+    script = buildScript
+    assertEquals ( 0 , processTargets ( 'doSubGant' ) )
+    assertEquals ( 'flobadoc = weed\n' , output )
+    assertEquals ( 2 , processTargets ( 'doOutput' ) )
+  }
+  */
 }

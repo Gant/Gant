@@ -30,13 +30,15 @@ public class GantBinding extends Binding implements Cloneable {
   private void initializeGantBinding ( ) {
     //
     //  When this class is instantiated from a Gant command line or via a Groovy script then the classloader
-    //  is a org.codehaus.groovy.tools.RootLoader, and is used to load all the Ant related classes.  This
+    //  is a org.codehaus.groovy.tools.RootLoader, and is used to load all the Ant-related classes.  This
     //  means that all Ant classes already know about all the Groovy jars in the classpath.  When this class is
     //  instantiated from the Gant Ant Task, all the Ant classes have already been loaded using an instance
     //  of URLLoader and have no knowledge of the Groovy jars.  Fortunately, this class has to have been
     //  loaded by an org.apache.tools.ant.AntClassLoader which does have all the necessary classpath
     //  information.  In this situation we must force a reload of the org.apache.tools.ant.Project class so
     //  that it has the right classpath.
+    //
+    //  There is as yet though no unit test to require making the change!
     //
     final classLoader = getClass ( ).classLoader
     if ( classLoader.class.name == "org.apache.tools.ant.AntClassLoader" ) {
