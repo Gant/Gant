@@ -220,7 +220,7 @@ final class Gant {
     //
     def cli = new CliBuilder ( usage : 'gant [option]* [target]*' , parser : new GnuParser ( ) )
     cli.c ( longOpt : 'usecache' , 'Whether to cache the generated class and perform modified checks on the file before re-compilation.' )
-    cli.d ( longOpt : 'cachedir' , args : 1 , argName : 'cache-file' , 'The directory where to cache generated classes to.' )
+    cli.d ( longOpt : 'debug' , 'Print debug levels of information.' )
     cli.f ( longOpt : 'gantfile' , args : 1 , argName : 'build-file' , 'Use the named build file instead of the default, build.gant.' )
     cli.h ( longOpt : 'help' , 'Print out this message.' )
     //  This option should have "args : Option.UNLIMITED_VALUES" but that doesn't work.
@@ -231,6 +231,7 @@ final class Gant {
     cli.s ( longOpt : 'silent' , 'Print out nothing when executing.' )
     cli.v ( longOpt : 'verbose' , 'Print lots of extra information.' )
     //  This option should have "args : Option.UNLIMITED_VALUES" but that doesn't work.
+    cli.C ( longOpt : 'cachedir' , args : 1 , argName : 'cache-file' , 'The directory where to cache generated classes to.' )
     cli.D ( argName : 'name>=<value' , args : 1 , 'Define <name> to have value <value>.  Creates a variable named <name> for use in the scripts and a property named <name> for the Ant tasks.' )
     cli.L ( longOpt : 'lib' , args : 1 , argName : 'path' , 'Add a directory to search for jars and classes.' )
     cli.P ( longOpt : 'classpath' , args : 1 , argName : 'path' , 'Specify a path to search for jars and classes.' )
@@ -248,6 +249,7 @@ final class Gant {
     if ( options.l ) { binding.gantLib << options.l.split ( System.properties.'path.separator' ) }
     if ( options.n ) { GantState.dryRun = true }
     def function =  ( options.p || options.T ) ? 'targetList' : 'dispatch'
+    if ( options.d ) { GantState.verbosity = GantState.DEBUG ; binding.ant.setMessageOutputLevel ( ) }
     if ( options.q ) { GantState.verbosity = GantState.QUIET ; binding.ant.setMessageOutputLevel ( ) }
     if ( options.s ) { GantState.verbosity = GantState.SILENT  ; binding.ant.setMessageOutputLevel ( ) }
     if ( options.v ) { GantState.verbosity = GantState.VERBOSE  ; binding.ant.setMessageOutputLevel ( ) }
