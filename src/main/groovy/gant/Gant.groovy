@@ -240,7 +240,7 @@ final class Gant {
     def options = cli.parse ( args )
     if ( options == null ) { println ( 'Error in processing command line options.' ) ; return 1 }
     binding.cacheEnabled = options.c ? true : false
-    binding.cacheDirectory = binding.cacheEnabled && options.d ? new File ( options.d ) : new File ( "${System.properties.'user.home'}/.gant/cache" )
+    binding.cacheDirectory = binding.cacheEnabled && options.C ? new File ( options.C ) : new File ( "${System.properties.'user.home'}/.gant/cache" )
     if ( options.f ) {
       buildFileName = options.f
       buildClassName = buildFileName.replaceAll ( '\\.' , '_' ) 

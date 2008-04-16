@@ -25,7 +25,7 @@ final class SubGant_Test extends GantTestCase {
   File buildFile 
   public void setUp ( ) {
     super.setUp ( )
-    buildFile = File.createTempFile ( 'gant_' , '_SubGant_Test' )
+    buildFile = File.createTempFile ( 'gant_' , '_SubGant_Test' ) // Must ensure name is a valid Java class name.
   }
   public void tearDown ( ) {
     super.tearDown ( )
