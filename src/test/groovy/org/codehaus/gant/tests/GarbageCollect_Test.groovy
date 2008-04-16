@@ -82,7 +82,6 @@ Thread.sleep ( 500 ) //  Give time for the reference queue monitor to report in.
                           .replace ( '__CREATE_GANT__' , 'new Gant ( buildScript )' )
                           .replace ( '__PROCESS_TARGET__' , 'gant.processTargets ( target )' )
                           )
-    System.err.println ( binding.output )
     assertEquals ( 3 , binding.output.size ( ) )
     assertEquals ( binding.output[0] , binding.output[2] )
   }
@@ -100,4 +99,3 @@ Thread.sleep ( 500 ) //  Give time for the reference queue monitor to report in.
     assertEquals ( 2 , binding.output.size ( ) )
   }
 }
-
