@@ -1,9 +1,3 @@
-1.3.0 ( rXXXX )
----------------
-
-Require Java 1.5 or higher and Groovy 1.6 or higher.  Introduce generics and remove casts wherever sensible.
-
-
 1.2.0 ( rXXXX )
 ---------------
 
@@ -25,6 +19,8 @@ Add in checks for duplicate symbols in the binding.
 Change --cachedir option to short form -C so that -d can be used for --debug.
 
 Updated Maven Ant Tasks to 2.0.9.
+
+Move to Java 1.5 for the Gant source: introduce generics and remove casts wherever sensible.
 
 
 1.1.3 ( rXXXX )
