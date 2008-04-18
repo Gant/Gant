@@ -12,16 +12,19 @@ Require Java 1.5 or higher and Groovy 1.6 or higher.  Introduce generics and rem
 Introduce the GantBinding class to ensure various things that are needed for Gant to work and to allow more
 efficient cloning for multi-threading builds.
 
-Remove the inserting of the class name for targets classes into the binding.  Change from Maven.<property>
-to maven.<property>.  This is a breaking change, all uses of Maven as a reference from the binding must be
-replaced by maven.
+Remove the inserting of the class name for target set classes into the binding.
+
+Make the symbols added to the binding by the tools lowercase rather than upper case.  cf. GANT-29.
+
+The Maven target set used to provide access to properties via the symbol Maven, this has been changed to
+maven.  This change is to make things consistent with the above change of case of tool symbols. All uses of
+Maven as a reference from the binding must be replaced by maven.
 
 Add in checks for duplicate symbols in the binding.
 
-Make the symbols created by the tools lowercase rather than upper case.  Add in checks for adding an
-overwrite in the binding.  cf. GANT-29.
-
 Change --cachedir option to short form -C so that -d can be used for --debug.
+
+Updated Maven Ant Tasks to 2.0.9.
 
 
 1.1.3 ( rXXXX )
