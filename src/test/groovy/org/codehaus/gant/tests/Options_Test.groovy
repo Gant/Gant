@@ -41,7 +41,7 @@ driht
   }
   void testFileOptionLong ( ) {
     script = 'target ( test : "Test entry" ) { println ( "Hello." ) }'
-    assertEquals ( 0 , gant.processArgs ( [ '--gantfile' , '-' , 'test' ] as String[] ) )
+    assertEquals ( 0 , gant.processArgs ( [ '--file' , '-' , 'test' ] as String[] ) )
     assertEquals ( '''Hello.
 ''' , output )
   }

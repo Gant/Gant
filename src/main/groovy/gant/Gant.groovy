@@ -221,7 +221,7 @@ final class Gant {
     def cli = new CliBuilder ( usage : 'gant [option]* [target]*' , parser : new GnuParser ( ) )
     cli.c ( longOpt : 'usecache' , 'Whether to cache the generated class and perform modified checks on the file before re-compilation.' )
     cli.d ( longOpt : 'debug' , 'Print debug levels of information.' )
-    cli.f ( longOpt : 'gantfile' , args : 1 , argName : 'build-file' , 'Use the named build file instead of the default, build.gant.' )
+    cli.f ( longOpt : 'file' , args : 1 , argName : 'build-file' , 'Use the named build file instead of the default, build.gant.' )
     cli.h ( longOpt : 'help' , 'Print out this message.' )
     //  This option should have "args : Option.UNLIMITED_VALUES" but that doesn't work.
     cli.l ( longOpt : 'gantlib' , args : 1 , argName : 'library' , 'A directory that contains classes to be used as extra Gant modules,' )
@@ -233,6 +233,7 @@ final class Gant {
     //  This option should have "args : Option.UNLIMITED_VALUES" but that doesn't work.
     cli.C ( longOpt : 'cachedir' , args : 1 , argName : 'cache-file' , 'The directory where to cache generated classes to.' )
     cli.D ( argName : 'name>=<value' , args : 1 , 'Define <name> to have value <value>.  Creates a variable named <name> for use in the scripts and a property named <name> for the Ant tasks.' )
+    //  This option should have "args : Option.UNLIMITED_VALUES" but that doesn't work.
     cli.L ( longOpt : 'lib' , args : 1 , argName : 'path' , 'Add a directory to search for jars and classes.' )
     cli.P ( longOpt : 'classpath' , args : 1 , argName : 'path' , 'Specify a path to search for jars and classes.' )
     cli.T ( longOpt : 'targets' , 'Print out a list of the possible targets.' )
@@ -240,7 +241,6 @@ final class Gant {
     def options = cli.parse ( args )
     if ( options == null ) { println ( 'Error in processing command line options.' ) ; return 1 }
     binding.cacheEnabled = options.c ? true : false
-    binding.cacheDirectory = binding.cacheEnabled && options.C ? new File ( options.C ) : new File ( "${System.properties.'user.home'}/.gant/cache" )
     if ( options.f ) {
       buildFileName = options.f
       buildClassName = buildFileName.replaceAll ( '\\.' , '_' ) 
@@ -253,6 +253,7 @@ final class Gant {
     if ( options.q ) { GantState.verbosity = GantState.QUIET ; binding.ant.setMessageOutputLevel ( ) }
     if ( options.s ) { GantState.verbosity = GantState.SILENT  ; binding.ant.setMessageOutputLevel ( ) }
     if ( options.v ) { GantState.verbosity = GantState.VERBOSE  ; binding.ant.setMessageOutputLevel ( ) }
+    binding.cacheDirectory = binding.cacheEnabled && options.C ? new File ( options.C ) : new File ( "${System.properties.'user.home'}/.gant/cache" )
     if ( options.D ) {
       options.Ds.each { definition ->
         def pair = definition.split ( '=' ) as List
