@@ -46,7 +46,6 @@ public abstract class GantTestCase extends GroovyTestCase {
   protected void setScript ( final String script ) { System.setIn ( new ByteArrayInputStream ( script.getBytes ( ) ) ) ; }
   protected int processTargets ( ) { return gant.processTargets ( ) ; }
   protected int processTargets ( final String s ) { return gant.processTargets ( s ) ; }
-  //protected int processTargets ( final List<String> l ) { return gant.processTargets ( l ) ; }  
-  protected int processTargets ( final List l ) { return gant.processTargets ( l ) ; }  
+  protected int processTargets ( final List<String> l ) { return gant.processTargets ( l ) ; }  
   protected String getOutput ( ) { return output.toString ( ).replace ( "\r" , "" ) ; }
 }

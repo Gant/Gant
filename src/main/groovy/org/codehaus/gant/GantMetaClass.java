@@ -71,8 +71,7 @@ class GantMetaClass extends DelegatingMetaClass {
     if ( methodName.equals ( "depends" ) ) {
       for ( int i = 0 ; i < arguments.length ; ++i ) {
         if ( arguments[i] instanceof List ) {
-          //Iterator<Object> iterator = ( (List) arguments[i] ).iterator ( ) ;
-          Iterator iterator = ( (List) arguments[i] ).iterator ( ) ;
+          Iterator<Object> iterator = ( (List) arguments[i] ).iterator ( ) ;
           while ( iterator.hasNext ( ) ) { returnObject = processArgument ( iterator.next ( ) ) ; }
         }
         else { returnObject = processArgument ( arguments[i] ) ; }
