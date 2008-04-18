@@ -71,8 +71,7 @@
         <pathelement location="${buildClassesDirectory}"/>
         <path refid="compileJarSet"/>
       </classpath>
-      <!--javac source="1.5" target="1.5" debug="on"/-->
-      <javac source="1.4" target="1.4" debug="on"/>
+      <javac source="1.5" target="1.5" debug="on"/>
     </groovyc>
   </target>
 
@@ -84,8 +83,7 @@
         <fileset dir="${installationHome}/lib" includes="junit*.jar"/>
         <path refid="compileJarSet"/>
       </classpath>
-      <!--javac source="1.5" target="1.5" debug="on"/-->
-      <javac source="1.4" target="1.4" debug="on"/>
+      <javac source="1.5" target="1.5" debug="on"/>
     </groovyc>
   </target>
 
