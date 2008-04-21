@@ -26,7 +26,7 @@ import org.apache.tools.ant.Project ;
  *
  *  @author Russel Winder <russel.winder@concertant.com>
  */
-class GantState {
+public class GantState {
 
   //  Use the representation of verbosity level from Project to avoid translations later.
 
