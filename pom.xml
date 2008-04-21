@@ -140,22 +140,28 @@
       <version>1.0</version>
       <scope>compile</scope>
     </dependency>
+    <!-- For building using Maven we have to use GMaven -->
+    <!--dependency>
+      <groupId>org.codehaus.groovy.maven.runtime</groupId>
+      <artifactId>gmaven-runtime-default</artifactId>
+      <version>1.0-beta-4-SNAPSHOT</version>
+    </dependency-->
+    <!-- For the Gant Ant task only. -->
     <dependency>
-      <!-- For the Gant Ant task only. -->
       <groupId>org.apache.ant</groupId>
       <artifactId>ant</artifactId>
       <version>1.7.0</version>
       <scope>compile</scope>
     </dependency>
+    <!-- For the Maven target set only, though it is used for some build targets of Gant using Gant. -->
     <dependency>
-      <!-- For the Maven target set only, though it is used for some build targets of Gant using Gant. -->
       <groupId>org.apache.maven</groupId>
       <artifactId>maven-ant-tasks</artifactId>
       <version>2.0.8</version>
       <scope>runtime</scope>
     </dependency>
+    <!-- For the Ivy tool only. -->
     <dependency>
-      <!-- For the Ivy tool only. -->
       <groupId>org.apache.ivy</groupId>
       <artifactId>ivy</artifactId>
       <version>2.0.0-beta2</version>
@@ -165,6 +171,15 @@
   
   <build>
     <defaultGoal>install</defaultGoal>
+    <pluginManagement>
+      <plugins>
+        <plugin>
+          <groupId>org.codehaus.groovy.maven</groupId>
+          <artifactId>gmaven-plugin</artifactId>
+          <version>1.0-beta-4-SNAPSHOT</version>
+        </plugin>
+      </plugins>
+    </pluginManagement>
     <plugins>
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
@@ -198,8 +213,8 @@
         </configuration>
       </plugin>
       <plugin>
-        <groupId>org.codehaus.mojo.groovy</groupId>
-        <artifactId>groovy-maven-plugin</artifactId>
+        <groupId>org.codehaus.groovy.maven</groupId>
+        <artifactId>gmaven-plugin</artifactId>
         <executions>
           <execution>
             <goals>
