@@ -37,6 +37,7 @@ final class Maven {
                                   groovyCompileProperties : [ : ] ,
                                   compileClasspath : [ ] ,
                                   testClasspath : [ ] ,
+                                  remoteRepositories : [ ] ,
                                   compileDependencies : [ ] ,
                                   testDependencies : [ ] ,
                                   testFramework : 'junit' ,
@@ -91,16 +92,20 @@ final class Maven {
                                      ] }
       }
       def createDependencyMap = { dependencyMap , map ->
-        [ 'groupId' , 'artifactId' , 'version' , 'classifier' ].each { property -> if ( map [ property ] ) { dependencyMap [ property ] =  map [ property ] } }
+        [ 'groupId' , 'artifactId' , 'version' , 'classifier' ].each { property ->
+          if ( map [ property ] ) { dependencyMap [ property ] =  map [ property ] }
+        }
         dependencyMap
       }
       if ( owner.compileDependencies ) {
         owner.binding.ant."${owner.antlibXMLns}:dependencies" ( pathId : owner.compileDependenciesClasspathId ) {
+          if ( owner.remoteRepositories ) { owner.remoteRepositories.each { url -> remoteRepository ( url : url ) } }
           owner.compileDependencies.each { item -> dependency ( createDependencyMap ( [ scope : 'compile' ] , item ) ) }
         }
       }
       if ( owner.testDependencies ) {
         owner.binding.ant."${owner.antlibXMLns}:dependencies" ( pathId : owner.testDependenciesClasspathId ) {
+          if ( owner.remoteRepositories ) { owner.remoteRepositories.each { url -> remoteRepository ( url : url ) } }
           owner.testDependencies.each { item -> dependency ( createDependencyMap ( [ scope : 'test' ] , item ) ) }
         }
       }
