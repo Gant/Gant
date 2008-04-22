@@ -164,6 +164,8 @@
 
   <target name="uninstall" depends="-initialize,-uninstallJar,-uninstallExecutables" description="Uninstall Gant from installation destination."/>
 
+  <target name="bambooBuild" depends="test"/>
+
   <target name="clean" description="Clean everything up.">
     <delete dir="${buildDirectory}"/>
     <delete>
