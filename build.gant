@@ -329,9 +329,6 @@ target ( distribution : 'Create the distribution.' ) {
     ant.delete ( dir : buildTestClassesDirectory )
     performCompile ( pathIdentifier , true )
     performCompileTests ( pathIdentifier , true )
-    //  NB Tests will fail on version < 1.6.0 dues to trivial inconsequential issues. So it is probably a
-    //  bad idea to implement not creating the distribution on a failed test.  Definitely do not do an
-    //  upload though.
     if ( ! performTests ( pathIdentifier ) ) { someTestsFailed = true }
     makeManifest ( )
     def discriminator = prefix + '_groovy-' + item.version
