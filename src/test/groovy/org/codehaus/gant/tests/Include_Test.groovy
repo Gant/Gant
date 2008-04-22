@@ -70,7 +70,8 @@ target ( 'default' : '' ) { something ( ) }
   private final String nonExistentFilePath
   private final resultFlobbed = 'flobbed.\n'
   private final resultErrorEvaluatingLineOne = "Standard input, line 1 -- Error evaluating Gantfile: ${targetsClassName}\n"
-  private final resultErrorEvaluatingLineSix = "Standard input, line 6 -- Error evaluating Gantfile: No such property: ${targetsClassName} for class: standard_input\n"
+   //  There is a weirdness in 1.5.x which reports line 1 here where 1.6.x reports line 6.
+   private final resultErrorEvaluatingLineSix = 'Standard input, line ' + ( ( groovyMinorVersion > 5 ) ? '6' : '1' ) + " -- Error evaluating Gantfile: No such property: ${targetsClassName} for class: standard_input\n"
   private final String resultErrorEvaluatingWeirdLineOne
   private final Boolean isWindows
   Include_Test ( ) {

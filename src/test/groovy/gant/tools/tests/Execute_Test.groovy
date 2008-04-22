@@ -36,7 +36,9 @@ target ( testing : '' ) { execute.executable ( 'echo 1' ) }
 target ( testing : '' ) { execute.executable ( [ 'echo' , '1' ] ) }
 '''
     assertEquals ( 0 , processTargets ( 'testing' ) )
-    assertEquals ( '''  [execute] [echo, 1]
+    assertEquals (  ( groovyMinorVersion > 5 ) ? '''  [execute] [echo, 1]
+1
+''' : '''  [execute] ["echo", "1"]
 1
 ''' , output ) 
   }

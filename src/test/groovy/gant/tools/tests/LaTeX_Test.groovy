@@ -49,61 +49,71 @@ target ( add${name}OptionList : "" ) {
   void testAddLaTeXOption ( ) {
     script = optionTestGantFile ( 'LaTeX' , 'latex' )
     assertEquals ( 0 , processTargets ( 'addLaTeXOption' ) )
-    assertEquals ( '''[-interaction=nonstopmode, -halt-on-error, -blah]
+    assertEquals ( ( groovyMinorVersion > 5 ) ? '''[-interaction=nonstopmode, -halt-on-error, -blah]
+''' : '''["-interaction=nonstopmode", "-halt-on-error", "-blah"]
 ''' , output ) 
   }
   void testAddLaTeXOptionList ( ) {
     script = optionListTestGantFile ( 'LaTeX' , 'latex' )
     assertEquals ( 0 , processTargets ( 'addLaTeXOptionList' ) )
-    assertEquals ( '''[-interaction=nonstopmode, -halt-on-error, -blah, --flobadob]
+    assertEquals ( ( groovyMinorVersion > 5 ) ? '''[-interaction=nonstopmode, -halt-on-error, -blah, --flobadob]
+''' : '''["-interaction=nonstopmode", "-halt-on-error", "-blah", "--flobadob"]
 ''' , output ) 
   }
   void testAddBibTeXOption ( ) {
     script = optionTestGantFile ( 'BibTeX' , 'bibtex' )
     assertEquals ( 0 , processTargets ( 'addBibTeXOption' ) )
-    assertEquals ( '''[-blah]
+    assertEquals ( ( groovyMinorVersion > 5 ) ? '''[-blah]
+''' : '''["-blah"]
 ''' , output ) 
   }
   void testAddBibTeXOptionList ( ) {
     script = optionListTestGantFile ( 'BibTeX' , 'bibtex' )
     assertEquals ( 0 , processTargets ( 'addBibTeXOptionList' ) )
-    assertEquals ( '''[-blah, --flobadob]
+    assertEquals ( ( groovyMinorVersion > 5 ) ? '''[-blah, --flobadob]
+''' : '''["-blah", "--flobadob"]
 ''' , output ) 
   }
   void testAddMakeindexOption ( ) {
     script = optionTestGantFile ( 'Makeindex' , 'makeindex' )
     assertEquals ( 0 , processTargets ( 'addMakeindexOption' ) )
-    assertEquals ( '''[-blah]
+    assertEquals ( ( groovyMinorVersion > 5 ) ? '''[-blah]
+''' : '''["-blah"]
 ''' , output ) 
   }
   void testAddMakeindexOptionList ( ) {
     script = optionListTestGantFile ( 'Makeindex' , 'makeindex' )
     assertEquals ( 0 , processTargets ( 'addMakeindexOptionList' ) )
-    assertEquals ( '''[-blah, --flobadob]
+    assertEquals ( ( groovyMinorVersion > 5 ) ? '''[-blah, --flobadob]
+''' : '''["-blah", "--flobadob"]
 ''' , output ) 
   }
   void testAddDvipsOption ( ) {
     script = optionTestGantFile ( 'Dvips' , 'dvips' )
     assertEquals ( 0 , processTargets ( 'addDvipsOption' ) )
-    assertEquals ( '''[-blah]
+    assertEquals ( ( groovyMinorVersion > 5 ) ? '''[-blah]
+''' : '''["-blah"]
 ''' , output ) 
   }
   void testAddDvipsOptionList ( ) {
     script = optionListTestGantFile ( 'Dvips' , 'dvips' )
     assertEquals ( 0 , processTargets ( 'addDvipsOptionList' ) )
-    assertEquals ( '''[-blah, --flobadob]
+    assertEquals ( ( groovyMinorVersion > 5 ) ? '''[-blah, --flobadob]
+''' : '''["-blah", "--flobadob"]
 ''' , output ) 
   }
   void testAddPs2pdfOption ( ) {
     script = optionTestGantFile ( 'Ps2pdf' , 'ps2pdf' )
     assertEquals ( 0 , processTargets ( 'addPs2pdfOption' ) )
-    assertEquals ( '''[-blah]
+    assertEquals ( ( groovyMinorVersion > 5 ) ? '''[-blah]
+''' : '''["-blah"]
 ''' , output ) 
   }
   void testAddPs2pdfOptionList ( ) {
     script = optionListTestGantFile ( 'Ps2pdf' , 'ps2pdf' )
     assertEquals ( 0 , processTargets ( 'addPs2pdfOptionList' ) )
-    assertEquals ( '''[-blah, --flobadob]
+    assertEquals ( ( groovyMinorVersion > 5 ) ? '''[-blah, --flobadob]
+''' : '''["-blah", "--flobadob"]
 ''' , output ) 
   }
   final buildScript = '''
@@ -118,7 +128,10 @@ laTeX.intermediateExtensions.each { extension -> cleanPattern << '*' + extension
       def filename = File.createTempFile ( 'gantLaTeXTest_' , extension , new File ( '.' ) )
       script = buildScript.replace ( 'TESTFILENAME' , filename.name.replaceAll ( extension , '' ) )
       assertEquals ( 0 , processTargets ( 'pdf' ) )
-      assertTrue ( output.contains ( '[execute] [pdflatex, -interaction=nonstopmode, -halt-on-error, gantLaTeXTest_' ) )
+      assertTrue ( output.contains (
+                                    ( groovyMinorVersion > 5 )
+                                    ? '[execute] [pdflatex, -interaction=nonstopmode, -halt-on-error, gantLaTeXTest_'
+                                    : '[execute] ["pdflatex", "-interaction=nonstopmode", "-halt-on-error", "gantLaTeXTest_' ) )
       assertTrue ( output.contains ( '!  ==> Fatal error occurred, no output PDF file produced!' ) )
       assertEquals ( 0 , processTargets ( 'clean' ) )
       filename.delete ( )

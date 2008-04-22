@@ -29,7 +29,8 @@ cleanDirectory << 'target'
 target ( testClean : '' ) { println ( cleanDirectory ) }
 """
     assertEquals ( 0 , processTargets ( 'testClean' ) )
-    assertEquals ( '''[target]
+    assertEquals (  ( groovyMinorVersion > 5 ) ? '''[target]
+''' : '''["target"]
 ''' , output ) 
   }
   void testCleanDirectoryList ( ) {
@@ -39,7 +40,8 @@ cleanDirectory << [ 'target_a' , 'target_b' ]
 target ( testClean : '' ) { println ( cleanDirectory ) }
 """ 
     assertEquals ( 0 , processTargets ( 'testClean' ) ) 
-    assertEquals ( '''[[target_a, target_b]]
+    assertEquals ( ( groovyMinorVersion > 5 ) ? '''[[target_a, target_b]]
+''' :  '''[["target_a", "target_b"]]
 ''' , output ) 
   }
   void testCleanPatternString ( ) {
@@ -49,7 +51,8 @@ cleanPattern << '**/*~'
 target ( testClean : '' ) {println ( cleanPattern ) }
 """
     assertEquals ( 0 , processTargets ( 'testClean' ) )
-    assertEquals ( '''[**/*~]
+    assertEquals ( ( groovyMinorVersion > 5 ) ? '''[**/*~]
+''' : '''["**/*~"]
 ''' , output ) 
   }
   void testCleanPatternList ( ) {
@@ -59,7 +62,8 @@ cleanPattern << [ '**/*~' , '**/*.bak' ]
 target ( testClean : '' ) { println ( cleanPattern ) }
 """
     assertEquals ( 0 , processTargets ( 'testClean' ) )
-    assertEquals ( '''[[**/*~, **/*.bak]]
+    assertEquals ( ( groovyMinorVersion > 5 ) ? '''[[**/*~, **/*.bak]]
+''' : '''[["**/*~", "**/*.bak"]]
 ''' , output ) 
   }
   void testClobberDirectoryString ( ) {
@@ -69,7 +73,8 @@ clobberDirectory << 'target'
 target ( testClobber : '' ) { println ( clobberDirectory ) }
 """
     assertEquals ( 0 , processTargets ( 'testClobber' ) )
-    assertEquals ( '''[target]
+    assertEquals ( ( groovyMinorVersion > 5 ) ? '''[target]
+''' : '''["target"]
 ''' , output ) 
   }
   void testClobberDirectoryList ( ) {
@@ -79,7 +84,8 @@ clobberDirectory << [ 'target_a' , 'target_b' ]
 target ( testClobber : '' ) { println ( clobberDirectory ) }
 """
     assertEquals ( 0 , processTargets ( 'testClobber' ) )
-    assertEquals ( '''[[target_a, target_b]]
+    assertEquals ( ( groovyMinorVersion > 5 ) ? '''[[target_a, target_b]]
+''' : '''[["target_a", "target_b"]]
 ''' , output ) 
   }
   void testClobberPatternString ( ) {
@@ -91,7 +97,8 @@ target ( testClobber : '' ) {
 }
 """
     assertEquals ( 0 , processTargets ( 'testClobber' ) )
-    assertEquals ( '''[**/*~]
+    assertEquals ( ( groovyMinorVersion > 5 ) ? '''[**/*~]
+''' : '''["**/*~"]
 ''' , output ) 
   }
   void testClobberPatternList ( ) {
@@ -101,7 +108,8 @@ clobberPattern << [ '**/*~' , '**/*.bak' ]
 target ( testClobber : '' ) { println ( clobberPattern ) }
 """
     assertEquals ( 0 , processTargets ( 'testClobber' ) )
-    assertEquals ( '''[[**/*~, **/*.bak]]
+    assertEquals ( ( groovyMinorVersion > 5 ) ? '''[[**/*~, **/*.bak]]
+''' : '''[["**/*~", "**/*.bak"]]
 ''' , output ) 
   }
 }

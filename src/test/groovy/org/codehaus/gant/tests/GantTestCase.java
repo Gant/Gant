@@ -24,6 +24,8 @@ import groovy.util.GroovyTestCase ;
 
 import gant.Gant ;
 
+import org.codehaus.groovy.runtime.InvokerHelper ;
+
 /**
  *  A Gant test case: Adds the required input stream manipulation features to avoid replication of code.
  *  Also prepare a new instance of Gant for each test.
@@ -31,6 +33,13 @@ import gant.Gant ;
  *  @author Russel Winder <russel.winder@concertant.com>
  */
 public abstract class GantTestCase extends GroovyTestCase {
+  public static final int groovyMajorVersion ;
+  public static final int groovyMinorVersion ;
+  static {
+    final String[] version =  InvokerHelper.getVersion ( ).split ( "[.-]" , 3 ) ;
+    groovyMajorVersion = Integer.parseInt ( version[0] ) ;
+    groovyMinorVersion = Integer.parseInt ( version[1] ) ;
+  }
   private ByteArrayOutputStream output ;
   private PrintStream savedOut ;
   protected Gant gant ;
