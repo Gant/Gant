@@ -25,9 +25,11 @@
   latter only installs the jar file.  If the property grailsBuild is defined then it is a Grails build
   otherwise it is a Groovy build. 
 
+  This script also provides targets for continuous integration servers.
+
 -->
 
-<project name="Gant" default="compile" basedir=".">
+<project name="Gant" default="compile" basedir="." xmlns:artifact="urn:maven-artifact-ant">
 
   <property file="build.properties"/>
   <property file="local.build.properties"/>
@@ -164,7 +166,55 @@
 
   <target name="uninstall" depends="-initialize,-uninstallJar,-uninstallExecutables" description="Uninstall Gant from installation destination."/>
 
-  <target name="bambooBuild" depends="test"/>
+  <target name="ciBuild">
+    <path id="maven-ant-tasks.classpath" path="${jarsDirectory}/maven-ant-tasks-2.0.9.jar"/>
+    <typedef resource="org/apache/maven/artifact/ant/antlib.xml" uri="urn:maven-artifact-ant" classpathref="maven-ant-tasks.classpath"/>
+    <artifact:dependencies pathId="dependency.classpath">
+      <dependency groupId="org.codehaus.groovy" artifactId="groovy" version="1.5.5"/>
+      <dependency groupId="commons-cli" artifactId="commons-cli" version="1.0"/>
+    </artifact:dependencies>
+    <taskdef name="groovyc" classname="org.codehaus.groovy.ant.Groovyc" classpathref="dependency.classpath"/>
+    <!-- compile -->
+    <mkdir dir="${buildClassesDirectory}"/>
+    <groovyc srcdir="${sourceDirectory}" destdir="${buildClassesDirectory}">
+      <classpath>
+        <pathelement location="${buildClassesDirectory}"/>
+        <path refid="dependency.classpath"/>
+      </classpath>
+      <javac source="1.5" target="1.5" debug="on"/>
+    </groovyc>
+    <!-- compileTests -->
+    <mkdir dir="${buildTestClassesDirectory}"/>
+    <groovyc srcdir="${testsDirectory}" destdir="${buildTestClassesDirectory}">
+      <classpath>
+        <pathelement location="${buildClassesDirectory}"/>
+        <path refid="dependency.classpath"/>
+      </classpath>
+      <javac source="1.5" target="1.5" debug="on"/>
+    </groovyc>
+    <!-- test -->
+    <mkdir dir="${buildTestReportsDirectory}"/>
+    <junit printsummary="yes" fork="true">
+      <formatter type="plain"/>
+      <batchtest todir="${buildTestReportsDirectory}">
+        <fileset dir="${buildTestClassesDirectory}" includes="**/ant/tests/*_Test.class"/>
+      </batchtest>
+      <classpath>
+        <pathelement location="${buildTestClassesDirectory}"/>
+      </classpath>
+    </junit>
+    <junit printsummary="yes" fork="true">
+      <formatter type="plain"/>
+      <batchtest todir="${buildTestReportsDirectory}">
+        <fileset dir="${buildTestClassesDirectory}" includes="**/*_Test.class" excludes="**/ant/tests/*"/>
+      </batchtest>
+      <classpath>
+        <pathelement location="${buildTestClassesDirectory}"/>
+        <pathelement location="${buildClassesDirectory}"/>
+        <path refid="dependency.classpath"/>
+      </classpath>
+    </junit>
+  </target>
 
   <target name="clean" description="Clean everything up.">
     <delete dir="${buildDirectory}"/>
