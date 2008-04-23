@@ -40,7 +40,7 @@ includeTargets << gant.targets.Maven
     script = """
 includeTargets << gant.targets.Maven
 """
-    assertEquals ( 13 , processTargets ( 'package' ) )
+    assertEquals ( -13 , processTargets ( 'package' ) )
     assertEquals ( '''maven.groupId must be set to achieve target package.
 ''' , output ) 
   }
@@ -48,7 +48,7 @@ includeTargets << gant.targets.Maven
     script = """
 includeTargets ** gant.targets.Maven * [ : ]
 """
-    assertEquals ( 13 , processTargets ( 'package' ) )
+    assertEquals ( -13 , processTargets ( 'package' ) )
     assertEquals ( '''maven.groupId must be set to achieve target package.
 ''' , output ) 
   }
@@ -57,7 +57,7 @@ includeTargets ** gant.targets.Maven * [ : ]
 includeTargets << gant.targets.Maven
 maven.groupId = 'flob'
 """
-    assertEquals ( 13 , processTargets ( 'package' ) )
+    assertEquals ( -13 , processTargets ( 'package' ) )
     assertEquals ( '''maven.artifactId must be set to achieve target package.
 ''' , output ) 
   }
@@ -65,7 +65,7 @@ maven.groupId = 'flob'
     script = """
 includeTargets ** gant.targets.Maven * [ groupId : 'flob' ]
 """
-    assertEquals ( 13 , processTargets ( 'package' ) )
+    assertEquals ( -13 , processTargets ( 'package' ) )
     assertEquals ( '''maven.artifactId must be set to achieve target package.
 ''' , output ) 
   }
@@ -75,7 +75,7 @@ includeTargets << gant.targets.Maven
 maven.groupId = 'flob'
 maven.artifactId = 'adob'
 """
-    assertEquals ( 13 , processTargets ( 'package' ) )
+    assertEquals ( -13 , processTargets ( 'package' ) )
     assertEquals ( '''maven.version must be set to achieve target package.
 ''' , output ) 
   }
@@ -83,7 +83,7 @@ maven.artifactId = 'adob'
     script = """
 includeTargets ** gant.targets.Maven * [ groupId : 'flob' , artifactId : 'adob' ]
 """
-    assertEquals ( 13 , processTargets ( 'package' ) )
+    assertEquals ( -13 , processTargets ( 'package' ) )
     assertEquals ( '''maven.version must be set to achieve target package.
 ''' , output ) 
   }
@@ -92,7 +92,7 @@ includeTargets ** gant.targets.Maven * [ groupId : 'flob' , artifactId : 'adob' 
 includeTargets << gant.targets.Maven
 maven.binding = new Binding ( )
 """
-    assertEquals ( 2 , processTargets ( 'initialize' ) )
+    assertEquals ( -2 , processTargets ( 'initialize' ) )
     assertEquals ( '''Standard input, line 3 -- Error evaluating Gantfile: Cannot amend the property binding.
 ''' , output ) 
   }
@@ -100,7 +100,7 @@ maven.binding = new Binding ( )
     script = """
 includeTargets ** gant.targets.Maven * [ binding : new Binding ( ) ]
 """ 
-    assertEquals ( 2 , processTargets ( 'initialize' ) )
+    assertEquals ( -2 , processTargets ( 'initialize' ) )
     assertEquals ( '''Standard input, line 2 -- Error evaluating Gantfile: Cannot amend the property binding.
 ''' , output ) 
   }

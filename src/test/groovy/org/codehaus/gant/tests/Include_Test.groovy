@@ -132,37 +132,37 @@ target ( 'default' : '' ) { something ( ) }
   void testToolFlobClass ( ) {
     def target = 'flob'
     script = toolBuildScriptClass
-    assertEquals ( 11 , processTargets ( target ) )
+    assertEquals ( -11 , processTargets ( target ) )
     assertEquals ( resultTargetDoesNotExist ( target ) , output ) 
   }
   void testToolFlobFile ( ) {
     def target = 'flob'
     script = toolBuildScriptFile
-    assertEquals ( 11 , processTargets ( target ) )
+    assertEquals ( -11 , processTargets ( target ) )
     assertEquals ( resultTargetDoesNotExist ( target ) , output ) 
   }
   void testToolFlobString ( ) {
     def target = 'flob' 
     script = toolBuildScriptString
-    assertEquals ( 11 , processTargets ( target ) )
+    assertEquals ( -11 , processTargets ( target ) )
     assertEquals ( resultTargetDoesNotExist ( target ) , output ) 
   }
   void testToolBurbleClass ( ) {
     def target = 'burble'
     script = toolBuildScriptClass
-    assertEquals ( 11 , processTargets ( target ) )
+    assertEquals ( -11 , processTargets ( target ) )
     assertEquals ( resultTargetDoesNotExist ( target ) , output ) 
   }
   void testToolBurbleFile ( ) {
     def target = 'burble'
     script = toolBuildScriptFile
-    assertEquals ( 11 , processTargets ( target ) )
+    assertEquals ( -11 , processTargets ( target ) )
     assertEquals ( resultTargetDoesNotExist ( target ) , output ) 
   }
   void testToolBurbleString ( ) {
     def target = 'burble'
     script = toolBuildScriptString
-    assertEquals ( 11 , processTargets ( target ) )
+    assertEquals ( -11 , processTargets ( target ) )
     assertEquals ( resultTargetDoesNotExist ( target ) , output ) 
   }
   void testToolSomethingClass ( ) {
@@ -185,7 +185,7 @@ target ( 'default' : '' ) { something ( ) }
     def errorMessage = 'Standard input, line 1 -- Error evaluating Gantfile: '
     if ( isWindows ) { errorMessage += nonExistentFilePath.replaceAll ( '/' , '\\\\' ) + ' (The system cannot find the path specified)\n' }
     else { errorMessage += nonExistentFilePath + ' (No such file or directory)\n' }
-    assertEquals ( 2 , processTargets ( 'flob' ) )
+    assertEquals ( -2 , processTargets ( 'flob' ) )
     assertEquals ( errorMessage , output )
   }
   void testTargetsDefaultClassClass ( ) {
@@ -195,12 +195,12 @@ target ( 'default' : '' ) { something ( ) }
   }
   void testTargetsDefaultClassFile ( ) {
     script = targetsBuildClassFile
-    assertEquals ( 2 , processTargets ( ) )
+    assertEquals ( -2 , processTargets ( ) )
     assertEquals ( resultErrorEvaluatingLineOne , output ) 
   }
   void testTargetsDefaultClassString ( ) {
     script = targetsBuildClassString
-    assertEquals ( 2 , processTargets ( ) )
+    assertEquals ( -2 , processTargets ( ) )
     assertEquals ( resultErrorEvaluatingLineOne , output ) 
   }
   void testTargetsFlobClassClass ( ) {
@@ -210,28 +210,28 @@ target ( 'default' : '' ) { something ( ) }
   }
   void testTargetsFlobClassFile ( ) {
     script = targetsBuildClassFile
-    assertEquals ( 2 , processTargets ( 'flob' ) )
+    assertEquals ( -2 , processTargets ( 'flob' ) )
     assertEquals ( resultErrorEvaluatingLineOne , output ) 
   }
   void testTargetsFlobClassString ( ) {
     script = targetsBuildClassString
-    assertEquals ( 2 , processTargets ( 'flob' ) )
+    assertEquals ( -2 , processTargets ( 'flob' ) )
     assertEquals ( resultErrorEvaluatingLineOne , output ) 
   }
   void testTargetsBurbleClassClass ( ) {
     def target = 'burble'
     script = targetsBuildClassClass
-    assertEquals ( 11 , processTargets ( target ) )
+    assertEquals ( -11 , processTargets ( target ) )
     assertEquals ( resultTargetDoesNotExist ( target ) , output ) 
   }
   void testTargetsBurbleClassFile ( ) {
     script = targetsBuildClassFile
-    assertEquals ( 2 , processTargets ( 'burble' ) )
+    assertEquals ( -2 , processTargets ( 'burble' ) )
     assertEquals ( resultErrorEvaluatingLineOne , output ) 
   }
   void testTargetsBurbleClassString ( ) {
     script = targetsBuildClassString
-    assertEquals ( 2 , processTargets ( 'burble') )
+    assertEquals ( -2 , processTargets ( 'burble') )
     assertEquals ( resultErrorEvaluatingLineOne , output ) 
   }
   void testTargetsSomethingClassClass ( ) {
@@ -241,23 +241,23 @@ target ( 'default' : '' ) { something ( ) }
   }
   void testTargetsSomethingClassFile ( ) {
     script = targetsBuildClassFile
-    assertEquals ( 2 , processTargets ( 'something' ) )
+    assertEquals ( -2 , processTargets ( 'something' ) )
     assertEquals ( resultErrorEvaluatingLineOne, output ) 
   }
   void testTargetsSomethingClassString ( ) {
     script = targetsBuildClassString
-    assertEquals ( 2 , processTargets ( 'something' ) )
+    assertEquals ( -2 , processTargets ( 'something' ) )
     assertEquals ( resultErrorEvaluatingLineOne, output ) 
   }
   void testTargetsClassNoFile ( ) {
     script = targetsBuildClassFile.replace ( targetsClassFilePath , nonExistentFilePath )
-    assertEquals ( 2 , processTargets ( 'flob' ) )
+    assertEquals ( -2 , processTargets ( 'flob' ) )
     if ( isWindows ) { assertTrue ( output.startsWith ( resultErrorEvaluatingWeirdLineOne ) ) }
     else { assertEquals ( resultErrorEvaluatingWeirdLineOne , output ) }
   }
   void testTargetsDefaultScriptClass ( ) {
     script = targetsBuildScriptClass
-    assertEquals ( 2 , processTargets ( ) )
+    assertEquals ( -2 , processTargets ( ) )
     assertEquals ( resultErrorEvaluatingLineSix , output ) 
   }
   void testTargetsDefaultScriptFile ( ) {
@@ -272,7 +272,7 @@ target ( 'default' : '' ) { something ( ) }
   }
   void testTargetsFlobScriptClass ( ) {
     script = targetsBuildScriptClass
-    assertEquals ( 2 , processTargets ( 'flob' ) )
+    assertEquals ( -2 , processTargets ( 'flob' ) )
     assertEquals ( resultErrorEvaluatingLineSix , output ) 
   }
   void testTargetsFlobScriptFile ( ) {
@@ -287,24 +287,24 @@ target ( 'default' : '' ) { something ( ) }
   }
   void testTargetsBurbleScriptClass ( ) {
     script = targetsBuildScriptClass
-    assertEquals ( 2 , processTargets ( 'burble' ) )
+    assertEquals ( -2 , processTargets ( 'burble' ) )
     assertEquals ( resultErrorEvaluatingLineSix , output ) 
   }
   void testTargetsBurbleScriptFile ( ) {
     def target = 'burble'
     script = targetsBuildScriptFile
-    assertEquals ( 11 , processTargets ( target ) )
+    assertEquals ( -11 , processTargets ( target ) )
     assertEquals ( resultTargetDoesNotExist ( target ) , output ) 
   }
   void testTargetsBurbleScriptString ( ) {
     def target = 'burble'
     script = targetsBuildScriptString
-    assertEquals ( 11 , processTargets ( target ) )
+    assertEquals ( -11 , processTargets ( target ) )
     assertEquals ( resultTargetDoesNotExist ( target ) , output ) 
   }
   void testTargetsSomethingScriptClass ( ) {
     script = targetsBuildScriptClass
-    assertEquals ( 2 , processTargets ( 'something' ) )
+    assertEquals ( -2 , processTargets ( 'something' ) )
     assertEquals ( resultErrorEvaluatingLineSix , output ) 
   }
   void testTargetsSomethingScriptFile ( ) {
@@ -319,7 +319,7 @@ target ( 'default' : '' ) { something ( ) }
   }
   void testTargetsScriptNoFile ( ) {
     script = targetsBuildScriptFile.replace ( targetsScriptFilePath , nonExistentFilePath )
-    assertEquals ( 2 , processTargets ( 'flob' ) )
+    assertEquals ( -2 , processTargets ( 'flob' ) )
     if ( isWindows ) { assertTrue ( output.startsWith ( resultErrorEvaluatingWeirdLineOne ) ) }
     else { assertEquals ( resultErrorEvaluatingWeirdLineOne , output ) }
   }
@@ -349,13 +349,13 @@ target ( 'default' : '' ) { something ( ) }
   void testTargetsMultipleIncludeBurbleScriptFile ( ) {
     def target = 'burble'
     script = "includeTargets <<  new File ( '${targetsScriptFilePath}' )\n" + targetsBuildScriptFile
-    assertEquals ( 11 , processTargets ( target ) )
+    assertEquals ( -11 , processTargets ( target ) )
     assertEquals ( resultTargetDoesNotExist ( target ) , output ) 
   }
   void testTargetsMultipleIncludeBurbleScriptString ( ) {
     def target = 'burble'
     script = "includeTargets <<  '''${targetsScriptText}'''\n" + targetsBuildScriptString
-    assertEquals ( 11 , processTargets ( target ) )
+    assertEquals ( -11 , processTargets ( target ) )
     assertEquals ( resultTargetDoesNotExist ( target ) , output ) 
   }
   void testTargetsMultipleIncludeSomethingScriptFile ( ) {

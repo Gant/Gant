@@ -33,7 +33,7 @@ target ( "default" : "something" ) { something ( ) }
     assertEquals ( 'yes\n' , output ) 
   }
   void testBlah ( ) {
-    assertEquals ( 11 , processTargets ( 'blah' ) )
+    assertEquals ( -11 , processTargets ( 'blah' ) )
     assertEquals ( 'Target blah does not exist.\n' , output ) 
   }
   void testSomething ( ) {

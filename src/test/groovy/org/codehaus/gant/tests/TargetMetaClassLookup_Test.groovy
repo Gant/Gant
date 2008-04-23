@@ -49,7 +49,7 @@ setDefaultTarget ( something )
 ''' , output ) 
   }
   void testBlah ( ) {
-    assertEquals ( 11 , processTargets ( 'blah' ) )
+    assertEquals ( -11 , processTargets ( 'blah' ) )
     assertEquals ( ''' [property] environment : 'environment'
 Target blah does not exist.
 ''' , output ) 

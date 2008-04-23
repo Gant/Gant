@@ -178,24 +178,30 @@ final class Gant {
     try {
       if ( targets.size ( ) > 0 ) {
         targets.each { target ->
-          try { binding.getVariable ( target ).run ( ) }
+          try {
+            def returnValue = binding.getVariable ( target ).call ( )
+            returnCode = ( returnValue instanceof Number ) ? returnValue.intValue ( ) : 0
+          }
           catch ( MissingPropertyException mme ) {
             printDispatchExceptionMessage ( target , mme.property , mme.message )
-            returnCode = 11
+            returnCode = -11
           }
         }
       }
       else {
-        try { binding.getVariable ( 'default' ).run ( ) }
+        try {
+          def returnValue = binding.getVariable ( 'default' ).call ( )
+          returnCode = ( returnValue instanceof Number ) ? returnValue.intValue ( ) : 0
+        }
         catch ( MissingPropertyException mme ) {
           printDispatchExceptionMessage ( 'default' , mme.property , mme.message )
-          returnCode = 12
+          returnCode = -12
         }
       }
     }
     catch ( Exception e ) {
       println ( e.message )
-      returnCode = 13
+      returnCode = -13
     }
     returnCode
   }
@@ -239,7 +245,7 @@ final class Gant {
     cli.T ( longOpt : 'targets' , 'Print out a list of the possible targets.' )
     cli.V ( longOpt : 'version' , 'Print the version number and exit.' )
     def options = cli.parse ( args )
-    if ( options == null ) { println ( 'Error in processing command line options.' ) ; return 1 }
+    if ( options == null ) { println ( 'Error in processing command line options.' ) ; return -1 }
     binding.cacheEnabled = options.c ? true : false
     if ( options.f ) {
       buildFileName = options.f
@@ -289,7 +295,7 @@ final class Gant {
         gotUnknownOptions = true
       }
     }
-    if ( gotUnknownOptions ) { cli.usage ( ) ; return 1 ; }
+    if ( gotUnknownOptions ) { cli.usage ( ) ; return -1 ; }
 	def jarPattern = ~/.*\.jar/
     def userAntLib = new File ( "${System.properties.'user.home'}/.ant/lib" )
     if ( userAntLib.isDirectory ( ) ) { userAntLib.eachFileMatch ( jarPattern ) { file -> rootLoader?.addURL ( file.toURL ( ) ) } }
@@ -321,12 +327,12 @@ final class Gant {
     }
     else {
       buildFile = new File ( buildFileName ) 
-      if ( ! buildFile.isFile ( ) ) { println ( 'Cannot open file ' + buildFileName ) ; return 3 }
+      if ( ! buildFile.isFile ( ) ) { println ( 'Cannot open file ' + buildFileName ) ; return -3 }
       buildClassName = buildFile.name.replaceAll ( /\./ , '_' )
       buildFileModified = buildFile.lastModified ( )
     }
     if ( binding.cacheEnabled ) {       
-      if ( buildFile == null ) { println 'Caching can only be used in combination with the -f option.' ; return 1 }
+      if ( buildFile == null ) { println 'Caching can only be used in combination with the -f option.' ; return -1 }
       def cacheDirectory = binding.cacheDirectory
       if ( binding.classLoader instanceof URLClassLoader ) { binding.classLoader.addURL ( cacheDirectory.toURL ( ) ) }
       else { rootLoader?.addURL ( cacheDirectory.toURL ( ) ) }      
@@ -362,7 +368,7 @@ final class Gant {
           }
         }
         println ( 'Error evaluating Gantfile: ' + ( e instanceof InvocationTargetException ? e.cause.message : e.message  ) )
-        return 2
+        return -2
       }
     }
     invokeMethod ( function , targets )

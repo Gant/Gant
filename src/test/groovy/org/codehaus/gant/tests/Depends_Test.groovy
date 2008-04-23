@@ -86,7 +86,7 @@ target ( listDoAll : '' ) { depends ( [ listDoA , listDoB , listDoC ] ) }
 datum = 1
 target ( notClosure : '' ) { depends ( datum ) }
 '''
-    assertEquals ( 13 , processTargets ( 'notClosure' ) )
+    assertEquals ( -13 , processTargets ( 'notClosure' ) )
     assertEquals ( 'depends called with an argument (1) that is not a known target or list of targets.\n' , output )
   }
   void testNotListClosure ( ) {
@@ -94,7 +94,7 @@ target ( notClosure : '' ) { depends ( datum ) }
 datum = 1
 target ( notListClosure : '' ) { depends ( [ datum ] ) }
 '''
-    assertEquals ( 13 , processTargets ( 'notListClosure' ) )
+    assertEquals ( -13 , processTargets ( 'notListClosure' ) )
     assertEquals ( 'depends called with an argument (1) that is not a known target or list of targets.\n' , output )
   }
   void testOutOfOrder ( ) {
@@ -127,7 +127,7 @@ target ( outOfOrderListDoit : '' ) { println ( 'done.' ) }
 target ( standard_input , '' ) { System.err.println ( 'Standard Input' ) ; println ( 'done.' ) }
 target ( startingPoint , '' ) { System.err.println ( 'StartingPoint' ) ; depends ( standard_input ) }
 '''
-    assertEquals ( 2 , processTargets ( 'startingPoint' ) )
+    assertEquals ( -2 , processTargets ( 'startingPoint' ) )
     assertTrue ( output.startsWith ( 'Standard input, line 2 -- Error evaluating Gantfile: No signature of method: ' ) )
   }
   void testStringParameter ( ) {

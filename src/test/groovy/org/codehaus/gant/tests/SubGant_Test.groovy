@@ -76,7 +76,7 @@ target ( doSubGant : '' ) {
     script = buildScript
     assertEquals ( 0 , processTargets ( 'doSubGant' ) )
     assertEquals ( 'flobadoc = weed\n' , output )
-    assertEquals ( 2 , processTargets ( 'doOutput' ) )
+    assertEquals ( -2 , processTargets ( 'doOutput' ) )
   }
   */
 }

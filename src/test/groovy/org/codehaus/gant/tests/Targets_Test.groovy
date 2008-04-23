@@ -40,12 +40,12 @@ final class Targets_Test extends GantTestCase {
   }
   void testEmptyMap ( ) {
     script = "target ( [ : ] ) { print ( '${result}' ) }"
-    assertEquals ( 2 , processTargets ( 'withDescription' ) )
+    assertEquals ( -2 , processTargets ( 'withDescription' ) )
     assertEquals ( 'Standard input, line 1 -- Error evaluating Gantfile: Target specified without a name.\n' , output ) 
   }
   void testMultipleEntries ( ) {
     script = "target ( fred : '' , debbie : '' ) { print ( '${result}' ) }"
-    assertEquals ( 2 , processTargets ( 'withDescription' ) )
+    assertEquals ( -2 , processTargets ( 'withDescription' ) )
     assertEquals ( 'Standard input, line 1 -- Error evaluating Gantfile: Target specified with multiple names.\n' , output ) 
   }
 }

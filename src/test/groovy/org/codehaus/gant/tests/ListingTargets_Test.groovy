@@ -108,7 +108,7 @@ target ( something : "Do something." ) { }
 target ( somethingElse : "Do something else." ) { }
 setDefaultTarget ( 'fail' )
 '''
-    assertEquals ( 2 , gant.processArgs ( [ '-p' ,  '-f' ,  '-' ] as String[] ) )
+    assertEquals ( -2 , gant.processArgs ( [ '-p' ,  '-f' ,  '-' ] as String[] ) )
     assertEquals ( '''Standard input, line 4 -- Error evaluating Gantfile: Target fail does not exist so cannot be made the default.
 ''' , output ) 
   }
@@ -199,7 +199,7 @@ target ( something : "Do something." ) { }
 target ( somethingElse : "Do something else." ) { }
 setDefaultTarget ( 'fail' )
 '''
-    assertEquals ( 2 , gant.processArgs ( [ '-T' ,  '-f' ,  '-' ] as String[] ) )
+    assertEquals ( -2 , gant.processArgs ( [ '-T' ,  '-f' ,  '-' ] as String[] ) )
     assertEquals ( '''Standard input, line 4 -- Error evaluating Gantfile: Target fail does not exist so cannot be made the default.
 ''' , output ) 
   }
