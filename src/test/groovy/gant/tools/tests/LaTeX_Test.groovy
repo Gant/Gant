@@ -24,11 +24,8 @@ import org.codehaus.gant.tests.GantTestCase
 final class LaTeX_Test extends GantTestCase {
   def executablePresent = false
   public LaTeX_Test ( ) {
-    try {
-      Runtime.runtime.exec ( 'pdflatex' )
-      executablePresent = true
-    }
-    catch ( IOException io ) { }
+    try { executablePresent = Runtime.runtime.exec ( 'pdflatex -interaction=batchmode \\end' ).waitFor ( ) == 0 }
+    catch ( Exception io ) { }
   }  
   def optionTestGantFile ( name , key ) { """
 includeTool << gant.tools.LaTeX
