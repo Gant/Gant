@@ -214,7 +214,7 @@ ant.path ( id : 'testJarSet' ) {
 //  Set up all the targets.
 
 includeTargets << gant.targets.Clean
-cleanPattern <<  [ '**/*~' , 'cobertura.ser' ] 
+cleanPattern <<  [ '**/*~' , 'cobertura.ser' , 'texput.log' ] 
 cleanDirectory << buildDirectory
 
 includeTool << gant.tools.Execute
