@@ -237,7 +237,7 @@ target ( test : 'Test a build.' ) {
   depends ( compileTests )
   def returnCode = performTests ( 'compileJarSet' )
   println ( 'Tests ' + ( returnCode ? 'suceeded' : 'failed' ) + '.' )
-  returnCode
+  returnCode ? 0 : 1
 }
 
 target ( coberturaTest : 'Test a build using Cobertura to get a coverage report.' ) {
