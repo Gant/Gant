@@ -14,20 +14,34 @@
 
 import org.codehaus.gant.ant.tests.Gant_Test
 
+//// This build file has to work in two contexts.  If GROOVY_HOME is set in the environment then the jars
+//// from that installation of Groovy should be used so as to ensure testing in the right context.  If the
+//// environment does not have a GROOVY_HOME set then grab some specific versions to make things work.
+
 target ( test : 'A test target in the default file.' ) { Gant_Test.returnValue = test_description }
 
 target ( blah : 'Another target in the default file.' ) { Gant_Test.returnValue = blah_description }
 
+////  MUST ensure that the same dependecies as in gantTest.xml and ${toplevelDirectory}/build.xml
+
 target ( gantTaskdef : 'Check that a taskdef works.' ) {
-  taskdef ( name : 'groovy' , classname: 'org.codehaus.groovy.ant.Groovyc' ) {
-    classpath {
-      pathelement ( location : '../../../../../../../../target/classes' )
-      fileset ( dir : ant.project.properties.'environment.GROOVY_HOME' + '/lib' , includes : 'groovy*.jar' )
-      fileset ( dir : ant.project.properties.'environment.GROOVY_HOME' + '/lib' , includes : 'asm*.jar' )
-      fileset ( dir : ant.project.properties.'environment.GROOVY_HOME' + '/lib' , includes : 'commons*.jar' )
-      fileset ( dir : ant.project.properties.'environment.GROOVY_HOME' + '/lib' , includes : 'antlr*.jar' )
+  if ( System.getenv ( ).'GROOVY_HOME' != null ) {
+    taskdef ( name : 'groovyc' , classname: 'org.codehaus.groovy.ant.Groovyc' ) {
+      classpath {
+        fileset ( dir : ant.project.properties.'environment.GROOVY_HOME' + '/lib' , includes : 'groovy*.jar' )
+        fileset ( dir : ant.project.properties.'environment.GROOVY_HOME' + '/lib' , includes : 'commons-cli*.jar' )
+      }
     }
   }
+  //  Assume execution is at the toplevel directory.
+  def artifact = 'urn:maven-artifact-ant'
+  def dependencyClasspathId = 'dependencyClasspath'
+  typedef ( resource : 'org/apache/maven/artifact/ant/antlib.xml' , uri : artifact  , classpath : 'jarfiles/maven-ant-tasks-2.0.9.jar' )
+  "${artifact}:dependencies" ( pathId : dependencyClasspathId ) {
+    dependency ( groupId : 'org.codehaus.groovy' , artifactId : 'groovy' , version : '1.5.5' )
+    dependency ( groupId : 'commons-cli' , artifactId : 'commons-cli' , version : '1.0' )
+  }
+  taskdef ( name : 'groovyc' , classname: 'org.codehaus.groovy.ant.Groovyc' , classpathref : dependencyClasspathId )
   Gant_Test.returnValue = 'OK.'
 }
 
