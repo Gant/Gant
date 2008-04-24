@@ -167,10 +167,10 @@
   <target name="uninstall" depends="-initialize,-uninstallJar,-uninstallExecutables" description="Uninstall Gant from installation destination."/>
 
   <!--  Target for Canoo CruiseControl build. --> 
-  <target name="canooBuild" depends="clean,test"/>
+  <target name="cruiseControlBuild" depends="clean,test"/>
 
   <!-- Target for Codehaus Bamboo build.-->
-  <target name="codehausBuild" depends="clean">
+  <target name="bambooBuild" depends="clean">
     <path id="maven-ant-tasks.classpath" path="${jarsDirectory}/maven-ant-tasks-2.0.9.jar"/>
     <typedef resource="org/apache/maven/artifact/ant/antlib.xml" uri="urn:maven-artifact-ant" classpathref="maven-ant-tasks.classpath"/>
     <artifact:dependencies pathId="dependency.classpath">

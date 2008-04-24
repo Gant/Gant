@@ -21,7 +21,7 @@
 
   <target name="delegate">
     <echo message="*** Starting the gant specific build parts ***"/>
-    <ant dir=".." antfile="build.xml" target="canooBuild">
+    <ant dir=".." antfile="build.xml" target="cruiseControlBuild">
       <property name="buildnumber" value="${label}"/>
     </ant>
     <echo message="*** gant build successfully ended          ***"/>
