@@ -20,27 +20,18 @@ package org.codehaus.gant.tests
  *  @author Russel Winder <russel.winder@concertant.com>
  */
 final class Environment_Test extends GantTestCase {
-  final java5orHigher = System.properties.'java.version'.split ( /\./ )[1] > '4'
-   //  Don't use an instance initializer since they do not get compiled properly on first compile only on a
-   //  second separate compile. :-(
+  //
+  //  NB System.properties.'groovy.home' is only set if Groovy/Gant is initiated via the standard Groovy
+  //  startup.  The property is set in the shell scripts / native launcher.
+  //
+  //  Don't use an instance initializer since they do not get compiled properly on first compile only on a
+  //  second separate compile. :-(
   final String groovyHome ;
   public Environment_Test ( ) {
     if ( System.properties.'groovy.home' != null ) { groovyHome = System.properties.'groovy.home' }
-    else if ( java5orHigher ) { groovyHome = System.getenv ( ).'GROOVY_HOME' }
-    else {
-      def ant = new AntBuilder ( )
-      ant.property ( environment : 'environment' )
-      groovyHome = ant.project.properties.'environment.GROOVY_HOME'
-    }
-  } 
-  void testConsistencyJava5OrHigher ( ) {
-    if ( java5orHigher ) { assertEquals ( groovyHome , System.getenv ( ).'GROOVY_HOME' ) }
+    else { groovyHome = System.getenv ( ).'GROOVY_HOME' }
   }
   void testAntPropertiesSet ( ) {
-    //
-    //  NB System.properties.'groovy.home' is only set if Groovy/Gant is initiated via the standard Groovy
-    //  startup.  The property is set in the shell scripts / native launcher.
-    //
     script = '''
 target ( report : '' ) {
   if ( System.properties.'groovy.home' != null ) {
@@ -62,13 +53,11 @@ target ( report : '' ) { print ( ant.project.properties.'environment.GROOVY_HOME
     assertEquals ( groovyHome , output )
   }
   void testSystemEnvironmentGroovyHome ( ) {
-    if ( java5orHigher ) {
-      script = '''
+    script = '''
 target ( report : '' ) { print ( System.getenv ( ).'GROOVY_HOME' ) }
 '''
-      assertEquals ( 0 , processTargets ( 'report' ) )
-      assertEquals ( groovyHome , output )
-    }
+    assertEquals ( 0 , processTargets ( 'report' ) )
+    assertEquals ( groovyHome , output )
   }
   void testSystemPropertiesGroovyHome ( ) {
     script = '''
