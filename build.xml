@@ -176,6 +176,7 @@
     <artifact:dependencies pathId="dependency.classpath">
       <dependency groupId="org.codehaus.groovy" artifactId="groovy" version="1.5.5"/>
       <dependency groupId="commons-cli" artifactId="commons-cli" version="1.0"/>
+      <dependency groupId="junit" artifactId="junit" version="3.8.2"/>
     </artifact:dependencies>
     <taskdef name="groovyc" classname="org.codehaus.groovy.ant.Groovyc" classpathref="dependency.classpath"/>
     <!-- compile -->
