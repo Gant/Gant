@@ -42,6 +42,7 @@ defaultmailhost
 				>
 				<propertiesmapper file="&basedir;/gant/cruisecontrol/checkout/cruise/emailmap.properties"/>
 				<always address="build-support@canoo.com"/>
+				<always address="russel.winder@concertant.com"/>
 			</htmlemail>
 			<XSLTLogPublisher
 				directory="&basedir;/gant/&hostname;/gant/"
