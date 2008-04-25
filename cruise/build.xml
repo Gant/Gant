@@ -1,6 +1,6 @@
 <project name="gant-cruisecontrol-starter" default="cruise"> 
   
-  <property name="svn.tag" value="http://svn.codehaus.org/gant/gant/tags/"/>
+  <property name="svn.tag" value="https://svn.codehaus.org/gant/gant/tags/"/>
   <property name="dir.checkout" value=".."/>
   <property name="svn.user" value="dierk"/>
   
