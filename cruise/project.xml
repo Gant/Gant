@@ -40,7 +40,7 @@ defaultmailhost
 				logdir="&basedir;/gant/cruisecontrol/logs"
 				xslfile="&basedir;/gant/cruisecontrol/checkout/cruise/htmlmail.xsl"
 				>
-				<!--propertiesmapper file="&basedir;/gant/cruisecontrol/checkout/cruise/emailmap.properties"/-->
+				<propertiesmapper file="&basedir;/gant/cruisecontrol/checkout/cruise/emailmap.properties"/>
 				<always address="build-support@canoo.com"/>
 			</htmlemail>
 			<XSLTLogPublisher
