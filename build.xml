@@ -19,13 +19,16 @@
   Author : Russel Winder <russel.winder@concertant.com>
 
   This Ant script provides the bootstrap capability to install Gant for the first time for those people
-  installing from a Subversion checkout.
+  installing from a Subversion checkout.  This build assumes the environment variable GROOVY_HOME is set and
+  that installtion of Gant will be into that Groovy.
 
-  There are two possibilities: install into a Groovy installation or install into a Grails installation.  The
+  There are two possibilities: install into a Groovy installation, or install into a Grails installation.  The
   latter only installs the jar file.  If the property grailsBuild is defined then it is a Grails build
   otherwise it is a Groovy build. 
 
-  This script also provides targets for continuous integration servers.
+  This Ant script also provides targets for continuous integration servers.  This build assumes nothing except
+  that that comes with Gant.  In particular, all the Groovy and JUnit jars are brought in from the Maven
+  repository using the Maven Ant task, the jar for which is part of the Gant distribution.
 
 -->
 
@@ -63,6 +66,9 @@
       <fileset dir="${installationHome}/lib" includes="asm*.jar"/>
       <fileset dir="${installationHome}/lib" includes="ant*.jar"/> <!-- Picks up antlr as well as ant. This is intended. -->
     </path>
+    <path id="junitJarPathId">
+      <fileset dir="${installationHome}/lib" includes="junit*.jar"/>
+    </path>
     <taskdef name="groovyc" classname="org.codehaus.groovy.ant.Groovyc" classpathref="compileJarSet"/>
   </target>
 
@@ -98,6 +104,7 @@
       </batchtest>
       <classpath>
         <pathelement location="${buildTestClassesDirectory}"/>
+        <path refid="junitJarPathId"/>
       </classpath>
     </junit>
     <junit printsummary="yes" fork="true">
@@ -108,6 +115,7 @@
       <classpath>
         <pathelement location="${buildTestClassesDirectory}"/>
         <pathelement location="${buildClassesDirectory}"/>
+        <path refid="junitJarPathId"/>
         <path refid="compileJarSet"/>
       </classpath>
     </junit>
