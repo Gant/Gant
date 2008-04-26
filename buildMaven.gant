@@ -33,7 +33,7 @@ includeTargets ** gant.targets.Maven * [
                                         version : gantVersion ,
                                         remoteRepositories : [ 'http://snapshots.repository.codehaus.org' ,  'http://repository.codehaus.org' , 'http://repo1.maven.org/maven2' ] ,
                                         compileDependencies : [
-                                                               [ groupId : 'org.codehaus.groovy' , artifactId : 'groovy' , version : '1.5.6-SNAPSHOT' ] ,
+                                                               [ groupId : 'org.codehaus.groovy' , artifactId : 'groovy' , version : '1.5.6' ] ,
                                                                [ groupId : 'commons-cli' , artifactId : 'commons-cli' , version : '1.0' ]
                                                                ] ,
                                         javaCompileProperties : [ source : '1.5' , target : '1.5' , debug : 'true' ] ,
