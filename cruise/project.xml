@@ -17,6 +17,7 @@ defaultmailhost
 			<ant
 				buildfile="&basedir;/gant/cruisecontrol/checkout/cruise/build.xml"
 				antWorkingDir="&basedir;/gant/cruisecontrol/checkout"
+				anthome="/usr/local/java/apache-ant-1.7.0/"
 				usedebug="false"
 				uselogger="true"
 				>
