@@ -252,8 +252,8 @@ target ( 'default' : '' ) { something ( ) }
   void testTargetsClassNoFile ( ) {
     script = targetsBuildClassFile.replace ( targetsClassFilePath , nonExistentFilePath )
     assertEquals ( -2 , processTargets ( 'flob' ) )
-    if ( isWindows ) { assertTrue ( output.startsWith ( resultErrorEvaluatingWeirdLineOne ) ) }
-    else { assertEquals ( resultErrorEvaluatingWeirdLineOne , output ) }
+    //  The returned string is platform dependent and dependent on whether NFS is used to mount stores, or
+    //  even RAID.  We therefore choose not to check the output to avoid having large numbers of cases.
   }
   void testTargetsDefaultScriptClass ( ) {
     script = targetsBuildScriptClass
@@ -320,8 +320,8 @@ target ( 'default' : '' ) { something ( ) }
   void testTargetsScriptNoFile ( ) {
     script = targetsBuildScriptFile.replace ( targetsScriptFilePath , nonExistentFilePath )
     assertEquals ( -2 , processTargets ( 'flob' ) )
-    if ( isWindows ) { assertTrue ( output.startsWith ( resultErrorEvaluatingWeirdLineOne ) ) }
-    else { assertEquals ( resultErrorEvaluatingWeirdLineOne , output ) }
+    //  The returned string is platform dependent and dependent on whether NFS is used to mount stores, or
+    //  even RAID.  We therefore choose not to check the output to avoid having large numbers of cases.
   }
 
   ////////  Test multiple include of the same targets.
