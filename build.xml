@@ -66,8 +66,9 @@
       <fileset dir="${installationHome}/lib" includes="asm*.jar"/>
       <fileset dir="${installationHome}/lib" includes="ant*.jar"/> <!-- Picks up antlr as well as ant. This is intended. -->
     </path>
-    <path id="junitJarPathId">
+    <path id="testJarSet">
       <fileset dir="${installationHome}/lib" includes="junit*.jar"/>
+      <path refid="compileJarSet"/>
     </path>
     <taskdef name="groovyc" classname="org.codehaus.groovy.ant.Groovyc" classpathref="compileJarSet"/>
   </target>
@@ -88,8 +89,7 @@
     <groovyc srcdir="${testsDirectory}" destdir="${buildTestClassesDirectory}">
       <classpath>
         <pathelement location="${buildClassesDirectory}"/>
-        <fileset dir="${installationHome}/lib" includes="junit*.jar"/>
-        <path refid="compileJarSet"/>
+        <path refid="testJarSet"/>
       </classpath>
       <javac source="1.5" target="1.5" debug="on"/>
     </groovyc>
@@ -104,7 +104,7 @@
       </batchtest>
       <classpath>
         <pathelement location="${buildTestClassesDirectory}"/>
-        <path refid="junitJarPathId"/>
+        <path refid="testJarSet"/>
       </classpath>
     </junit>
     <junit printsummary="yes" fork="true">
@@ -115,8 +115,7 @@
       <classpath>
         <pathelement location="${buildTestClassesDirectory}"/>
         <pathelement location="${buildClassesDirectory}"/>
-        <path refid="junitJarPathId"/>
-        <path refid="compileJarSet"/>
+        <path refid="testJarSet"/>
       </classpath>
     </junit>
   </target>
