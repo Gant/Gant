@@ -22,14 +22,14 @@ package org.codehaus.gant.tests
  *  @author Russel Winder <russel.winder@concertant.com>
  */
 final class GarbageCollect_Test extends GantTestCase {
-  private final buildScript =  '''
+  final buildScript =  '''
 function = { -> }
 target ( main : 'simpleTest' ) {
   println ( 'Main target executing...' )
   function ( )
 }
 '''
-  private final scriptTemplate = '''
+  final scriptTemplate = '''
 import gant.Gant
 import java.lang.ref.PhantomReference
 import java.lang.ref.ReferenceQueue
@@ -61,7 +61,7 @@ __PROCESS_TARGET__
 System.gc ( )
 Thread.sleep ( 500 ) //  Give time for the reference queue monitor to report in.
 '''
-  private File buildScriptFile
+  File buildScriptFile
   void setUp ( ) {
     super.setUp ( ) 
     buildScriptFile = File.createTempFile ( 'gant_' , '_GarbageCollect_Test' )
@@ -70,10 +70,6 @@ Thread.sleep ( 500 ) //  Give time for the reference queue monitor to report in.
   void tearDown ( ) {
     buildScriptFile.delete ( )
   }
-  //////////////////////////////////////////////////////////////////////////////////////////////
-  //  On Windows the string returned by createTempFile must have \ reprocessed before being used for other
-  //  purposes.
-  //////////////////////////////////////////////////////////////////////////////////////////////
   void testCorrectCollection ( ) {
     //  Creates two Gant instances, one of which should be garbage collected, so the result of execution is
     //  a list of 3 items, the addresses of the two created objects and the address of the collected object
@@ -82,7 +78,7 @@ Thread.sleep ( 500 ) //  Give time for the reference queue monitor to report in.
     def groovyShell = new GroovyShell ( binding )
     groovyShell.evaluate (
                           scriptTemplate
-                          .replace ( '__BUILDSCRIPT_PATH__' , ( isWindows ? buildScriptFile.path.replace ( '\\' , '\\\\' ) : buildScriptFile.path ) )
+                          .replace ( '__BUILDSCRIPT_PATH__' , buildScriptFile.path )
                           .replace ( '__CREATE_GANT__' , 'new Gant ( buildScript )' )
                           .replace ( '__PROCESS_TARGET__' , 'gant.processTargets ( target )' )
                           )
@@ -95,10 +91,11 @@ Thread.sleep ( 500 ) //  Give time for the reference queue monitor to report in.
     def groovyShell = new GroovyShell ( binding )
     groovyShell.evaluate (
                           scriptTemplate
-                          .replace ( '__BUILDSCRIPT_PATH__' , ( isWindows ? buildScriptFile.path.replace ( '\\' , '\\\\' ) : buildScriptFile.path ) )
+                          .replace ( '__BUILDSCRIPT_PATH__' , buildScriptFile.path )
                           .replace ( '__CREATE_GANT__' , 'new Gant ( )' )
                           .replace ( '__PROCESS_TARGET__' , 'gant.processArgs ( [ "-f" , new File ( buildScript ).absolutePath , "-c" , target ] as String[] )' )
                           )
+    System.err.println ( binding.output )
     assertEquals ( 2 , binding.output.size ( ) )
   }
 }

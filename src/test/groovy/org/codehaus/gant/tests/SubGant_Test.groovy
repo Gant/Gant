@@ -36,7 +36,7 @@ final class SubGant_Test extends GantTestCase {
 def internalTarget = 'doTarget'
 target ( ( internalTarget ) : '' ) { println ( '${resultMessage}' ) }
 target ( '${targetName}' : '' ) {
-  newthing = new gant.Gant ( '${isWindows ? buildFile.path.replace ( '\\' , '\\\\' ) : buildFile.path}' )
+  newthing = new gant.Gant ( '${buildFile.path}' )
   newthing.processTargets ( internalTarget )
 }
 """
@@ -50,7 +50,7 @@ target ( '${targetName}' : '' ) {
 def internalTarget = 'doTarget'
 target ( ( internalTarget ) : '' ) { println ( '${resultMessage}' ) }
 target ( '${targetName}' : '' ) {
-  newthing = new gant.Gant ( '${isWindows ? buildFile.path.replace ( '\\' , '\\\\' ) : buildFile.path}' , binding.clone ( ) )
+  newthing = new gant.Gant ( '${buildFile.path}' , binding.clone ( ) )
   newthing.processTargets ( internalTarget )
 }
 """

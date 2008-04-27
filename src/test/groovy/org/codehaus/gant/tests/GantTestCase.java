@@ -40,11 +40,6 @@ public abstract class GantTestCase extends GroovyTestCase {
     groovyMajorVersion = Integer.parseInt ( version[0] ) ;
     groovyMinorVersion = Integer.parseInt ( version[1] ) ;
   }
-  public static final boolean isWindows ;
-  static {
-    final String osName = System.getProperty ( "os.name" ) ;
-    isWindows = ( osName.length ( ) > 6 ) ? osName.substring ( 0 , 7 ).equals ( "Windows" ) : false ;
-  }
   private ByteArrayOutputStream output ;
   private PrintStream savedOut ;
   protected Gant gant ;
