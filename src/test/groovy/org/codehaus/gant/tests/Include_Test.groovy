@@ -73,11 +73,7 @@ target ( 'default' : '' ) { something ( ) }
    //  There is a weirdness in 1.5.x which reports line 1 here where 1.6.x reports line 6.
    private final resultErrorEvaluatingLineSix = 'Standard input, line ' + ( ( groovyMinorVersion > 5 ) ? '6' : '1' ) + " -- Error evaluating Gantfile: No such property: ${targetsClassName} for class: standard_input\n"
   private final String resultErrorEvaluatingWeirdLineOne
-  private final Boolean isWindows
   Include_Test ( ) {
-    def osName = System.properties.'os.name'
-    isWindows = ( osName.length ( ) > 6 ) ? osName[0..6] == 'Windows' : false
-
     //////////////////////////////////////////////////////////////////////////////////////////////////////////
     ////  createTempFile delivers a File object that delivers a string for the path that is platform
     ////  specific.  Cannot use // to delimit the strings in the Gant script being created since / is the
@@ -85,7 +81,6 @@ target ( 'default' : '' ) { something ( ) }
     ////  still interpret \.  Fortunately Windows will accept / as the path separator, so transform all \ to
     ////  / in all cases.
     //////////////////////////////////////////////////////////////////////////////////////////////////////////
-
     temporaryDirectory = File.createTempFile ( 'gant-includeTest-' ,  '-directory' )
     def temporaryDirectoryPath = isWindows ? temporaryDirectory.path.replaceAll ( '\\\\' , '/' ) : temporaryDirectory.path
     toolClassFilePath = temporaryDirectoryPath + '/' + toolClassName + '.groovy'
