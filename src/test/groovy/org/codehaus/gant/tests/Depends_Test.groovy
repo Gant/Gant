@@ -124,8 +124,8 @@ target ( outOfOrderListDoit : '' ) { println ( 'done.' ) }
     //  a depend.  At this point the class name not the name in the binding is picked up and all hell breaks
     //  loose.  Standard input is compiled as class standard_input.
     script = '''
-target ( standard_input , '' ) { System.err.println ( 'Standard Input' ) ; println ( 'done.' ) }
-target ( startingPoint , '' ) { System.err.println ( 'StartingPoint' ) ; depends ( standard_input ) }
+target ( standard_input , '' ) { println ( 'done.' ) }
+target ( startingPoint , '' ) { depends ( standard_input ) }
 '''
     assertEquals ( -2 , processTargets ( 'startingPoint' ) )
     assertTrue ( output.startsWith ( 'Standard input, line 2 -- Error evaluating Gantfile: No signature of method: ' ) )
