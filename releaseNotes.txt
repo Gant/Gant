@@ -1,4 +1,4 @@
-1.2.0 ( rXXXX )
+1.2.0 ( r9173 )
 ---------------
 
 Introduce the GantBinding class to ensure various things that are needed for Gant to work and to allow more
