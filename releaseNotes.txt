@@ -31,11 +31,6 @@ Rearrange the tests to only depend on the presence of GROOVY_HOME when it is app
 not needed for execution only for installation of Gant.
 
 
-1.1.3 ( rXXXX )
----------------
-
-
-
 1.1.2 ( r9087 )
 ---------------
 
