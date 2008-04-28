@@ -23,8 +23,6 @@ Ant.property ( file : rootDirectory + System.properties.'file.separator' + 'loca
 try { gantVersion }
 catch ( MissingPropertyException mpe ) { gantVersion = Ant.project.properties.gantVersion }
 
-//
-
 final groovyVersion = '1.5.6'
 
 final packageName = 'gant'
@@ -48,7 +46,7 @@ includeTool << gant.tools.Execute
 
 target ( debFiles : 'Create the deb file of the distribution.' ) {
   //  Need to avoid recursive Gant.  Fix this.
-  ////Execute.shell ( "cd ${rootDirectory} && gant distribution" )
+  execute.shell ( "cd ${rootDirectory} && gant distribution" )
   // Create a deb for the jar in the distribution with the right Groovy version.
   ( new File ( buildDirectory ).listFiles ( { it ==~ '.*.jar' } as java.io.FileFilter ) as List ).each { item ->
     def jarName = item.name
