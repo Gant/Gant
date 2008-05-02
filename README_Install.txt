@@ -5,7 +5,7 @@ This is Gant a Groovy way of working with Ant tasks -- no more XML :-)
 In order to install and use Gant you must have Groovy installed and
 the environment variable GROOVY_HOME must be set to the location of a
 Groovy installation.  This location is where Gant will be installed:
-the gant/gant.bat scripts are installed in the Groovy bin directory
+the gant and gant.bat scripts are installed in the Groovy bin directory,
 and the gant-<version-number>.jar file in the Groovy lib directory.
 
 The method of installation depends on whether you have downloaded a
