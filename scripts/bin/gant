@@ -2,13 +2,40 @@
 
 #  Gant -- A Groovy build framework based on scripting Ant tasks.
 
-#  Copyright © 2006-7 Russel Winder
+#  Copyright © 2006-8 Russel Winder
 
 #  Gant initiation script for Linux and UNIX
 
-#  Use -cp or -classpath just as in java to use a custom classpath
+#  If GANT_HOME is not set then attempt to deduce a path.
 
-DIRNAME=`dirname "$0"`
-. "$DIRNAME/startGroovy"
+if [ -z "$GANT_HOME" ]
+then
+    GANT_HOME=`dirname $0`
+    GANT_HOME=`dirname $GANT_HOME`
+    export GANT_HOME
+fi
+
+#  If GROOVY_HOME is not set then deduce a path -- this is needed in order to discover the location of teh
+#  startGroovy script.
+
+if [ -z "$GROOVY_HOME" ]
+then
+    GROOVY_HOME=`which groovy`
+    GROOVY_HOME=`dirname "$GROOVY_HOME"`
+    GROOVY_HOME=`dirname "$GROOVY_HOME"`
+    export GROOVY_HOME
+fi
+
+gantJar="$GANT_HOME/lib/gant-@GANT_VERSION@.jar"
+
+#  CP is forceably set if there is a -cp or -classpath option on the command line, in which case this will fail.
+
+CP="$gantJar"
+
+. "$GROOVY_HOME/bin/startGroovy"
+
+#  STARTER_CLASSPATH is forceably set to the Groovy jar.
+
+STARTER_CLASSPATH="$STARTER_CLASSPATH:$gantJar"
 
 startGroovy gant.Gant "$@"
