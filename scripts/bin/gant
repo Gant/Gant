@@ -28,9 +28,15 @@ fi
 
 gantJar="$GANT_HOME/lib/gant-@GANT_VERSION@.jar"
 
+gantAndDependentJars=""
+for jar in `ls -1 $GANT_HOME/lib/`
+do
+    gantAndDependentJars="$GANT_HOME/lib/$jar:$gantAndDependentJars"
+done
+
 #  CP is forceably set if there is a -cp or -classpath option on the command line, in which case this will fail.
 
-CP="$gantJar"
+CP="$gantAndDependentJars"
 
 . "$GROOVY_HOME/bin/startGroovy"
 

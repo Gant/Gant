@@ -49,6 +49,9 @@ final buildTestReportsDirectory = buildDirectory + '/test-reports'
 final buildCoberturaClassesDirectory = buildDirectory + '/cobertura-classes' 
 final buildCoberturaReportsDirectory = buildDirectory + '/cobertura-reports'
 
+final buildFilteredScriptsDirectory = buildDirectory + '/filteredScripts'
+final buildInstallDirectory = buildDirectory + '/install'
+
 final documentationDirectory = buildDirectory + '/documentation'
 final apiDocumentationDirectory = documentationDirectory + '/api'
 
@@ -192,18 +195,46 @@ final makeManifest = { ->
   }
 }
 
-//  Create the compilation context of the Groovy into which Gant will be installed.  This is the standard
-//  context but it is not used for the distributions.
+final setInstallationDirectory = { path ->
+  if ( path == null ) {
+    println ( 'Property installationDirectory is not set, cannot undertake (un)install actions.' )
+    System.exit ( 1 )
+  }
+  installationDirectory = path
+}
 
-ant.path ( id : 'compileJarSet' ) {
+  final prepareInstallDirectory = { path , gantJarName ->
+  setInstallationDirectory ( path )
+  ant.copy ( todir : installationDirectory ) {
+    fileset ( dir : scriptsDirectory , includes : 'bin/gant*' )
+    filterset { filter ( token : 'GANT_VERSION' , value : gantVersion ) }
+  }
+  ant.chmod ( perm : 'a+x' ) { fileset ( dir : installationDirectory + '/bin' , includes : 'gant*' ) }
+  ivyFilesetId = 'ivyFilesetId'
+  ant."${antlibXMLns}:dependencies" ( filesetId : ivyFilesetId ) {
+    dependency ( groupId : 'org.apache.ivy' , artifactId : 'ivy' , version : ant.project.properties.ivyVersion )
+  }
+  ant.copy ( todir : installationDirectory + '/lib' ) {
+    fileset ( dir : buildDirectory , includes : gantJarName ) 
+    fileset ( dir : jarfilesDirectory , includes : 'maven*.jar' )
+    fileset ( refid : ivyFilesetId )
+    mapper ( type : 'flatten' )
+  }
+}
+
+//  Create the compilation context of the Groovy with which Gant will be installed.  This is not used for
+//  the distributions.
+compileJarSet = 'compileJarSet'
+ant.path ( id : compileJarSet ) {
   fileset ( dir : groovyHome + '/lib' , includes : 'groovy*.jar' )
   fileset ( dir : groovyHome + '/lib' , includes : 'commons-cli*.jar' )
   fileset ( dir : groovyHome + '/lib' , includes : 'asm*.jar' )
   fileset ( dir : groovyHome + '/lib' , includes : 'ant*.jar' )  // Picks up antlr as well as ant. This is intended.
 }
 
-ant.path ( id : 'testJarSet' ) {
-  path ( refid : 'compileJarSet' )
+testJarSet = 'testJarSet'
+ant.path ( id : testJarSet ) {
+  path ( refid : compileJarSet )
   fileset ( dir : groovyHome + '/lib' , includes : 'junit*.jar' )
 }
 
@@ -221,17 +252,17 @@ target ( reallyClean : 'Ensure all clean operations for the entire tree get acti
 }
 
 target ( compile : 'Compile everything needed for a Gant installation.' ) {
-  performCompile ( 'compileJarSet' , false )
+  performCompile ( compileJarSet , false )
 }
 
 target ( compileTests : 'Compile all the tests for a newly built Gant.' ) {
   depends ( compile )
-  performCompileTests ( 'testJarSet' , false )
+  performCompileTests ( testJarSet , false )
 }
 
 target ( test : 'Test a build.' ) {
   depends ( compileTests )
-  def returnCode = performTests ( 'compileJarSet' )
+  def returnCode = performTests ( compileJarSet )
   println ( 'Tests ' + ( returnCode ? 'suceeded' : 'failed' ) + '.' )
   returnCode ? 0 : 1
 }
@@ -268,7 +299,7 @@ target ( documentation : 'Create the API documentation.' ) {
                footer : 'Copyright &copy; 2006&ndash;8 The Codehaus.  All rights reserved.' ,
                source : 1.5
                ) {
-    classpath { fileset ( dir : installationHome + '/lib' , includes : '*.jar' ) }
+    classpath ( refid : testJarSet )
   }    
   groovydoc (
              destdir : groovyApiDocumentationDirectory ,
@@ -286,36 +317,13 @@ target ( documentation : 'Create the API documentation.' ) {
              )
 }
 
-testForInstallDirectory = { ->
-  installationDirectory = ant.project.properties.installDirectory
-  if ( installationDirectory == null ) {
-    println ( 'Property installationDirectory is not set, cannot undertake (un)install actions.' )
-    System.exit ( 1 )
-  }
-}
-  
 target ( install : "Compile everything and install it." ) {
-  testForInstallDirectory ( )
   depends ( 'package' )
-  copy ( todir : installationHome ) {
-    fileset ( dir : scriptsDirectory , includes : 'bin/gant*' )
-    filterset { filter ( token : 'GANT_VERSION' , value : gantVersion ) }
-  }
-  chmod ( perm : 'a+x' ) { fileset ( dir : installationHome + '/bin' , includes : 'gant*' ) }
-  ivyFilesetId = 'ivyFilesetId'
-  ant."${antlibXMLns}:dependencies" ( filesetId : ivyFilesetId ) {
-    dependency ( groupId : 'org.apache.ivy' , artifactId : 'ivy' , version : ant.project.properties.ivyVersion )
-  }
-  copy ( todir : installationDirectory + '/lib' ) {
-    fileset ( dir : buildDirectory , includes : 'gant*.jar' ) 
-    fileset ( dir : jarfilesDirectory , includes : 'maven*.jar' )
-    fileset ( refid : ivyFilesetId )
-    mapper ( type : 'flatten' )
-  }
+  prepareInstallDirectory ( ant.project.properties.installDirectory , 'gant-' + gantVersion + '.jar' )
 }
 
 target ( uninstall : "Uninstall Gant." ) {
-  testForInstallDirectory ( )
+  setInstallationDirectory ( ant.project.properties.installDirectory )
   delete ( dir : installationDirectory )
 }
 
@@ -328,43 +336,43 @@ target ( distribution : 'Create the distribution.' ) {
   def distributionClasspathId = 'classpath'
   clean ( )
   someTestsFailed = false
-  distributionVersions.each { item ->
+    distributionVersions.each { item ->
     //  This is a closure that doesn't have the right metaclass so we have to specify Ant.  Need to
     //  rearrange things to deal with this problem as is done in the target Closure.
     def pathIdentifier = distributionClasspathId + item.version
     ant."${antlibXMLns}:dependencies" ( pathId : pathIdentifier ) {
       dependency ( groupId : item.groupId , artifactId : item.artifactId , version : item.version )
-      dependency ( groupId : 'org.apache.ant' , artifactId : 'ant' , version : '1.7.0' )
-      dependency ( groupId : 'commons-cli' , artifactId : 'commons-cli' , version : '1.0' )
-      dependency ( groupId : 'junit' , artifactId : 'junit' , version : '3.8.2' )
+      dependency ( groupId : 'org.apache.ant' , artifactId : 'ant' , version : ant.project.properties.antVersion )
+      dependency ( groupId : 'commons-cli' , artifactId : 'commons-cli' , version : ant.project.properties.commonsCliVersion )
+      dependency ( groupId : 'junit' , artifactId : 'junit' , version : ant.project.properties.junitVersion )
+      remoteRepository ( url : 'http://snapshots.repository.codehaus.org' )
+      remoteRepository ( url : 'http://repository.codehaus.org' )
+      remoteRepository ( url : 'http://repo1.maven.org' )
     }
     //  Must remove the compilation products of the last compilation!
     ant.delete ( dir : buildClassesDirectory )
     ant.delete ( dir : buildTestClassesDirectory )
+    ant.delete ( dir : buildFilteredScriptsDirectory )
+    ant.delete ( dir : buildInstallDirectory )
     performCompile ( pathIdentifier , true )
     performCompileTests ( pathIdentifier , true )
-    if ( ! performTests ( pathIdentifier ) ) { someTestsFailed = true }
+    //if ( ! performTests ( pathIdentifier ) ) { someTestsFailed = true }
     makeManifest ( )
     def discriminator = prefix + '_groovy-' + item.version
     def jarName = discriminator + '.jar'                    
     def jarPath = buildDirectory + System.properties.'file.separator' + jarName
     ant.jar ( destfile : jarPath , basedir : buildClassesDirectory , manifest : buildMetadataDirectory + '/MANIFEST.MF' )
     serverUploadProducts [ jarPath ] = serverJarsDirectory + '/' + jarName
+    prepareInstallDirectory ( buildInstallDirectory , jarName )
     def archiveRoot = discriminator
     def archiveRootPath = buildDirectory + System.properties.'file.separator' + archiveRoot
     ant.zip ( destfile : archiveRootPath + zipExtension ) {
-      zipfileset ( dir : buildDirectory , includes : jarName , prefix : prefix + '/lib' )
-      zipfileset ( dir : jarfilesDirectory , prefix : prefix + '/lib' )
-      zipfileset ( dir : 'scripts/bin' , includes : 'gant*' , prefix : prefix + '/bin' )
-      zipfileset ( dir : 'scripts/install' , includes : 'install.groovy' , prefix : prefix + '/bin' )
+      zipfileset ( dir : buildInstallDirectory , prefix : prefix )
       zipfileset ( dir : '.' , includes : 'README*' , prefix : prefix )
     }
     serverUploadProducts [ archiveRootPath + zipExtension ] = serverDistributionsDirectory + '/' +  archiveRoot + zipExtension
     ant.tar ( destfile :  archiveRootPath + tgzExtension , compression : 'gzip' ) {
-      tarfileset ( dir : buildDirectory , includes : jarName , prefix : prefix + '/lib' )
-      tarfileset ( dir : jarfilesDirectory , prefix : prefix + '/lib' )
-      tarfileset ( dir : 'scripts/bin' , includes : 'gant*' , prefix : prefix + '/bin' , mode : '755' )
-      tarfileset ( dir : 'scripts/install' , includes : 'install.groovy' , prefix : prefix + '/bin' , mode : '755' )
+      tarfileset ( dir : buildInstallDirectory , prefix : prefix )
       tarfileset ( dir : '.' , includes : 'README*' , prefix : prefix )
     }
     serverUploadProducts [ archiveRootPath + tgzExtension ] = serverDistributionsDirectory + '/' +  archiveRoot + tgzExtension

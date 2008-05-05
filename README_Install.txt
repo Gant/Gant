@@ -2,12 +2,6 @@ Gant -- A Groovy build framework based on scripting Ant tasks.
 
 This is Gant a Groovy way of working with Ant tasks -- no more XML :-)
 
-In order to install and use Gant you must have Groovy installed and
-the environment variable GROOVY_HOME must be set to the location of a
-Groovy installation.  This location is where Gant will be installed:
-the gant and gant.bat scripts are installed in the Groovy bin directory,
-and the gant-<version-number>.jar file in the Groovy lib directory.
-
 The method of installation depends on whether you have downloaded a
 tarball or zipfile distribution or you have a Subversion store
 checkout.
@@ -15,18 +9,32 @@ checkout.
 Distribution
 ------------
 
-Untar the tarball or unzip the zipfile.  This creates a directory with
-all the files.  cd into the directory and issue the command:
+In order to install the Gant distribution you must have an
+installation of Groovy.
 
-    groovy bin/install.groovy
+The distributions contain a ready-made install directory hierarchy.
+Untar the tarball or unzip the zipfile to the location where you want
+the Gant installation to reside.  A directory with the name structured
+gant-<version-number> will be created in the location specified for
+the untar or unzip.  You might like to set up an environment variable
+GANT_HOME set to the directory created by the untar or unzip.
 
-assuming the command groovy is in your path.  If it is not then you
-will have to give the path to the groovy executable.
+The script $GANT_HOME/bin/gant for systems with a Posix shell, or
+$GANT_HOME/bin/gant.bat on Windows are the mechanisms for launching a
+Gant run.
 
 Subversion Checkout
 -------------------
 
-To install Gant for the first time, you need to either:
+Having checked out a Gant source tree, you will need to create a file
+called local.build.properties containing a definition of the property
+installDirectory.  This property defines the directory of the
+installation, not the parent.  An example definition:
+
+  installDirectory = ${user.home}/lib/JavaPackages/gant-${gantVersion}
+
+Having created this file with installDirectory property, then to
+install Gant for the first time, you need to either:
 
 --  install Gant from a distribution as above and the type "gant
     install" which will overwrite the distribution install with the
@@ -34,7 +42,6 @@ To install Gant for the first time, you need to either:
 
 --  assuming you have an Ant installation, type "ant install" which
     will do everything necessary.
-
 
 To install a new build of Gant where one is installed already, you
 can, of course (!), simply do "gant install".
