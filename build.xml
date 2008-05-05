@@ -163,7 +163,7 @@
 
   <target name="-install" depends="-initializeMavenAntTask,package" if="installDirectoryIsSet">
      <copy todir="${installDirectory}">
-      <fileset dir="${scriptsDirectory}" includes="bin/gant*"/>
+      <fileset dir="${scriptsDirectory}" includes="bin/gant*,conf/gant-starter.conf"/>
       <filterset>
         <filter token="GANT_VERSION" value="${gantVersion}"/>
       </filterset>

@@ -1,8 +1,20 @@
 #!/bin/sh
 
 #  Gant -- A Groovy build framework based on scripting Ant tasks.
-
+#
 #  Copyright © 2006-8 Russel Winder
+#
+#  Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in
+#  compliance with the License. You may obtain a copy of the License at
+#
+#    http://www.apache.org/licenses/LICENSE-2.0
+#
+#  Unless required by applicable law or agreed to in writing, software distributed under the License is
+#  distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or
+#  implied. See the License for the specific language governing permissions and limitations under the
+#  License.
+#
+#  Author : Russel Winder <russel.winder@concertant.com>
 
 #  Gant initiation script for Linux and UNIX
 
@@ -26,22 +38,10 @@ then
     export GROOVY_HOME
 fi
 
-gantJar="$GANT_HOME/lib/gant-@GANT_VERSION@.jar"
-
-gantAndDependentJars=""
-for jar in `ls -1 $GANT_HOME/lib/`
-do
-    gantAndDependentJars="$GANT_HOME/lib/$jar:$gantAndDependentJars"
-done
-
-#  CP is forceably set if there is a -cp or -classpath option on the command line, in which case this will fail.
-
-CP="$gantAndDependentJars"
+GROOVY_CONF="$GANT_HOME/conf/gant-starter.conf"
 
 . "$GROOVY_HOME/bin/startGroovy"
-
-#  STARTER_CLASSPATH is forceably set to the Groovy jar.
-
-STARTER_CLASSPATH="$STARTER_CLASSPATH:$gantJar"
+STARTER_CLASSPATH="$STARTER_CLASSPATH:$GANT_HOME/lib/gant-@GANT_VERSION@.jar"
+JAVA_OPTS="$JAVA_OPTS -Dgant.home=$GANT_HOME"
 
 startGroovy gant.Gant "$@"
