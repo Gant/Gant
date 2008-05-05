@@ -356,7 +356,7 @@ target ( distribution : 'Create the distribution.' ) {
     ant.delete ( dir : buildInstallDirectory )
     performCompile ( pathIdentifier , true )
     performCompileTests ( pathIdentifier , true )
-    //if ( ! performTests ( pathIdentifier ) ) { someTestsFailed = true }
+    if ( ! performTests ( pathIdentifier ) ) { someTestsFailed = true }
     makeManifest ( )
     def discriminator = prefix + '_groovy-' + item.version
     def jarName = discriminator + '.jar'                    
