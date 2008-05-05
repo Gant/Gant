@@ -29,13 +29,9 @@ catch ( MissingPropertyException mpe ) { usingCobertura = false }
 try { ignoreTestFailures }
 catch ( MissingPropertyException mpe ) { ignoreTestFailures = false }
 
-installationHome = System.getenv ( ).'GROOVY_HOME'
-try { if ( grailsBuild ) { installationHome = System.getenv ( ).'GRAILS_HOME' } }
-catch ( MissingPropertyException mpe ) { grailsBuild = false }
-
-if ( ( installationHome == null ) || ( installationHome == '' ) ) {
-  if ( grailsBuild ) { println ( 'GRAILS_HOME is not set, so a build cannot happen.' ) }
-  else { println ( 'Real problem: Groovy home is not set and this is Groovy executing.' ) }
+groovyHome = System.properties.'groovy.home'
+if ( ( groovyHome == null ) || ( groovyHome == '' ) ) {
+  println ( 'Real problem: property groovy.home is not set and this is Gant executing.' )
   return
 }
 
@@ -59,7 +55,7 @@ final apiDocumentationDirectory = documentationDirectory + '/api'
 final buildMetadataDirectory = buildClassesDirectory + '/META-INF'
 
 //  Labels for supporting use of the Maven Ant task.  NB Installing Gant installs the Maven and Ivy Ant
-//  tasks jars into the Groovy library.
+//  tasks jars into the Groovy library.  Should the antlib: or urn: string be used here? 
 
 final antlibXMLns = 'antlib:org.apache.maven.artifact.ant'
 final mavenPOMId = 'maven.pom'
@@ -200,15 +196,15 @@ final makeManifest = { ->
 //  context but it is not used for the distributions.
 
 ant.path ( id : 'compileJarSet' ) {
-  fileset ( dir : installationHome + '/lib' , includes : 'groovy*.jar' )
-  fileset ( dir : installationHome + '/lib' , includes : 'commons-cli*.jar' )
-  fileset ( dir : installationHome + '/lib' , includes : 'asm*.jar' )
-  fileset ( dir : installationHome + '/lib' , includes : 'ant*.jar' )  // Picks up antlr as well as ant. This is intended.
+  fileset ( dir : groovyHome + '/lib' , includes : 'groovy*.jar' )
+  fileset ( dir : groovyHome + '/lib' , includes : 'commons-cli*.jar' )
+  fileset ( dir : groovyHome + '/lib' , includes : 'asm*.jar' )
+  fileset ( dir : groovyHome + '/lib' , includes : 'ant*.jar' )  // Picks up antlr as well as ant. This is intended.
 }
 
 ant.path ( id : 'testJarSet' ) {
   path ( refid : 'compileJarSet' )
-  fileset ( dir : installationHome + '/lib' , includes : 'junit*.jar' )
+  fileset ( dir : groovyHome + '/lib' , includes : 'junit*.jar' )
 }
 
 //  Set up all the targets.
@@ -290,21 +286,37 @@ target ( documentation : 'Create the API documentation.' ) {
              )
 }
 
-target ( install : "Compile everything and install it to ${installationHome}" ) {
+testForInstallDirectory = { ->
+  installationDirectory = ant.project.properties.installDirectory
+  if ( installationDirectory == null ) {
+    println ( 'Property installationDirectory is not set, cannot undertake (un)install actions.' )
+    System.exit ( 1 )
+  }
+}
+  
+target ( install : "Compile everything and install it." ) {
+  testForInstallDirectory ( )
   depends ( 'package' )
-  copy ( todir : installationHome + '/lib' ) { fileset ( dir : buildDirectory , includes : 'gant*.jar' ) }
-  if ( ! grailsBuild ) {
-    copy ( todir : installationHome ) { fileset ( dir : scriptsDirectory , includes : 'bin/gant*' ) }
-    copy ( todir : installationHome + '/lib' ) { fileset ( dir : jarfilesDirectory , includes : 'ivy*.jar,maven*.jar' ) }
-    chmod ( perm : 'a+x' ) { fileset ( dir : installationHome + '/bin' , includes : 'gant*' ) }
+  copy ( todir : installationHome ) {
+    fileset ( dir : scriptsDirectory , includes : 'bin/gant*' )
+    filterset { filter ( token : 'GANT_VERSION' , value : gantVersion ) }
+  }
+  chmod ( perm : 'a+x' ) { fileset ( dir : installationHome + '/bin' , includes : 'gant*' ) }
+  ivyFilesetId = 'ivyFilesetId'
+  ant."${antlibXMLns}:dependencies" ( filesetId : ivyFilesetId ) {
+    dependency ( groupId : 'org.apache.ivy' , artifactId : 'ivy' , version : ant.project.properties.ivyVersion )
+  }
+  copy ( todir : installationDirectory + '/lib' ) {
+    fileset ( dir : buildDirectory , includes : 'gant*.jar' ) 
+    fileset ( dir : jarfilesDirectory , includes : 'maven*.jar' )
+    fileset ( refid : ivyFilesetId )
+    mapper ( type : 'flatten' )
   }
 }
 
-target ( uninstall : "Uninstall Gant from ${installationHome}." ) {
-  delete {
-    if ( ! grailsBuild ) { fileset ( dir : installationHome + '/bin' , includes : 'gant*' ) }
-    fileset ( dir : installationHome + '/lib' , includes : 'gant*.jar' )
-  }
+target ( uninstall : "Uninstall Gant." ) {
+  testForInstallDirectory ( )
+  delete ( dir : installationDirectory )
 }
 
 //  Returns a boolean stating whether there were any test failures.

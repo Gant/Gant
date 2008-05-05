@@ -171,13 +171,13 @@
     <chmod perm="a+x">
       <fileset dir="${installDirectory}/bin" includes="gant*"/>
     </chmod>
-    <artifact:dependencies filesetId="filesetId">
+    <artifact:dependencies filesetId="ivyFilesetId">
       <dependency groupId="org.apache.ivy" artifactId="ivy" version="${ivyVersion}"/>
     </artifact:dependencies>
     <copy todir="${installDirectory}/lib">
       <fileset dir="${buildDirectory}" includes="gant*.jar"/>
       <fileset dir="${jarsDirectory}" includes="maven*.jar"/>
-      <fileset refid="filesetId"/>
+      <fileset refid="ivyFilesetId"/>
       <mapper type="flatten"/>
     </copy>
   </target>
