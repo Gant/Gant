@@ -296,7 +296,8 @@ final class Gant {
       }
     }
     if ( gotUnknownOptions ) { cli.usage ( ) ; return -1 ; }
-	def jarPattern = ~/.*\.jar/
+    /*
+    def jarPattern = ~/.*\.jar/
     def userAntLib = new File ( "${System.properties.'user.home'}/.ant/lib" )
     if ( userAntLib.isDirectory ( ) ) { userAntLib.eachFileMatch ( jarPattern ) { file -> rootLoader?.addURL ( file.toURL ( ) ) } }
     def userGantLib = new File ( "${System.properties.'user.home'}/.gant/lib" )
@@ -307,6 +308,7 @@ final class Gant {
       def antLib = new File ( antHome + '/lib' )
       if ( antLib.isDirectory ( ) ) { antLib.eachFileMatch ( jarPattern ) { file -> rootLoader?.addURL ( file.toURL ( ) ) } }
     }
+    */
     processTargets ( function , targets )
   }
   public int processTargets ( ) { processTargets ( 'dispatch' , [ ] ) }
