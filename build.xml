@@ -115,6 +115,7 @@
     <mkdir dir="${buildTestReportsDirectory}"/>
     <junit printsummary="yes" fork="true">
       <formatter type="plain"/>
+      <formatter type="xml"/>
       <batchtest todir="${buildTestReportsDirectory}">
         <fileset dir="${buildTestClassesDirectory}" includes="**/ant/tests/*_Test.class"/>
       </batchtest>
@@ -125,6 +126,7 @@
     </junit>
     <junit printsummary="yes" fork="true">
       <formatter type="plain"/>
+      <formatter type="xml"/>
       <batchtest todir="${buildTestReportsDirectory}">
         <fileset dir="${buildTestClassesDirectory}" includes="**/*_Test.class" excludes="**/ant/tests/*"/>
       </batchtest>
