@@ -49,6 +49,7 @@ then
     export ANT_HOME
 fi
 
+GROOVY_APP_NAME=Gant
 GROOVY_CONF="$GANT_HOME/conf/gant-starter.conf"
 
 . "$GROOVY_HOME/bin/startGroovy"
