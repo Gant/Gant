@@ -206,7 +206,7 @@ final setInstallationDirectory = { path ->
   final prepareInstallDirectory = { path , gantJarName ->
   setInstallationDirectory ( path )
   ant.copy ( todir : installationDirectory ) {
-    fileset ( dir : scriptsDirectory , includes : 'bin/gant*,conf/gant-starter.conf' )
+    fileset ( dir : scriptsDirectory , includes : 'bin/gant*,bin/startGroovy.bat,conf/gant-starter.conf' )
     filterset { filter ( token : 'GANT_VERSION' , value : gantVersion ) }
   }
   ant.chmod ( perm : 'a+x' ) { fileset ( dir : installationDirectory + '/bin' , includes : 'gant*' ) }
