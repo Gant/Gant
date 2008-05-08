@@ -39,7 +39,7 @@ then
 fi
 
 #  If ANT_HOME is not set, deduce a path -- this is needed in order to discover the location of the jars
-#  asscoiated with the Ant installation.
+#  associated with the Ant installation.
 
 if [ -z "$ANT_HOME" ]
 then
@@ -58,9 +58,9 @@ if $cygwin
 then
     GANT_HOME=`cygpath --path --mixed "$GANT_HOME"`
     ANT_HOME=`cygpath --path --mixed "$ANT_HOME"`
-    STARTER_CLASSPATH="$GANT_HOME\\lib\\groovy-all-1.6-beta-2-SNAPSHOT.jar;$GANT_HOME\\lib\\gant-@GANT_VERSION@.jar"
+    STARTER_CLASSPATH="$STARTER_CLASSPATH;$GANT_HOME\\lib\\gant-@GANT_VERSION@.jar"
 else
-    STARTER_CLASSPATH="$GANT_HOME/lib/groovy-all-1.6-beta-2-SNAPSHOT.jar:$GANT_HOME/lib/gant-@GANT_VERSION@.jar"
+    STARTER_CLASSPATH="$STARTER_CLASSPATH:$GANT_HOME/lib/gant-@GANT_VERSION@.jar"
 fi
 JAVA_OPTS="$JAVA_OPTS -Dgant.home=$GANT_HOME -Dant.home=$ANT_HOME"
 
