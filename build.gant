@@ -90,8 +90,8 @@ final distributionVersions = [
                         //  Gant can still be built and distributed against Groovy 1.5.0 and 1.5.1 but it
                         //  has to be done the hard (manual) way.
                         //
-                        ////'groovy-1.5.6' : [ groupId : 'org.codehaus.groovy' , artifactId : 'groovy' , version : '1.5.6' ] ,
-                        ////'groovy-1.6-beta-1-SNAPSHOT' : [ groupId : 'org.codehaus.groovy' , artifactId : 'groovy' , version : '1.6-beta-1-SNAPSHOT' ] ,
+                        'groovy-1.5.6' : [ groupId : 'org.codehaus.groovy' , artifactId : 'groovy' , version : '1.5.6' ] ,
+                        'groovy-1.6-beta-1-SNAPSHOT' : [ groupId : 'org.codehaus.groovy' , artifactId : 'groovy' , version : '1.6-beta-1-SNAPSHOT' ] ,
                         'standalone' : [ groupId : 'org.codehaus.groovy' , artifactId : 'groovy-all' , version : '1.6-beta-2-SNAPSHOT' ]
                         ]
 
@@ -367,7 +367,7 @@ target ( distribution : 'Create the distribution.' ) {
     ant.delete ( dir : buildInstallDirectory )
     performCompile ( pathIdentifier , true )
     performCompileTests ( pathIdentifier , true )
-    ////if ( ! performTests ( pathIdentifier ) ) { someTestsFailed = true }
+    if ( ! performTests ( pathIdentifier ) ) { someTestsFailed = true }
     makeManifest ( )
     def discriminator = prefix + '_groovy-' + item.version
     if ( isStandalone ) { discriminator = prefix }                          
