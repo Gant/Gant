@@ -34,7 +34,7 @@ GROOVY_HOME="$GANT_HOME"
 export GROOVY_HOME
 
 #  If ANT_HOME is not set, deduce a path -- this is needed in order to discover the location of the jars
-#  asscoiated with the Ant installation.
+#  associated with the Ant installation.
 
 if [ -z "$ANT_HOME" ]
 then
