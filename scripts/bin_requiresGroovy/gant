@@ -54,7 +54,14 @@ GROOVY_CONF="$GANT_HOME/conf/gant-starter.conf"
 
 . "$GROOVY_HOME/bin/startGroovy"
 
-STARTER_CLASSPATH="$STARTER_CLASSPATH:$GANT_HOME/lib/gant-@GANT_VERSION@.jar"
+if [ $cygwin ]
+then
+    GANT_HOME=`cygpath --path --mixed "$GANT_HOME"`
+    ANT_HOME=`cygpath --path --mixed "$ANT_HOME"`
+    STARTER_CLASSPATH="$STARTER_CLASSPATH;$GANT_HOME\\lib\\gant-@GANT_VERSION@.jar"
+else
+    STARTER_CLASSPATH="$STARTER_CLASSPATH:$GANT_HOME/lib/gant-@GANT_VERSION@.jar"
+fi
 JAVA_OPTS="$JAVA_OPTS -Dgant.home=$GANT_HOME -Dant.home=$ANT_HOME"
 
 startGroovy gant.Gant "$@"
