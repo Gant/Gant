@@ -164,8 +164,8 @@
   </condition>
 
   <target name="-install" depends="-initializeMavenAntTask,package" if="installDirectoryIsSet">
-     <copy todir="${installDirectory}">
-      <fileset dir="${scriptsDirectory}" includes="bin/gant*,bin/startGroovy.bat,conf/gant-starter.conf"/>
+     <copy todir="${installDirectory}/bin">
+      <fileset dir="${scriptsDirectory}/bin_requiresGroovy"/>
       <filterset>
         <filter token="GANT_VERSION" value="${gantVersion}"/>
       </filterset>
@@ -173,7 +173,10 @@
     <chmod perm="a+x">
       <fileset dir="${installDirectory}/bin" includes="gant*,startGroovy.bat"/>
     </chmod>
-    <artifact:dependencies filesetId="ivyFilesetId">
+     <copy todir="${installDirectory}">
+      <fileset dir="${scriptsDirectory}" includes="conf/gant-starter.conf"/>
+    </copy>
+   <artifact:dependencies filesetId="ivyFilesetId">
       <dependency groupId="org.apache.ivy" artifactId="ivy" version="${ivyVersion}"/>
     </artifact:dependencies>
     <copy todir="${installDirectory}/lib">

@@ -54,7 +54,7 @@ GROOVY_CONF="$GANT_HOME/conf/gant-starter.conf"
 
 . "$GROOVY_HOME/bin/startGroovy"
 
-if [ $cygwin ]
+if $cygwin
 then
     GANT_HOME=`cygpath --path --mixed "$GANT_HOME"`
     ANT_HOME=`cygpath --path --mixed "$ANT_HOME"`

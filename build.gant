@@ -82,8 +82,6 @@ final distributionVersions = [
                         //  since the joint compiler only arrived with 1.5.0.  Opinion on the user list
                         //  indicated that it seemed reasonable to drop support for Groovy 1.0.
                         //
-                        ////[ groupId : 'groovy' , artifactId : 'groovy' , version : '1.0' ] ,
-                        //
                         //  The target distribution assumes that the groovyc fork mode works, which means we
                         //  cannot build against any version prior to 1.5.2.  Using a forked Java task is
                         //  not an option because there is no --classpath option in the 1.5.0 and 1.5.1
@@ -92,8 +90,9 @@ final distributionVersions = [
                         //  Gant can still be built and distributed against Groovy 1.5.0 and 1.5.1 but it
                         //  has to be done the hard (manual) way.
                         //
-                        [ groupId : 'org.codehaus.groovy' , artifactId : 'groovy' , version : '1.5.6' ] ,
-                        [ groupId : 'org.codehaus.groovy' , artifactId : 'groovy' , version : '1.6-beta-1-SNAPSHOT' ] ,
+                        ////'groovy-1.5.6' : [ groupId : 'org.codehaus.groovy' , artifactId : 'groovy' , version : '1.5.6' ] ,
+                        ////'groovy-1.6-beta-1-SNAPSHOT' : [ groupId : 'org.codehaus.groovy' , artifactId : 'groovy' , version : '1.6-beta-1-SNAPSHOT' ] ,
+                        'standalone' : [ groupId : 'org.codehaus.groovy' , artifactId : 'groovy-all' , version : '1.6-beta-2-SNAPSHOT' ]
                         ]
 
 // As Jürgen Hermann pointed out the trailing / on the URL is very important.
@@ -203,21 +202,32 @@ final setInstallationDirectory = { path ->
   installationDirectory = path
 }
 
-  final prepareInstallDirectory = { path , gantJarName ->
+  final prepareInstallDirectory = { path , gantJarName , isStandalone , item ->
   setInstallationDirectory ( path )
-  ant.copy ( todir : installationDirectory ) {
-    fileset ( dir : scriptsDirectory , includes : 'bin/gant*,bin/startGroovy.bat,conf/gant-starter.conf' )
+  def installationBinDirectory = installationDirectory + '/bin'
+  ant.copy ( todir : installationBinDirectory ) {
+    fileset ( dir : scriptsDirectory + ( isStandAlone : '/bin_standalone' : '/bin_requiresGroovy' ) )
     filterset { filter ( token : 'GANT_VERSION' , value : gantVersion ) }
+   }
+  ant.chmod ( perm : 'a+x' ) { fileset ( dir : installationBinDirectory , includes : 'gant*' ) }
+  ant.copy ( todir : installationDirectory ) {
+    fileset ( dir : scriptsDirectory , includes : 'conf/gant-starter.conf' )
   }
-  ant.chmod ( perm : 'a+x' ) { fileset ( dir : installationDirectory + '/bin' , includes : 'gant*' ) }
-  ivyFilesetId = 'ivyFilesetId'
-  ant."${antlibXMLns}:dependencies" ( filesetId : ivyFilesetId ) {
+  filesetId = 'filesetId'
+  ant."${antlibXMLns}:dependencies" ( filesetId : filesetId ) {
     dependency ( groupId : 'org.apache.ivy' , artifactId : 'ivy' , version : ant.project.properties.ivyVersion )
+    if ( isStandalone ) {
+        dependency ( groupId : item.groupId , artifactId : item.artifactId , version : item.version )
+        dependency ( groupId : 'commons-cli' , artifactId : 'commons-cli' , version : ant.project.properties.commonsCliVersion )
+      }
+    remoteRepository ( url : 'http://snapshots.repository.codehaus.org' )
+    remoteRepository ( url : 'http://repository.codehaus.org' )
+    remoteRepository ( url : 'http://repo1.maven.org' )
   }
   ant.copy ( todir : installationDirectory + '/lib' ) {
     fileset ( dir : buildDirectory , includes : gantJarName ) 
     fileset ( dir : jarfilesDirectory , includes : 'maven*.jar' )
-    fileset ( refid : ivyFilesetId )
+    fileset ( refid : filesetId )
     mapper ( type : 'flatten' )
   }
 }
@@ -319,7 +329,7 @@ target ( documentation : 'Create the API documentation.' ) {
 
 target ( install : "Compile everything and install it." ) {
   depends ( 'package' )
-  prepareInstallDirectory ( ant.project.properties.installDirectory , 'gant-' + gantVersion + '.jar' )
+  prepareInstallDirectory ( ant.project.properties.installDirectory , 'gant-' + gantVersion + '.jar' , false , null )
 }
 
 target ( uninstall : "Uninstall Gant." ) {
@@ -336,7 +346,8 @@ target ( distribution : 'Create the distribution.' ) {
   def distributionClasspathId = 'classpath'
   clean ( )
   someTestsFailed = false
-    distributionVersions.each { item ->
+  distributionVersions.each { label , item ->
+    def isStandalone = label == 'standalone'
     //  This is a closure that doesn't have the right metaclass so we have to specify Ant.  Need to
     //  rearrange things to deal with this problem as is done in the target Closure.
     def pathIdentifier = distributionClasspathId + item.version
@@ -356,14 +367,15 @@ target ( distribution : 'Create the distribution.' ) {
     ant.delete ( dir : buildInstallDirectory )
     performCompile ( pathIdentifier , true )
     performCompileTests ( pathIdentifier , true )
-    if ( ! performTests ( pathIdentifier ) ) { someTestsFailed = true }
+    ////if ( ! performTests ( pathIdentifier ) ) { someTestsFailed = true }
     makeManifest ( )
     def discriminator = prefix + '_groovy-' + item.version
+    if ( isStandalone ) { discriminator = prefix }                          
     def jarName = discriminator + '.jar'                    
     def jarPath = buildDirectory + System.properties.'file.separator' + jarName
     ant.jar ( destfile : jarPath , basedir : buildClassesDirectory , manifest : buildMetadataDirectory + '/MANIFEST.MF' )
     serverUploadProducts [ jarPath ] = serverJarsDirectory + '/' + jarName
-    prepareInstallDirectory ( buildInstallDirectory , jarName )
+    prepareInstallDirectory ( buildInstallDirectory , jarName , isStandalone , item )
     def archiveRoot = discriminator
     def archiveRootPath = buildDirectory + System.properties.'file.separator' + archiveRoot
     ant.zip ( destfile : archiveRootPath + zipExtension ) {
