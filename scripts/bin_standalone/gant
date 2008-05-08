@@ -16,7 +16,8 @@
 #
 #  Author : Russel Winder <russel.winder@concertant.com>
 
-#  Gant initiation script for Linux and UNIX
+#  Gant initiation script for Linux and UNIX.  This version does not require a GROOVY_HOME to be set since
+#  it has all the necessary jars in the $GANT_HOME/lib directory.
 
 #  If GANT_HOME is not set, deduce a path.
 
@@ -27,16 +28,10 @@ then
     export GANT_HOME
 fi
 
-#  If GROOVY_HOME is not set, deduce a path -- this is needed in order to discover the location of the
-#  startGroovy script.
+#  Force GROOVY_HOME to be GANT_HOME so that the startGroovy code does the right thing.
 
-if [ -z "$GROOVY_HOME" ]
-then
-    GROOVY_HOME=`which groovy`
-    GROOVY_HOME=`dirname "$GROOVY_HOME"`
-    GROOVY_HOME=`dirname "$GROOVY_HOME"`
-    export GROOVY_HOME
-fi
+GROOVY_HOME="$GANT_HOME"
+export GROOVY_HOME
 
 #  If ANT_HOME is not set, deduce a path -- this is needed in order to discover the location of the jars
 #  asscoiated with the Ant installation.

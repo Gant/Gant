@@ -206,7 +206,7 @@ final setInstallationDirectory = { path ->
   setInstallationDirectory ( path )
   def installationBinDirectory = installationDirectory + '/bin'
   ant.copy ( todir : installationBinDirectory ) {
-    fileset ( dir : scriptsDirectory + ( isStandAlone : '/bin_standalone' : '/bin_requiresGroovy' ) )
+    fileset ( dir : scriptsDirectory + ( isStandalone ? '/bin_standalone' : '/bin_requiresGroovy' ) )
     filterset { filter ( token : 'GANT_VERSION' , value : gantVersion ) }
    }
   ant.chmod ( perm : 'a+x' ) { fileset ( dir : installationBinDirectory , includes : 'gant*' ) }
