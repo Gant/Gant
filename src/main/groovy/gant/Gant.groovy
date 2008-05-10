@@ -167,13 +167,13 @@ final class Gant {
     if ( message != null ) { println ( 'Default target is ' + message + '.' ) ; println ( ) }
     0
   }
-  private void printDispatchExceptionMessage ( target , method , message ) {
-    println ( ( target == method ) ? "Target ${method} does not exist." : "Could not execute method ${method}.\n${message}" )
-  }
   /**
    *  The function that handles actioning the targets.
    */
   private int dispatch ( targets ) {
+    final printDispatchExceptionMessage = { target , method , message ->
+      println ( ( target == method ) ? "Target ${method} does not exist." : "Could not execute method ${method}.\n${message}" )
+    }
     def returnCode = 0
     try {
       if ( targets.size ( ) > 0 ) {
@@ -364,12 +364,13 @@ final class Gant {
       try { binding.groovyShell.evaluate ( buildFileText , buildClassName ) }
       catch ( Exception e ) {
         for ( stackEntry in e.stackTrace ) {
-          if ( stackEntry.fileName == buildClassName ) {
+          if ( ( stackEntry.fileName == buildClassName ) && ( stackEntry.lineNumber  != -1 ) ) {
             def sourceName = ( buildClassName == standardInputClassName ) ? 'Standard input' : buildFile.name
             print ( sourceName + ', line ' + stackEntry.lineNumber + ' -- ' )
           }
         }
-        println ( 'Error evaluating Gantfile: ' + ( e instanceof InvocationTargetException ? e.cause.message : e.message  ) )
+        if ( e instanceof InvocationTargetException ) { e = e.cause }
+        println ( 'Error evaluating Gantfile: ' + ( ( e instanceof RuntimeException ) ? e.message : e.toString ( ) ) )
         return -2
       }
     }

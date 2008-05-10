@@ -69,7 +69,7 @@ target ( 'default' : '' ) { something ( ) }
   private final targetsBuildClassString =  "includeTargets <<  '''${targetsClassText}'''\n" + targetsBuildScriptBase
   private final String nonExistentFilePath
   private final resultFlobbed = 'flobbed.\n'
-  private final resultErrorEvaluatingLineOne = "Standard input, line 1 -- Error evaluating Gantfile: ${targetsClassName}\n"
+  private final resultErrorEvaluatingLineOne = "Standard input, line 1 -- Error evaluating Gantfile: java.lang.InstantiationException: ${targetsClassName}\n"
    //  There is a weirdness in 1.5.x which reports line 1 here where 1.6.x reports line 6.
    private final resultErrorEvaluatingLineSix = 'Standard input, line ' + ( ( groovyMinorVersion > 5 ) ? '6' : '1' ) + " -- Error evaluating Gantfile: No such property: ${targetsClassName} for class: standard_input\n"
   private final String resultErrorEvaluatingWeirdLineOne
@@ -177,7 +177,7 @@ target ( 'default' : '' ) { something ( ) }
   }
   void testToolClassNoFile ( ) {
     script = toolBuildScriptFile.replace ( toolClassFilePath , nonExistentFilePath )
-    def errorMessage = 'Standard input, line 1 -- Error evaluating Gantfile: '
+    def errorMessage = 'Standard input, line 1 -- Error evaluating Gantfile: java.io.FileNotFoundException: '
     if ( isWindows ) { errorMessage += nonExistentFilePath.replaceAll ( '/' , '\\\\' ) + ' (The system cannot find the path specified)\n' }
     else { errorMessage += nonExistentFilePath + ' (No such file or directory)\n' }
     assertEquals ( -2 , processTargets ( 'flob' ) )
