@@ -30,17 +30,9 @@ if not "%GANT_HOME%" == "" goto endSetGantHome
    set GANT_HOME=%DIRNAME%..
 :endSetGantHome
 
-@rem  If GROOVY_HOME is not set, deduce a path -- this is needed in order to discover the location of the
-@rem  startGroovy script.
+@rem  Force GROOVY_HOME to be GANT_HOME so that the startGroovy code does the right thing.
 
-if not "%GROOVY_HOME%" == "" goto endSetGroovyHome
-   for %%P in ( %PATH% ) do if exist %%P\groovy.exe set GROOVY_HOME=%%P\..
-   if not "%GROOVY_HOME%" == "" goto endSetGroovyHome
-   for %%P in ( %PATH% ) do if exist %%P\groovy.bat set GROOVY_HOME=%%P\..
-   if not "%GROOVY_HOME%" == "" goto endSetGroovyHome
-      call :environmentVariableError GROOVY_HOME
-      goto :EOF
-:endSetGroovyHome
+set GROOVY_HOME=%GANT_HOME%
 
 @rem  If ANT_HOME is not set, deduce a path -- this is needed in order to discover the location of the jars
 @rem  asscoiated with the Ant installation.
