@@ -1,4 +1,4 @@
-1.3.0 (rXXXX)
+1.3.0 (rr9298)
 -------------
 
 Change the way Groovy installs so that it doesn't install into the Groovy installation, but into its own
