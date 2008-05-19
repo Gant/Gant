@@ -205,9 +205,20 @@ final setInstallationDirectory = { path ->
   final prepareInstallDirectory = { path , gantJarName , isStandalone , item ->
   setInstallationDirectory ( path )
   def installationBinDirectory = installationDirectory + '/bin'
+  def groovyJarName = null
+  if ( item != null ) { groovyJarName = 'groovy-' + item.version + '.jar' }
+  else {
+    ant.pathconvert ( property : 'groovyJarName' ) {
+      //  Have to specify ant.path here for some reason that is not entirely clear.
+      ant.path { fileset ( dir : groovyHome + '/lib' , includes : 'groovy-1.*.jar' ) }
+      mapper ( type : 'flatten' )
+    }
+    groovyJarName = ant.project.properties.groovyJarName
+  }
   ant.copy ( todir : installationBinDirectory ) {
     fileset ( dir : scriptsDirectory + ( isStandalone ? '/bin_standalone' : '/bin_requiresGroovy' ) )
     filterset { filter ( token : 'GANT_VERSION' , value : gantVersion ) }
+    filterset { filter ( token : 'GROOVYJAR' , value : groovyJarName ) }
    }
   ant.chmod ( perm : 'a+x' ) { fileset ( dir : installationBinDirectory , includes : 'gant*' ) }
   ant.copy ( todir : installationDirectory ) {

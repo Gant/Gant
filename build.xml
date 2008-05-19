@@ -164,10 +164,17 @@
   </condition>
 
   <target name="-install" depends="-initializeMavenAntTask,package" if="installDirectoryIsSet">
+    <pathconvert property="groovyJarName">
+      <path>
+        <fileset dir="${groovyHome}/lib" includes="groovy-1.*.jar"/>
+      </path>
+      <mapper type="flatten"/>
+    </pathconvert>
      <copy todir="${installDirectory}/bin">
       <fileset dir="${scriptsDirectory}/bin_requiresGroovy"/>
       <filterset>
         <filter token="GANT_VERSION" value="${gantVersion}"/>
+        <filter token="GROOVYJAR" value="${groovyJarName}"/>
       </filterset>
     </copy>
     <chmod perm="a+x">
