@@ -15,6 +15,7 @@
 //  Author : Russel Winder <russel.winder@concertant.com>
 
 final zipExtension = '.zip'
+final tarExtension = '.tar'
 final tgzExtension = '.tgz'
 
 ant.property ( file : 'build.properties' )
@@ -202,12 +203,13 @@ final setInstallationDirectory = { path ->
   installationDirectory = path
 }
 
-  final prepareInstallDirectory = { path , gantJarName , isStandalone , item ->
+final prepareInstallDirectory = { path , gantJarName , isStandalone , item ->
   setInstallationDirectory ( path )
   def installationBinDirectory = installationDirectory + '/bin'
   def groovyJarName = null
-  if ( item != null ) { groovyJarName = 'groovy-' + item.version + '.jar' }
+  if ( item != null ) { groovyJarName = ( isStandalone ? 'groovy-all-' : 'groovy-' ) + item.version + '.jar' }
   else {
+    assert ! isStandalone
     ant.pathconvert ( property : 'groovyJarName' ) {
       //  Have to specify ant.path here for some reason that is not entirely clear.
       ant.path { fileset ( dir : groovyHome + '/lib' , includes : 'groovy-1.*.jar' ) }
@@ -243,6 +245,15 @@ final setInstallationDirectory = { path ->
   }
 }
 
+final prepareZipFromTarAndRegisterForUpload = { String root , Closure closure ->
+  path = buildDirectory + System.properties.'file.separator' + root
+  closure ( )
+  ant.zip ( destfile : path + zipExtension ) { tarfileset ( src : path + tarExtension ) }
+  ant.gzip ( src : path + tarExtension , destfile : path + tgzExtension )
+  serverUploadProducts [ path + tgzExtension ] = serverDistributionsDirectory + '/' +  root + tgzExtension
+  serverUploadProducts [ path + zipExtension ] = serverDistributionsDirectory + '/' +  root + zipExtension
+}
+  
 //  Create the compilation context of the Groovy with which Gant will be installed.  This is not used for
 //  the distributions.
 compileJarSet = 'compileJarSet'
@@ -387,44 +398,34 @@ target ( distribution : 'Create the distribution.' ) {
     ant.jar ( destfile : jarPath , basedir : buildClassesDirectory , manifest : buildMetadataDirectory + '/MANIFEST.MF' )
     serverUploadProducts [ jarPath ] = serverJarsDirectory + '/' + jarName
     prepareInstallDirectory ( buildInstallDirectory , jarName , isStandalone , item )
-    def archiveRoot = discriminator
-    def archiveRootPath = buildDirectory + System.properties.'file.separator' + archiveRoot
-    ant.zip ( destfile : archiveRootPath + zipExtension ) {
-      zipfileset ( dir : buildInstallDirectory , prefix : prefix )
-      zipfileset ( dir : '.' , includes : 'README*' , prefix : prefix )
+    prepareZipFromTarAndRegisterForUpload ( discriminator ) {
+      //  NB Rely on Closures not being closures:  path is only resolved when the Closure is executed.
+      ant.tar ( destfile :  path + tarExtension ) {
+        tarfileset ( dir : buildInstallDirectory , mode : '511' , prefix : prefix ) { include ( name : 'bin/gant*' ) }
+        tarfileset ( dir : buildInstallDirectory , prefix : prefix ) {
+          include ( name : '**' )
+          exclude ( name : 'bin/gant*' )
+        }
+        tarfileset ( dir : '.' , includes : 'README*' , prefix : prefix )
+      }
     }
-    serverUploadProducts [ archiveRootPath + zipExtension ] = serverDistributionsDirectory + '/' +  archiveRoot + zipExtension
-    ant.tar ( destfile :  archiveRootPath + tgzExtension , compression : 'gzip' ) {
-      tarfileset ( dir : buildInstallDirectory , prefix : prefix )
-      tarfileset ( dir : '.' , includes : 'README*' , prefix : prefix )
+  }
+  //  Create the source distribution.
+  prepareZipFromTarAndRegisterForUpload ( 'gant_src-' + gantVersion ) {
+    //  NB Rely on Closures not being closures:  path is only resolved when the Closure is executed.
+    ant.tar ( destfile :  path + tarExtension ) {
+      tarfileset ( dir : '.' , includes : distributionTopLevelFiles.join ( ',' ) , prefix : prefix )
+      distributionDirectories.each { directory -> tarfileset ( dir : directory , prefix : prefix + System.properties.'file.separator' + directory ) }
     }
-    serverUploadProducts [ archiveRootPath + tgzExtension ] = serverDistributionsDirectory + '/' +  archiveRoot + tgzExtension
   }
-  //  Create the source distributions.
-  archiveRoot = 'gant_src-' + gantVersion
-  archiveRootPath = buildDirectory + System.properties.'file.separator' + archiveRoot
-  zip ( destfile : archiveRootPath + zipExtension ) {
-    zipfileset ( dir : '.' , includes : distributionTopLevelFiles.join ( ',' ) , prefix : prefix )
-    distributionDirectories.each { directory -> zipfileset ( dir : directory , prefix : prefix + System.properties.'file.separator' + directory ) }
-  }
-  serverUploadProducts [ archiveRootPath + zipExtension ] = serverDistributionsDirectory + '/' +  archiveRoot + zipExtension
-  tar ( destfile :  archiveRootPath + tgzExtension , compression : 'gzip' ) {
-    tarfileset ( dir : '.' , includes : distributionTopLevelFiles.join ( ',' ) , prefix : prefix )
-    distributionDirectories.each { directory -> tarfileset ( dir : directory , prefix : prefix + System.properties.'file.separator' + directory ) }
-  }
-  serverUploadProducts [ archiveRootPath + tgzExtension ] = serverDistributionsDirectory + '/' +  archiveRoot + tgzExtension
-  // Create the API documentation distributions.
+  // Create the API documentation distribution.
   documentation ( )
-  archiveRoot = 'gant_doc-' + gantVersion
-  archiveRootPath = buildDirectory + System.properties.'file.separator' + archiveRoot
-  zip ( destfile : archiveRootPath + zipExtension ) {
-    zipfileset ( dir : documentationDirectory , prefix : prefix + System.properties.'file.separator' + 'doc' )
+  prepareZipFromTarAndRegisterForUpload (  'gant_doc-' + gantVersion ) {
+    //  NB Rely on Closures not being closures:  path is only resolved when the Closure is executed.
+    ant.tar ( destfile :  path + tarExtension ) {
+      tarfileset ( dir : documentationDirectory , prefix : prefix + System.properties.'file.separator' + 'doc' )
+    }
   }
-  serverUploadProducts [ archiveRootPath + zipExtension ] = serverDistributionsDirectory + '/' +  archiveRoot + zipExtension
-  tar ( destfile :  archiveRootPath + tgzExtension , compression : 'gzip' ) {
-    tarfileset ( dir : documentationDirectory , prefix : prefix + System.properties.'file.separator' + 'doc' )
-  }
-  serverUploadProducts [ archiveRootPath + tgzExtension ] = serverDistributionsDirectory + '/' +  archiveRoot + tgzExtension
   //  Return the result of the test executions so that uploadDistributions can choose not to upload a failed
   //  compilation.
   ! someTestsFailed
