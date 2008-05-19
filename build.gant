@@ -219,6 +219,7 @@ final prepareInstallDirectory = { path , gantJarName , isStandalone , item ->
   }
   ant.copy ( todir : installationBinDirectory ) {
     fileset ( dir : scriptsDirectory + ( isStandalone ? '/bin_standalone' : '/bin_requiresGroovy' ) )
+    fileset ( dir : scriptsDirectory + '/bin' )
     filterset { filter ( token : 'GANT_VERSION' , value : gantVersion ) }
     filterset { filter ( token : 'GROOVYJAR' , value : groovyJarName ) }
    }
@@ -401,10 +402,10 @@ target ( distribution : 'Create the distribution.' ) {
     prepareZipFromTarAndRegisterForUpload ( discriminator ) {
       //  NB Rely on Closures not being closures:  path is only resolved when the Closure is executed.
       ant.tar ( destfile :  path + tarExtension ) {
-        tarfileset ( dir : buildInstallDirectory , mode : '511' , prefix : prefix ) { include ( name : 'bin/gant*' ) }
+        tarfileset ( dir : buildInstallDirectory , mode : '511' , prefix : prefix ) { include ( name : 'bin/*' ) }
         tarfileset ( dir : buildInstallDirectory , prefix : prefix ) {
           include ( name : '**' )
-          exclude ( name : 'bin/gant*' )
+          exclude ( name : 'bin/*' )
         }
         tarfileset ( dir : '.' , includes : 'README*' , prefix : prefix )
       }
