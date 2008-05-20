@@ -280,7 +280,7 @@ final class Gant {
       def version = ''
       final gantPackage = Package.getPackage ( 'gant' )
       if ( gantPackage != null ) { version = gantPackage.getImplementationVersion ( ) }
-      println ( 'Gant version ' + ( ( version == null ) ? '<unknown>' : version ) )
+      println ( 'Gant version ' + ( ( ( version == null ) || ( version == '' ) ) ? '<unknown>' : version ) )
       return 0
     }
     //  The rest of the arguments appear to be delivered as a single string as the first item in a list.  This is surely an error but
