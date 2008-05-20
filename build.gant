@@ -166,6 +166,7 @@ final performTests =  { classpathRef ->
         path ( refid : 'coberturaPathId' )
       }
       pathelement ( location : buildTestClassesDirectory )
+      path ( refid : classpathRef )
     }
   }
   ant.junit ( printsummary : 'yes' , failureproperty : 'testsFailed' , fork : 'true' ) {
