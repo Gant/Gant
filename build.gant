@@ -18,11 +18,11 @@ final zipExtension = '.zip'
 final tarExtension = '.tar'
 final tgzExtension = '.tgz'
 
-ant.property ( file : 'build.properties' )
 ant.property ( file : 'local.build.properties' )
+ant.property ( file : 'build.properties' )
 
-try { gantVersion }
-catch ( MissingPropertyException mpe ) { gantVersion = ant.project.properties.gantVersion }
+gantVersion = ant.project.properties.gantVersion
+groovyVersion = ant.project.properties.groovyVersion
 
 try { usingCobertura }
 catch ( MissingPropertyException mpe ) { usingCobertura = false }
@@ -77,24 +77,30 @@ final distributionDirectories = [ 'documentation' , 'examples' , '.settings' , s
 
 //  The versions of Gant in the Maven repository to build distribution version of Gant against.
 
+//  Deb production assumes that the standalone build is the last one undertaken.  Pragmatically this is the
+//  case since iterating over the items in the map happens in lexical order of the keys.  However, this is
+//  an assumption, so this really needs changing.
+
 final distributionVersions = [
-                        //  Introducing the Gant Ant Task written in Java means we have to use the joint
-                        //  compiler to compile Gant and this means we cannot build Gant against Groovy 1.0
-                        //  since the joint compiler only arrived with 1.5.0.  Opinion on the user list
-                        //  indicated that it seemed reasonable to drop support for Groovy 1.0.
-                        //
-                        //  The target distribution assumes that the groovyc fork mode works, which means we
-                        //  cannot build against any version prior to 1.5.2.  Using a forked Java task is
-                        //  not an option because there is no --classpath option in the 1.5.0 and 1.5.1
-                        //  versions of Groovyc and this is essential to get things to work correctly.
-                        //
-                        //  Gant can still be built and distributed against Groovy 1.5.0 and 1.5.1 but it
-                        //  has to be done the hard (manual) way.
-                        //
-                        'groovy-1.5.6' : [ groupId : 'org.codehaus.groovy' , artifactId : 'groovy' , version : '1.5.6' ] ,
-                        'groovy-1.6-beta-1-SNAPSHOT' : [ groupId : 'org.codehaus.groovy' , artifactId : 'groovy' , version : '1.6-beta-1-SNAPSHOT' ] ,
-                        'standalone' : [ groupId : 'org.codehaus.groovy' , artifactId : 'groovy-all' , version : '1.5.6' ]
-                        ]
+                              //  Introducing the Gant Ant Task written in Java means we have to use the
+                              //  joint compiler to compile Gant and this means we cannot build Gant against
+                              //  Groovy 1.0 since the joint compiler only arrived with 1.5.0.  Opinion on
+                              //  the user list indicated that it seemed reasonable to drop support for
+                              //  Groovy 1.0.
+                              //
+                              //  The target distribution assumes that the groovyc fork mode works, which
+                              //  means we cannot build against any version prior to 1.5.2.  Using a forked
+                              //  Java task is not an option because there is no --classpath option in the
+                              //  1.5.0 and 1.5.1 versions of Groovyc and this is essential to get things to
+                              //  work correctly.
+                              //
+                              //  Gant can still be built and distributed against Groovy 1.5.0 and 1.5.1 but
+                              //  it has to be done the hard (manual) way.
+                              //
+                              ( 'groovy-' + groovyVersion ) : [ groupId : 'org.codehaus.groovy' , artifactId : 'groovy' , version : groovyVersion ] ,
+                              'groovy-1.6-beta-1-SNAPSHOT' : [ groupId : 'org.codehaus.groovy' , artifactId : 'groovy' , version : '1.6-beta-1-SNAPSHOT' ] ,
+                              standalone : [ groupId : 'org.codehaus.groovy' , artifactId : 'groovy-all' , version : groovyVersion ]
+                              ]
 
 // As Jürgen Hermann pointed out the trailing / on the URL is very important.
 

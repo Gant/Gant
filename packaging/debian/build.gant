@@ -20,17 +20,17 @@ final buildDirectory = rootDirectory + System.properties.'file.separator' + 'tar
 Ant.property ( file : rootDirectory + System.properties.'file.separator' + 'build.properties' )
 Ant.property ( file : rootDirectory + System.properties.'file.separator' + 'local.build.properties' )
 
-try { gantVersion }
-catch ( MissingPropertyException mpe ) { gantVersion = Ant.project.properties.gantVersion }
+gantVersion = Ant.project.properties.gantVersion
+groovyVersion = Ant.project.properties.groovyVersion
 
-final groovyVersion = '1.5.6'
-
-final packageName = 'gant'
+final requiresGroovyPackageName = 'gant'
+final standalonePackageName = 'gant-standalone'
 final section = 'devel'
 final priority = 'optional'
 final architecture = 'all'
-final depends = "java2-runtime, groovy ( >= ${groovyVersion} )"
 final homepage = 'http://gant.codehaus.org/' 
+
+final installPrefixBase = 'usr/share/gant'
 
 //  Use the ant-deb-task from Marius Scurtescu <marius.scurtescu@gmail.com> to create a deb file.
 //  Assume the ant-deb.jar file is in ~/.groovy/lib.
@@ -40,33 +40,12 @@ Ant.taskdef ( resource : 'ant_deb_task.properties' , classpath : [ System.proper
 final debsDirectory = 'debs'
 
 includeTargets << gant.targets.Clean
+ cleanPattern << '**/*~'
 cleanDirectory << debsDirectory
 
 includeTool << gant.tools.Execute
 
-target ( debFiles : 'Create the deb file of the distribution.' ) {
-  //  Need to avoid recursive Gant.  Fix this.
-  execute.shell ( "cd ${rootDirectory} && gant distribution" )
-  // Create a deb for the jar in the distribution with the right Groovy version.
-  ( new File ( buildDirectory ).listFiles ( { it ==~ '.*.jar' } as java.io.FileFilter ) as List ).each { item ->
-    def jarName = item.name
-    def groovyVersionFromJar = '0.0.0'
-    def gantVersionFromJar = '0.0.0'
-    def matcher = jarName =~ /gant-(.*)_groovy-(.*)\.jar/
-    if ( matcher.matches ( ) ) {
-      gantVersionFromJar = matcher.group ( 1 )
-      groovyVersionFromJar = matcher.group ( 2 )
-    }
-    assert gantVersion == gantVersionFromJar
-    if ( groovyVersion == groovyVersionFromJar ) {                                                                                                       
-      Ant.mkdir ( dir : debsDirectory )
-      //  Have to use Ant. as we are in a Closure :-(
-      Ant.deb ( todir : debsDirectory , 'package' : packageName , section : section , priority : priority , architecture : architecture ,
-                depends : depends.replace ( '${groovyVersion}' , groovyVersion ) , postinst : 'postinst' , prerm : 'prerm' ) {
-        version ( upstream : gantVersion )
-        maintainer ( name : 'Russel Winder' , email : 'russel.winder@concertant.com' )
-        //homepage ( homepage )
-        description ( synopsis : 'Groovy scripting of Ant tasks.' , '''
+theWords = """
 Gant is a build tool for scripting Ant tasks using Groovy instead of XML
 to specify the build logic. A Gant build specification is just a Groovy
 script and so can bring all the power of Groovy to bear directly,
@@ -76,12 +55,36 @@ things, so it is really an alternative way of doing builds using Ant,
 but using a programming language rather than XML to specify the build
 rules.
 .
-Homepage: http://gant.codehaus.org/
-''' )
-        tarfileset ( file : [ rootDirectory , 'scripts' , 'bin' , 'gant' ].join ( System.properties.'file.separator' ) , prefix : 'usr/share/groovy/bin' , filemode : '755' )
-        tarfileset ( file : buildDirectory + System.properties.'file.separator' + jarName , prefix : 'usr/share/groovy/lib' )
-      }
-    }
+Homepage: ${homepage}
+"""
+  
+target ( debFiles : 'Create the deb file of the distribution.' ) {
+  //  Need to avoid recursive Gant.  Fix this.
+  //execute.shell ( "cd ${rootDirectory} && gant distribution" )
+  mkdir ( dir : debsDirectory )
+  // Create a deb that depend on a Groovy deb                                                                                 
+  deb ( todir : debsDirectory , 'package' : requiresGroovyPackageName , section : section , priority : priority , architecture : architecture ,
+        depends : "java2-runtime, groovy ( >= ${groovyVersion} )", conflicts : standalonePackageName , postinst : 'postinst' , prerm : 'prerm' ) {
+    version ( upstream : gantVersion )
+    maintainer ( name : 'Russel Winder' , email : 'russel.winder@concertant.com' )
+    //homepage ( homepage )
+    description ( synopsis : 'Groovy scripting of Ant tasks.' , theWords )
+    tarfileset ( file : [ rootDirectory , 'scripts' , 'bin_requiresGroovy' , 'gant' ].join ( System.properties.'file.separator' ) , prefix : installPrefixBase + '/bin' , filemode : '755' )
+    tarfileset ( file : [ rootDirectory , 'scripts' , 'conf' , 'gant-starter.conf' ].join ( System.properties.'file.separator' ) , prefix : installPrefixBase + '/conf' )
+    tarfileset ( file : buildDirectory + System.properties.'file.separator' + 'gant-' + gantVersion + '_groovy-' + groovyVersion + '.jar' , prefix : installPrefixBase + '/lib' )
+  }
+  // Create a deb that is standalone requiring no Groovy installation. 
+  deb ( todir : debsDirectory , 'package' : standalonePackageName , section : section , priority : priority , architecture : architecture ,
+        depends : 'java2-runtime', conflicts : requiresGroovyPackageName , postinst : 'postinst' , prerm : 'prerm' ) {
+    version ( upstream : gantVersion )
+    maintainer ( name : 'Russel Winder' , email : 'russel.winder@concertant.com' )
+    //homepage ( homepage )
+    description ( synopsis : 'Groovy scripting of Ant tasks.' , theWords )
+    tarfileset ( file : [ rootDirectory , 'target' , 'install' , 'bin' , 'gant' ].join ( System.properties.'file.separator' ) , prefix : installPrefixBase + '/bin' , filemode : '755' )
+    tarfileset ( file : [ rootDirectory , 'target' , 'install' , 'bin' , 'startGroovy' ].join ( System.properties.'file.separator' ) , prefix : installPrefixBase + '/bin' , filemode : '644' )
+    tarfileset ( file : [ rootDirectory , 'target' , 'install' , 'conf' , 'gant-starter.conf' ].join ( System.properties.'file.separator' ) , prefix : installPrefixBase + '/conf' )
+    tarfileset ( file : buildDirectory + System.properties.'file.separator' + 'gant-' + gantVersion  + '.jar' , prefix : installPrefixBase + '/lib' )
+    tarfileset ( dir : [ buildDirectory , 'install' , 'lib'].join (  System.properties.'file.separator' ) , includes : '*.jar' , prefix : installPrefixBase + '/lib' )
   }
 }
 
