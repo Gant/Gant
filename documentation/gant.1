@@ -1,6 +1,6 @@
-.TH gant 1 "2007-11-30" "Russel Winder"
+.TH gant 1 "2008-05-24" "Russel Winder"
 .SH NAME
-gant \- A Groovy build framework based on scripting Ant task.
+gant \- A build framework based on scripting Ant task using Groovy.
 
 .SH SYNOPSIS
 .B gant
@@ -20,21 +20,10 @@ which describes the targets.
 \fB \-c,\-\-usecache\fR
 Whether to cache the generated class and perform modified checks on the file before re-compilation.
 .TP
-\fB \-n,\-\-dry\-run \fR
-Do not actually action any tasks.
+\fB \-d,\-\-debug\fR
+Print debug levels of information.
 .TP
-\fB \-D <name>=<value>\fR
-Define <name> to have value <value>.
-Creates a variable named <name> for use in the scripts and a property
-named <name> for the Ant tasks.
-.TP
-\fB \-T,\-\-targets\fR
-Print out a list of the possible targets.
-.TP
-\fB \-V,\-\-version\fR
-Print lots of extra information.
-.TP
-\fB \-f,\-\-gantfile <build\-file>\fR
+\fB \-f,\-\-file <build\-file>\fR
 Use the named build file instead of the default,
 .BR build.gant .
 .TP
@@ -43,6 +32,9 @@ Print out this message.
 .TP
 \fB \-l,\-\-gantlib <library>\fR
 A directory that contains classes to be used as extra Gant modules,
+.TP
+\fB \-n,\-\-dry\-run \fR
+Do not actually action any tasks.
 .TP
 \fB \-p,\-\-projecthelp\fR
 Print out a list of the possible targets.
@@ -55,6 +47,26 @@ Print out nothing when executing.
 .TP
 \fB \-v,\-\-verbose\fR
 Print lots of extra information.
+.TP
+\fB \-C, \-\-cachedir <cache-file>\fR
+The directory where to cache generated classes to.
+.TP
+\fB \-D <name>=<value>\fR
+Define <name> to have value <value>.
+Creates a variable named <name> for use in the scripts and a property
+named <name> for the Ant tasks.
+.TP
+\fB \-L,\-\-lib <path>\fR
+Add a directory to search for jars and classes.
+.TP
+\fB \-P,\-\-classpath <path-list>\fR
+Specify a path list to search for jars and classes.
+.TP
+\fB \-T,\-\-targets\fR
+Print out a list of the possible targets.
+.TP
+\fB \-V,\-\-version\fR
+Print the version number and exit.
 
 .SH AUTHOR
 Gant and this manpage written by Russel Winder <russel.winder@concertant.com>.
