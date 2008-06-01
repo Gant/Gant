@@ -39,8 +39,7 @@ import groovy.lang.MetaClass ;
  *  @author Russel Winder <russel.winder@concertant.com>
  */
 class GantMetaClass extends DelegatingMetaClass {
-  //private final static HashSet<Closure> methodsInvoked = new HashSet<Closure> ( ) ;
-  private final static HashSet methodsInvoked = new HashSet ( ) ;
+  private final static HashSet<Closure> methodsInvoked = new HashSet<Closure> ( ) ;
   private final Binding binding ;
   public GantMetaClass ( final MetaClass metaClass , final Binding binding ) {
     super ( metaClass ) ;
