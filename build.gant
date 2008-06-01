@@ -30,6 +30,9 @@ catch ( MissingPropertyException mpe ) { usingCobertura = false }
 try { ignoreTestFailures }
 catch ( MissingPropertyException mpe ) { ignoreTestFailures = false }
 
+try { testCase }
+catch ( MissingPropertyException mpe ) { testCase = null }
+
 groovyHome = System.properties.'groovy.home'
 if ( ( groovyHome == null ) || ( groovyHome == '' ) ) {
   println ( 'Real problem: property groovy.home is not set and this is Gant executing.' )
@@ -156,31 +159,36 @@ final performTests =  { classpathRef ->
     ant.taskdef ( resource : 'tasks.properties' , classpathref : 'coberturaPathId' )
     ant.'cobertura-instrument' ( todir : buildCoberturaClassesDirectory ) { fileset ( dir : buildClassesDirectory ) }
   }
-  ant.junit ( printsummary : 'yes' , failureproperty : 'testsFailed' , fork : 'true' ) {
-    formatter ( type : 'plain' )
-    batchtest ( todir : buildTestReportsDirectory ) { fileset ( dir : buildTestClassesDirectory , includes : '**/ant/tests/*_Test.class' ) }
-    classpath {
-      if ( usingCobertura ) {
-        // MUST appear in classpath before the uninstrumented classes.
-        pathelement ( location : buildCoberturaClassesDirectory )
-        path ( refid : 'coberturaPathId' )
+  if ( ( testCase == null ) || ( testCase ==~ 'org.codehaus.gant.ant.tests.*_Test' ) ) {                        
+    ant.junit ( printsummary : 'yes' , failureproperty : 'testsFailed' , fork : 'true' ) {
+      formatter ( type : 'plain' )
+      batchtest ( todir : buildTestReportsDirectory ) { fileset ( dir : buildTestClassesDirectory , includes : '**/ant/tests/*_Test.class' ) }
+      classpath {
+        if ( usingCobertura ) {
+          // MUST appear in classpath before the uninstrumented classes.
+          pathelement ( location : buildCoberturaClassesDirectory )
+          path ( refid : 'coberturaPathId' )
+        }
+        pathelement ( location : buildTestClassesDirectory )
+        path ( refid : classpathRef )
       }
-      pathelement ( location : buildTestClassesDirectory )
-      path ( refid : classpathRef )
     }
   }
-  ant.junit ( printsummary : 'yes' , failureproperty : 'testsFailed' , fork : 'true' ) {
-    formatter ( type : 'plain' )
-    batchtest ( todir : buildTestReportsDirectory ) { fileset ( dir : buildTestClassesDirectory , includes : '**/*_Test.class' , excludes : '**/ant/tests/*' ) }
-    classpath {
-      if ( usingCobertura ) {
-        // MUST appear in classpath before the uninstrumented classes.
-        pathelement ( location : buildCoberturaClassesDirectory )
-        path ( refid : 'coberturaPathId' )
+  if ( ! ( testCase ==~ 'org.codehaus.gant.ant.tests.*_Test' ) ) {                        
+    ant.junit ( printsummary : 'yes' , failureproperty : 'testsFailed' , fork : 'true' ) {
+      formatter ( type : 'plain' )
+      if ( testCase != null) { ant.test ( name : testCase , todir : buildTestReportsDirectory ) }
+      else { batchtest ( todir : buildTestReportsDirectory ) { fileset ( dir : buildTestClassesDirectory , includes : '**/*_Test.class' , excludes : '**/ant/tests/*' ) } }
+      classpath {
+        if ( usingCobertura ) {
+          // MUST appear in classpath before the uninstrumented classes.
+          pathelement ( location : buildCoberturaClassesDirectory )
+          path ( refid : 'coberturaPathId' )
+        }
+        pathelement ( location : buildTestClassesDirectory )
+        pathelement ( location : buildClassesDirectory )
+        path ( refid : classpathRef )
       }
-      pathelement ( location : buildTestClassesDirectory )
-      pathelement ( location : buildClassesDirectory )
-      path ( refid : classpathRef )
     }
   }
   if ( usingCobertura ) { ant.'cobertura-report' ( srcdir : sourceDirectory , destdir : buildCoberturaReportsDirectory ) }
@@ -309,7 +317,7 @@ target ( test : 'Test a build.' ) {
 
 target ( coberturaTest : 'Test a build using Cobertura to get a coverage report.' ) {
   usingCobertura = true
-  depends ( tests )
+  depends ( test )
 }
 
 target ( 'package' : 'Create the jar file.' ) {
