@@ -389,7 +389,7 @@ target ( distribution : 'Create the distribution.' ) {
     //  This is a closure that doesn't have the right metaclass so we have to specify Ant.  Need to
     //  rearrange things to deal with this problem as is done in the target Closure.
     def pathIdentifier = distributionClasspathId + item.version
-    ant."${antlibXMLns}:dependencies" ( pathId : pathIdentifier ) {
+    "${antlibXMLns}:dependencies" ( pathId : pathIdentifier ) {
       dependency ( groupId : item.groupId , artifactId : item.artifactId , version : item.version )
       dependency ( groupId : 'org.apache.ant' , artifactId : 'ant' , version : ant.project.properties.antVersion )
       dependency ( groupId : 'commons-cli' , artifactId : 'commons-cli' , version : ant.project.properties.commonsCliVersion )
@@ -399,10 +399,10 @@ target ( distribution : 'Create the distribution.' ) {
       remoteRepository ( url : 'http://repo1.maven.org' )
     }
     //  Must remove the compilation products of the last compilation!
-    ant.delete ( dir : buildClassesDirectory )
-    ant.delete ( dir : buildTestClassesDirectory )
-    ant.delete ( dir : buildFilteredScriptsDirectory )
-    ant.delete ( dir : buildInstallDirectory )
+    delete ( dir : buildClassesDirectory )
+    delete ( dir : buildTestClassesDirectory )
+    delete ( dir : buildFilteredScriptsDirectory )
+    delete ( dir : buildInstallDirectory )
     performCompile ( pathIdentifier , true )
     performCompileTests ( pathIdentifier , true )
     if ( ! performTests ( pathIdentifier ) ) { someTestsFailed = true }
@@ -411,12 +411,12 @@ target ( distribution : 'Create the distribution.' ) {
     if ( isStandalone ) { discriminator = prefix }                          
     def jarName = discriminator + '.jar'                    
     def jarPath = buildDirectory + System.properties.'file.separator' + jarName
-    ant.jar ( destfile : jarPath , basedir : buildClassesDirectory , manifest : buildMetadataDirectory + '/MANIFEST.MF' )
+    jar ( destfile : jarPath , basedir : buildClassesDirectory , manifest : buildMetadataDirectory + '/MANIFEST.MF' )
     serverUploadProducts [ jarPath ] = serverJarsDirectory + '/' + jarName
     prepareInstallDirectory ( buildInstallDirectory , jarName , isStandalone , item )
     prepareZipFromTarAndRegisterForUpload ( discriminator ) {
       //  NB Rely on Closures not being closures:  path is only resolved when the Closure is executed.
-      ant.tar ( destfile :  path + tarExtension ) {
+      tar ( destfile :  path + tarExtension ) {
         tarfileset ( dir : buildInstallDirectory , mode : '511' , prefix : prefix ) { include ( name : 'bin/*' ) }
         tarfileset ( dir : buildInstallDirectory , prefix : prefix ) {
           include ( name : '**' )
@@ -429,7 +429,7 @@ target ( distribution : 'Create the distribution.' ) {
   //  Create the source distribution.
   prepareZipFromTarAndRegisterForUpload ( 'gant_src-' + gantVersion ) {
     //  NB Rely on Closures not being closures:  path is only resolved when the Closure is executed.
-    ant.tar ( destfile :  path + tarExtension ) {
+    tar ( destfile :  path + tarExtension ) {
       tarfileset ( dir : '.' , includes : distributionTopLevelFiles.join ( ',' ) , prefix : prefix )
       distributionDirectories.each { directory -> tarfileset ( dir : directory , prefix : prefix + System.properties.'file.separator' + directory ) }
     }
@@ -438,7 +438,7 @@ target ( distribution : 'Create the distribution.' ) {
   documentation ( )
   prepareZipFromTarAndRegisterForUpload (  'gant_doc-' + gantVersion ) {
     //  NB Rely on Closures not being closures:  path is only resolved when the Closure is executed.
-    ant.tar ( destfile :  path + tarExtension ) {
+    tar ( destfile :  path + tarExtension ) {
       tarfileset ( dir : documentationDirectory , prefix : prefix + System.properties.'file.separator' + 'doc' )
     }
   }
@@ -464,7 +464,7 @@ target ( uploadDistribution : 'Upload a complete distribution.' ) {
   //  moment simply read the ~/.m2/settings.xml file.
   //
   def loader = getClass ( ).getClassLoader ( )
-  def path = ant.path ( refid : 'slidePathId' )
+  def path = path ( refid : 'slidePathId' )
   ( path.list ( ) as List ).each { location -> loader.addURL ( new URL ( 'file://' + location ) ) }
   def settings =  ( new XmlSlurper ( ) ).parse ( System.properties.'user.home' + '/.m2/settings.xml' ).servers.server.find { item -> item.id == 'dav.codehaus.org' }
   def credentials =  loader.loadClass ( 'org.apache.commons.httpclient.UsernamePasswordCredentials' ).getConstructor ( String , String ).newInstance ( settings.username.toString ( ) , settings.password.toString ( ) )

@@ -123,7 +123,7 @@ class GantMetaClass implements MetaClass , GroovyObject {
    *  Set a new metaclass for this object.  This method always throws a
    *  <code>UnsupportedOperationException</code>.
    *
-   *  @param metaclass the new metaclass.
+   *  @param metaClass the new metaclass.
    *  @throws UnsupportedOperationException
    */
   public void setMetaClass ( final MetaClass metaClass ) { throw new UnsupportedOperationException ( ) ; }
@@ -329,7 +329,7 @@ class GantMetaClass implements MetaClass , GroovyObject {
    *
    *  <p>This method is "safe" in that it will always return a value and never throw an exception.</p>
    *
-   * @param obj The object to inspect.
+   * @param object The object to inspect.
    * @param name The name of the method of interest.
    * @param argTypes The argument types to match against.
    * @return A <code>List</code> of <code>MetaMethod</code>s matching the argument types which will be empty
@@ -348,7 +348,7 @@ class GantMetaClass implements MetaClass , GroovyObject {
    *
    *  <p>This method is "safe" in that it will always return a value and never throw an exception.</p>
    *
-   * @param obj The object to inspect.
+   * @param object The object to inspect.
    * @param name The name of the method of interest.
    * @return A <code>List</code> of <code>MetaMethod</code>s which will be empty if no methods with the
    * given name exist.
@@ -362,7 +362,7 @@ class GantMetaClass implements MetaClass , GroovyObject {
    *  <p>Note that this method will only return <code>true</code> for realized properties and does not take
    *  into account implementation of <code>getProperty</code> or <code>propertyMissing</code>.
    *
-   *  @param obj The object to inspect.
+   *  @param object The object to inspect.
    *  @param name The name of the property.
    *  @return The MetaProperty or null if it doesn't exist.
    */
@@ -512,7 +512,6 @@ class GantMetaClass implements MetaClass , GroovyObject {
    *  case would result in an attempt to invoke a JavaBean getter, or if no such getter exists a public
    *  field of the instance.</p>
    *
-   *  @see MetaClassImpl
    *  @param object An instance of the class returned by the <code>getTheClass</code> method.
    *  @param property The name of the property to retrieve the value for.
    *  @return The property's value.
@@ -527,7 +526,6 @@ class GantMetaClass implements MetaClass , GroovyObject {
    *  case would result in an attempt to invoke a JavaBean setter, or if no such setter exists to set a
    *  public field of the instance.</p>
    *
-   *  @see MetaClassImpl
    *  @param object An instance of the class returned by the <code>getTheClass</code> method.
    *  @param property The name of the property to set.
    *  @param newValue The new value of the property.
@@ -541,7 +539,6 @@ class GantMetaClass implements MetaClass , GroovyObject {
    *  <p>What this means is largely down to the <code>MetaClass</code> implementation, however the default
    *  case would result in attempt to read a field of the instance.</p>
    *
-   *  @see MetaClassImpl
    *  @param object An instance of the class returned by the <code>getTheClass</code> method.
    *  @param attribute The name of the attribute to retrieve the value for.
    *  @return The attribute value.
@@ -555,7 +552,6 @@ class GantMetaClass implements MetaClass , GroovyObject {
    *  <p>What this means is largely down to the <code>MetaClass</code> implementation, however the default
    *  case would result in an attempt to set a field of the instance.</p>
    *
-   *  @see MetaClassImpl
    *  @param object An instance of the class returned by the <code>getTheClass</code> method.
    *  @param attribute The name of the attribute to set.
    *  @param newValue The new value of the attribute.

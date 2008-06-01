@@ -83,6 +83,13 @@ target ( test : '' ) {
      [echo] Hello World!
 ''' , output ) 
   }
+  void testWithoutAntReferenceInMapClosure ( ) {
+    script = '''target ( test : '' ) { [ a : 'A' , b : 'B' ].each { key , value -> echo ( message : "${key}:${value}" ) } }'''
+    assertEquals ( 0 , processTargets ( 'test' ) )
+    assertEquals ( '''     [echo] a:A
+     [echo] b:B
+''' , output ) 
+  }
   void testClosureWithAnt ( ) {
     script = '''
 closure = { ant.echo ( message : "Hello World!" ) }
