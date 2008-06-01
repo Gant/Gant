@@ -37,4 +37,72 @@ final class NoAntObject_Test extends GantTestCase {
     assertEquals ( '''     [echo] Hello
 ''' , output ) 
   }
+  //  cf. GANT-10
+  void testWithAntReferenceScriptLevel ( ) {
+    script = '''
+ant.echo ( message : "Hello" )
+target ( test : '' ) { ant.echo ( message : "World" ) }
+'''
+    assertEquals ( 0 , processTargets ( 'test' ) )
+    assertEquals ( '''     [echo] Hello
+     [echo] World
+''' , output ) 
+  }
+  /*
+  void testWithoutAntReferenceScriptLevel ( ) {
+    script = '''
+echo ( message : "Hello" )
+target ( test : '' ) { echo ( message : "World" ) }
+'''
+    //assertEquals ( 0 , processTargets ( 'test' ) )
+    System.err.println ( processTargets ( 'test' ) )
+    assertEquals ( '''     [echo] Hello
+     [echo] World
+''' , output ) 
+  }
+  */
+  void testWithAntReferenceInClosure ( ) {
+    script = '''
+target ( test : '' ) {
+  ( 0..3 ).each { ant.echo ( message : "Hello World!" ) }
+}
+'''
+    assertEquals ( 0 , processTargets ( 'test' ) )
+    assertEquals ( '''     [echo] Hello World!
+     [echo] Hello World!
+     [echo] Hello World!
+     [echo] Hello World!
+''' , output ) 
+  }
+  /*
+  void testWithoutAntReferenceInClosure ( ) {
+   script = '''
+target ( test : '' ) {
+  ( 0..3 ).each {
+
+System.err.println ( 'class: ' + getClass ( ) )
+System.err.println ( 'metaClass: ' + getClass ( ).metaClass )
+System.err.println ( '&echo: ' + getClass ( ).&echo )
+System.err.println ( 'this.class: ' + this.class )
+System.err.println ( 'this.metaClass: ' + this.metaClass )
+System.err.println ( 'this.&echo: ' + this.&echo )
+System.err.println ( 'owner.class: ' + owner.class )
+System.err.println ( 'owner.metaClass: ' + owner.metaClass )
+System.err.println ( 'owner.&echo: ' + owner.&echo )
+System.err.println ( 'delegate.class: ' + delegate.class )
+System.err.println ( 'delegate.metaClass: ' + delegate.metaClass )
+System.err.println ( 'delegate.&echo: ' + delegate.&echo )
+
+ echo ( message : "Hello World!" ) }
+}
+'''
+   //assertEquals ( 0 , processTargets ( 'test' ) )
+    System.err.println ( processTargets ( 'test' ) )
+    assertEquals ( '''     [echo] Hello World!
+     [echo] Hello World!
+     [echo] Hello World!
+     [echo] Hello World!
+''' , output ) 
+  }
+  */
 }

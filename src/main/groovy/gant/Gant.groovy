@@ -21,6 +21,7 @@ import org.codehaus.groovy.control.CompilerConfiguration
 import org.codehaus.groovy.control.CompilationUnit
 
 import org.codehaus.gant.GantBinding
+import org.codehaus.gant.GantMetaClass
 import org.codehaus.gant.GantState
 
 import org.apache.commons.cli.GnuParser
@@ -330,6 +331,7 @@ final class Gant {
     else {
       buildFile = new File ( buildFileName ) 
       if ( ! buildFile.isFile ( ) ) { println ( 'Cannot open file ' + buildFileName ) ; return -3 }
+      //  Apparently this transformation break debugging in Eclipse cf. GANT-30.
       buildClassName = buildFile.name.replaceAll ( /\./ , '_' )
       buildFileModified = buildFile.lastModified ( )
     }
@@ -353,7 +355,7 @@ final class Gant {
         catch ( Exception e) {
           def fileText = file.text
           compileScript ( cacheDirectory , fileText , className )
-          binding.groovyShell.evaluate ( fileText , className )			
+          binding.groovyShell.evaluate ( fileText , className )
         }
       }
       binding.loadClassFromCache =  loadClassFromCache
@@ -361,7 +363,15 @@ final class Gant {
     }
     else {
       if ( buildFile )  { buildFileText = buildFile.text }
-      try { binding.groovyShell.evaluate ( buildFileText , buildClassName ) }
+      try {
+        //binding.groovyShell.evaluate ( buildFileText , buildClassName )
+        def script = binding.groovyShell.parse ( buildFileText , buildClassName )
+        script.binding = binding
+        // Scripts have ExpandoMetaClass as their metaclass.
+        //System.err.println ( 'Gant: ' + script.class.metaClass )
+        //script.metaClass = new GantMetaClass ( script.class , binding )
+        script.run ( )
+      }
       catch ( Exception e ) {
         for ( stackEntry in e.stackTrace ) {
           if ( ( stackEntry.fileName == buildClassName ) && ( stackEntry.lineNumber  != -1 ) ) {
