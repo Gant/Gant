@@ -447,7 +447,7 @@ class GantMetaClass implements MetaClass , GroovyObject {
       //  Ensure that we have a GantMetaClass on every closure object so that we guarantee that the
       //  GantBuilder object is included in the search path.  Unfortunately, even though this changes the
       //  metaclass on some Closures, it appears to make no difference whatsoever :-(
-
+      /*
       for ( Object arg : arguments ) {
         if ( arg instanceof Closure ) {
           final Closure closure = (Closure) arg ;
@@ -457,6 +457,7 @@ class GantMetaClass implements MetaClass , GroovyObject {
            }
         }
       }
+      */
       //////////////////////////////////////////////////////////////////////////////////////////////////////
 
       try {

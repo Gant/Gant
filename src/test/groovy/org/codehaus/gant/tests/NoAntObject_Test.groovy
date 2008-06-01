@@ -74,29 +74,47 @@ target ( test : '' ) {
      [echo] Hello World!
 ''' , output ) 
   }
-  /*
   void testWithoutAntReferenceInClosure ( ) {
-   script = '''
-target ( test : '' ) {
-  ( 0..3 ).each {
-
-System.err.println ( 'class: ' + getClass ( ) )
-System.err.println ( 'metaClass: ' + getClass ( ).metaClass )
-System.err.println ( '&echo: ' + getClass ( ).&echo )
-System.err.println ( 'this.class: ' + this.class )
-System.err.println ( 'this.metaClass: ' + this.metaClass )
-System.err.println ( 'this.&echo: ' + this.&echo )
-System.err.println ( 'owner.class: ' + owner.class )
-System.err.println ( 'owner.metaClass: ' + owner.metaClass )
-System.err.println ( 'owner.&echo: ' + owner.&echo )
-System.err.println ( 'delegate.class: ' + delegate.class )
-System.err.println ( 'delegate.metaClass: ' + delegate.metaClass )
-System.err.println ( 'delegate.&echo: ' + delegate.&echo )
-
- echo ( message : "Hello World!" ) }
-}
+    script = '''target ( test : '' ) { ( 0..3 ).each { echo ( message : "Hello World!" ) } }'''
+    assertEquals ( 0 , processTargets ( 'test' ) )
+    assertEquals ( '''     [echo] Hello World!
+     [echo] Hello World!
+     [echo] Hello World!
+     [echo] Hello World!
+''' , output ) 
+  }
+  void testClosureWithAnt ( ) {
+    script = '''
+closure = { ant.echo ( message : "Hello World!" ) }
+target ( test : '' ) { ( 0..3 ).each closure }
 '''
-   //assertEquals ( 0 , processTargets ( 'test' ) )
+    assertEquals ( 0 , processTargets ( 'test' ) )
+    assertEquals ( '''     [echo] Hello World!
+     [echo] Hello World!
+     [echo] Hello World!
+     [echo] Hello World!
+''' , output ) 
+  }
+  void testClosureWithoutAntWithExplictMetaClassSetting ( ) {
+    script = '''
+closure = { echo ( message : "Hello World!" ) }
+closure.metaClass = new org.codehaus.gant.GantMetaClass ( closure.metaClass , binding )
+target ( test : '' ) { ( 0..3 ).each closure }
+'''
+    assertEquals ( 0 , processTargets ( 'test' ) )
+    assertEquals ( '''     [echo] Hello World!
+     [echo] Hello World!
+     [echo] Hello World!
+     [echo] Hello World!
+''' , output ) 
+  }
+  /*
+  void testClosureWithoutAnt ( ) {
+    script = '''
+closure = { echo ( message : "Hello World!" ) }
+target ( test : '' ) { ( 0..3 ).each closure }
+'''
+    //assertEquals ( 0 , processTargets ( 'test' ) )
     System.err.println ( processTargets ( 'test' ) )
     assertEquals ( '''     [echo] Hello World!
      [echo] Hello World!
