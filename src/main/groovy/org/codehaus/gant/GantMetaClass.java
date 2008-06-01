@@ -78,6 +78,23 @@ class GantMetaClass extends DelegatingMetaClass {
       }
     }
     else {
+
+      //////////////////////////////////////////////////////////////////////////////////////////////////////
+      //  Ensure that we have a GantMetaClass on every closure object so that we guarantee that the
+      //  GantBuilder object is included in the search path.  Unfortunately, even though this changes the
+      //  metaclass on some Closures, it appears to make no difference whatsoever :-(
+
+      for ( Object arg : arguments ) {
+        if ( arg instanceof Closure ) {
+          final Closure closure = (Closure) arg ;
+           if ( ! ( closure.getMetaClass ( ) instanceof GantMetaClass ) ) {
+             System.err.println ( "Setting metaclass on " + arg + " which had class " + closure.getClass ( ) + " and metaclass " + closure.getMetaClass ( ) ) ;
+             closure.setMetaClass ( new GantMetaClass ( closure.getClass ( ) , binding ) ) ;
+           }
+        }
+      }
+      //////////////////////////////////////////////////////////////////////////////////////////////////////
+
       try {
         returnObject = super.invokeMethod ( object , methodName , arguments ) ;
         try {
