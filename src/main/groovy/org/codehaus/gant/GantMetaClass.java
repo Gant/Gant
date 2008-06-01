@@ -25,9 +25,11 @@ import groovy.lang.MissingMethodException ;
 import groovy.lang.MissingPropertyException ;
 
 import groovy.lang.GroovySystem ;
+import groovy.lang.MetaClass ;
 
 /**
- *  This class is the metaclass used for target <code>Closure</code>s.
+ *  This class is the metaclass used for target <code>Closure</code>s, any enclosed <code>Closures</code>,
+ *  and the Gant script itself.
  *
  *  <p>This metaclass deals with <code>depends</code> method calls and redirects unknown method calls to the
  *  instance of <code>GantBuilder</code>.  To process the <codce>depends</code> all closures from the
@@ -43,8 +45,14 @@ class GantMetaClass extends DelegatingMetaClass {
   //private final static HashSet<Closure> methodsInvoked = new HashSet<Closure> ( ) ;
   private final static HashSet methodsInvoked = new HashSet ( ) ;
   private final Binding binding ;
+  /*
   public GantMetaClass ( final Class theClass , final Binding binding ) {
     super ( GroovySystem.getMetaClassRegistry ( ).getMetaClass ( theClass ) ) ;
+    this.binding = binding ;
+  }
+  */
+ public GantMetaClass ( final MetaClass metaClass , final Binding binding ) {
+    super ( metaClass ) ;
     this.binding = binding ;
   }
   private Object processClosure ( final Closure closure ) {
@@ -89,7 +97,7 @@ class GantMetaClass extends DelegatingMetaClass {
           final Closure closure = (Closure) arg ;
            if ( ! ( closure.getMetaClass ( ) instanceof GantMetaClass ) ) {
              System.err.println ( "Setting metaclass on " + arg + " which had class " + closure.getClass ( ) + " and metaclass " + closure.getMetaClass ( ) ) ;
-             closure.setMetaClass ( new GantMetaClass ( closure.getClass ( ) , binding ) ) ;
+             closure.setMetaClass ( new GantMetaClass ( closure.getMetaClass ( ) , binding ) ) ;
            }
         }
       }

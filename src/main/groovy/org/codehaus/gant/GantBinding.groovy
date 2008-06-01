@@ -74,7 +74,7 @@ public class GantBinding extends Binding implements Cloneable {
         catch ( MissingPropertyException ) { }         
         def targetDescription = map.get ( targetName )
         if ( targetDescription ) { targetDescriptions.put ( targetName , targetDescription ) }
-        closure.metaClass = new GantMetaClass ( closure.class , owner )
+        closure.metaClass = new GantMetaClass ( closure.metaClass , owner )
         owner.setVariable ( targetName , closure )
         owner.setVariable ( targetName + '_description' , targetDescription )
       } )

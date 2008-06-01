@@ -369,7 +369,7 @@ final class Gant {
         script.binding = binding
         // Scripts have ExpandoMetaClass as their metaclass.
         //System.err.println ( 'Gant: ' + script.class.metaClass )
-        //script.metaClass = new GantMetaClass ( script.class , binding )
+        //script.metaClass = new GantMetaClass ( script.metaClass , binding )
         script.run ( )
       }
       catch ( Exception e ) {
