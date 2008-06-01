@@ -36,22 +36,13 @@ import groovy.lang.MetaClass ;
  *  binding called during execution of the Gant specification must be logged so that when a depends happens
  *  the full closure call history is available.</p>
  *
- *  <p>Currently no check is made to deal with circular dependencies, this should be added as per
- *  GANT-9.</p>
- *
  *  @author Russel Winder <russel.winder@concertant.com>
  */
 class GantMetaClass extends DelegatingMetaClass {
   //private final static HashSet<Closure> methodsInvoked = new HashSet<Closure> ( ) ;
   private final static HashSet methodsInvoked = new HashSet ( ) ;
   private final Binding binding ;
-  /*
-  public GantMetaClass ( final Class theClass , final Binding binding ) {
-    super ( GroovySystem.getMetaClassRegistry ( ).getMetaClass ( theClass ) ) ;
-    this.binding = binding ;
-  }
-  */
- public GantMetaClass ( final MetaClass metaClass , final Binding binding ) {
+  public GantMetaClass ( final MetaClass metaClass , final Binding binding ) {
     super ( metaClass ) ;
     this.binding = binding ;
   }
