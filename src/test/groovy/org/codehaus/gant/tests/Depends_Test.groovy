@@ -180,6 +180,14 @@ target ( two : 'Two Target' ) { println 'Running two...' }
 Running two...
 ''' , output )
   }
+  void testEmbeddedDepend ( ) {
+    script = '''
+target ( targetA : '' ) { println ( 'done.' ) }
+target ( targetB : '' ) { (0..3).each { depends ( targetA ) } }
+'''
+    assertEquals ( 0 , processTargets ( 'targetB' ) )
+    assertEquals ( 'done.\n' , output )
+  }
   //  cf. GANT-26
   void testMultipleDependentTargets ( ) {
     script = '''

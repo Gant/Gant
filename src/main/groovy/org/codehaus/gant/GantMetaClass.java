@@ -27,9 +27,11 @@ import groovy.lang.MetaMethod ;
 import groovy.lang.MetaProperty ;
 import groovy.lang.MissingMethodException ;
 import groovy.lang.MissingPropertyException ;
+import groovy.lang.Tuple ;
 
 import org.codehaus.groovy.ast.ClassNode ;
 import org.codehaus.groovy.runtime.InvokerHelper ;
+import org.codehaus.groovy.runtime.MetaClassHelper ;
 
 /**
  *  This class is the metaclass used for target <code>Closure</code>s, any enclosed <code>Closures</code>,
@@ -481,7 +483,10 @@ class GantMetaClass implements MetaClass , GroovyObject {
    *  @return The return value of the method which is null if the return type is void
    */
   public Object invokeMethod ( final Object object , final String methodName , final Object arguments ) {
-    return delegate.invokeMethod ( object , methodName , arguments ) ;
+    if ( arguments == null ) { return invokeMethod ( object , methodName , MetaClassHelper.EMPTY_ARRAY ) ; }
+    else if ( arguments instanceof Tuple ) { return invokeMethod ( object , methodName , ( (Tuple) arguments ).toArray ( ) ) ; }
+    else if ( arguments instanceof Object[] ) { return invokeMethod ( object , methodName , (Object[]) arguments ) ; }
+    else { return invokeMethod ( object , methodName , new Object[] { arguments } ) ; }
   }
   /**
    *  Invoke a static method on the given object with the given name and arguments.
