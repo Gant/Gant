@@ -157,7 +157,7 @@ target ( mixedListParameter : '' ) { depends ( [ aTarget , 'anotherTarget' ] ) }
     assertEquals ( 'done.\ndone.\n' , output )
   }
   void testCircularDependency ( ) {
-    //  Should this actually fail? cf. GANT-9
+    //  Should this actually fail? cf. GANT-9.  Current view is that it is fine as is.
     script = '''
 target ( A : '' ) { depends ( B ) ; println ( 'A' ) }
 target ( B : '' ) { depends ( C )  ; println ( 'B' ) }
@@ -195,5 +195,4 @@ Running one...
 Running two...
 ''' , output )
   }
-  
 }
