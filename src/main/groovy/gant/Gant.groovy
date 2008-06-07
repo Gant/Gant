@@ -216,7 +216,7 @@ final class Gant {
     //  different set of ideas about multiple args and is broken.  For the moment we leave things so that
     //  they work in 1.0.
     //
-    //  1.0 silently absorbs unknown single letter options.
+    //  1.0 PosixParser silently absorbs unknown single letter options.
     //
     //  1.0 cannot deal with options having only a long form as the access mechanism that works only works
     //  for short form.
