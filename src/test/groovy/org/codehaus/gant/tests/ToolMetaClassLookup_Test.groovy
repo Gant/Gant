@@ -22,11 +22,12 @@ package org.codehaus.gant.tests
 final class ToolMetaClassLookup_Test extends GantTestCase {
   void setUp ( ) {
     super.setUp ( )
-    script = '''
+    def command = isWindows ? 'cmd /c echo yes' : 'echo yes'
+    script = """
 includeTool << gant.tools.Subdirectories
-target ( something : 'Do something.' ) { subdirectories.runSubprocess ( "echo yes" , new File ( "src" ) ) }
-target ( "default" : "something" ) { something ( ) }
-''' 
+target ( something : 'Do something.' ) { subdirectories.runSubprocess ( '${command}' , new File ( 'src' ) ) }
+target ( 'default' : 'something' ) { something ( ) }
+"""
   }
   void testDefault ( ) {
     assertEquals ( 0 , processTargets ( ) )
