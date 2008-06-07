@@ -171,6 +171,7 @@
       <mapper type="flatten"/>
     </pathconvert>
      <copy todir="${installDirectory}/bin">
+      <fileset dir="${scriptsDirectory}/bin"/>
       <fileset dir="${scriptsDirectory}/bin_requiresGroovy"/>
       <filterset>
         <filter token="GANT_VERSION" value="${gantVersion}"/>
