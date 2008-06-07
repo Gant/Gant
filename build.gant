@@ -270,7 +270,7 @@ final prepareZipFromTarAndRegisterForUpload = { String root , Closure closure ->
   serverUploadProducts [ path + zipExtension ] = serverDistributionsDirectory + '/' +  root + zipExtension
 }
   
-//  Create the compilation context of the Groovy with which Gant will be installed.  This is not used for
+//  Create the compilation context of the Groovy with which Gant will be associated.  This is not used for
 //  the distributions.
 compileJarSet = 'compileJarSet'
 ant.path ( id : compileJarSet ) {
@@ -386,8 +386,6 @@ target ( distribution : 'Create the distribution.' ) {
   someTestsFailed = false
   distributionVersions.each { label , item ->
     def isStandalone = label == 'standalone'
-    //  This is a closure that doesn't have the right metaclass so we have to specify Ant.  Need to
-    //  rearrange things to deal with this problem as is done in the target Closure.
     def pathIdentifier = distributionClasspathId + item.version
     "${antlibXMLns}:dependencies" ( pathId : pathIdentifier ) {
       dependency ( groupId : item.groupId , artifactId : item.artifactId , version : item.version )
