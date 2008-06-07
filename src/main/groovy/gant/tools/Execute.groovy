@@ -94,7 +94,10 @@ final class Execute {
    *  @return the return code of the process.
    */
   def shell ( final Map keywordParameters = [:] , final String command ) {
-    manageProcess ( [ 'sh' , '-c' , command ].execute ( ) ,
+    final String osName = System.getProperty ( "os.name" )
+    final boolean isWindows = ( osName.length ( ) > 6 ) ? osName.substring ( 0 , 7 ).equals ( "Windows" ) : false
+    final commandArray = isWindows ? [ 'cmd' , '/c' , command ] : [ 'sh' , '-c' , command ]
+    manageProcess ( commandArray.execute ( ) ,
                     keywordParameters['errProcessing'] ? keywordParameters['errProcessing'] : { System.err.println ( it ) },
                     keywordParameters['outProcessing'] ? keywordParameters['outProcessing'] : { println ( it ) } ,
                     command ,

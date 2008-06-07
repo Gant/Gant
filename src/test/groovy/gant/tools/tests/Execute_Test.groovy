@@ -23,24 +23,26 @@ import org.codehaus.gant.tests.GantTestCase
  */
 final class Execute_Test extends GantTestCase {
   void testExecutableString ( ) {
-    script = '''includeTool << gant.tools.Execute
-target ( testing : '' ) { execute.executable ( 'echo 1' ) }
-'''
+    def command = isWindows ? 'cmd /c echo 1' : 'echo 1'
+    script = """includeTool << gant.tools.Execute
+target ( testing : '' ) { execute.executable ( '${command}' ) }
+"""
     assertEquals ( 0 , processTargets ( 'testing' ) )
-    assertEquals ( '''  [execute] echo 1
+    assertEquals ( """  [execute] ${command}
 1
-''' , output )
+""" , output )
   }
   void testExecutableListOfString ( ) {
-    script = '''includeTool << gant.tools.Execute
-target ( testing : '' ) { execute.executable ( [ 'echo' , '1' ] ) }
-'''
+    //  Format these correctly and they are both input and expected value.
+    def command = isWindows ? '["cmd", "/c", "echo", "1"]' : '["echo", "1"]'
+    def expected = ( groovyMinorVersion > 5 ) ? command.replaceAll ( '"' , '' ) : command
+    script = """includeTool << gant.tools.Execute
+target ( testing : '' ) { execute.executable ( ${command} ) }
+"""
     assertEquals ( 0 , processTargets ( 'testing' ) )
-    assertEquals (  ( groovyMinorVersion > 5 ) ? '''  [execute] [echo, 1]
+    assertEquals ( """  [execute] ${expected}
 1
-''' : '''  [execute] ["echo", "1"]
-1
-''' , output ) 
+""" , output ) 
   }
   void testShellString ( ) {
     script = '''includeTool << gant.tools.Execute
@@ -52,20 +54,24 @@ target ( testing : '' ) { execute.shell ( 'echo 1' ) }
 ''' , output ) 
   }
   void testExecuteReturnCodeCorrect ( ) {
-    script = '''includeTool << gant.tools.Execute
-target ( testing : '' ) { assert execute.executable ( 'echo 1' ) == 0 }
-'''
+   def command = isWindows ? 'cmd /c echo 1' : 'echo 1'
+     script = """includeTool << gant.tools.Execute
+target ( testing : '' ) { assert execute.executable ( '${command}' ) == 0 }
+"""
     assertEquals ( 0 , processTargets ( 'testing' ) )
-    assertEquals ( '''  [execute] echo 1
+    assertEquals ( """  [execute] ${command}
 1
-''' , output )
+""" , output )
   }
   void testExecuteReturnCodeError ( ) {
-    script = '''includeTool << gant.tools.Execute
+    //  TODO:  Find out what can be done in Windows to check this.
+    if ( ! isWindows ) {
+      script = '''includeTool << gant.tools.Execute
 target ( testing : '' ) { assert execute.executable ( 'false' ) == 1 }
 '''
-    assertEquals ( 0 , processTargets ( 'testing' ) )
-    assertEquals ( '''  [execute] false
+      assertEquals ( 0 , processTargets ( 'testing' ) )
+      assertEquals ( '''  [execute] false
 ''' , output )
+    }
   }
 }
