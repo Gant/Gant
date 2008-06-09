@@ -42,6 +42,7 @@ import org.apache.tools.ant.Project ;
  *
  *  @author Russel Winder <russel.winder@concertant.com>
  */
+@SuppressWarnings ( "unchecked" )
 public class GantBuilder extends AntBuilder {
   public GantBuilder ( ) { }
   public GantBuilder ( final Project project ) { super ( project ) ; }
@@ -53,9 +54,9 @@ public class GantBuilder extends AntBuilder {
         System.out.print ( "         ".substring ( 0 , padding ) + "[" + name + "] ") ;
         final Object[] args = (Object[]) arguments ;
         if ( args[0] instanceof Map ) {
-          final Iterator<Map.Entry> i = ( (Map) args[0] ).entrySet ( ).iterator ( ) ;
+          final Iterator<Map.Entry<String,String>> i = ( (Map<String,String>) args[0] ).entrySet ( ).iterator ( ) ;
           while ( i.hasNext ( ) ) {
-            final Map.Entry e = i.next ( ) ;
+            final Map.Entry<String,String> e = i.next ( ) ;
             System.out.print ( e.getKey ( ) + " : '" + e.getValue ( ) + "'" ) ;
             if ( i.hasNext ( ) ) { System.out.print ( " , " ) ; }
           }
@@ -80,7 +81,7 @@ public class GantBuilder extends AntBuilder {
       final Field field = getClass ( ).getSuperclass ( ).getDeclaredField ( "project" ) ;
       field.setAccessible ( true ) ;
       final Project project = (Project) field.get ( this ) ;
-      final List listeners = project.getBuildListeners ( ) ;
+      final List<?> listeners = project.getBuildListeners ( ) ;
       assert listeners.size ( ) == 1 ;
       final BuildLogger logger = (BuildLogger) listeners.get ( 0 ) ;
       logger.setMessageOutputLevel ( GantState.verbosity ) ;

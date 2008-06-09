@@ -21,7 +21,6 @@ import java.util.List ;
 import groovy.lang.Binding ;
 import groovy.lang.Closure ;
 import groovy.lang.GroovyObject ;
-import groovy.lang.GroovySystem ;
 import groovy.lang.MetaClass ;
 import groovy.lang.MetaMethod ;
 import groovy.lang.MetaProperty ;
@@ -33,12 +32,15 @@ import org.codehaus.groovy.ast.ClassNode ;
 import org.codehaus.groovy.runtime.InvokerHelper ;
 import org.codehaus.groovy.runtime.MetaClassHelper ;
 
+//  Groovy 1.5.x is Java 1.4 and as at 2008-06-08 Groovy 1.6.x groovy.lang.MetaClass and groovy.lang.GroovyObject
+//  have not been properly marked up for Java 5 generics.
+
 /**
  *  This class is the metaclass used for target <code>Closure</code>s, any enclosed <code>Closures</code>,
  *  and the Gant script itself.
  *
  *  <p>This metaclass deals with <code>depends</code> method calls and redirects unknown method calls to the
- *  instance of <code>GantBuilder</code>.  To process the <codce>depends</code> all closures from the
+ *  instance of <code>GantBuilder</code>.  To process the <code>depends</code> all closures from the
  *  binding called during execution of the Gant specification must be logged so that when a depends happens
  *  the full closure call history is available.</p>
  *
@@ -252,12 +254,14 @@ class GantMetaClass implements MetaClass , GroovyObject {
    *  @see MetaProperty
    *  @return A list of <code>MetaProperty</code> instances
    */
+  @SuppressWarnings ( "unchecked" )
   public List<MetaProperty> getProperties ( ) { return delegate.getProperties ( ) ; }
   /**
    *  Retrieve a list of <code>MetaMethods</code> held by the class.
    *
    *  @return A list of <code>MetaMethods</code>
    */
+  @SuppressWarnings ( "unchecked" )
   public List<MetaMethod> getMethods ( ) { return delegate.getMethods ( ) ; }
   /**
    *  Return a reference to the original AST for the <ciode>MetaClass</code> if it is available at runtime.
@@ -270,6 +274,7 @@ class GantMetaClass implements MetaClass , GroovyObject {
    *
    *  @return A list of <code>MetaMethod</code> instances.
    */
+  @SuppressWarnings ( "unchecked" )
   public List<MetaMethod> getMetaMethods ( ) { return delegate.getMetaMethods ( ) ; }
   /**
    *  Internal method to support Groovy runtime. Not for client usage.
@@ -335,6 +340,7 @@ class GantMetaClass implements MetaClass , GroovyObject {
    * @return A <code>List</code> of <code>MetaMethod</code>s matching the argument types which will be empty
    * if no matching methods exist.
    */
+  @SuppressWarnings ( "unchecked" )
   public List<MetaMethod> respondsTo ( final Object object , final String name , final Object[] argTypes ) {
     return delegate.respondsTo ( object , name , argTypes ) ;
   }
@@ -353,6 +359,7 @@ class GantMetaClass implements MetaClass , GroovyObject {
    * @return A <code>List</code> of <code>MetaMethod</code>s which will be empty if no methods with the
    * given name exist.
    */
+  @SuppressWarnings ( "unchecked" )
   public List<MetaMethod> respondsTo ( final Object object , final String name ) {
     return delegate.respondsTo ( object , name ) ;
   }
@@ -406,7 +413,7 @@ class GantMetaClass implements MetaClass , GroovyObject {
    *
    * @return The <code>Class</code> instance.
    */
-  public Class getTheClass ( ) { return delegate.getTheClass ( ) ; }
+  public Class<?> getTheClass ( ) { return delegate.getTheClass ( ) ; }
   /**
    *  Invoke a constructor for the given arguments. The <code>MetaClass</code> will attempt to pick the best
    *  argument which matches the types of the objects passed within the arguments array.
@@ -435,7 +442,7 @@ class GantMetaClass implements MetaClass , GroovyObject {
     if ( methodName.equals ( "depends" ) ) {
       for ( int i = 0 ; i < arguments.length ; ++i ) {
         if ( arguments[i] instanceof List ) {
-          Iterator<Object> iterator = ( (List) arguments[i] ).iterator ( ) ;
+          Iterator<?> iterator = ( (List<?>) arguments[i] ).iterator ( ) ;
           while ( iterator.hasNext ( ) ) { returnObject = processArgument ( iterator.next ( ) ) ; }
         }
         else { returnObject = processArgument ( arguments[i] ) ; }
