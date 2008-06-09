@@ -1,3 +1,5 @@
 target
 local.build.properties
 artwork/*.png
+bin-groovy
+bin
