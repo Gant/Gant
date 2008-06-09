@@ -34,8 +34,9 @@ final class Include_Test extends GantTestCase {
   private final toolBindingName = 'toolClass'
   private final String toolClassFilePath
   private final toolClassText =  """
+import org.codehaus.gant.GantBinding
 class ${toolClassName} {
-  ${toolClassName} ( Binding binding ) { }
+  ${toolClassName} ( GantBinding binding ) { }
   void flob ( ) { println ( 'flobbed.' ) }
 }
 """
@@ -53,8 +54,9 @@ target ( flob : '' ) { println ( 'flobbed.' ) }
   private final targetsClassName = 'TargetsClass'
   private final String targetsClassFilePath
   private final targetsClassText =  """
+import org.codehaus.gant.GantBinding
 class ${targetsClassName} {
-  ${targetsClassName} ( Binding binding ) { binding.target.call ( flob : '' ) { println ( 'flobbed.' ) } }
+  ${targetsClassName} ( GantBinding binding ) { binding.target.call ( flob : '' ) { println ( 'flobbed.' ) } }
 }
 """
   private final targetsBuildScriptBase =  """
@@ -367,8 +369,9 @@ target ( 'default' : '' ) { something ( ) }
     def theToolClassName = 'TheTool'
     def theToolBindingName = 'theTool'
     def theToolClassText = """
+import org.codehaus.gant.GantBinding
 class ${theToolClassName} {
-  ${theToolClassName} ( Binding binding , Map map ) { }
+  ${theToolClassName} ( GantBinding binding , Map map ) { }
   void flob ( ) { println ( 'flobbed.' ) }
 }
 """
@@ -382,9 +385,10 @@ target ( something : '' ) { ${theToolBindingName}.flob ( ) }
   //  cf. GANT-29
   void testInlineToolClass ( ) {
     script = '''
+import org.codehaus.gant.GantBinding
 class SampleTool {
   private final Map properties = [name : '' ]
-  SampleTool ( Binding binding ) { properties.binding = binding }
+  SampleTool ( GantBinding binding ) { properties.binding = binding }
   def getProperty ( String name ) { properties[name] }
   void setProperty ( String name , value ) { properties[name] = value }  
 }

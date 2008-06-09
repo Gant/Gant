@@ -22,7 +22,7 @@ package org.codehaus.gant
  *  @author Graeme Rocher <graeme.rocher@gmail.com>        
  */
 class IncludeTargets extends AbstractInclude {
-  IncludeTargets ( Binding binding ) { super ( binding ) }
+  IncludeTargets ( GantBinding binding ) { super ( binding ) }
   def leftShift ( Class theClass ) {
     def className = theClass.name
     if ( ! ( className in loadedClasses ) ) {

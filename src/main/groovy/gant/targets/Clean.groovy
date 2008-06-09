@@ -14,6 +14,8 @@
 
 package gant.targets
 
+import org.codehaus.gant.GantBinding
+
 /**
  *  A class to provide clean and clobber actions for Gant build scripts.  Maintains separate lists of
  *  Ant pattern specifications and directory names for clean and for clobber.  The lists are used as the
@@ -22,7 +24,7 @@ package gant.targets
  *  @author Russel Winder <russel.winder@concertant.com>
  */
 final class Clean {
-  private Binding binding
+  private GantBinding binding
   private performPatternAction ( List l ) {
     if ( l.size ( ) > 0 ) {
       binding.ant.delete ( quiet : 'false' ) {
@@ -33,7 +35,7 @@ final class Clean {
   private performDirectoryAction ( List l ) {
     l.flatten ( ).each { item -> binding.ant.delete ( dir : item , quiet : 'false' ) }
   }
-  Clean ( Binding binding ) {
+  Clean ( GantBinding binding ) {
     this.binding = binding
     binding.cleanPattern = [ ]
     binding.cleanDirectory = [ ]

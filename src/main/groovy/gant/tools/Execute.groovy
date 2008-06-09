@@ -14,14 +14,16 @@
 
 package gant.tools
 
+import org.codehaus.gant.GantBinding
+
 /**
  *  A class providing methods for executing operating system commands.
  *
  *  @author Russel Winder <russel.winder@concertant.com>
  */
 final class Execute {
-  private final Binding binding ;
-  Execute ( final Binding binding ) { this.binding = binding ; }
+  private final GantBinding binding ;
+  Execute ( final GantBinding binding ) { this.binding = binding ; }
   //
   //  Don't use the Elvis operator since that would mean the code would not compile in Groovy 1.0.
   //

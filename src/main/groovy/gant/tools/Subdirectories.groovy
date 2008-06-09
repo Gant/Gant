@@ -1,6 +1,6 @@
 //  Gant -- A Groovy build framework based on scripting Ant tasks.
 //
-//  Copyright © 2006-7 Russel Winder
+//  Copyright © 2006-8 Russel Winder
 //
 //  Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in
 //  compliance with the License. You may obtain a copy of the License at
@@ -14,6 +14,7 @@
 
 package gant.tools
 
+import org.codehaus.gant.GantBinding
 import org.codehaus.gant.GantState
 
 /**
@@ -23,8 +24,8 @@ import org.codehaus.gant.GantState
  *  @author Russel Winder <russel.winder@concertant.com>
  */
 final class Subdirectories {
-  private final Binding binding ;
-  Subdirectories ( final Binding binding ) { this.binding = binding ; }
+  private final GantBinding binding ;
+  Subdirectories ( final GantBinding binding ) { this.binding = binding ; }
   void runSubprocess ( final String command , final File directory ) {
     if ( GantState.verbosity > GantState.NORMAL ) { println "\n============ ${directory} ================" }
     //  If we allowed ourselves Java SE 5.0 then we could use ProcessBuilder but we restrict ourselves to Java 1.4.

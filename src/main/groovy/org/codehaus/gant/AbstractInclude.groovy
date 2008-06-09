@@ -23,7 +23,7 @@ abstract class AbstractInclude {
   protected binding
   protected loadedClasses = [ ]
   protected pendingClass = null
-  protected AbstractInclude ( Binding binding ) { this.binding = binding }
+  protected AbstractInclude ( GantBinding binding ) { this.binding = binding }
   public abstract leftShift ( Class theClass )
   public abstract leftShift ( File file )
   public abstract leftShift ( String s )
@@ -38,11 +38,11 @@ abstract class AbstractInclude {
   }
   public abstract multiply ( Map keywordParameters )
   protected createInstance ( Class theClass ) {
-    try { return theClass.getConstructor ( Binding ).newInstance ( [ binding ] as Object[] ) }
+    try { return theClass.getConstructor ( GantBinding ).newInstance ( [ binding ] as Object[] ) }
     catch ( NoSuchMethodException nsme ) { throw new RuntimeException ( 'Could not initialize ' + theClass.name , nsme ) }
   }
   protected createInstance ( Class theClass , Map keywordParameters ) {
-    try { return theClass.getConstructor ( Binding , Map ).newInstance ( [ binding , keywordParameters ] as Object[] ) }
+    try { return theClass.getConstructor ( GantBinding , Map ).newInstance ( [ binding , keywordParameters ] as Object[] ) }
     catch ( NoSuchMethodException nsme ) { throw new RuntimeException ( 'Could not initialize ' + theClass.name , nsme ) }
   }
   private attemptRead ( File file , boolean asClass ) {

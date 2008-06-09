@@ -14,6 +14,8 @@
 
 package gant.targets
 
+import org.codehaus.gant.GantBinding
+
 /**
  *  A class to provide the Maven 2 style lifecycle targets associated with a project.
  *
@@ -55,11 +57,11 @@ final class Maven {
                                   ( readOnlyKeys[3] ) : 'antlib:org.apache.maven.artifact.ant' ,
                                   ( readOnlyKeys[4] ) : 'maven.pom'
                                   ]
-   Maven ( Binding binding ) {
+   Maven ( GantBinding binding ) {
      properties.binding = binding
      constructMavenObject ( )
    }
-   Maven ( Binding binding , Map map ) {
+   Maven ( GantBinding binding , Map map ) {
      properties.binding = binding
      map.each { key , value -> owner.setProperty ( key , value ) }
      constructMavenObject ( )

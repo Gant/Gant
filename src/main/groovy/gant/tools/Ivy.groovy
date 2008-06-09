@@ -14,17 +14,19 @@
 
 package gant.tools
 
+import org.codehaus.gant.GantBinding
+
 /**
  *  A class to provide support for using Ivy.  Assumes the ivy jar file is in $GROOVY_HOME/lib.
  *
  *  @author Russel Winder <russel.winder@concertant.com>
  */
 final class Ivy {
-  private final Binding binding ;
+  private final GantBinding binding ;
   private final ivyURI = 'antlib:org.apache.ivy.ant'
   private final classpathRef = 'ivy.class.path'
   private String ivyJarPath = null
-  Ivy ( final Binding binding ) {
+  Ivy ( final GantBinding binding ) {
     this.binding = binding
     if ( System.properties.'groovy.home' ) {
       ivyJarPath = System.properties.'groovy.home' + System.properties.'file.separator' + 'lib'
@@ -34,7 +36,7 @@ final class Ivy {
     }
     constructIvyTask ( )
   }
-  Ivy ( final Binding binding , final Map map ) {
+  Ivy ( final GantBinding binding , final Map map ) {
     this.binding = binding
     if ( map.containsKey ( 'ivyJarPath' ) ) { ivyJarPath = map.ivyJarPath }
     else {

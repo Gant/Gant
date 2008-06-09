@@ -14,6 +14,8 @@
 
 package gant.tools
 
+import org.codehaus.gant.GantBinding
+
 import org.apache.tools.ant.ProjectHelper
 
 /**
@@ -22,9 +24,9 @@ import org.apache.tools.ant.ProjectHelper
  *  @author Russel Winder <russel.winder@concertant.com>
  */
 final class AntFile {
-  private final Binding binding ;
-  AntFile ( final Binding binding ) { this.binding = binding }
-  AntFile ( final Binding binding , Map map ) {
+  private final GantBinding binding ;
+  AntFile ( final GantBinding binding ) { this.binding = binding }
+  AntFile ( final GantBinding binding , Map map ) {
     this.binding = binding
     includeTargets ( map.filename )
   }

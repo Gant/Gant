@@ -23,7 +23,7 @@ package org.codehaus.gant
  *  @author Russel Winder <russel.winder@concertant.com>
  */
 class IncludeTool extends AbstractInclude {
-  IncludeTool ( Binding binding ) { super ( binding  ) }
+  IncludeTool ( GantBinding binding ) { super ( binding  ) }
   def leftShift ( Class theClass ) {
     def className = theClass.name
     if ( ! ( className in loadedClasses ) ) {
