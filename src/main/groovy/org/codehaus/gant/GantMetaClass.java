@@ -32,8 +32,10 @@ import org.codehaus.groovy.ast.ClassNode ;
 import org.codehaus.groovy.runtime.InvokerHelper ;
 import org.codehaus.groovy.runtime.MetaClassHelper ;
 
-//  Groovy 1.5.x is Java 1.4 and as at 2008-06-08 Groovy 1.6.x groovy.lang.MetaClass and groovy.lang.GroovyObject
-//  have not been properly marked up for Java 5 generics.
+//  Groovy 1.5.x is Java 1.4 and as at 2008-06-09 Groovy 1.6.x groovy.lang.MetaClass and
+//  groovy.lang.GroovyObject have not been properly marked up for Java 5 generics.  Because there is a
+//  problem that blah(Class<?>) does not override blah(Class) -- at least according to Eclipse -- then we
+//  leave the situation as is and suffer the 6 warnings.
 
 /**
  *  This class is the metaclass used for target <code>Closure</code>s, any enclosed <code>Closures</code>,
