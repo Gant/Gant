@@ -54,7 +54,7 @@ public class GantBuilder extends AntBuilder {
         System.out.print ( "         ".substring ( 0 , padding ) + "[" + name + "] ") ;
         final Object[] args = (Object[]) arguments ;
         if ( args[0] instanceof Map ) {
-          // final Iterator<Map.Entry<?,?>> i = ( (Map<?,?>) args[0] ).entrySet ( ).iterator ( ) ;
+          // NB: Using the cast (Map<?,?>) here causes a type check error.
           final Iterator<Map.Entry<?,?>> i = ( (Map) args[0] ).entrySet ( ).iterator ( ) ;
           while ( i.hasNext ( ) ) {
             final Map.Entry<?,?> e = i.next ( ) ;
