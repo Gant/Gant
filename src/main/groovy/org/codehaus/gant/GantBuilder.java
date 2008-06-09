@@ -54,9 +54,10 @@ public class GantBuilder extends AntBuilder {
         System.out.print ( "         ".substring ( 0 , padding ) + "[" + name + "] ") ;
         final Object[] args = (Object[]) arguments ;
         if ( args[0] instanceof Map ) {
-          final Iterator<Map.Entry<String,String>> i = ( (Map<String,String>) args[0] ).entrySet ( ).iterator ( ) ;
+          // final Iterator<Map.Entry<?,?>> i = ( (Map<?,?>) args[0] ).entrySet ( ).iterator ( ) ;
+          final Iterator<Map.Entry<?,?>> i = ( (Map) args[0] ).entrySet ( ).iterator ( ) ;
           while ( i.hasNext ( ) ) {
-            final Map.Entry<String,String> e = i.next ( ) ;
+            final Map.Entry<?,?> e = i.next ( ) ;
             System.out.print ( e.getKey ( ) + " : '" + e.getValue ( ) + "'" ) ;
             if ( i.hasNext ( ) ) { System.out.print ( " , " ) ; }
           }
