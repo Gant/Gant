@@ -415,7 +415,7 @@ target ( distribution : 'Create the distribution.' ) {
     prepareZipFromTarAndRegisterForUpload ( discriminator ) {
       //  NB Rely on Closures not being closures:  path is only resolved when the Closure is executed.
       tar ( destfile :  path + tarExtension ) {
-        tarfileset ( dir : buildInstallDirectory , mode : '511' , prefix : prefix ) { include ( name : 'bin/*' ) }
+        tarfileset ( dir : buildInstallDirectory , mode : '755' , prefix : prefix ) { include ( name : 'bin/*' ) }
         tarfileset ( dir : buildInstallDirectory , prefix : prefix ) {
           include ( name : '**' )
           exclude ( name : 'bin/*' )
