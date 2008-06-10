@@ -279,7 +279,7 @@ final class Gant {
     if ( options.P ) { options.P.split ( System.properties.'path.separator' ).each { pathitem -> rootLoader?.addURL ( ( new File ( pathitem ) ).toURL ( ) ) } }
     if ( options.V ) {
       def version = ''
-      final gantPackage = Package.getPackage ( 'gant' )
+      final gantPackage = binding.classLoader.getPackage ( 'gant' )
       if ( gantPackage != null ) { version = gantPackage.getImplementationVersion ( ) }
       println ( 'Gant version ' + ( ( ( version == null ) || ( version == '' ) ) ? '<unknown>' : version ) )
       return 0
