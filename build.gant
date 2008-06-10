@@ -296,7 +296,7 @@ includeTool << gant.tools.Execute
 
 target ( reallyClean : 'Ensure all clean operations for the entire tree get actioned.' ) {
   clobber ( )
-  Execute.shell ( "cd packaging/debian && gant clobber" ) 
+  execute.shell ( "cd packaging/debian && gant clobber" ) 
 }
 
 target ( compile : 'Compile everything needed for a Gant installation.' ) {
