@@ -482,4 +482,13 @@ target ( uploadDistribution : 'Upload a complete distribution.' ) {
   if ( resource != null ) { resource.close ( ) }
 }
 
+//  This target creates an installation set up suitable for creating a deb file.  See packaging/devian/build.gant.
+
+target ( debDistribution : '' ) {
+  distributionVersions = [
+                          standalone : [ groupId : 'org.codehaus.groovy' , artifactId : 'groovy-all' , version : groovyVersion ]
+                          ]
+  distribution ( )
+}
+  
 setDefaultTarget ( test )
