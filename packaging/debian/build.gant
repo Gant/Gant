@@ -20,8 +20,8 @@ final buildDirectory = rootDirectory + System.properties.'file.separator' + 'tar
 ant.property ( file : rootDirectory + System.properties.'file.separator' + 'build.properties' )
 ant.property ( file : rootDirectory + System.properties.'file.separator' + 'local.build.properties' )
 
-gantVersion = ant.project.properties.gantVersion
-groovyVersion = ant.project.properties.groovyVersion
+final gantVersion = ant.project.properties.gantVersion
+final groovyVersion = ant.project.properties.groovyVersion
 
 final requiresGroovyPackageName = 'gant'
 final standalonePackageName = 'gant-standalone'
@@ -32,16 +32,22 @@ final homepage = 'http://gant.codehaus.org/'
 
 final installPrefixBase = 'usr/share/gant'
 
+final antlibXMLns = 'antlib:org.apache.maven.artifact.ant'
+final distributionURL = 'https://dav.codehaus.org/dist/gant/'
+
 //  Use the ant-deb-task from Marius Scurtescu <marius.scurtescu@gmail.com> to create a deb file.
 //  Assume the ant-deb.jar file is in ~/.groovy/lib.
 
 ant.taskdef ( resource : 'ant_deb_task.properties' , classpath : [ System.properties.'user.home' , '.groovy' , 'lib' , 'ant-deb.jar' ].join ( System.properties.'file.separator' ) )
 
 final debsDirectory = 'debs'
+final scriptsDirectory = 'scripts'
+final scriptsRequiresGroovyDirectory = scriptsDirectory + '/bin_requiresGroovy'
+final scriptsStandaloneDirectory = scriptsDirectory + '/bin_standalone'
 
 includeTargets << gant.targets.Clean
- cleanPattern << '**/*~'
-cleanDirectory << debsDirectory
+cleanPattern << '**/*~'
+cleanDirectory << [ debsDirectory , scriptsDirectory ]
 
 includeTool << gant.tools.Execute
 
@@ -61,6 +67,16 @@ Homepage: ${homepage}
   
 target ( debFiles : 'Create the deb file of the distribution.' ) {
   execute.shell ( "cd ${rootDirectory} && gant debDistribution" )
+  mkdir ( dir : scriptsRequiresGroovyDirectory )
+  copy ( tofile : scriptsRequiresGroovyDirectory + '/gant' , file : 'gant.sh' ) {
+    filterset { filter ( token : 'GANT_VERSION' , value : gantVersion ) }
+    filterset { filter ( token : 'GROOVYJAR' , value : 'groovy-' + groovyVersion + '.jar' ) }
+  }
+  mkdir ( dir : scriptsStandaloneDirectory )
+  copy ( tofile : scriptsStandaloneDirectory + '/gant' , file : 'gant_standalone.sh' ) {
+    filterset { filter ( token : 'GANT_VERSION' , value : gantVersion ) }
+    filterset { filter ( token : 'GROOVYJAR' , value : 'groovy-all-' + groovyVersion + '.jar' ) }
+  }
   mkdir ( dir : debsDirectory )
   // Create a deb that depend on a Groovy deb                                                                                 
   deb ( todir : debsDirectory , 'package' : requiresGroovyPackageName , section : section , priority : priority , architecture : architecture ,
@@ -69,7 +85,7 @@ target ( debFiles : 'Create the deb file of the distribution.' ) {
     maintainer ( name : 'Russel Winder' , email : 'russel.winder@concertant.com' )
     //homepage ( homepage )
     description ( synopsis : theSynopsis , theWords )
-    tarfileset ( file : [ rootDirectory , 'scripts' , 'bin_requiresGroovy' , 'gant' ].join ( System.properties.'file.separator' ) , prefix : installPrefixBase + '/bin' , filemode : '755' )
+    tarfileset ( file : scriptsRequiresGroovyDirectory + '/gant' , prefix : installPrefixBase + '/bin' , filemode : '755' )
     tarfileset ( file : [ rootDirectory , 'scripts' , 'conf' , 'gant-starter.conf' ].join ( System.properties.'file.separator' ) , prefix : installPrefixBase + '/conf' )
     tarfileset ( file : buildDirectory + System.properties.'file.separator' + 'gant-' + gantVersion + '.jar' , prefix : installPrefixBase + '/lib' )
   }
@@ -80,12 +96,40 @@ target ( debFiles : 'Create the deb file of the distribution.' ) {
     maintainer ( name : 'Russel Winder' , email : 'russel.winder@concertant.com' )
     //homepage ( homepage )
     description ( synopsis : theSynopsis , theWords )
-    tarfileset ( file : [ rootDirectory , 'target' , 'install' , 'bin' , 'gant' ].join ( System.properties.'file.separator' ) , prefix : installPrefixBase + '/bin' , filemode : '755' )
+    tarfileset ( file : scriptsStandaloneDirectory + '/gant' , prefix : installPrefixBase + '/bin' , filemode : '755' )
     tarfileset ( file : [ rootDirectory , 'target' , 'install' , 'bin' , 'startGroovy' ].join ( System.properties.'file.separator' ) , prefix : installPrefixBase + '/bin' )
     tarfileset ( file : [ rootDirectory , 'target' , 'install' , 'conf' , 'gant-starter.conf' ].join ( System.properties.'file.separator' ) , prefix : installPrefixBase + '/conf' )
     tarfileset ( file : buildDirectory + System.properties.'file.separator' + 'gant-' + gantVersion  + '.jar' , prefix : installPrefixBase + '/lib' )
     tarfileset ( dir : [ buildDirectory , 'install' , 'lib'].join (  System.properties.'file.separator' ) , includes : '*.jar' , prefix : installPrefixBase + '/lib' )
   }
+}
+
+target ( uploadDistribution : 'Upload the deb files to Codehaus.' ) {
+  "${antlibXMLns}:dependencies" ( pathId :  'slidePathId' ) {
+    dependency ( groupId : 'slide' , artifactId : 'slide-webdavlib' , version : '2.1' )
+  }
+  def loader = getClass ( ).getClassLoader ( )
+  def path = path ( refid : 'slidePathId' )
+  ( path.list ( ) as List ).each { location -> loader.addURL ( new URL ( 'file://' + location ) ) }
+  def settings =  ( new XmlSlurper ( ) ).parse ( System.properties.'user.home' + '/.m2/settings.xml' ).servers.server.find { item -> item.id == 'dav.codehaus.org' }
+  def credentials =  loader.loadClass ( 'org.apache.commons.httpclient.UsernamePasswordCredentials' ).getConstructor ( String , String ).newInstance ( settings.username.toString ( ) , settings.password.toString ( ) )
+  //  Have to put resource in the binding so that the Closures can access it.
+  resource = loader.loadClass ( 'org.apache.webdav.lib.WebdavResource' ).getConstructor ( String ,  loader.loadClass ( 'org.apache.commons.httpclient.Credentials' ) , boolean ).newInstance ( distributionURL , credentials , true )
+  if ( resource.statusCode != 200 ) { println ( 'Failed to open ' + distributionURL ) }
+  else {
+    final serverUploadProducts = [:]
+    final serverDistributionsDirectory = 'distributions'
+    ( new File ( debsDirectory ) ).eachFile { file -> serverUploadProducts[ file.path ] = serverDistributionsDirectory + '/' + file.name
+    }
+    serverUploadProducts.each { source , destination ->
+      def serverPath = resource.path + '/' + destination
+      print ( 'Uploading ' + source + ' -> ' + destination + ' : ' )
+      def result = 'Failed.'
+      if ( resource.putMethod ( serverPath , new File ( source ) ) ) { result = 'OK.' }
+      println ( result + ' Status : ' + resource.statusMessage )
+    }
+  }
+  if ( resource != null ) { resource.close ( ) }
 }
 
 setDefaultTarget ( debFiles )
