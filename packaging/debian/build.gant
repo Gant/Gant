@@ -60,7 +60,7 @@ Homepage: ${homepage}
 """
   
 target ( debFiles : 'Create the deb file of the distribution.' ) {
-  //execute.shell ( "cd ${rootDirectory} && gant debDistribution" )
+  execute.shell ( "cd ${rootDirectory} && gant debDistribution" )
   mkdir ( dir : debsDirectory )
   // Create a deb that depend on a Groovy deb                                                                                 
   deb ( todir : debsDirectory , 'package' : requiresGroovyPackageName , section : section , priority : priority , architecture : architecture ,
