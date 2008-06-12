@@ -43,7 +43,6 @@ import org.apache.tools.ant.Project ;
  *
  *  @author Russel Winder <russel.winder@concertant.com>
  */
-@SuppressWarnings ( "unchecked" )
 public class GantBuilder extends AntBuilder {
   public GantBuilder ( ) { addGroovycTask ( ) ; }
   public GantBuilder ( final Project project ) { super ( project ) ; addGroovycTask ( ) ; }
