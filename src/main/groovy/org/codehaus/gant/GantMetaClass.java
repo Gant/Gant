@@ -48,7 +48,7 @@ import org.codehaus.groovy.runtime.MetaClassHelper ;
  *
  *  @author Russel Winder <russel.winder@concertant.com>
  */
-class GantMetaClass implements MetaClass , GroovyObject {
+public class GantMetaClass implements MetaClass , GroovyObject {
   /**
    *  The metaclass that this metaclass is a proxy of.
    */
