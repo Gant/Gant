@@ -17,6 +17,7 @@ package org.codehaus.gant ;
 import java.lang.reflect.Field ;
 
 import java.util.Iterator ;
+import java.util.HashMap ;
 import java.util.List ;
 import java.util.Map ;
 
@@ -44,8 +45,8 @@ import org.apache.tools.ant.Project ;
  */
 @SuppressWarnings ( "unchecked" )
 public class GantBuilder extends AntBuilder {
-  public GantBuilder ( ) { }
-  public GantBuilder ( final Project project ) { super ( project ) ; }
+  public GantBuilder ( ) { addGroovycTask ( ) ; }
+  public GantBuilder ( final Project project ) { super ( project ) ; addGroovycTask ( ) ; }
   public Object invokeMethod ( final String name , final Object arguments ) {
     if ( GantState.dryRun ) {
       if ( GantState.verbosity > GantState.SILENT ) {
@@ -94,4 +95,10 @@ public class GantBuilder extends AntBuilder {
       throw new RuntimeException ( "Unable to access field project in GantBuilder." ) ;
     }
   }
+  private void addGroovycTask ( ) {
+    final Map<String,String> parameters = new HashMap<String,String> ( ) ;
+    parameters.put ( "name" , "groovyc" ) ;
+    parameters.put ( "classname" , "org.codehaus.groovy.ant.Groovyc" ) ;
+    invokeMethod ( "taskdef" , new Object[] { parameters } ) ;
+  }    
 }
