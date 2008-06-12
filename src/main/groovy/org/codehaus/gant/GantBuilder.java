@@ -46,6 +46,7 @@ import org.apache.tools.ant.Project ;
 public class GantBuilder extends AntBuilder {
   public GantBuilder ( ) { addGroovycTask ( ) ; }
   public GantBuilder ( final Project project ) { super ( project ) ; addGroovycTask ( ) ; }
+  @SuppressWarnings ( "unchecked" )
   public Object invokeMethod ( final String name , final Object arguments ) {
     if ( GantState.dryRun ) {
       if ( GantState.verbosity > GantState.SILENT ) {
