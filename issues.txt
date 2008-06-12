@@ -28,21 +28,16 @@ Add a --propertyfile <filename> option.
 In the Maven target set, the compilation always happens against the Groovy installation that initiated the
 Gant run.  Need to add a way of specifying which Groovy jar to compile against.
 
-The Maven and Ivy target sets assume that System.properties.'groovy.home' is set which is not the case
+How to add compilerarg tags to the Maven target set?
+
+The Maven target set and the Ivy tool assume that System.properties.'groovy.home' is set which is not the case
 always.  In particular, this will only be true when Gant is initiated from the command line, it is not true
 when Gant is initiated via the Ant task.
 
 The LaTeX tool does not make use of the return code from (pdf)latex, and it should.
 
-Using a target of target gives a very weird error message.
+Using a target name of target gives a very weird error message.
 
-How to add compilerarg tags to the Maven target set?
+The tests currently work fine with Ant or Gant and fail with Maven.  This difference needs investigating.
 
-Should there be a build of Gant that is stand alone rather than being an insert to Groovy?  This would allow
-people to use Gant but not install Groovy.
-
-Put all the above in as JIRA issues.
-
-Experiment with a two-phase system instead of the one-phase system.  Phase 1 build a graph of the build
-specification and reflect on it for errors and problems.  Phase 2 execute the necessary actions in sequence
-to achieve all the targets.
+Add all the above as JIRA issues.
