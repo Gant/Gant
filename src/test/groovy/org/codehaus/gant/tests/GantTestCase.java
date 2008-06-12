@@ -62,4 +62,10 @@ public abstract class GantTestCase extends GroovyTestCase {
   protected int processTargets ( final String s ) { return gant.processTargets ( s ) ; }
   protected int processTargets ( final List<String> l ) { return gant.processTargets ( l ) ; }  
   protected String getOutput ( ) { return output.toString ( ).replace ( "\r" , "" ) ; }
+
+  //  For some reason, some tests, but not all tests, output the results of various tasks run by Gant before
+  //  the script is excuted.
+
+  protected static final String prefixMaterial = "  [taskdef] classname : 'org.codehaus.groovy.ant.Groovyc' , name : 'groovyc'\n [property] environment : 'environment'\n" ;
+  
 }

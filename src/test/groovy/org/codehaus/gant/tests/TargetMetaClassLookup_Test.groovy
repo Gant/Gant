@@ -31,7 +31,7 @@ setDefaultTarget ( something )
   }
     
   //  It seems that the same gant.targets.Clean instance is used for all tests in this class which is a bit
-  //  sad becaus it means that there is an accumulation of **/*~ patterns, 1 for each test method as
+  //  sad because it means that there is an accumulation of **/*~ patterns, one for each test method as
   //  addCleanPattern gets executed for each test.  So it is crucial to know when testClean is run to know
   //  what the output will be.  Put it first in the hope it will be run first.
 
@@ -41,23 +41,20 @@ setDefaultTarget ( something )
     assertEquals ( '''   [delete] quiet : 'false'
   [fileset] dir : '.' , includes : '**/*~' , defaultexcludes : 'false'
 ''' , output )
+    //  Partly correct Emacs colouring by closing the comment: */
+    //  TODO:  Fix fontlock in Groovy mode so '' are treated as strings in which comments
+    //  do not affect fontlock.                   
   }
   void testDefault ( ) {
     assertEquals ( 0 , processTargets (  ) )
-    assertEquals (  ''' [property] environment : 'environment'
-     [echo] message : 'Did something.'
-''' , output ) 
+    assertEquals (  prefixMaterial + "     [echo] message : 'Did something.'\n" , output ) 
   }
   void testBlah ( ) {
     assertEquals ( -11 , processTargets ( 'blah' ) )
-    assertEquals ( ''' [property] environment : 'environment'
-Target blah does not exist.
-''' , output ) 
+    assertEquals ( prefixMaterial + 'Target blah does not exist.\n' , output ) 
   }
   void testSomething ( ) {
     assertEquals ( 0 , processTargets ( 'something' ) )
-    assertEquals ( ''' [property] environment : 'environment'
-     [echo] message : 'Did something.'
-''' , output ) 
+    assertEquals ( prefixMaterial + "     [echo] message : 'Did something.'\n" , output ) 
   }
 }

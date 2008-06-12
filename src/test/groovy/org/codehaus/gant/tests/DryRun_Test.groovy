@@ -33,20 +33,14 @@ target ( somethingElse : "Do something else." ) { echo ( message : "Did somethin
   }
   void testMissingNamedTarget ( ) {
     assertEquals ( -11 , gant.processArgs ( [ '-n' ,  '-f' ,  '-'  , 'blah'] as String[] ) )
-    assertEquals ( ''' [property] environment : 'environment'
-Target blah does not exist.
-''' , output ) 
+    assertEquals ( prefixMaterial + "Target blah does not exist.\n" , output ) 
   }
   void testSomething ( ) {
     assertEquals ( 0 , gant.processArgs ( [ '-n' ,  '-f' ,  '-'  , 'something'] as String[] ) )
-    assertEquals ( ''' [property] environment : 'environment'
-     [echo] message : 'Did something.'
-''' , output ) 
+    assertEquals ( prefixMaterial + "     [echo] message : 'Did something.'\n" , output ) 
   }
   void testSomethingElse ( ) {
     assertEquals ( 0 , gant.processArgs ( [ '-n' ,  '-f' ,  '-'  , 'somethingElse'] as String[] ) )
-    assertEquals (  ''' [property] environment : 'environment'
-     [echo] message : 'Did something else.'
-''' , output ) 
+    assertEquals ( prefixMaterial + "     [echo] message : 'Did something else.'\n" , output ) 
   }
 }
