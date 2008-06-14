@@ -246,9 +246,10 @@ final prepareInstallDirectory = { path , gantJarName , isStandalone , item ->
   ant."${antlibXMLns}:dependencies" ( filesetId : filesetId ) {
     dependency ( groupId : 'org.apache.ivy' , artifactId : 'ivy' , version : ant.project.properties.ivyVersion )
     if ( isStandalone ) {
-        dependency ( groupId : item.groupId , artifactId : item.artifactId , version : item.version )
-        dependency ( groupId : 'commons-cli' , artifactId : 'commons-cli' , version : ant.project.properties.commonsCliVersion )
-      }
+      dependency ( groupId : item.groupId , artifactId : item.artifactId , version : item.version )
+      dependency ( groupId : 'commons-cli' , artifactId : 'commons-cli' , version : ant.project.properties.commonsCliVersion )
+      dependency ( groupId : 'org.apache.ant' , artifactId : 'ant-junit' , version : ant.project.properties.antVersion )
+    }
     remoteRepository ( url : 'http://snapshots.repository.codehaus.org' )
     remoteRepository ( url : 'http://repository.codehaus.org' )
     remoteRepository ( url : 'http://repo1.maven.org' )
@@ -390,6 +391,7 @@ target ( distribution : 'Create the distribution.' ) {
     "${antlibXMLns}:dependencies" ( pathId : pathIdentifier ) {
       dependency ( groupId : item.groupId , artifactId : item.artifactId , version : item.version )
       dependency ( groupId : 'org.apache.ant' , artifactId : 'ant' , version : ant.project.properties.antVersion )
+      dependency ( groupId : 'org.apache.ant' , artifactId : 'ant-junit' , version : ant.project.properties.antVersion )
       dependency ( groupId : 'commons-cli' , artifactId : 'commons-cli' , version : ant.project.properties.commonsCliVersion )
       dependency ( groupId : 'junit' , artifactId : 'junit' , version : ant.project.properties.junitVersion )
       remoteRepository ( url : 'http://snapshots.repository.codehaus.org' )
