@@ -24,9 +24,6 @@ import org.codehaus.gant.GantBinding
 final class Execute {
   private final GantBinding binding ;
   Execute ( final GantBinding binding ) { this.binding = binding ; }
-  //
-  //  Don't use the Elvis operator since that would mean the code would not compile in Groovy 1.0.
-  //
   /**
    *  Handle the output and error streams from the already initializaed and started process to ensure the
    *  buffers are never filled, and block waiting termination of the process.
@@ -36,7 +33,6 @@ final class Execute {
    *  @param outProcessing the <code>Closure</code> to process the output stream.
    *  @param command the command used to start the executing process.
    *  @param tag the tag to print.
-   *
    *  @return the return code of the process.
    */
   private manageProcess ( final Process process , final Closure errProcessing , final Closure outProcessing , final Object command , final String tag ) {
@@ -56,13 +52,12 @@ final class Execute {
    *  standard error.
    *
    *  @param command the command as a single <code>String</code>.
-   *
    *  @return the return code of the process.
    */
   def executable ( final Map keywordParameters = [:] , final String command ) {
     manageProcess ( command.execute ( ) ,
-                    keywordParameters['errProcessing'] ? keywordParameters['errProcessing'] : { System.err.println ( it ) },
-                    keywordParameters['outProcessing'] ? keywordParameters['outProcessing'] : { println ( it ) } ,
+                    keywordParameters['errProcessing'] ?: { System.err.println ( it ) },
+                    keywordParameters['outProcessing'] ?: { println ( it ) } ,
                     command ,
                     'execute' )
   }
@@ -74,13 +69,12 @@ final class Execute {
    *  from standard error.
    *
    *  @param command the command as a  list of <code>String</code>s.
-   *
    *  @return the return code of the process.
    */
   def executable ( final Map keywordParameters = [:] , final List command ) {
     manageProcess ( command.execute ( ) ,
-                    keywordParameters['errProcessing'] ? keywordParameters['errProcessing'] : { System.err.println ( it ) },
-                    keywordParameters['outProcessing'] ? keywordParameters['outProcessing'] : { println ( it ) } ,
+                    keywordParameters['errProcessing'] ?: { System.err.println ( it ) },
+                    keywordParameters['outProcessing'] ?: { println ( it ) } ,
                     command ,
                     'execute' )
   }
@@ -92,7 +86,6 @@ final class Execute {
    *  from standard error.
    *
    *  @param command the command as a single <code>String</code>.
-   *
    *  @return the return code of the process.
    */
   def shell ( final Map keywordParameters = [:] , final String command ) {
@@ -100,8 +93,8 @@ final class Execute {
     final boolean isWindows = ( osName.length ( ) > 6 ) ? osName.substring ( 0 , 7 ).equals ( "Windows" ) : false
     final commandArray = isWindows ? [ 'cmd' , '/c' , command ] : [ 'sh' , '-c' , command ]
     manageProcess ( commandArray.execute ( ) ,
-                    keywordParameters['errProcessing'] ? keywordParameters['errProcessing'] : { System.err.println ( it ) },
-                    keywordParameters['outProcessing'] ? keywordParameters['outProcessing'] : { println ( it ) } ,
+                    keywordParameters['errProcessing'] ?: { System.err.println ( it ) },
+                    keywordParameters['outProcessing'] ?: { println ( it ) } ,
                     command ,
                     'shell' )
   }
