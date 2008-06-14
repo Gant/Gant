@@ -120,6 +120,7 @@ included in the package.
 }
 
 target ( uploadDistribution : 'Upload the deb files to Codehaus.' ) {
+  depends ( debFiles )
   "${antlibXMLns}:dependencies" ( pathId :  'slidePathId' ) {
     dependency ( groupId : 'slide' , artifactId : 'slide-webdavlib' , version : '2.1' )
   }
