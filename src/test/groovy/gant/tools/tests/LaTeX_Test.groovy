@@ -142,6 +142,9 @@ includeTool ** gant.tools.LaTeX * [ latexOptions : 'flobadob' ]
 target ( test : "" ) { println ( laTeX.environment['latexOptions'] ) }
 '''
     assertEquals ( 0 , processTargets ( 'test' ) )
-    assertEquals ( '[-interaction=nonstopmode, -halt-on-error, flobadob]\n' , output )
+    assertEquals (  ( groovyMinorVersion > 5 )
+                    ? '[-interaction=nonstopmode, -halt-on-error, flobadob]\n'
+                    : '["-interaction=nonstopmode", "-halt-on-error", "flobadob"]\n'
+                    , output )
   }
 }
