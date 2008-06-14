@@ -16,21 +16,12 @@
 #
 #  Author : Russel Winder <russel.winder@concertant.com>
 
-#  Gant initiation script for Debian and Ubuntu.  This version does not require a Groovy installation since
-#  it has all the necessary jars in the $GANT_HOME/lib directory.
+#  Gant initiation script for Debian and Ubuntu.  This version does not require a Groovy or Ant installation
+#  since it has all the necessary jars in the $GANT_HOME/lib directory.
 
-#  If GANT_HOME is not set, deduce a path.
-
-[ -z "$GANT_HOME" ] && export GANT_HOME=/usr/share/gant
-
-#  Force GROOVY_HOME to be GANT_HOME so that the startGroovy code does the right thing.
-
+export GANT_HOME=/usr/share/gant
 export GROOVY_HOME="$GANT_HOME"
-
-#  If ANT_HOME is not set, deduce a path -- this is needed in order to discover the location of the jars
-#  associated with the Ant installation.
-
-[ -z "$ANT_HOME" ] && export ANT_HOME=/usr/share/ant
+export ANT_HOME="$GANT_HOME"
 
 GROOVY_APP_NAME=Gant
 GROOVY_CONF="$GANT_HOME/conf/gant-starter.conf"
