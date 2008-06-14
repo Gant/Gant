@@ -95,7 +95,7 @@ This package depends on the groovy and ant packages.
     tarfileset ( file : [ rootDirectory , 'scripts' , 'conf' , 'gant-starter.conf' ].join ( System.properties.'file.separator' ) , prefix : installPrefixBase + '/conf' )
     tarfileset ( file : buildDirectory + System.properties.'file.separator' + 'gant-' + gantVersion + '.jar' , prefix : installPrefixBase + '/lib' )
   }
-  // Create a deb that is standalone requiring no Groovy installation. 
+  // Create a deb that is standalone requiring no Groovy or Ant installation. 
   deb ( todir : debsDirectory , 'package' : standalonePackageName , section : section , priority : priority , architecture : architecture ,
         depends : 'java2-runtime',
         conflicts : requiresGroovyPackageName , postinst : 'postinst' , prerm : 'prerm' ) {
