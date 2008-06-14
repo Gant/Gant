@@ -135,4 +135,13 @@ laTeX.intermediateExtensions.each { extension -> cleanPattern << '*' + extension
     }
     else { System.err.println ( 'testEmptyFile not run since pdflatex executable is not avaialble.' ) }
   }
+
+  void testInitialized ( ) {
+    script = '''
+includeTool ** gant.tools.LaTeX * [ latexOptions : 'flobadob' ]
+target ( test : "" ) { println ( laTeX.environment['latexOptions'] ) }
+'''
+    assertEquals ( 0 , processTargets ( 'test' ) )
+    assertEquals ( '[-interaction=nonstopmode, -halt-on-error, flobadob]\n' , output )
+  }
 }

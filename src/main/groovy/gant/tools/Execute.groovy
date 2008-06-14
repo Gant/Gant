@@ -17,14 +17,27 @@ package gant.tools
 import org.codehaus.gant.GantBinding
 
 /**
- *  A class providing methods for executing operating system commands.
+ *  Provides methods for executing operating system commands ensuring that the pipes are flushed and
+ *  so the execution cannot block on full pipes.
  *
  *  @author Russel Winder <russel.winder@concertant.com>
  */
 final class Execute {
   private final GantBinding binding ;
-  Execute ( final GantBinding binding ) { this.binding = binding ; }
   /**
+   *  Constructor for the "includeTool <<" usage.
+   *
+   *  @param binding The <code>GantBinding</code> to bind to.
+   */
+  Execute ( final GantBinding binding ) { this.binding = binding ; }
+   /**
+   *  Constructor for the "includeTool **" usage.
+   *
+   *  @param binding The <code>GantBinding</code> to bind to.
+   *  @param map The <code>Map</code> of initialization parameters.  Currently ignored.
+    */
+  Execute ( final GantBinding binding , final Map map ) { this.binding = binding ; }
+ /**
    *  Handle the output and error streams from the already initializaed and started process to ensure the
    *  buffers are never filled, and block waiting termination of the process.
    *

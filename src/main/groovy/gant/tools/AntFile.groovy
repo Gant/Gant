@@ -19,8 +19,8 @@ import org.codehaus.gant.GantBinding
 import org.apache.tools.ant.ProjectHelper
 
 /**
- *  This class provides a method for including Ant XML files into a Gant run which sets up the targets from
- *  the Ant file as Gant targets.
+ *  Support for including Ant XML files into a Gant run which sets up the targets from the Ant file as Gant
+ *  targets.
  *
  *  @author Russel Winder <russel.winder@concertant.com>
  */
@@ -39,7 +39,7 @@ final class AntFile {
    *  @param binding The <code>GantBinding</code> to bind to.
    *  @param map The <code>Map</code> of initialization parameters.
    */
-  AntFile ( final GantBinding binding , Map map ) {
+  AntFile ( final GantBinding binding , final Map map ) {
     this.binding = binding
     includeTargets ( map.filename )
   }
@@ -49,7 +49,7 @@ final class AntFile {
    *
    *  @param fileNameList the list of path to the Ant XML file.  
    */
-  void includeTargets ( List fileNameList ) {
+  void includeTargets ( final List fileNameList ) {
     for ( fileName in fileNameList ) { includeTargets ( fileName ) }
   }
   /**
@@ -58,7 +58,7 @@ final class AntFile {
    *
    *  @param fileName the path to the Ant XML file.  
    */
-  void includeTargets ( String fileName ) {
+  void includeTargets ( final String fileName ) {
     ProjectHelper.configureProject ( binding.ant.project , new File ( fileName ) )
     binding.ant.project.targets.each { key , value ->
       assert key == value.name

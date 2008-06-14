@@ -17,7 +17,8 @@ package gant.tools
 import org.codehaus.gant.GantBinding
 
 /**
- *  A class to provide support for using Ivy.  Assumes the ivy jar file is in $GROOVY_HOME/lib.
+ *  Provide support for using Ivy.  This simply redirects all method calls to the standard
+ * <code>GantBuilder</code> instance -- which in turn selects the method from the Ivy jar. 
  *
  *  @author Russel Winder <russel.winder@concertant.com>
  */
@@ -26,6 +27,11 @@ final class Ivy {
   private final ivyURI = 'antlib:org.apache.ivy.ant'
   private final classpathRef = 'ivy.class.path'
   private String ivyJarPath = null
+  /**
+   *  Constructor to support "includeTool <<" usage.
+   *
+   *  @param binding The <code>GantBinding</code> to bind to.
+   */
   Ivy ( final GantBinding binding ) {
     this.binding = binding
     if ( System.properties.'groovy.home' ) {
@@ -36,6 +42,13 @@ final class Ivy {
     }
     constructIvyTask ( )
   }
+ /**
+   *  Constructor to support "includeTool **" usage.  Allows the field <code>ivyJarPath</code> to allow
+   *  explicit specification of the location of the Ivy jar.
+   *
+   *  @param binding The <code>GantBinding</code> to bind to.
+   *  @param map The <code>Map</code> of parameters for intialization.
+   */
   Ivy ( final GantBinding binding , final Map map ) {
     this.binding = binding
     if ( map.containsKey ( 'ivyJarPath' ) ) { ivyJarPath = map.ivyJarPath }

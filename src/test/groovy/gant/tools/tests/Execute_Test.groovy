@@ -74,4 +74,13 @@ target ( testing : '' ) { assert execute.executable ( 'false' ) == 1 }
 ''' , output )
     }
   }
+  void testParameterizedUsage ( ) {
+    script = '''includeTool ** gant.tools.Execute * [ command : 'echo 1' ]
+target ( testing : '' ) { execute.shell ( 'echo 1' ) }
+''' 
+    assertEquals ( 0 , processTargets ( 'testing' ) )
+    assertEquals ( '''    [shell] echo 1
+1
+''' , output ) 
+ }
 }

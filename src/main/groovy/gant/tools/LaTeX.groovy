@@ -18,7 +18,7 @@ import org.codehaus.gant.GantBinding
 import org.codehaus.gant.GantState
 
 /**
- *  A class providing methods support for processing LaTeX.
+ *  Provide support for supporting LaTeX document processing.
  *
  *  @author Russel Winder <russel.winder@concertant.com>
  */
@@ -60,20 +60,70 @@ class LaTeX {
     ]
   protected final GantBinding binding
   protected final Execute executor
+  /**
+   *  Constructor for the "includeTool <<" usage.
+   *
+   *  @param binding The <code>GantBinding</code> to bind to.
+   */
   public LaTeX ( final GantBinding binding ) {
     this.binding = binding
     executor = new Execute ( binding ) 
+  }
+ /**
+   *  Constructor for the "includeTool **" usage.
+   *
+   *  @param binding The <code>GantBinding</code> to bind to.
+   *  @param map The <code>Map</code> of initialization parameters.
+   */
+  public LaTeX ( final GantBinding binding , final Map map ) {
+    this.binding = binding
+    executor = new Execute ( binding ) 
+    map.each { key , value -> addOption ( key , value ) }
   }
   private void addOption ( key , option ) {
     if ( option instanceof List ) { environment[ key ] += option }
     else { environment[ key ] << option }
   }
+  /**
+   *  Add a LaTeX option for the build.
+   *
+   *  @param option The option to add.
+   */
   public void addLaTeXOption ( option ) { addOption ( 'latexOptions' , option ) }
+  /**
+   *  Add a BibTeX option for the build.
+   *
+   *  @param option The option to add.
+   */
   public void addBibTeXOption ( option ) { addOption ( 'bibtexOptions' , option ) }
+  /**
+   *  Add a Makeindex option for the build.
+   *
+   *  @param option The option to add.
+   */
   public void addMakeindexOption ( option ) { addOption ( 'makeindexOptions' , option ) }
+  /**
+   *  Add a DviPS option for the build.
+   *
+   *  @param option The option to add.
+   */
   public void addDvipsOption ( option ) { addOption ( 'dvipsOptions' , option ) }
+  /**
+   *  Add a Ps2Pdf option for the build.
+   *
+   *  @param option The option to add.
+   */
   public void addPs2pdfOption ( option ) { addOption ( 'ps2pdfOptions' , option ) }
+  /**
+   *  Add a collection of options for the build. 
+   *
+   *  @param keywordOptions The collection of options to add.
+   */
   public void addOptions ( Map keywordOptions ) { keywordOptions.each { key , value -> addOption ( key , value ) } }
+  /**
+   *  Perform the LaTeX source compilation.  The source will be processed enough times to ensure that BibTeX
+   *  and Makeindex requirements are completed.
+   */
   private void executeLaTeX ( ) {
     def root = environment.root
     def sourceName = root + ltxExtension
@@ -128,11 +178,21 @@ class LaTeX {
       }
     }
   }
+  /**
+   *  Create a PDF file from a LaTeX source.
+   *
+   *  @param arguments a <code>Map</code> of options to add to the build environment.
+   */
   public void generatePDF ( Map arguments ) {
     arguments.each { key , value -> environment[ key ] = value }
     environment.latexCommand = 'pdflatex'
     executeLaTeX ( )
   }
+  /**
+   *   Create a PostScript file from a LaTeX source.
+   *
+   *  @param arguments a <code>Map</code> of options to add to the build environment.
+   */
   public void generatePS ( Map arguments ) {
     arguments.each { key , value -> environment[ key ] = value }
     environment.latexCommand = 'latex'
