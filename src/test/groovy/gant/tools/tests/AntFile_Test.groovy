@@ -32,6 +32,7 @@ final class AntFile_Test extends GantTestCase {
 
   private File temporaryFile
   private String temporaryFilePath
+
   void setUp ( ) {
     super.setUp ( )
     temporaryFile = File.createTempFile ( 'gant-antFile-' ,  '-executable' )
@@ -48,23 +49,13 @@ final class AntFile_Test extends GantTestCase {
     temporaryFile.delete ( )
     super.tearDown ( )
   }
-  
-  void testExecutable ( ) {
-    script = """
-includeTool << gant.tools.AntFile
-antFile.includeTargets ( '${temporaryFilePath}' )
-setDefaultTarget ( 'execute' )
-"""
+
+  private void performExecutableTest ( ) {
     assertEquals ( 0 , processTargets ( ) )
     assertEquals ( '''     [echo] Hello world.
 ''' , output )
   }
-  void testListing ( ) {
-    script = """
-includeTool << gant.tools.AntFile
-antFile.includeTargets ( '${temporaryFilePath}' )
-setDefaultTarget ( 'execute' )
-"""
+  private void performListingTest ( ) {
     assertEquals ( 0 , gant.processArgs ( [ '-p' , '-f' , '-' ] as String[] ) )
     assertEquals ( '''
  execute  Do something.
@@ -72,5 +63,46 @@ setDefaultTarget ( 'execute' )
 Default target is execute.
 
 ''' , output )
+  }
+
+  private uninitializedScript = """
+includeTool << gant.tools.AntFile
+antFile.includeTargets ( '${-> temporaryFilePath}' )
+setDefaultTarget ( 'execute' )
+"""
+  private initializedScriptString = """
+includeTool ** gant.tools.AntFile * [ filename : '${ -> temporaryFilePath}' ]
+setDefaultTarget ( 'execute' )
+"""
+  private initializedScriptList = """
+includeTool ** gant.tools.AntFile * [ filename : [ '${ -> temporaryFilePath}' ] ]
+setDefaultTarget ( 'execute' )
+"""
+
+  void testExecutableUninitialized ( ) {
+    script = uninitializedScript
+    performExecutableTest ( )
+  }
+  void testListingUninitialized ( ) {
+    script = uninitializedScript
+    performListingTest ( )
+  }
+
+  void testExecutableInitializedString ( ) {
+    script = initializedScriptString
+    performExecutableTest ( )
+  }
+  void testListingInitializedString ( ) {
+    script = initializedScriptString
+    performListingTest ( )
+  }
+
+  void testExecutableInitializedList ( ) {
+    script = initializedScriptList
+    performExecutableTest ( )
+  }
+  void testListingInitializedList ( ) {
+    script = initializedScriptList
+    performListingTest ( )
   }
 }

@@ -19,17 +19,45 @@ import org.codehaus.gant.GantBinding
 import org.apache.tools.ant.ProjectHelper
 
 /**
- *  A class providing methods for including Ant XML files and setting up the targets as Gant targets.
+ *  This class provides a method for including Ant XML files into a Gant run which sets up the targets from
+ *  the Ant file as Gant targets.
  *
  *  @author Russel Winder <russel.winder@concertant.com>
  */
 final class AntFile {
-  private final GantBinding binding ;
+  private final GantBinding binding
+  /**
+   *  Constructor for the "includeTool <<" usage.
+   *
+   *  @param binding The <code>GantBinding</code> to bind to.
+   */
   AntFile ( final GantBinding binding ) { this.binding = binding }
+  /**
+   *  Constructor for the "includeTool **" usage.  It is assumed that the <code>Map</code> entry provides a
+   *  filename or a list of filenames of Ant XML files to load. 
+   *
+   *  @param binding The <code>GantBinding</code> to bind to.
+   *  @param map The <code>Map</code> of initialization parameters.
+   */
   AntFile ( final GantBinding binding , Map map ) {
     this.binding = binding
     includeTargets ( map.filename )
   }
+  /**
+   *  Read the named file assuming it is an Ant XML file.  Load the targets into the current project and
+   *  then associate each of the Ant targets with a Gant target.
+   *
+   *  @param fileNameList the list of path to the Ant XML file.  
+   */
+  void includeTargets ( List fileNameList ) {
+    for ( fileName in fileNameList ) { includeTargets ( fileName ) }
+  }
+  /**
+   *  Read the named file assuming it is an Ant XML file.  Load the targets into the current project and
+   *  then associate each of the Ant targets with a Gant target.
+   *
+   *  @param fileName the path to the Ant XML file.  
+   */
   void includeTargets ( String fileName ) {
     ProjectHelper.configureProject ( binding.ant.project , new File ( fileName ) )
     binding.ant.project.targets.each { key , value ->
