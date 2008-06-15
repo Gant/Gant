@@ -57,10 +57,21 @@ final class Maven {
                                   ( readOnlyKeys[3] ) : 'antlib:org.apache.maven.artifact.ant' ,
                                   ( readOnlyKeys[4] ) : 'maven.pom'
                                   ]
-   Maven ( GantBinding binding ) {
+   /**
+   *  Constructor for the "includeTargets <<" usage.
+   *
+   *  @param binding The <code>GantBinding</code> to bind to.
+   */
+  Maven ( GantBinding binding ) {
      properties.binding = binding
      constructMavenObject ( )
    }
+  /**
+   *  Constructor for the "includeTargets **" usage.
+   *
+   *  @param binding The <code>GantBinding</code> to bind to.
+   *  @param map The <code>Map</code> of initialization parameters.
+   */
    Maven ( GantBinding binding , Map map ) {
      properties.binding = binding
      map.each { key , value -> owner.setProperty ( key , value ) }

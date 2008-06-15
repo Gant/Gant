@@ -57,7 +57,8 @@ final class Clean {
     }
   }
   /**
-   *  Constructor for the "includeTargets **" usage.  Currently ignores the parameters.
+   *  Constructor for the "includeTargets **" usage.  Currently ignores keys other than cleanPattern,
+   *  cleanDirectory, clobberPattern, and clobberDirectory.
    *
    *  @param binding The <code>GantBinding</code> to bind to.
    *  @param map The <code>Map</code> of initialization parameters.
