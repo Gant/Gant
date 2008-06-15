@@ -22,11 +22,23 @@ package org.codehaus.gant
  *  @author Russel Winder <russel.winder@concertant.com>
  */
 public class GantBinding extends Binding implements Cloneable {
+  /**
+   *  Default constructor.
+   */
   public GantBinding ( ) { initializeGantBinding ( ) }
+  /**
+   *  Constructor taking an explicit <code>Binding</code> as parameter.
+   *
+   *  @param binding The <code>Binding</code> to use as a base of maplets to initialize the
+   *  <code>GantBinding</code> with.
+   */
   public GantBinding ( final Binding binding ) {
     super ( binding.variables )
     initializeGantBinding ( )
   }
+  /**
+   *  Method holding all the code common to all construction.
+   */
   private void initializeGantBinding ( ) {
     //
     //  When this class is instantiated from a Gant command line or via a Groovy script then the classloader

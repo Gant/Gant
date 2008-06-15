@@ -23,7 +23,18 @@ package org.codehaus.gant
  *  @author Russel Winder <russel.winder@concertant.com>
  */
 class IncludeTool extends AbstractInclude {
+  /**
+   *  Constructor.
+   *
+   *  @param binding The <code>GantBinding</code> to associate with.
+   */
   IncludeTool ( GantBinding binding ) { super ( binding  ) }
+  /**
+   *  Implementation of the << operator taking a <code>Class</code> parameter.
+   *
+   *  @param theClass The <code>Class</code> to load and instantiate. 
+   *  @return The includer object to allow for << chaining.
+   */
   def leftShift ( Class theClass ) {
     def className = theClass.name
     if ( ! ( className in loadedClasses ) ) {
@@ -33,6 +44,12 @@ class IncludeTool extends AbstractInclude {
     }
     this
   }
+  /**
+   *  Implementation of the << operator taking a <code>File</code> parameter.
+   *
+   *  @param file The <code>File</code> to load, compile, and instantiate. 
+   *  @return The includer object to allow for << chaining.
+   */
   def leftShift ( File file ) {
     def className = file.name
     if ( ! ( className in loadedClasses ) ) {
@@ -43,6 +60,12 @@ class IncludeTool extends AbstractInclude {
     }
     this
   }
+  /**
+   *  Implementation of the << operator taking a <code>String</code> parameter.
+   *
+   *  @param s The <code>String</code> to compile and instantiate. 
+   *  @return The includer object to allow for << chaining.
+   */
   def leftShift ( String script ) {
     def className = ''
     final javaIdentifierRegexAsString = /\b\p{javaJavaIdentifierStart}(?:\p{javaJavaIdentifierPart})*\b/
@@ -59,6 +82,13 @@ class IncludeTool extends AbstractInclude {
     }
     this
   }
+  /**
+   *  Implementation of the * operator taking a <code>Map</code> parameter.  This operator only makes
+   *  sense immediately after a ** operator, since only then is there a <code>Class</code> to instantiate.
+   *
+   *  @param keywordParameter The <code>Map</code> of parameters to the constructor. 
+   *  @return The includer object to allow for ** * operator chaining.
+   */
   def multiply ( Map keywordParameters ) {
     if ( pendingClass != null ) {
       def className = pendingClass.name
@@ -71,7 +101,14 @@ class IncludeTool extends AbstractInclude {
     }
     this
   }
-private void makeBindingEntry ( String name , object ) {
+  /**
+   *  Make an entry in the binding for an instance of a class where the entry in the binding is the same as
+   *  the name of the class but with an initial lowercase letter instead of uppercase letter.
+   *
+   *  @param name The label to use in the binding.
+   *  @param object The object for name to refer to.
+   */
+  private void makeBindingEntry ( String name , object ) {
     def initialLetter = name[0] as Character
     def transformedName = ( Character.toLowerCase ( initialLetter ) as String ) + name[1..-1]
     try {

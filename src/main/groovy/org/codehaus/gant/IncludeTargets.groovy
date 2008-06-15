@@ -22,8 +22,19 @@ package org.codehaus.gant
  *  @author Graeme Rocher <graeme.rocher@gmail.com>        
  */
 class IncludeTargets extends AbstractInclude {
+  /**
+   *  Constructor.
+   *
+   *  @param binding The <code>GantBinding</code> to associate with.
+   */
   IncludeTargets ( GantBinding binding ) { super ( binding ) }
-  def leftShift ( Class theClass ) {
+  /**
+   *  Implementation of the << operator taking a <code>Class</code> parameter.
+   *
+   *  @param theClass The <code>Class</code> to load and instantiate. 
+   *  @return The includer object to allow for << chaining.
+   */
+  def leftShift ( final Class theClass ) {
     def className = theClass.name
     if ( ! ( className in loadedClasses ) ) {
       createInstance ( theClass )
@@ -31,7 +42,13 @@ class IncludeTargets extends AbstractInclude {
     }
     this
   }
-  def leftShift ( File file ) { 
+  /**
+   *  Implementation of the << operator taking a <code>File</code> parameter.
+   *
+   *  @param file The <code>File</code> to load, compile, and instantiate. 
+   *  @return The includer object to allow for << chaining.
+   */
+  def leftShift ( final File file ) { 
     def className = file.name
     if ( ! ( className in loadedClasses ) ) {
       if ( binding.cacheEnabled ) {
@@ -44,8 +61,21 @@ class IncludeTargets extends AbstractInclude {
     }
     this 		
   }
-  def leftShift ( String s ) { binding.groovyShell.evaluate ( s ) ; this }
-  def multiply ( Map keywordParameters ) {
+  /**
+   *  Implementation of the << operator taking a <code>String</code> parameter.
+   *
+   *  @param s The <code>String</code> to compile and instantiate. 
+   *  @return The includer object to allow for << chaining.
+   */
+  def leftShift ( final String s ) { binding.groovyShell.evaluate ( s ) ; this }
+  /**
+   *  Implementation of the * operator taking a <code>Map</code> parameter.  This operator only makes
+   *  sense immediately after a ** operator, since only then is there a <code>Class</code> to instantiate.
+   *
+   *  @param keywordParameter The <code>Map</code> of parameters to the constructor. 
+   *  @return The includer object to allow for ** * operator chaining.
+   */
+  def multiply ( final Map keywordParameters ) {
     if ( pendingClass != null ) {
       def className = pendingClass.name
       if ( ! ( className in loadedClasses ) ) {
