@@ -20,13 +20,30 @@ package org.codehaus.gant.tests
  *  @author Russel Winder <russel.winder@concertant.com>
  */
 final class GantBuilder_Test extends GantTestCase {
-  void testGroovyTask ( ) {
-    script = '''
+  void testGroovyTaskFail ( ) {
+    def path = '/tmp/tmp/tmp/tmp'
+    script = """
 target ( hello : '' ) {
-  groovyc ( srcdir : '.' , destdir : '/dev/null' )
+  groovyc ( srcdir : '.' , destdir : '${path}' )
 }
-'''
+"""
     assertEquals ( -13 , processTargets ( 'hello' ) )
-    assertEquals ( 'destination directory "/dev/null" does not exist or is not a directory\n' , output )
+    assertTrue ( output.endsWith ( ' does not exist or is not a directory\n' ) )
+  }
+  void testGroovyTaskSucceed ( ) {
+    try {
+      def directory = File.createTempFile ( 'gant-' , '-GantBuilder_Test' )
+      directory.delete ( )
+      directory.mkdir ( )
+      directory.deleteOnExit ( )
+      script = """
+target ( hello : '' ) {
+  groovyc ( srcdir : '.' , destdir : '${directory.path.replace ( '\\' , '\\\\' )}' )
+}
+"""
+      assertEquals ( 0 , processTargets ( 'hello' ) )
+      assertTrue ( output.startsWith ( '  [groovyc] Compiling ' ) )
+    }
+    catch ( IOException ioe ) { fail ( 'Failed to create a temporary directory.' ) }
   }
 }
