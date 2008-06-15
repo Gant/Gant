@@ -401,4 +401,35 @@ target ( doit : '' ) {
     assertEquals ( 0 , processTargets ( 'doit' ) )
     assertEquals ( 'name\n' , output )
   }
+
+  //  Make sure that errors are correctly trapped.
+
+  void testErrorPowerNoMultiply ( ) {
+    // ** without * is effectively a no-op due to the way things are processed.
+    script = '''
+includeTargets ** gant.targets.Clean
+cleanPattern << '*~'
+target ( test : '' ) { }
+'''
+    assertEquals ( -2 , processTargets ( 'test' ) )
+    assertEquals ( 'Standard input, line 4 -- Error evaluating Gantfile: No such property: cleanPattern for class: standard_input\n' , output )
+  }
+  void testErrorNoPower ( ) {
+    // * instead of ** is an error because of the type of the right hand parameter.
+    script = '''
+includeTargets * gant.targets.Clean
+target ( test : '' ) { }
+'''
+    assertEquals ( -2 , processTargets ( 'test' ) )
+    assertEquals ( 'Standard input, line 2 -- Error evaluating Gantfile: No signature of method: org.codehaus.gant.IncludeTargets.multiply() is applicable for argument types: (java.lang.Class) values: {class gant.targets.Clean}\n' , output )
+  }
+  void testErrorNullPower ( ) {
+    script = '''
+includeTargets ** null * [ ]
+target ( test : '' ) { }
+'''
+    assertEquals ( -2 , processTargets ( 'test' ) )
+    assertEquals ( 'Standard input, line 2 -- Error evaluating Gantfile: wrong number of arguments\n' , output )
+  }
+  
 }
