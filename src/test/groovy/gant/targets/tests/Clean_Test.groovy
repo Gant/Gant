@@ -112,4 +112,14 @@ target ( testClobber : '' ) { println ( clobberPattern ) }
 ''' : '''[["**/*~", "**/*.bak"]]
 ''' , output ) 
   }
+  void testParameterizedInclude ( ) {
+   script = """
+includeTargets ** gant.targets.Clean * [ cleanDirectory : 'target' ]
+target ( testClean : '' ) { println ( cleanDirectory ) }
+"""
+    assertEquals ( 0 , processTargets ( 'testClean' ) )
+    assertEquals (  ( groovyMinorVersion > 5 ) ? '''[target]
+''' : '''["target"]
+''' , output ) 
+  }
 }
