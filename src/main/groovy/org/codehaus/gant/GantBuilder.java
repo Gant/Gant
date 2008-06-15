@@ -44,8 +44,23 @@ import org.apache.tools.ant.Project ;
  *  @author Russel Winder <russel.winder@concertant.com>
  */
 public class GantBuilder extends AntBuilder {
+  /**
+   *  Constructor that uses the default project.
+   */
   public GantBuilder ( ) { addGroovycTask ( ) ; }
+  /**
+   *  Constructor that specifies which <code>Project</code> to be associated with.
+   *
+   *  @param project The <code>Project</code> to be associated with.
+   */
   public GantBuilder ( final Project project ) { super ( project ) ; addGroovycTask ( ) ; }
+  /**
+   *  Invoke a method.
+   *
+   *  @param name The name of the method to invoke.
+   *  @param arguments The parameters to the method call.
+   *  @return The value returned by the method call or null if no value is returned.
+   */
   @SuppressWarnings ( "unchecked" )
   public Object invokeMethod ( final String name , final Object arguments ) {
     if ( GantState.dryRun ) {
@@ -95,6 +110,9 @@ public class GantBuilder extends AntBuilder {
       throw new RuntimeException ( "Unable to access field project in GantBuilder." ) ;
     }
   }
+  /**
+   *  Add the Groovyc Ant task to the set of tasks loaded.
+   */
   private void addGroovycTask ( ) {
     final Map<String,String> parameters = new HashMap<String,String> ( ) ;
     parameters.put ( "name" , "groovyc" ) ;

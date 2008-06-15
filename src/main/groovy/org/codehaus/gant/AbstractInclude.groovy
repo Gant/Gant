@@ -23,19 +23,13 @@ abstract class AbstractInclude {
   protected binding
   protected loadedClasses = [ ]
   protected pendingClass = null
-  protected AbstractInclude ( GantBinding binding ) { this.binding = binding }
+  protected AbstractInclude ( final GantBinding binding ) { this.binding = binding }
   public abstract leftShift ( Class theClass )
   public abstract leftShift ( File file )
   public abstract leftShift ( String s )
-  public leftShift ( List l ) { l.each { item -> this << item } ; this }
-  public leftShift ( Object o ) {
-    throw new RuntimeException ( 'Ignoring include of type ' + o.class.name )
-    this
-  }
-  public power ( Class theClass ) {
-    pendingClass = theClass
-    this
-  }
+  public leftShift ( final List l ) { l.each { item -> this << item } ; this }
+  public leftShift ( final Object o ) { throw new RuntimeException ( 'Ignoring include of type ' + o.class.name ) }
+  public power ( final Class theClass ) { pendingClass = theClass ; this }
   public abstract multiply ( Map keywordParameters )
   protected createInstance ( Class theClass ) {
     try { return theClass.getConstructor ( GantBinding ).newInstance ( [ binding ] as Object[] ) }

@@ -39,7 +39,7 @@ import org.apache.tools.ant.Task ;
  */
 public class Gant extends Task {
   /**
-   * Gantfile to load, default is build.gant.
+   * The name of the file to use to drive the build, default is build.gant.
    */
   private String file = "build.gant" ;
   /**
@@ -49,13 +49,13 @@ public class Gant extends Task {
   /**
    *  Set the name of the Gantfile.
    *
-   *  @param file The Gantfile.
+   *  @param file The name of the file to be used to drive the build.
    */
   public void setFile ( final String file ) { this.file = file ; }
   /**
-   *  Set the target to be run.
+   *  Set the target to be achieved.
    *
-   *  @param target The target.
+   *  @param target The target to achieve.
    */
   public void setTarget ( final String target ) { this.target = target ; }
   /**
