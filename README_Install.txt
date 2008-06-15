@@ -23,8 +23,8 @@ There are three distinct distributions:
 
             2.  Self-contained, includes all dependent jars.
 
- You might like to set up an environment variable GANT_HOME set to the
-directory created by the untar or unzip, though this i snot essential, it is
+You might like to set up an environment variable GANT_HOME set to the
+directory created by the untar or unzip, though this is not essential, it is
 just an efficiency.
 
 The script $GANT_HOME/bin/gant for systems with a Posix shell, or
@@ -34,7 +34,7 @@ run.
 Using a Bazaar Branch or a Checkout of the Subversion Repository
 ----------------------------------------------------------------
 
-You first need to get a working tree.  If you want to use the Bazaar branch
+You first need to get a source tree.  If you want to use the Bazaar branch
 as your source then:
 
     bzr branch lp:~russel/gant/trunk
