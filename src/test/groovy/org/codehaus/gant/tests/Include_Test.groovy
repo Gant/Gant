@@ -408,11 +408,10 @@ target ( doit : '' ) {
     // ** without * is effectively a no-op due to the way things are processed.
     script = '''
 includeTargets ** gant.targets.Clean
-cleanPattern << '*~'
 target ( test : '' ) { }
 '''
-    assertEquals ( -2 , processTargets ( 'test' ) )
-    assertEquals ( 'Standard input, line 3 -- Error evaluating Gantfile: No such property: cleanPattern for class: standard_input\n' , output )
+    assertEquals ( 0 , processTargets ( 'test' ) )
+    assertEquals ( '' , output )
   }
   void testErrorNoPower ( ) {
     // * instead of ** is an error because of the type of the right hand parameter.
