@@ -412,7 +412,7 @@ cleanPattern << '*~'
 target ( test : '' ) { }
 '''
     assertEquals ( -2 , processTargets ( 'test' ) )
-    assertEquals ( 'Standard input, line 4 -- Error evaluating Gantfile: No such property: cleanPattern for class: standard_input\n' , output )
+    assertEquals ( 'Standard input, line 3 -- Error evaluating Gantfile: No such property: cleanPattern for class: standard_input\n' , output )
   }
   void testErrorNoPower ( ) {
     // * instead of ** is an error because of the type of the right hand parameter.
