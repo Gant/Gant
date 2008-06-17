@@ -14,7 +14,7 @@
 //
 //  Author : Russel Winder <russel.winder@concertant.com>
   
-Ant.property ( file : 'build.properties' )
+ant.property ( file : 'build.properties' )
 
 try { gantVersion }
 catch ( MissingPropertyException mpe ) { gantVersion = Ant.project.properties.gantVersion }
