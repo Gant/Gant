@@ -23,6 +23,10 @@ package org.codehaus.gant
  */
 public class GantBinding extends Binding implements Cloneable {
   /**
+   *  Determine whether we are initializing an instance and so are able to define the read-only items.
+   */
+  private boolean initializing = true
+  /**
    *  Default constructor.
    */
   public GantBinding ( ) { initializeGantBinding ( ) }
@@ -90,10 +94,6 @@ public class GantBinding extends Binding implements Cloneable {
         owner.setVariable ( targetName , closure )
         owner.setVariable ( targetName + '_description' , targetDescription )
       } )
-    setVariable ( 'task' , { Map map , Closure closure ->
-        System.err.println ( 'Deprecation warning: Use of task instead of target is deprecated and will be removed in version 1.3.' )
-        target ( map , closure )
-      } )
     setVariable ( 'targetDescriptions' , new TreeMap ( ) )
     setVariable ( 'message' , { String tag , Object message ->
         def padding = 9 - tag.length ( )
@@ -126,5 +126,17 @@ public class GantBinding extends Binding implements Cloneable {
     def item = System.getenv ( ).GANTLIB ;
     if ( item == null ) { gantLib = [ ] }
     else { gantLib = Arrays.asList ( item.split ( System.properties.'path.separator' ) ) }
+    initializing = false
+  }
+  /**
+   *  The method for setting values in the binding.  Ensures that read-only values cannot be reset after
+   *  initialization.
+   *
+   *  @param name The symbol to define.
+   *  @param value The value to associate with the name.
+   */
+  void setVariable ( final String name , final Object value ) {
+    if ( ! initializing && [ 'target' , 'message' ].contains ( name ) ) { throw new RuntimeException ( 'Cannot redefine symbol ' + name ) }
+    super.setVariable ( name , value )
   }
 }

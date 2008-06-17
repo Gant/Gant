@@ -32,7 +32,6 @@ final class GantBinding_Test extends GantTestCase {
     assertTrue ( object.includeTargets instanceof IncludeTargets )
     assertTrue ( object.includeTool instanceof IncludeTool )
     assertTrue ( object.target instanceof Closure )
-    assertTrue ( object.task instanceof Closure )
     assertTrue ( object.targetDescriptions instanceof TreeMap )
     assertTrue ( object.message instanceof Closure )
     assertTrue ( object.setDefaultTarget instanceof Closure )
@@ -51,5 +50,13 @@ target ( hello : '' ) { println ( 'Hello 2' ) }
     System.err.println ( 'testOverwriting: This test is wrong.' )
     assertEquals ( 0 , processTargets ( 'hello' ) )
     assertEquals ( 'Hello 2\n' , output )
+  }
+  void testForbidRedefinitionOfTarget ( ) {
+    script = '''
+target ( test : '' ) { }
+target = 10
+'''
+    assertEquals ( -2 , processTargets ( 'test' ) )
+    assertEquals ( 'Standard input, line 3 -- Error evaluating Gantfile: Cannot redefine symbol target\n' , output )
   }
 }

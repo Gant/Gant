@@ -118,5 +118,5 @@ public class GantBuilder extends AntBuilder {
     parameters.put ( "name" , "groovyc" ) ;
     parameters.put ( "classname" , "org.codehaus.groovy.ant.Groovyc" ) ;
     invokeMethod ( "taskdef" , new Object[] { parameters } ) ;
-  }    
+  }
 }
