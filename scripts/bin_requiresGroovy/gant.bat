@@ -55,7 +55,6 @@ if not "%ANT_HOME%" == "" goto endSetAntHome
 set PROGNAME=gant.bat
 set GROOVY_SCRIPT_NAME=gant.bat
 set STARTER_CONF="%GANT_HOME%\conf\gant-starter.conf"
-set STARTER_CLASSPATH="%GANT_HOME%\lib\gant-@GANT_VERSION@.jar"
 set JAVA_OPTS=%JAVA_OPTS% -Dgant.home="%GANT_HOME%" -Dant.home="%ANT_HOME%"
 
 %GANT_HOME%\bin\startGroovy.bat %DIRNAME% gant.Gant %*
