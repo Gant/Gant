@@ -145,7 +145,6 @@ final class Maven {
       owner.binding.ant.mkdir ( dir : owner.mainCompilePath )
       //  If a source path has been explicitly specified then compile everything in it.  Otherwise assume Maven 2 rules.
       if ( owner.mainSourcePath ) {
-        owner.binding.ant.taskdef ( name : 'groovyc' , classname : 'org.codehaus.groovy.ant.Groovyc' )
         owner.binding.ant.groovyc ( [ srcdir : owner.mainSourcePath , destdir : owner.mainCompilePath , fork : 'true' ] + owner.groovyCompileProperties ) {
           javac ( owner.javaCompileProperties )
           classpath {
@@ -169,7 +168,6 @@ final class Maven {
              }
              break
              case 'groovy' :
-             owner.binding.ant.taskdef ( name : 'groovyc' , classname : 'org.codehaus.groovy.ant.Groovyc' )
              owner.binding.ant.groovyc ( [ srcdir : owner.default_mainSourcePath + System.properties.'file.separator' + 'groovy' , destdir : owner.mainCompilePath , fork : 'true' ] + owner.groovyCompileProperties ) {
                javac ( owner.javaCompileProperties )
                classpath {
@@ -206,7 +204,6 @@ final class Maven {
       owner.binding.ant.mkdir ( dir : owner.testCompilePath  )
       if ( owner.testSourcePath ) {
         if ( ( new File ( owner.testSourcePath ) ).isDirectory ( ) ) {
-          owner.binding.ant.taskdef ( name : 'groovyc' , classname : 'org.codehaus.groovy.ant.Groovyc' )
           owner.binding.ant.groovyc ( [ srcdir : owner.testSourcePath , destdir : owner.testCompilePath , fork : 'true' ] + owner.groovyCompileProperties ) {
             javac ( owner.javaCompileProperties )
             classpath {
@@ -238,7 +235,6 @@ final class Maven {
                }
                break
                case 'groovy' :
-               owner.binding.ant.taskdef ( name : 'groovyc' , classname : 'org.codehaus.groovy.ant.Groovyc' )
                owner.binding.ant.groovyc ( [ srcdir : owner.default_testSourcePath + System.properties.'file.separator' + 'groovy' , destdir : owner.testCompilePath , fork : 'true' ] + owner.groovyCompileProperties ) {
                  javac ( owner.javaCompileProperties )
                  classpath {
