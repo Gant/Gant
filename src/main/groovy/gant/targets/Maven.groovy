@@ -28,13 +28,13 @@ final class Maven {
                                   artifactId : '' ,
                                   version : '' ,
                                   sourcePath : 'src' ,
-                                  mainSourcePath : '' , // Defaults to standard Maven 2 convention
-                                  testSourcePath : '' , // Defaults to standard Maven 2 convention
+                                  mainSourcePath : '' , // Defaults to standard Maven 2 convention.  Set in constructor since it uses a GString dependent on a value in the map.
+                                  testSourcePath : '' , // Defaults to standard Maven 2 convention.  Set in constructor since it uses a GString dependent on a value in the map.
                                   targetPath : 'target' ,
-                                  mainCompilePath : '' , // Set in constructor since it uses a GString dependent on a value in the map.
-                                  testCompilePath : '' , // Set in constructor since it uses a GString dependent on a value in the map.
-                                  testReportPath : '' , // Set in constructor since it uses a GString dependent on a value in the map.
-                                  metadataPath : '' , // Set in constructor since it uses a GString dependent on a value in the map.
+                                  mainCompilePath : '' , // Defaults to standard Maven 2 convention.  Set in constructor since it uses a GString dependent on a value in the map.
+                                  testCompilePath : '' , // Defaults to standard Maven 2 convention.  Set in constructor since it uses a GString dependent on a value in the map.
+                                  testReportPath : '' , // Defaults to standard Maven 2 convention.  Set in constructor since it uses a GString dependent on a value in the map.
+                                  metadataPath : '' , // Defaults to standard Maven 2 convention.  Set in constructor since it uses a GString dependent on a value in the map.
                                   javaCompileProperties : [ source : '1.3' , target : '1.3' , debug : 'false' ] ,
                                   groovyCompileProperties : [ : ] ,
                                   compileClasspath : [ ] ,
@@ -276,6 +276,7 @@ final class Maven {
        owner.binding.ant.mkdir ( dir : owner.testReportPath )
        owner.binding.ant.junit ( printsummary : 'yes' , failureproperty : 'testsFailed' , fork : 'true' ) {
          classpath {
+           fileset ( dir : System.properties.'groovy.home' + System.properties.'file.separator' + 'lib' , includes : '*.jar' )
            pathelement ( location : owner.mainCompilePath )
            pathelement ( location : owner.testCompilePath )
            pathelement ( path : owner.compileClasspath.join ( System.properties.'path.separator' ) )
