@@ -181,7 +181,7 @@
         <plugin>
           <groupId>org.codehaus.groovy.maven</groupId>
           <artifactId>gmaven-plugin</artifactId>
-          <version>1.0-rc-1</version>
+          <version>1.0-rc-2</version>
         </plugin>
       </plugins>
     </pluginManagement>
@@ -280,8 +280,9 @@
       </plugin>
     </plugins>
 
-    <!-- It seems that Maven (at least up to 2.0.9) doesn't download this artefact which is needed for
-    deployment as a matter of course.  So unless we specify it here then the WebDAV stuff doesn't work. -->
+    <!-- It seems that Maven (at least up to 2.0.9) doesn't download this artefact, which is needed for
+         deployment, as a matter of course.  So unless we specify it here then the WebDAV stuff doesn't
+         work. -->
 
     <extensions>
       <extension>
