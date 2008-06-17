@@ -54,8 +54,7 @@ target ( test : '' ) { ant.echo ( message : "World" ) }
 echo ( message : "Hello" )
 target ( test : '' ) { echo ( message : "World" ) }
 '''
-    //assertEquals ( 0 , processTargets ( 'test' ) )
-    System.err.println ( processTargets ( 'test' ) )
+    assertEquals ( 0 , processTargets ( 'test' ) )
     assertEquals ( '''     [echo] Hello
      [echo] World
 ''' , output ) 
@@ -121,8 +120,7 @@ target ( test : '' ) { ( 0..3 ).each closure }
 closure = { echo ( message : "Hello World!" ) }
 target ( test : '' ) { ( 0..3 ).each closure }
 '''
-    //assertEquals ( 0 , processTargets ( 'test' ) )
-    System.err.println ( processTargets ( 'test' ) )
+    assertEquals ( 0 , processTargets ( 'test' ) )
     assertEquals ( '''     [echo] Hello World!
      [echo] Hello World!
      [echo] Hello World!
