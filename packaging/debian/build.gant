@@ -14,6 +14,11 @@
 //
 //  Author : Russel Winder <russel.winder@concertant.com>
 
+//  Sometimes we know the debDistribution target has been completed and so there is no need to do it again.
+
+try { ignoreBuildDeb = Boolean.valueOf ( ignoreBuildDeb ) }
+catch ( Exception e ) { ignoreBuildDeb = false }
+
 final rootDirectory = '..' + System.properties.'file.separator' + '..'
 final buildDirectory = rootDirectory + System.properties.'file.separator' + 'target'
 
@@ -65,7 +70,7 @@ Homepage: ${homepage}
 """
   
 target ( debFiles : 'Create the deb file of the distribution.' ) {
-  execute.shell ( "cd ${rootDirectory} && gant debDistribution" )
+  if ( ! ignoreBuildDeb ) { execute.shell ( "cd ${rootDirectory} && gant debDistribution" ) }
   mkdir ( dir : scriptsRequiresGroovyDirectory )
   copy ( tofile : scriptsRequiresGroovyDirectory + '/gant' , file : 'gant.sh' ) {
     filterset { filter ( token : 'GANT_VERSION' , value : gantVersion ) }

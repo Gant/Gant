@@ -19,16 +19,14 @@
 #  Gant initiation script for Debian and Ubuntu.  This version does not require a Groovy or Ant installation
 #  since it has all the necessary jars in the $GANT_HOME/lib directory.
 
-export GANT_HOME=/usr/share/gant
-export GROOVY_HOME="$GANT_HOME"
-export ANT_HOME="$GANT_HOME"
+GANT_HOME=/usr/share/gant
+GROOVY_HOME="$GANT_HOME"
+ANT_HOME="$GANT_HOME"
 
 GROOVY_APP_NAME=Gant
 GROOVY_CONF="$GANT_HOME/conf/gant-starter.conf"
 
 . "$GROOVY_HOME/bin/startGroovy"
-
-STARTER_CLASSPATH="$GANT_HOME/lib/@GROOVYJAR@:$GANT_HOME/lib/gant-@GANT_VERSION@.jar"
 
 JAVA_OPTS="$JAVA_OPTS -Dgant.home=$GANT_HOME -Dant.home=$ANT_HOME"
 
