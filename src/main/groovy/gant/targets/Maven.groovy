@@ -260,7 +260,6 @@ final class Maven {
        owner.binding.ant.taskdef ( resource : 'testngtasks' ) { classpath { path ( refid : owner.testDependenciesClasspathId ) } }
        owner.binding.ant.testng ( outputdir : owner.testReportPath ) {
          classpath {
-           fileset ( dir : System.properties.'groovy.home' + System.properties.'file.separator' + 'lib' , includes : '*.jar' )
            pathelement ( location : owner.mainCompilePath )
            pathelement ( location : owner.testCompilePath )
            pathelement ( path : owner.compileClasspath.join ( System.properties.'path.separator' ) )
@@ -276,7 +275,6 @@ final class Maven {
        owner.binding.ant.mkdir ( dir : owner.testReportPath )
        owner.binding.ant.junit ( printsummary : 'yes' , failureproperty : 'testsFailed' , fork : 'true' ) {
          classpath {
-           fileset ( dir : System.properties.'groovy.home' + System.properties.'file.separator' + 'lib' , includes : '*.jar' )
            pathelement ( location : owner.mainCompilePath )
            pathelement ( location : owner.testCompilePath )
            pathelement ( path : owner.compileClasspath.join ( System.properties.'path.separator' ) )
