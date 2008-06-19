@@ -24,14 +24,17 @@ ant.property ( file : 'build.properties' )
 gantVersion = ant.project.properties.gantVersion
 groovyVersion = ant.project.properties.groovyVersion
 
-try { usingCobertura }
+try { usingCobertura = Boolean.valueOf ( usingCobertura ) }
 catch ( MissingPropertyException mpe ) { usingCobertura = false }
 
-try { ignoreTestFailures }
+try { ignoreTestFailures = Boolean.valueOf ( ignoreTestFailures ) }
 catch ( MissingPropertyException mpe ) { ignoreTestFailures = false }
 
 try { testCase }
 catch ( MissingPropertyException mpe ) { testCase = null }
+
+try {  forkCompiles = Boolean.valueOf ( forkCompiles ) }
+catch ( MissingPropertyException mpe ) { forkCompiles = false }
 
 groovyHome = System.properties.'groovy.home'
 if ( ( groovyHome == null ) || ( groovyHome == '' ) ) {
@@ -301,12 +304,12 @@ target ( reallyClean : 'Ensure all clean operations for the entire tree get acti
 }
 
 target ( compile : 'Compile everything needed for a Gant installation.' ) {
-  performCompile ( compileJarSet , false )
+  performCompile ( compileJarSet , forkCompiles )
 }
 
 target ( compileTests : 'Compile all the tests for a newly built Gant.' ) {
   depends ( compile )
-  performCompileTests ( testJarSet , false )
+  performCompileTests ( testJarSet , forkCompiles )
 }
 
 target ( test : 'Test a build.' ) {
