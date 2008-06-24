@@ -43,8 +43,8 @@ final class Targets_Test extends GantTestCase {
   }
   void testOverwriting ( ) {
     //
-    //  Until changed, creating a new symbol in the binding using a target overwrites the old symbol.  This
-    //  is clearly wrong behaviour and needs amending.
+    //  TODO: Fix the problem of overwriting targets.  Until changed, creating a new symbol in the binding
+    //  using a target overwrites the old symbol.  This is clearly wrong behaviour and needs amending.
     //
     script = '''
 target ( hello : '' ) { println ( 'Hello 1' ) }
