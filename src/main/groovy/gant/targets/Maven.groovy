@@ -58,29 +58,27 @@ final class Maven {
                                   ( readOnlyKeys[4] ) : 'maven.pom'
                                   ]
    /**
-   *  Constructor for the "includeTargets <<" usage.
-   *
-   *  @param binding The <code>GantBinding</code> to bind to.
-   */
-  Maven ( GantBinding binding ) {
-     properties.binding = binding
-     constructMavenObject ( )
-   }
-  /**
    *  Constructor for the "includeTargets **" usage.
    *
    *  @param binding The <code>GantBinding</code> to bind to.
    *  @param map The <code>Map</code> of initialization parameters.
    */
    Maven ( GantBinding binding , Map map ) {
-     properties.binding = binding
+     this ( binding )
      map.each { key , value -> owner.setProperty ( key , value ) }
-     constructMavenObject ( )
    }
-  private void constructMavenObject ( ) {
+  /**
+   *  Constructor for the "includeTargets <<" usage.
+   *
+   *  @param binding The <code>GantBinding</code> to bind to.
+   */
+  Maven ( GantBinding binding ) {
+    properties.binding = binding
     properties.binding.maven = this
     properties.default_mainSourcePath = "${properties.sourcePath}${System.properties.'file.separator'}main"
+    properties.mainSourcePath = properties.default_mainSourcePath
     properties.default_testSourcePath = "${properties.sourcePath}${System.properties.'file.separator'}test"
+    properties.testSourcePath = properties.default_testSourcePath
     properties.mainCompilePath = "${properties.targetPath}${System.properties.'file.separator'}classes"
     properties.testCompilePath = "${properties.targetPath}${System.properties.'file.separator'}test-classes"
     properties.testReportPath = "${properties.targetPath}${System.properties.'file.separator'}test-reports"
@@ -140,11 +138,13 @@ final class Maven {
       throw new RuntimeException ( 'Process-resources not implemented as yet.' )
     }
     */
-    properties.binding.target.call ( compile : "Compile the source code in ${properties.mainSourcePath ? properties.mainSourcePath : properties.default_mainSourcePath } to ${properties.mainCompilePath}." ) {
+    properties.binding.target.call ( compile : "Compile the source code in ${properties.mainSourcePath} to ${properties.mainCompilePath}." ) {
       depends ( owner.binding.initialize )
       owner.binding.ant.mkdir ( dir : owner.mainCompilePath )
-      //  If a source path has been explicitly specified then compile everything in it.  Otherwise assume Maven 2 rules.
-      if ( owner.mainSourcePath ) {
+      //  If a source path has been explicitly specified then compile everything in it using the joint
+      //  compiler so there is no problem with it containing Groovy as well as Java code.  Otherwise assume
+      //  Maven 2 hierarchy rules.
+      if ( owner.mainSourcePath != owner.default_mainSourcePath ) {
         owner.binding.ant.groovyc ( [ srcdir : owner.mainSourcePath , destdir : owner.mainCompilePath , fork : 'true' ] + owner.groovyCompileProperties ) {
           javac ( owner.javaCompileProperties )
           classpath {
@@ -155,12 +155,12 @@ final class Maven {
       }
       else {
         try {
-          new File ( owner.default_mainSourcePath ).eachDir { directory ->
+          new File ( owner.mainSourcePath ).eachDir { directory ->
             switch ( directory.name ) {
              case 'java' :
              //  Need to use the joint Groovy compiler here to deal wuth the case where Groovy files are in the
              //  Java hierarchy.
-             owner.binding.ant.javac ( [ srcdir : owner.default_mainSourcePath + System.properties.'file.separator' + 'java' , destdir : owner.mainCompilePath , fork : 'true' ] + owner.javaCompileProperties ) {
+             owner.binding.ant.javac ( [ srcdir : owner.mainSourcePath + System.properties.'file.separator' + 'java' , destdir : owner.mainCompilePath , fork : 'true' ] + owner.javaCompileProperties ) {
                classpath {
                  pathelement ( path : owner.compileClasspath.join ( System.properties.'path.separator' ) )
                  if ( owner.compileDependencies ) { path ( refid : owner.compileDependenciesClasspathId ) }
@@ -168,7 +168,7 @@ final class Maven {
              }
              break
              case 'groovy' :
-             owner.binding.ant.groovyc ( [ srcdir : owner.default_mainSourcePath + System.properties.'file.separator' + 'groovy' , destdir : owner.mainCompilePath , fork : 'true' ] + owner.groovyCompileProperties ) {
+             owner.binding.ant.groovyc ( [ srcdir : owner.mainSourcePath + System.properties.'file.separator' + 'groovy' , destdir : owner.mainCompilePath , fork : 'true' ] + owner.groovyCompileProperties ) {
                javac ( owner.javaCompileProperties )
                classpath {
                  pathelement ( path : owner.compileClasspath.join ( System.properties.'path.separator' ) )
@@ -179,7 +179,7 @@ final class Maven {
             }
           }        
         }
-        catch ( FileNotFoundException fnfe ) { throw new RuntimeException ( 'Error: ' + owner.default_mainSourcePath + ' does not exist.' ) }
+        catch ( FileNotFoundException fnfe ) { throw new RuntimeException ( 'Error: ' + owner.mainSourcePath + ' does not exist.' ) }
       }
     }
     /*
@@ -202,7 +202,7 @@ final class Maven {
     properties.binding.target.call ( 'test-compile' : "Compile the test source code in ${properties.testSourcePath} to ${properties.testCompilePath}." ) {
       depends ( owner.binding.compile )
       owner.binding.ant.mkdir ( dir : owner.testCompilePath  )
-      if ( owner.testSourcePath ) {
+      if ( owner.testSourcePath != owner.default_testSourcePath ) {
         if ( ( new File ( owner.testSourcePath ) ).isDirectory ( ) ) {
           owner.binding.ant.groovyc ( [ srcdir : owner.testSourcePath , destdir : owner.testCompilePath , fork : 'true' ] + owner.groovyCompileProperties ) {
             javac ( owner.javaCompileProperties )
@@ -217,14 +217,14 @@ final class Maven {
         }
       }
       else {
-        if ( ( new File ( owner.default_testSourcePath ) ).isDirectory ( ) ) {
+        if ( ( new File ( owner.testSourcePath ) ).isDirectory ( ) ) {
           try {
             new File ( owner.default_testSourcePath ).eachDir { directory ->
               switch ( directory.name ) {
                case 'java' :
                //  Need to use the joint Groovy compiler here to deal with the case where Groovy files are in the
                //  Java hierarchy.
-               owner.binding.ant.javac ( [ srcdir : owner.default_testSourcePath + System.properties.'file.separator' + 'java' , destdir : owner.testCompilePath , fork : 'true' ] + owner.javaCompileProperties ) {
+               owner.binding.ant.javac ( [ srcdir : owner.testSourcePath + System.properties.'file.separator' + 'java' , destdir : owner.testCompilePath , fork : 'true' ] + owner.javaCompileProperties ) {
                  classpath {
                    pathelement ( location : owner.mainCompilePath )
                    pathelement ( path : owner.compileClasspath.join ( System.properties.'path.separator' ) )
@@ -235,7 +235,7 @@ final class Maven {
                }
                break
                case 'groovy' :
-               owner.binding.ant.groovyc ( [ srcdir : owner.default_testSourcePath + System.properties.'file.separator' + 'groovy' , destdir : owner.testCompilePath , fork : 'true' ] + owner.groovyCompileProperties ) {
+               owner.binding.ant.groovyc ( [ srcdir : owner.testSourcePath + System.properties.'file.separator' + 'groovy' , destdir : owner.testCompilePath , fork : 'true' ] + owner.groovyCompileProperties ) {
                  javac ( owner.javaCompileProperties )
                  classpath {
                    pathelement ( location : owner.mainCompilePath )
@@ -249,7 +249,7 @@ final class Maven {
               }
             }
           }
-          catch ( FileNotFoundException fnfe ) { throw new RuntimeException ( 'Error: ' + owner.default_testSourcePath + ' does not exist.' ) }
+          catch ( FileNotFoundException fnfe ) { throw new RuntimeException ( 'Error: ' + owner.testSourcePath + ' does not exist.' ) }
         }
       }
     }

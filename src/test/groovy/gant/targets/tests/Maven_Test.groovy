@@ -33,6 +33,7 @@ includeTargets << gant.targets.Maven
     script = """
 includeTargets << gant.targets.Maven
 """
+    //  This is a noop since there is nothing to compile in the default path.
     assertEquals ( 0 , processTargets ( 'compile' ) )
     assertEquals ( '' , output ) 
   }
