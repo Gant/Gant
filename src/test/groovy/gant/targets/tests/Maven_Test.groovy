@@ -104,4 +104,12 @@ includeTargets ** gant.targets.Maven * [ binding : new Binding ( ) ]
     assertEquals ( '''Standard input, line 2 -- Error evaluating Gantfile: Cannot amend the property binding.
 ''' , output ) 
   }
+  void testAdditionalTarget ( ) {
+    script = '''
+includeTargets << gant.targets.Maven
+target ( sayHello : '' ) { println ( 'Hello.' ) }
+'''
+    assertEquals ( 0 , processTargets ( 'sayHello' ) )
+    assertEquals ( 'Hello.\n' , output )
+  }
 }
