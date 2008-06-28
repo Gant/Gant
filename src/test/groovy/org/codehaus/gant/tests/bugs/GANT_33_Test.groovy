@@ -66,7 +66,7 @@ Thread.sleep ( 500 ) //  Give time for the reference queue monitor to report in.
   private File buildScriptFile
   void setUp ( ) {
     super.setUp ( ) 
-    buildScriptFile = File.createTempFile ( 'gant_' , '_GarbageCollect_Test' )
+    buildScriptFile = File.createTempFile ( 'gant_' , '_GANT_33_Test' )
     buildScriptFile.write ( buildScript )
   }
   void tearDown ( ) {
@@ -92,7 +92,7 @@ Thread.sleep ( 500 ) //  Give time for the reference queue monitor to report in.
     assertEquals ( binding.output[0] , binding.output[2] )
   }
   void testNoCollection ( ) {
-    //  Creates two Gant instances neither of which are garbage collected.
+    //  Creates two Gant instances neither of which are garbage collected.  This is showing the presence of the "memory leak".
     def binding = new Binding ( output : '' )
     def groovyShell = new GroovyShell ( binding )
     System.err.println ( 'testNoCollection:  This test succeeds incorrectly, it is showing the presence of the bug.' )
