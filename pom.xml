@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <!--
-
   Gant - A Groovy build framework based on scripting Ant tasks.
 
   Copyright © 2007-8 Russel Winder.
@@ -17,7 +16,6 @@
   License.
 
   Author : Russel Winder <russel.winder@concertant.com>
-
 -->
 
 <project
@@ -25,7 +23,6 @@
   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
   xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd"
 >
-
   <modelVersion>4.0.0</modelVersion>
 
   <groupId>org.codehaus.gant</groupId>
@@ -280,9 +277,10 @@
       </plugin>
     </plugins>
 
-    <!-- It seems that Maven (at least up to 2.0.9) doesn't download this artefact, which is needed for
-         deployment, as a matter of course.  So unless we specify it here then the WebDAV stuff doesn't
-         work. -->
+    <!--
+        It seems that Maven (at least up to 2.0.9) doesn't download this artefact, which is needed for
+        deployment, as a matter of course.  So unless we specify it here then the WebDAV stuff doesn't work.
+    -->
 
     <extensions>
       <extension>

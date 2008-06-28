@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <!--
-
   Gant - A Groovy build framework based on scripting Ant tasks.
 
   Copyright © 2006-8 Russel Winder
@@ -24,13 +23,12 @@
   This Ant script also provides targets for continuous integration servers.  This build assumes nothing except
   that that comes with Gant.  In particular, all the Groovy and JUnit jars are brought in from the Maven
   repository using the Maven Ant task, the jar for which is part of the Gant distribution.
-
 -->
 
 <project name="Gant" default="compile" basedir="." xmlns:artifact="urn:maven-artifact-ant">
 
-  <property file="build.properties"/>
   <property file="local.build.properties"/>
+  <property file="build.properties"/>
 
   <property environment="environment"/>
 
@@ -46,7 +44,16 @@
 
   <property name="buildMetadataDirectory" value="${buildClassesDirectory}/META-INF"/>
 
-  <!-- Why are ASM, Antlr, and Ant jars needed for this when they are not for the following ? -->
+  <!--
+      The bootstrap build assumed that GROOVY_HOME is set and points to a Groovy installation.  In order to
+      compile the Groovy, Ant, ASM, Antlr and Commons CLI jars are needed.  ASM and Antlr are only needed
+      for Groovy, Ant and Commons CLI are actually needed directly.  JUnit is needed only for compiling and
+      running the tests.
+ 
+      All compilations use the path id compileJarSet and the tests the path id testJarSet.  This
+      parameterization of the targets is important for supporting both bootstrapp installation and
+      continuous integration support.
+  -->
 
   <target name="-initializeGroovyHome">
     <property name="groovyHome" value="${environment.GROOVY_HOME}"/>
@@ -63,28 +70,6 @@
     <taskdef name="groovyc" classname="org.codehaus.groovy.ant.Groovyc" classpathref="compileJarSet"/>
   </target>
 
-  <target name="-initializeMavenAntTask">
-     <path id="mavenAntTaskPathId">
-      <fileset dir="${jarsDirectory}" includes="maven-ant-tasks-*.jar"/>
-    </path>
-    <typedef resource="org/apache/maven/artifact/ant/antlib.xml" uri="urn:maven-artifact-ant" classpathref="mavenAntTaskPathId"/>
-  </target>
-
-  <target name="-initializeMavenDownload" depends="-initializeMavenAntTask">
-    <path id="compileJarSet"/>
-     <artifact:dependencies pathId="compileJarSet">
-      <dependency groupId="org.codehaus.groovy" artifactId="groovy" version="${groovyVersion}"/>
-      <dependency groupId="commons-cli" artifactId="commons-cli" version="${commonsCliVersion}"/>
-    </artifact:dependencies>
-    <path id="testJarSet">
-      <path refid="compileJarSet"/>
-    </path>
-   <artifact:dependencies pathId="testjarSet">
-      <dependency groupId="junit" artifactId="junit" version="${junitVersion}"/>
-    </artifact:dependencies>
-    <taskdef name="groovyc" classname="org.codehaus.groovy.ant.Groovyc" classpathref="compileJarSet"/>
-  </target>
-
   <target name="-compile">
     <mkdir dir="${buildClassesDirectory}"/>
     <groovyc srcdir="${sourceDirectory}" destdir="${buildClassesDirectory}">
@@ -96,7 +81,7 @@
     </groovyc>
   </target>
 
-  <target name="compile" depends="-initializeGroovyHome,-compile" description="Compile everything needed for a Gant installation."/>
+  <target name="compile" depends="-initializeGroovyHome,-compile" description="Compile everything needed for a bootstrap build of Gant."/>
 
   <target name="-compileTests" depends="-compile">
     <mkdir dir="${buildTestClassesDirectory}"/>
@@ -109,13 +94,13 @@
     </groovyc>
   </target>
 
-  <target name="compileTests" depends="-initializeGroovyHome,-compileTests" description="Compile all the tests for a newly built Gant."/>
+  <target name="compileTests" depends="-initializeGroovyHome,-compileTests" description="Compile all the tests for a bootstrap build of Gant."/>
 
   <target name="-test" depends="-compileTests">
     <mkdir dir="${buildTestReportsDirectory}"/>
     <junit printsummary="yes" fork="true">
       <formatter type="plain"/>
-      <formatter type="xml"/>
+      <formatter type="xml"/> <!-- Must have XML output for the continuous integration builds. -->
       <batchtest todir="${buildTestReportsDirectory}">
         <fileset dir="${buildTestClassesDirectory}" includes="**/ant/tests/*_Test.class"/>
       </batchtest>
@@ -126,7 +111,7 @@
     </junit>
     <junit printsummary="yes" fork="true">
       <formatter type="plain"/>
-      <formatter type="xml"/>
+      <formatter type="xml"/> <!-- Must have XML output for the continuous integration builds. -->
       <batchtest todir="${buildTestReportsDirectory}">
         <fileset dir="${buildTestClassesDirectory}" includes="**/*_Test.class" excludes="**/ant/tests/*"/>
       </batchtest>
@@ -138,9 +123,9 @@
     </junit>
   </target>
 
-  <target name="test" depends="-initializeGroovyHome,-test" description="Test a build."/>
+  <target name="test" depends="-initializeGroovyHome,-test" description="Test a boostrap build of Gant."/>
  
- <target name="-makeManifest">
+  <target name="-package" depends="-test">
     <mkdir dir="${buildMetadataDirectory}"/>
     <copy todir="${buildMetadataDirectory}" file="LICENCE.txt"/>
     <manifest file="${buildMetadataDirectory}/MANIFEST.MF">
@@ -153,10 +138,21 @@
       <attribute name="Implementation-Version" value="${gantVersion}"/> 
       <attribute name="Implementation-Vendor" value="The Codehaus"/>
     </manifest>
+    <jar destfile="${buildDirectory}/gant-${gantVersion}.jar" basedir="${buildClassesDirectory}" manifest="${buildMetadataDirectory}/MANIFEST.MF"/>
   </target>
 
-  <target name="package" depends="compile,-makeManifest" description="Create the jar file.">
-    <jar destfile="${buildDirectory}/gant-${gantVersion}.jar" basedir="${buildClassesDirectory}" manifest="${buildMetadataDirectory}/MANIFEST.MF"/>
+  <target name="package" depends="-initializeGroovyHome,-test" description="Create the jar file for a bootstrap build of Gant."/>
+
+  <!--
+      For bootstrap installation we need to get the Ivy jar from the Maven repository, so we need to set up
+      the Maven Ant Task.  This is also needed for the continuous integration builds hence it is a separate
+      target.
+  -->
+  <target name="-initializeMavenAntTask">
+     <path id="mavenAntTaskPathId">
+      <fileset dir="${jarsDirectory}" includes="maven-ant-tasks-*.jar"/>
+    </path>
+    <typedef resource="org/apache/maven/artifact/ant/antlib.xml" uri="urn:maven-artifact-ant" classpathref="mavenAntTaskPathId"/>
   </target>
 
   <condition property="installDirectoryIsSet">
@@ -194,26 +190,22 @@
       <mapper type="flatten"/>
     </copy>
   </target>
+
   <target name="-notInstallable" unless="installDirectoryIsSet">
     <echo message="Property installDirectory is not set, so cannot install.  Set installDirectory in file local.build.properties."/>
   </target>
-  <target name="install" depends="-install,-notInstallable" description="Package and then install to installation destination."/>
+
+  <target name="install" depends="-install,-notInstallable" description="Package and then install a boostrap build of Gant.  Install destination must be set in the file local.build.properties."/>
 
   <target name="-uninstall" if="installDirectoryIsSet">
     <delete dir="${installDirectory}"/>
   </target>
+
   <target name="-notUninstallable" unless="installDirectoryIsSet">
     <echo message="Property installDirectory is not set, so cannot uninstall.  Set installDirectory in file local.build.properties."/>
   </target>
+
  <target name="uninstall" depends="-uninstall,-notUninstallable" description="Uninstall Gant from installation destination."/>
-
-  <target name="-ciBuild" depends="clean,-initializeMavenDownload,-test"/>
- 
-  <!-- Target for Canoo CruiseControl build. -->
-  <target name="cruiseControlBuild" depends="-ciBuild"/>
-
-  <!-- Target for Codehaus Bamboo build. -->
-  <target name="bambooBuild" depends="-ciBuild"/>
 
   <target name="clean" description="Clean everything up.">
     <delete dir="${buildDirectory}"/>
@@ -225,5 +217,37 @@
       </fileset>
     </delete>
   </target>
+
+  <!-- 
+       The remainder of this is for the continuous integration builds for Canoo CruiseControl and Codehaus
+       Bamboo.  If these systems worked with Gant directly we wouldn't need any of this.  Avoid any hassles
+       with dependencies by using the Maven Ant task to pull down all the needed jars.  Could just read the
+       POM and use those dependencies, but it seems better to explicitly specify them.  Note that we don't
+       need to specify transitive dependencies here, the Maven Ant Task takes care of that.
+       
+       It is important that all the targets above are parameterized with compileJarSet as the compile path
+       id and testJarSet as the test path id.
+  -->
+
+  <target name="-initializeMavenDownload" depends="-initializeMavenAntTask">
+    <path id="compileJarSet"/>
+     <artifact:dependencies pathId="compileJarSet">
+      <dependency groupId="org.codehaus.groovy" artifactId="groovy" version="${groovyVersion}"/>
+      <dependency groupId="commons-cli" artifactId="commons-cli" version="${commonsCliVersion}"/>
+    </artifact:dependencies>
+    <path id="testJarSet">
+      <path refid="compileJarSet"/>
+    </path>
+   <artifact:dependencies pathId="testjarSet">
+      <dependency groupId="junit" artifactId="junit" version="${junitVersion}"/>
+    </artifact:dependencies>
+    <taskdef name="groovyc" classname="org.codehaus.groovy.ant.Groovyc" classpathref="compileJarSet"/>
+  </target>
+
+  <target name="-ciBuild" depends="clean,-initializeMavenDownload,-package"/>
+ 
+  <target name="cruiseControlBuild" depends="-ciBuild" description="Target for the Canoo CruiseControl build."/>
+
+  <target name="bambooBuild" depends="-ciBuild" description="Target for the Codehaus Bamboo build."/>
 
 </project>
