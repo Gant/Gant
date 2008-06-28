@@ -14,6 +14,8 @@
 
 package org.codehaus.gant.tests.bugs
 
+import org.codehaus.gant.tests.GantTestCase
+
 /**
  *  A test to ensure that Gant objects are garbage collected appropriately.
  *
