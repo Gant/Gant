@@ -98,7 +98,7 @@
 
   <target name="-test" depends="-compileTests">
     <mkdir dir="${buildTestReportsDirectory}"/>
-    <junit printsummary="yes" fork="true">
+    <junit printsummary="yes" fork="true" failureproperty="testsFailed">
       <formatter type="plain"/>
       <formatter type="xml"/> <!-- Must have XML output for the continuous integration builds. -->
       <batchtest todir="${buildTestReportsDirectory}">
@@ -109,7 +109,7 @@
         <path refid="testJarSet"/>
       </classpath>
     </junit>
-    <junit printsummary="yes" fork="true">
+    <junit printsummary="yes" fork="true" failureproperty="testsFailed">
       <formatter type="plain"/>
       <formatter type="xml"/> <!-- Must have XML output for the continuous integration builds. -->
       <batchtest todir="${buildTestReportsDirectory}">
