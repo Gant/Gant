@@ -42,7 +42,7 @@ if ( ( groovyHome == null ) || ( groovyHome == '' ) ) {
   return
 }
 
-//  The Gant source is structured according to the standard Maven 2 structure.
+//  The Gant source is structured according to the standard Maven 2 hierarchy.
 
 final sourceDirectory = 'src/main/groovy'
 final testsDirectory = 'src/test/groovy'  
@@ -65,12 +65,12 @@ final apiDocumentationDirectory = documentationDirectory + '/api'
 final buildMetadataDirectory = buildClassesDirectory + '/META-INF'
 
 //  Labels for supporting use of the Maven Ant task.  NB Installing Gant installs the Maven and Ivy Ant
-//  tasks jars into the Groovy library.  Should the antlib: or urn: string be used here? 
+//  tasks jars into the Groovy library.
 
 final antlibXMLns = 'antlib:org.apache.maven.artifact.ant'
 final mavenPOMId = 'maven.pom'
 
-//  Details of what is going to appear in the distribution.
+//  List of files from the top-level directory to put into the distribution files.
 
 final distributionTopLevelFiles = [
                              'build.gant' , 'buildMaven.gant' , 'build.properties' , 'build.xml' ,
@@ -79,30 +79,24 @@ final distributionTopLevelFiles = [
                              'README_Distribution.txt' , 'README_Install.txt' ,
                              'releaseNotes.txt'
                              ]
+
+ //  List of directories to put in wholesale into the distribution files.
+
 final distributionDirectories = [ 'documentation' , 'examples' , '.settings' , scriptsDirectory , jarfilesDirectory , sourceDirectory , testsDirectory ]
 
 //  The versions of Gant in the Maven repository to build distribution version of Gant against.
-
-//  Deb production assumes that the standalone build is the last one undertaken.  Pragmatically this is the
-//  case since iterating over the items in the map happens in lexical order of the keys.  However, this is
-//  an assumption, so this really needs changing.
-
+//
+ //  Introducing the Gant Ant Task written in Java means we have to use the joint compiler to compile Gant
+ //  and this means we cannot build Gant against Groovy 1.0 since the joint compiler only arrived with
+ //  1.5.0.  Opinion on the user list indicated that it seemed reasonable to drop support for Groovy 1.0.
+ //
+ //  The target distribution assumes that the groovyc fork mode works, which means we cannot build against
+ //  any version prior to 1.5.2.  Using a forked Java task is not an option because there is no --classpath
+ //  option in the 1.5.0 and 1.5.1 versions of Groovyc and this is essential to get things to work
+ //  correctly.  Gant can still be built and distributed against Groovy 1.5.0 and 1.5.1 but it has to be
+ //  done the hard (manual) way.
+ 
 final distributionVersions = [
-                              //  Introducing the Gant Ant Task written in Java means we have to use the
-                              //  joint compiler to compile Gant and this means we cannot build Gant against
-                              //  Groovy 1.0 since the joint compiler only arrived with 1.5.0.  Opinion on
-                              //  the user list indicated that it seemed reasonable to drop support for
-                              //  Groovy 1.0.
-                              //
-                              //  The target distribution assumes that the groovyc fork mode works, which
-                              //  means we cannot build against any version prior to 1.5.2.  Using a forked
-                              //  Java task is not an option because there is no --classpath option in the
-                              //  1.5.0 and 1.5.1 versions of Groovyc and this is essential to get things to
-                              //  work correctly.
-                              //
-                              //  Gant can still be built and distributed against Groovy 1.5.0 and 1.5.1 but
-                              //  it has to be done the hard (manual) way.
-                              //
                               ( 'groovy-' + groovyVersion ) : [ groupId : 'org.codehaus.groovy' , artifactId : 'groovy' , version : groovyVersion ] ,
                               'groovy-1.6-beta-1-SNAPSHOT' : [ groupId : 'org.codehaus.groovy' , artifactId : 'groovy' , version : '1.6-beta-1-SNAPSHOT' ] ,
                               standalone : [ groupId : 'org.codehaus.groovy' , artifactId : 'groovy-all' , version : groovyVersion ]
@@ -112,7 +106,7 @@ final distributionVersions = [
 
 final distributionURL = 'https://dav.codehaus.org/dist/gant/'
 
- //  The server hierarchy is fixed and known.
+ //  The hierarchy on the Codehaus server for the distributions is fixed and known.
 
 final serverDistributionsDirectory = 'distributions'
 final serverJarsDirectory = 'jars'
@@ -123,9 +117,9 @@ final serverPomsDirectory = 'poms'
 final serverUploadProducts = [ : ]
 
 //  The various compilation and test actions are parameterized so they can be used with different classpaths.
-
+//
 //  Currently these Closures do not have the GantMetaClass as their metaclass so there is no delegated
-//  lookup on Ant so we have to use it explicitly.
+//  lookup on the ant object, it has to be done explicitly.
 
 final performCompile = { classpathRef , boolean fork ->
   ant.mkdir ( dir : buildClassesDirectory )
@@ -274,8 +268,12 @@ final prepareZipFromTarAndRegisterForUpload = { String root , Closure closure ->
   serverUploadProducts [ path + zipExtension ] = serverDistributionsDirectory + '/' +  root + zipExtension
 }
   
-//  Create the compilation context of the Groovy with which Gant will be associated.  This is not used for
-//  the distributions.
+//  Create the classpaths for the boostrap builds.  These are only used for the bootstrap builds they are
+//  ignored by the distribution builds.
+
+//  The ASM and Antlr jars are just transitive dependencies of the Groovy jat, the Ant and Commons CLI jars
+//  are needed directly by the Gant code.
+
 compileJarSet = 'compileJarSet'
 ant.path ( id : compileJarSet ) {
   fileset ( dir : groovyHome + '/lib' , includes : 'groovy*.jar' )
@@ -290,7 +288,8 @@ ant.path ( id : testJarSet ) {
   fileset ( dir : groovyHome + '/lib' , includes : 'junit*.jar' )
 }
 
-//  Set up all the targets.
+//  --------------------------------------------------------------------------------------------------------
+//  --------------------------------------------------------------------------------------------------------
 
 includeTargets << gant.targets.Clean
 cleanPattern <<  [ '**/*~' , 'cobertura.ser' , 'texput.log' ] 
@@ -303,34 +302,34 @@ target ( reallyClean : 'Ensure all clean operations for the entire tree get acti
   execute.shell ( "cd packaging/debian && gant clobber" ) 
 }
 
-target ( compile : 'Compile everything needed for a Gant installation.' ) {
+target ( compile : 'Compile everything needed for a Groovy installation dependent build of Gant.' ) {
   performCompile ( compileJarSet , forkCompiles )
 }
 
-target ( compileTests : 'Compile all the tests for a newly built Gant.' ) {
+target ( compileTests : 'Compile all the tests for a Groovy installation dependent build of Gant.' ) {
   depends ( compile )
   performCompileTests ( testJarSet , forkCompiles )
 }
 
-target ( test : 'Test a build.' ) {
+target ( test : 'Test a boostrap build of Gant.' ) {
   depends ( compileTests )
   def returnCode = performTests ( compileJarSet )
   println ( 'Tests ' + ( returnCode ? 'suceeded' : 'failed' ) + '.' )
   returnCode ? 0 : 1
 }
 
-target ( coberturaTest : 'Test a build using Cobertura to get a coverage report.' ) {
+target ( coberturaTest : 'Test a Groovy installation dependent build of Gant using Cobertura to get a coverage report.' ) {
   usingCobertura = true
   depends ( test )
 }
 
-target ( 'package' : 'Create the jar file.' ) {
+target ( 'package' : 'Create the jar file for a Groovy installation dependent build of Gant.' ) {
   depends ( compile )
   makeManifest ( )
   jar ( destfile : buildDirectory + "/gant-${gantVersion}.jar" , basedir : buildClassesDirectory , manifest : buildMetadataDirectory + '/MANIFEST.MF' )
 }
 
-target ( documentation : 'Create the API documentation.' ) {
+target ( documentation : 'Create the API documentation of Gant.' ) {
   taskdef ( name : 'groovydoc' , classname : 'org.codehaus.groovy.ant.Groovydoc' )
   def javaApiDocumentationDirectory = apiDocumentationDirectory + '/java'
   def groovyApiDocumentationDirectory = apiDocumentationDirectory + '/groovy'
@@ -369,7 +368,7 @@ target ( documentation : 'Create the API documentation.' ) {
              )
 }
 
-target ( install : "Compile everything and install it." ) {
+target ( install : "Install a Groovy installation dependent build of Gant." ) {
   depends ( 'package' )
   prepareInstallDirectory ( ant.project.properties.installDirectory , 'gant-' + gantVersion + '.jar' , false , null )
 }
@@ -379,9 +378,7 @@ target ( uninstall : "Uninstall Gant." ) {
   delete ( dir : installationDirectory )
 }
 
-//  Returns a boolean stating whether there were any test failures.
-
-target ( distribution : 'Create the distribution.' ) {
+target ( distribution : 'Create the distributions of Gant.' ) {
   //  Use the Ant Maven plugin to ensure that the groovy jar of a given release is in the local Maven
   //  repository and ensure that it is the only version of Groovy used in the compilation.
   def prefix = 'gant-' + gantVersion
@@ -401,7 +398,7 @@ target ( distribution : 'Create the distribution.' ) {
       remoteRepository ( url : 'http://repository.codehaus.org' )
       remoteRepository ( url : 'http://repo1.maven.org' )
     }
-    //  Must remove the compilation products of the last compilation!
+    //  Remove the compilation products of the last compilation so as not to affect this one!
     delete ( dir : buildClassesDirectory )
     delete ( dir : buildTestClassesDirectory )
     delete ( dir : buildFilteredScriptsDirectory )
@@ -455,17 +452,13 @@ target ( uploadDistribution : 'Upload a complete distribution.' ) {
     println ( 'Not uploading as some tests failed.' )
     return
   }
-  //
   //  Slide has been retired by the Apache Foundation in favour of Jackrabbit, but we use Slide anyway.
-  //
   "${antlibXMLns}:dependencies" ( pathId :  'slidePathId' ) {
     //dependency ( groupId : 'org.apache.jackrabbit' , artifactId : 'jackrabbit-webdav' , version : '1.3.3' )
     dependency ( groupId : 'slide' , artifactId : 'slide-webdavlib' , version : '2.1' )
   }
-  //
   //  Is there a way of extracting the username and password information from the Maven Ant Task?  For the
   //  moment simply read the ~/.m2/settings.xml file.
-  //
   def loader = getClass ( ).getClassLoader ( )
   def path = path ( refid : 'slidePathId' )
   ( path.list ( ) as List ).each { location -> loader.addURL ( new URL ( 'file://' + location ) ) }
