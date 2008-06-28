@@ -141,7 +141,7 @@
     <jar destfile="${buildDirectory}/gant-${gantVersion}.jar" basedir="${buildClassesDirectory}" manifest="${buildMetadataDirectory}/MANIFEST.MF"/>
   </target>
 
-  <target name="package" depends="-initializeGroovyHome,-test" description="Create the jar file for a bootstrap build of Gant."/>
+  <target name="package" depends="-initializeGroovyHome,-package" description="Create the jar file for a bootstrap build of Gant."/>
 
   <!--
       For bootstrap installation we need to get the Ivy jar from the Maven repository, so we need to set up
