@@ -95,6 +95,7 @@ Thread.sleep ( 500 ) //  Give time for the reference queue monitor to report in.
     //  Creates two Gant instances neither of which are garbage collected.
     def binding = new Binding ( output : '' )
     def groovyShell = new GroovyShell ( binding )
+    System.err.println ( 'testNoCollection:  This test succeeds incorrectly, it is showing the presence of the bug.' )
     groovyShell.evaluate (
                           scriptTemplate
                           .replace ( '__BUILDSCRIPT_PATH__' , ( isWindows ? buildScriptFile.path.replace ( '\\' , '\\\\' ) : buildScriptFile.path ) )
