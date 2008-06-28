@@ -16,7 +16,7 @@ package org.codehaus.gant.tests.bugs
 
 import org.codehaus.gant.tests.GantTestCase
 
-class GANT_32 extends GantTestCase {
+class GANT_32_Test extends GantTestCase {
   void testSingleFileFailsCorrectly ( ) {
     script = '''
 target ( test : '' ) { foo }
