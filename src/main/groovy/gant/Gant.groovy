@@ -113,18 +113,18 @@ final class Gant {
     *  Constructor that uses the file passed as a parameter as the build script, creates a new instance of
     *  <code>GantBinding</code> for the script binding, and uses the default class loader.
     */
-  public Gant ( File f ) { this ( f.name , null , null ) }  
+  public Gant ( File f ) { this ( f.path , null , null ) }  
    /**
     *  Constructor that uses the file passed as a parameter as the build script, the passed
     *  <code>GantBinding</code> for the script binding, and the default class loader.
     */
-  public Gant ( File f , GantBinding b ) { this ( f.name , b , null ) }
+  public Gant ( File f , GantBinding b ) { this ( f.path , b , null ) }
    /**
     *  Constructor that uses the file passed as a parameter as the build script, the passed
     *  <code>GantBinding</code> for the script binding, the passed <code>ClassLoader</code> as the class
     *  loader.
     */
-  public Gant ( File f , GantBinding b , ClassLoader cl ) { this ( f.name , b , cl ) }
+  public Gant ( File f , GantBinding b , ClassLoader cl ) { this ( f.path , b , cl ) }
    /**
     *  Constructor that uses the filename passed as a parameter as the build script, creates a new instance
     *  of <code>GantBinding</code> for the script binding and uses the default class loader.
