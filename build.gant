@@ -150,23 +150,23 @@ final performTests =  { classpathId ->
   if ( usingCobertura ) {
     ant.mkdir ( dir : buildCoberturaClassesDirectory )
     ant.mkdir ( dir : buildCoberturaReportsDirectory )
-    ant."${antlibXMLns}:dependencies" ( pathId :  'coberturaPathId' ) {
+    ant."${antlibXMLns}:dependencies" ( pathId :  'coberturaJarPathId' ) {
       dependency ( groupId : 'net.sourceforge.cobertura' , artifactId : 'cobertura' , version : '1.9' )
     }
-    ant.taskdef ( resource : 'tasks.properties' , classpathref : 'coberturaPathId' )
+    ant.taskdef ( resource : 'tasks.properties' , classpathref : 'coberturaJarPathId' )
     ant.'cobertura-instrument' ( todir : buildCoberturaClassesDirectory ) { fileset ( dir : buildClassesDirectory ) }
   }
-  ant."${antlibXMLns}:dependencies" ( pathId : 'ivyJarId' ) {
+  ant."${antlibXMLns}:dependencies" ( pathId : 'ivyJarPathId' ) {
     dependency ( groupId : 'org.apache.ivy' , artifactId : 'ivy' , version : ant.project.properties.ivyVersion )
   }
-  ant.path ( id : 'baseClasspathId' ) {
+  ant.path ( id : 'testClasspathId' ) {
     if ( usingCobertura ) {
       // MUST appear in classpath before the uninstrumented classes.
       pathelement ( location : buildCoberturaClassesDirectory )
       path ( refid : 'coberturaPathId' )
     }
     pathelement ( location : buildTestClassesDirectory )
-    path ( refid : 'ivyJarId' )
+    path ( refid : 'ivyJarPathId' )
     fileset ( dir : 'jarfiles' , includes : 'maven-ant-task*.jar' ) 
     path ( refid : classpathId )
   }                        
@@ -174,7 +174,7 @@ final performTests =  { classpathId ->
     ant.junit ( printsummary : 'yes' , failureproperty : 'testsFailed' , fork : 'true' ) {
       formatter ( type : 'plain' )
       batchtest ( todir : buildTestReportsDirectory ) { fileset ( dir : buildTestClassesDirectory , includes : '**/ant/tests/*_Test.class' ) }
-      classpath { path ( refid : 'baseClasspathId' ) }
+      classpath { path ( refid : 'testClasspathId' ) }
     }
   }
   if ( ! ( testCase ==~ 'org.codehaus.gant.ant.tests.*_Test' ) ) {                        
@@ -183,7 +183,7 @@ final performTests =  { classpathId ->
       if ( testCase != null) { ant.test ( name : testCase , todir : buildTestReportsDirectory ) }
       else { batchtest ( todir : buildTestReportsDirectory ) { fileset ( dir : buildTestClassesDirectory , includes : '**/*_Test.class' , excludes : '**/ant/tests/*' ) } }
       classpath {
-        path ( refid : 'baseClasspathId' )
+        path ( refid : 'testClasspathId' )
         pathelement ( location : buildClassesDirectory )
       }
     }
