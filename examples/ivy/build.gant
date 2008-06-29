@@ -33,15 +33,15 @@ includeTool << gant.tools.Ivy
 //  Cannot have a target called run as it creates an infinite mutual recursion. :-(
 
 target ( runTest : 'Run the Ivy "Hello" test.' ) {
-  def classpathRef = 'libraryClasspath'
-  ivy.cachepath ( organisation : 'commons-lang' , module : 'commons-lang' , revision : '2.3' ,  pathid : classpathRef , inline : 'true' )
+  def classpathId = 'libraryClasspath'
+  ivy.cachepath ( organisation : 'commons-lang' , module : 'commons-lang' , revision : '2.3' ,  pathid : classpathId , inline : 'true' )
   mkdir ( dir : buildDirectory )
-  javac ( srcdir : sourceDirectory , destdir : buildDirectory , debug : 'true' , classpathref : classpathRef )
-  java ( classname : 'example.Hello' , classpathref : classpathRef ) {
+  javac ( srcdir : sourceDirectory , destdir : buildDirectory , debug : 'true' , classpathref : classpathId )
+  java ( classname : 'example.Hello' , classpathref : classpathId ) {
     classpath { pathelement ( location : buildDirectory ) }
   }
 }
 
-target ( cleanCache : 'Clean the Ivy cache.' ) { Ivy.cleancache ( ) }
+target ( cleanCache : 'Clean the Ivy cache.' ) { ivy.cleancache ( ) }
 
 setDefaultTarget ( runTest )

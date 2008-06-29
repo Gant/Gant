@@ -121,31 +121,31 @@ final serverUploadProducts = [ : ]
 //  Currently these Closures do not have the GantMetaClass as their metaclass so there is no delegated
 //  lookup on the ant object, it has to be done explicitly.
 
-final performCompile = { classpathRef , boolean fork ->
+final performCompile = { classpathId , boolean fork ->
   ant.mkdir ( dir : buildClassesDirectory )
-  ant.taskdef ( name : 'groovyc' , classname : 'org.codehaus.groovy.ant.Groovyc' , classpathref : classpathRef )
+  ant.taskdef ( name : 'groovyc' , classname : 'org.codehaus.groovy.ant.Groovyc' , classpathref : classpathId )
   ant.groovyc ( srcdir : sourceDirectory , destdir : buildClassesDirectory , fork : fork ? 'true' : 'false' , failonerror : 'true' ) {
     classpath {
       pathelement ( location : buildClassesDirectory )
-      path ( refid : classpathRef )
+      path ( refid : classpathId )
     }
     javac ( source : '1.5' , target : '1.5' , debug : 'on' )
   }
 }
 
-final performCompileTests = { classpathRef , boolean fork ->
+final performCompileTests = { classpathId , boolean fork ->
   ant.mkdir ( dir : buildTestClassesDirectory )
-  ant.taskdef ( name : 'groovyc' , classname : 'org.codehaus.groovy.ant.Groovyc' , classpathref : classpathRef )
+  ant.taskdef ( name : 'groovyc' , classname : 'org.codehaus.groovy.ant.Groovyc' , classpathref : classpathId )
   ant.groovyc ( srcdir : testsDirectory , destdir : buildTestClassesDirectory , fork : fork ? 'true' : 'false' , failonerror : 'true' ) {
     classpath {
       pathelement ( location : buildClassesDirectory )
-      path ( refid : classpathRef )
+      path ( refid : classpathId )
     }
     javac ( source : '1.5' , target : '1.5' , debug : 'on' )
   }
 }
 
-final performTests =  { classpathRef ->
+final performTests =  { classpathId ->
   ant.mkdir ( dir : buildTestReportsDirectory )
   if ( usingCobertura ) {
     ant.mkdir ( dir : buildCoberturaClassesDirectory )
@@ -156,19 +156,25 @@ final performTests =  { classpathRef ->
     ant.taskdef ( resource : 'tasks.properties' , classpathref : 'coberturaPathId' )
     ant.'cobertura-instrument' ( todir : buildCoberturaClassesDirectory ) { fileset ( dir : buildClassesDirectory ) }
   }
+  ant."${antlibXMLns}:dependencies" ( pathId : 'IvyJarId' ) {
+    dependency ( groupId : 'org.apache.ivy' , artifactId : 'ivy' , version : ant.project.properties.ivyVersion )
+  }
+  ant.path ( id : 'baseClasspathId' ) {
+    if ( usingCobertura ) {
+      // MUST appear in classpath before the uninstrumented classes.
+      pathelement ( location : buildCoberturaClassesDirectory )
+      path ( refid : 'coberturaPathId' )
+    }
+    pathelement ( location : buildTestClassesDirectory )
+    path ( refid : 'IvyJarId' )
+    fileset ( dir : 'jarfiles' , includes : 'maven-ant-task*.jar' ) 
+    path ( refid : classpathId )
+  }                        
   if ( ( testCase == null ) || ( testCase ==~ 'org.codehaus.gant.ant.tests.*_Test' ) ) {                        
     ant.junit ( printsummary : 'yes' , failureproperty : 'testsFailed' , fork : 'true' ) {
       formatter ( type : 'plain' )
       batchtest ( todir : buildTestReportsDirectory ) { fileset ( dir : buildTestClassesDirectory , includes : '**/ant/tests/*_Test.class' ) }
-      classpath {
-        if ( usingCobertura ) {
-          // MUST appear in classpath before the uninstrumented classes.
-          pathelement ( location : buildCoberturaClassesDirectory )
-          path ( refid : 'coberturaPathId' )
-        }
-        pathelement ( location : buildTestClassesDirectory )
-        path ( refid : classpathRef )
-      }
+      classpath { path ( refid : 'baseClasspathId' ) }
     }
   }
   if ( ! ( testCase ==~ 'org.codehaus.gant.ant.tests.*_Test' ) ) {                        
@@ -177,14 +183,8 @@ final performTests =  { classpathRef ->
       if ( testCase != null) { ant.test ( name : testCase , todir : buildTestReportsDirectory ) }
       else { batchtest ( todir : buildTestReportsDirectory ) { fileset ( dir : buildTestClassesDirectory , includes : '**/*_Test.class' , excludes : '**/ant/tests/*' ) } }
       classpath {
-        if ( usingCobertura ) {
-          // MUST appear in classpath before the uninstrumented classes.
-          pathelement ( location : buildCoberturaClassesDirectory )
-          path ( refid : 'coberturaPathId' )
-        }
-        pathelement ( location : buildTestClassesDirectory )
+        path ( refid : 'baseClasspathId' )
         pathelement ( location : buildClassesDirectory )
-        path ( refid : classpathRef )
       }
     }
   }
