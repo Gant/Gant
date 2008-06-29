@@ -156,7 +156,7 @@ final performTests =  { classpathId ->
     ant.taskdef ( resource : 'tasks.properties' , classpathref : 'coberturaPathId' )
     ant.'cobertura-instrument' ( todir : buildCoberturaClassesDirectory ) { fileset ( dir : buildClassesDirectory ) }
   }
-  ant."${antlibXMLns}:dependencies" ( pathId : 'IvyJarId' ) {
+  ant."${antlibXMLns}:dependencies" ( pathId : 'ivyJarId' ) {
     dependency ( groupId : 'org.apache.ivy' , artifactId : 'ivy' , version : ant.project.properties.ivyVersion )
   }
   ant.path ( id : 'baseClasspathId' ) {
@@ -166,7 +166,7 @@ final performTests =  { classpathId ->
       path ( refid : 'coberturaPathId' )
     }
     pathelement ( location : buildTestClassesDirectory )
-    path ( refid : 'IvyJarId' )
+    path ( refid : 'ivyJarId' )
     fileset ( dir : 'jarfiles' , includes : 'maven-ant-task*.jar' ) 
     path ( refid : classpathId )
   }                        
@@ -274,17 +274,17 @@ final prepareZipFromTarAndRegisterForUpload = { String root , Closure closure ->
 //  The ASM and Antlr jars are just transitive dependencies of the Groovy jat, the Ant and Commons CLI jars
 //  are needed directly by the Gant code.
 
-compileJarSet = 'compileJarSet'
-ant.path ( id : compileJarSet ) {
+compileJarSetId = 'compileJarSetId'
+ant.path ( id : compileJarSetId ) {
   fileset ( dir : groovyHome + '/lib' , includes : 'groovy*.jar' )
   fileset ( dir : groovyHome + '/lib' , includes : 'commons-cli*.jar' )
   fileset ( dir : groovyHome + '/lib' , includes : 'asm*.jar' )
   fileset ( dir : groovyHome + '/lib' , includes : 'ant*.jar' )  // Picks up antlr as well as ant. This is intended.
 }
 
-testJarSet = 'testJarSet'
-ant.path ( id : testJarSet ) {
-  path ( refid : compileJarSet )
+testJarSetId = 'testJarSetId'
+ant.path ( id : testJarSetId ) {
+  path ( refid : compileJarSetId )
   fileset ( dir : groovyHome + '/lib' , includes : 'junit*.jar' )
 }
 
@@ -303,17 +303,17 @@ target ( reallyClean : 'Ensure all clean operations for the entire tree get acti
 }
 
 target ( compile : 'Compile everything needed for a Groovy installation dependent build of Gant.' ) {
-  performCompile ( compileJarSet , forkCompiles )
+  performCompile ( compileJarSetId , forkCompiles )
 }
 
 target ( compileTests : 'Compile all the tests for a Groovy installation dependent build of Gant.' ) {
   depends ( compile )
-  performCompileTests ( testJarSet , forkCompiles )
+  performCompileTests ( testJarSetId , forkCompiles )
 }
 
 target ( test : 'Test a boostrap build of Gant.' ) {
   depends ( compileTests )
-  def returnCode = performTests ( compileJarSet )
+  def returnCode = performTests ( compileJarSetId )
   println ( 'Tests ' + ( returnCode ? 'suceeded' : 'failed' ) + '.' )
   returnCode ? 0 : 1
 }
@@ -350,7 +350,7 @@ target ( documentation : 'Create the API documentation of Gant.' ) {
                footer : 'Copyright &copy; 2006&ndash;8 The Codehaus.  All rights reserved.' ,
                source : 1.5
                ) {
-    classpath ( refid : testJarSet )
+    classpath ( refid : testJarSetId )
   }    
   groovydoc (
              destdir : groovyApiDocumentationDirectory ,

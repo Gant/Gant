@@ -50,32 +50,45 @@
       for Groovy, Ant and Commons CLI are actually needed directly.  JUnit is needed only for compiling and
       running the tests.
  
-      All compilations use the path id compileJarSet and the tests the path id testJarSet.  This
+      All compilations use the path id compileJarSetId and the tests the path id testJarSetId.  This
       parameterization of the targets is important for supporting both bootstrapp installation and
       continuous integration support.
   -->
 
   <target name="-initializeGroovyHome">
     <property name="groovyHome" value="${environment.GROOVY_HOME}"/>
-    <path id="compileJarSet">
+    <path id="compileJarSetId">
       <fileset dir="${groovyHome}/lib" includes="groovy*.jar"/>
       <fileset dir="${groovyHome}/lib" includes="commons-cli*.jar"/>
       <fileset dir="${groovyHome}/lib" includes="asm*.jar"/>
       <fileset dir="${groovyHome}/lib" includes="ant*.jar"/> <!-- Picks up antlr as well as ant. This is intended. -->
     </path>
-    <path id="testJarSet">
+    <path id="testJarSetId">
       <fileset dir="${groovyHome}/lib" includes="junit*.jar"/>
-      <path refid="compileJarSet"/>
+      <path refid="compileJarSetId"/>
     </path>
-    <taskdef name="groovyc" classname="org.codehaus.groovy.ant.Groovyc" classpathref="compileJarSet"/>
+    <taskdef name="groovyc" classname="org.codehaus.groovy.ant.Groovyc" classpathref="compileJarSetId"/>
   </target>
+
+  <!--
+      We need to get the Ivy jar from the Maven repository, so we need to set up the Maven Ant Task.  This
+      is also needed for the continuous integration builds hence it is a separate target.
+  -->
+
+  <target name="-initializeMavenAntTask">
+     <path id="mavenAntTaskJarPathId">
+      <fileset dir="${jarsDirectory}" includes="maven-ant-tasks-*.jar"/>
+    </path>
+    <typedef resource="org/apache/maven/artifact/ant/antlib.xml" uri="urn:maven-artifact-ant" classpathref="mavenAntTaskJarPathId"/>
+  </target>
+
 
   <target name="-compile">
     <mkdir dir="${buildClassesDirectory}"/>
     <groovyc srcdir="${sourceDirectory}" destdir="${buildClassesDirectory}">
       <classpath>
         <pathelement location="${buildClassesDirectory}"/>
-        <path refid="compileJarSet"/>
+        <path refid="compileJarSetId"/>
       </classpath>
       <javac source="1.5" target="1.5" debug="on" encoding="UTF-8"/>
     </groovyc>
@@ -88,7 +101,7 @@
     <groovyc srcdir="${testsDirectory}" destdir="${buildTestClassesDirectory}">
       <classpath>
         <pathelement location="${buildClassesDirectory}"/>
-        <path refid="testJarSet"/>
+        <path refid="testJarSetId"/>
       </classpath>
       <javac source="1.5" target="1.5" debug="on" encoding="UTF-8"/>
     </groovyc>
@@ -96,8 +109,17 @@
 
   <target name="compileTests" depends="-initializeGroovyHome,-compileTests" description="Compile all the tests for a bootstrap build of Gant."/>
 
-  <target name="-test" depends="-compileTests">
+  <target name="-test" depends="-initializeMavenAntTask,-compileTests">
     <mkdir dir="${buildTestReportsDirectory}"/>
+    <artifact:dependencies pathId="ivyJarPathId">
+      <dependency groupId="org.apache.ivy" artifactId="ivy" version="${ivyVersion}"/>
+    </artifact:dependencies>
+    <path id="testClasspathId">
+      <pathelement location="${buildTestClassesDirectory}"/>
+      <path refid="mavenAntTaskJarPathId"/>
+      <path refid="ivyJarPathId"/>
+      <path refid="testJarSetId"/>
+    </path>
     <junit printsummary="yes" fork="true" failureproperty="testsFailed">
       <formatter type="plain"/>
       <formatter type="xml"/> <!-- Must have XML output for the continuous integration builds. -->
@@ -105,8 +127,7 @@
         <fileset dir="${buildTestClassesDirectory}" includes="**/ant/tests/*_Test.class"/>
       </batchtest>
       <classpath>
-        <pathelement location="${buildTestClassesDirectory}"/>
-        <path refid="testJarSet"/>
+        <path refid="testClasspathId"/>
       </classpath>
     </junit>
     <junit printsummary="yes" fork="true" failureproperty="testsFailed">
@@ -116,9 +137,8 @@
         <fileset dir="${buildTestClassesDirectory}" includes="**/*_Test.class" excludes="**/ant/tests/*"/>
       </batchtest>
       <classpath>
-        <pathelement location="${buildTestClassesDirectory}"/>
+        <path refid="testClasspathId"/>
         <pathelement location="${buildClassesDirectory}"/>
-        <path refid="testJarSet"/>
       </classpath>
     </junit>
   </target>
@@ -142,18 +162,6 @@
   </target>
 
   <target name="package" depends="-initializeGroovyHome,-package" description="Create the jar file for a bootstrap build of Gant."/>
-
-  <!--
-      For bootstrap installation we need to get the Ivy jar from the Maven repository, so we need to set up
-      the Maven Ant Task.  This is also needed for the continuous integration builds hence it is a separate
-      target.
-  -->
-  <target name="-initializeMavenAntTask">
-     <path id="mavenAntTaskPathId">
-      <fileset dir="${jarsDirectory}" includes="maven-ant-tasks-*.jar"/>
-    </path>
-    <typedef resource="org/apache/maven/artifact/ant/antlib.xml" uri="urn:maven-artifact-ant" classpathref="mavenAntTaskPathId"/>
-  </target>
 
   <condition property="installDirectoryIsSet">
     <isset property="installDirectory"/>
@@ -225,23 +233,23 @@
        POM and use those dependencies, but it seems better to explicitly specify them.  Note that we don't
        need to specify transitive dependencies here, the Maven Ant Task takes care of that.
        
-       It is important that all the targets above are parameterized with compileJarSet as the compile path
-       id and testJarSet as the test path id.
+       It is important that all the targets above are parameterized with compileJarSetId as the compile path
+       id and testJarSetId as the test path id.
   -->
 
   <target name="-initializeMavenDownload" depends="-initializeMavenAntTask">
-    <path id="compileJarSet"/>
-     <artifact:dependencies pathId="compileJarSet">
+    <path id="compileJarSetId"/>
+     <artifact:dependencies pathId="compileJarSetId">
       <dependency groupId="org.codehaus.groovy" artifactId="groovy" version="${groovyVersion}"/>
       <dependency groupId="commons-cli" artifactId="commons-cli" version="${commonsCliVersion}"/>
     </artifact:dependencies>
-    <path id="testJarSet">
-      <path refid="compileJarSet"/>
+    <path id="testJarSetId">
+      <path refid="compileJarSetId"/>
     </path>
    <artifact:dependencies pathId="testjarSet">
       <dependency groupId="junit" artifactId="junit" version="${junitVersion}"/>
     </artifact:dependencies>
-    <taskdef name="groovyc" classname="org.codehaus.groovy.ant.Groovyc" classpathref="compileJarSet"/>
+    <taskdef name="groovyc" classname="org.codehaus.groovy.ant.Groovyc" classpathref="compileJarSetId"/>
   </target>
 
   <target name="-ciBuild" depends="clean,-initializeMavenDownload,-package"/>
