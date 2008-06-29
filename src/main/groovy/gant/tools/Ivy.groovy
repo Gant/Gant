@@ -18,53 +18,42 @@ import org.codehaus.gant.GantBinding
 
 /**
  *  Provide support for using Ivy.  This simply redirects all method calls to the standard
- * <code>GantBuilder</code> instance -- which in turn selects the method from the Ivy jar. 
+ * <code>GantBuilder</code> instance, which in turn selects the method from the Ivy jar. 
  *
  *  @author Russel Winder <russel.winder@concertant.com>
  */
 final class Ivy {
   private final GantBinding binding ;
   private final ivyURI = 'antlib:org.apache.ivy.ant'
-  private final classpathRef = 'ivy.class.path'
-  private String ivyJarPath = null
   /**
-   *  Constructor to support "includeTool <<" usage.
+   *  Constructor to support "includeTool <<" usage.  Assumes that an Ivy jar is already in the classpath.
+   *  The standard Gant installation includes an Ivy jar and it is automatically included in the classpath.
    *
    *  @param binding The <code>GantBinding</code> to bind to.
    */
   Ivy ( final GantBinding binding ) {
     this.binding = binding
-    if ( System.properties.'groovy.home' ) {
-      ivyJarPath = System.properties.'groovy.home' + System.properties.'file.separator' + 'lib'
-    }
-    else {
-      throw new RuntimeException ( 'groovy.home property not set, and cannot guess location of Ivy jar.' )
-    }
-    constructIvyTask ( )
+    binding.ant.taskdef ( resource : 'org/apache/ivy/ant/antlib.xml' , uri : ivyURI )
   }
  /**
-   *  Constructor to support "includeTool **" usage.  Allows the field <code>ivyJarPath</code> to allow
-   *  explicit specification of the location of the Ivy jar.
+   *  Constructor to support "includeTool **" usage.  By default assumes that an Ivy jar is already in the
+   *  classpath.  The standard Gant installation includes an Ivy jar and it is automatically included in the
+   *  classpath.  However the <code>ivyJarPath</code> field can be set to allow explicit specification of
+   *  the location of the Ivy jar.
    *
    *  @param binding The <code>GantBinding</code> to bind to.
    *  @param map The <code>Map</code> of parameters for intialization.
    */
   Ivy ( final GantBinding binding , final Map map ) {
     this.binding = binding
-    if ( map.containsKey ( 'ivyJarPath' ) ) { ivyJarPath = map.ivyJarPath }
-    else {
-      if ( System.properties.'groovy.home' ) {
-        ivyJarPath = System.properties.'groovy.home' + System.properties.'file.separator' + 'lib'
-      }
-      else {
-        throw new RuntimeException ( 'Neither ivyJarPath or groovy.home set, and cannot guess location of Ivy jar.' )
-      }
+    if ( map.containsKey ( 'ivyJarPath' ) ) {
+      final classpathId = 'ivy.class.path'
+      binding.ant.path ( id : classpathId ) { binding.ant.fileset ( dir : map.ivyJarPath , includes : 'ivy*.jar' ) }
+      binding.ant.taskdef ( resource : 'org/apache/ivy/ant/antlib.xml' , uri : ivyURI , classpathref : classpathId )
     }
-    constructIvyTask ( )
-  }
-  private void constructIvyTask ( ) {
-    binding.ant.path ( id : classpathRef ) { binding.ant.fileset ( dir : ivyJarPath , includes : 'ivy*.jar' ) }
-    binding.ant.taskdef ( resource : 'org/apache/ivy/ant/antlib.xml' , uri : ivyURI , classpathref : classpathRef )
+    else {
+      binding.ant.taskdef ( resource : 'org/apache/ivy/ant/antlib.xml' , uri : ivyURI )
+    }
   }
   //  To save having to maintain lists of the functions available, simply redirect all method calls to the GantBuilder object.
   def invokeMethod ( String name , args ) { binding.ant.invokeMethod ( ivyURI + ':' + name , args ) }
