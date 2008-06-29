@@ -77,7 +77,7 @@
         <pathelement location="${buildClassesDirectory}"/>
         <path refid="compileJarSet"/>
       </classpath>
-      <javac source="1.5" target="1.5" debug="on"/>
+      <javac source="1.5" target="1.5" debug="on" encoding="UTF-8"/>
     </groovyc>
   </target>
 
@@ -90,7 +90,7 @@
         <pathelement location="${buildClassesDirectory}"/>
         <path refid="testJarSet"/>
       </classpath>
-      <javac source="1.5" target="1.5" debug="on"/>
+      <javac source="1.5" target="1.5" debug="on" encoding="UTF-8"/>
     </groovyc>
   </target>
 
