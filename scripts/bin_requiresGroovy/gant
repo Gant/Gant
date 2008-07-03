@@ -18,17 +18,23 @@
 
 #  Gant initiation script for Linux and UNIX
 
-#  If GANT_HOME is not set, deduce a path.
+#  If GANT_HOME is not set, deduce a path.  Assume the executable is in $GANT_HOME/bin.
 
 if [ -z "$GANT_HOME" ]
 then
-    GANT_HOME=`dirname $0`
+    if [ -h $0 ]
+    then
+        GANT_HOME=`readlink -f $0`
+        GANT_HOME=`dirname $GANT_HOME`
+    else
+        GANT_HOME=`dirname $0`
+    fi
     GANT_HOME=`dirname $GANT_HOME`
     export GANT_HOME
 fi
 
 #  If GROOVY_HOME is not set, deduce a path -- this is needed in order to discover the location of the
-#  startGroovy script.
+#  startGroovy script.  Assume the executable is in $GROOVY_HOME/bin.
 
 if [ -z "$GROOVY_HOME" ]
 then
@@ -39,7 +45,7 @@ then
 fi
 
 #  If ANT_HOME is not set, deduce a path -- this is needed in order to discover the location of the jars
-#  associated with the Ant installation.
+#  associated with the Ant installation.  Assume the executable is in $ANT_HOME/bin.
 
 if [ -z "$ANT_HOME" ]
 then
