@@ -93,6 +93,7 @@ import org.apache.commons.cli.OptionBuilder
 final class Gant {
   private buildFileName
   private buildClassName
+  private buildScript
   private final GantBinding binding
    /**
     *  Constructor that uses build.gant as the build script, creates a new instance of
@@ -142,6 +143,17 @@ final class Gant {
   public Gant ( String s , GantBinding b , ClassLoader cl ) {
     buildFileName = s
     buildClassName = buildFileName.replaceAll ( '\\.' , '_' )
+    binding = ( b != null ) ? b : new GantBinding ( )
+    binding.classLoader = ( cl != null ) ? cl : getClass ( ).classLoader
+    binding.groovyShell = new GroovyShell ( binding.classLoader , binding )
+  }
+  /**
+   *  Constructor that uses the <code>InputStream</code> passed as a parameter as the source of the build
+   *  script, the passed <code>GantBinding</code> for the script binding, and the passed
+   *  <code>ClassLoader</code> as the class loader.
+   */
+  public Gant ( Script script , GantBinding b , ClassLoader cl ) {
+    buildScript = script
     binding = ( b != null ) ? b : new GantBinding ( )
     binding.classLoader = ( cl != null ) ? cl : getClass ( ).classLoader
     binding.groovyShell = new GroovyShell ( binding.classLoader , binding )
@@ -328,13 +340,14 @@ final class Gant {
       buildFileText = System.in.text
       buildClassName = standardInputClassName
     }
-    else {
+    else if ( buildFileName != null ) {
       buildFile = new File ( buildFileName ) 
       if ( ! buildFile.isFile ( ) ) { println ( 'Cannot open file ' + buildFileName ) ; return -3 }
       //  Apparently this transformation break debugging in Eclipse cf. GANT-30.
       buildClassName = buildFile.name.replaceAll ( /\./ , '_' )
       buildFileModified = buildFile.lastModified ( )
     }
+    // else: the caller has already provided the script instance.
     if ( binding.cacheEnabled ) {       
       if ( buildFile == null ) { println 'Caching can only be used in combination with the -f option.' ; return -1 }
       def cacheDirectory = binding.cacheDirectory
@@ -360,6 +373,10 @@ final class Gant {
       }
       binding.loadClassFromCache =  loadClassFromCache
       loadClassFromCache ( buildClassName , buildFileModified , buildFile )
+    }
+    else if ( buildScript != null ) {
+        buildScript.binding = binding
+        buildScript.run ( )
     }
     else {
       if ( buildFile )  { buildFileText = buildFile.text }

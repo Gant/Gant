@@ -102,8 +102,17 @@ abstract class AbstractInclude {
    *  @throws NoSuchMethodException if the required constructor cannot be found.
    */
   protected createInstance ( Class theClass ) {
-    try { return theClass.getConstructor ( GantBinding ).newInstance ( [ binding ] as Object[] ) }
-    catch ( NoSuchMethodException nsme ) { throw new RuntimeException ( 'Could not initialize ' + theClass.name , nsme ) }
+    if ( Script.isAssignableFrom ( theClass ) ) {
+      // We need to ensure that the script runs so that it populates the binding.
+      def script = theClass.newInstance ( )
+      script.binding = binding
+      script.run ( )
+      return script
+    }
+    else {
+      try { return theClass.getConstructor ( GantBinding ).newInstance ( [ binding ] as Object[] ) }
+      catch ( NoSuchMethodException nsme ) { throw new RuntimeException ( 'Could not initialize ' + theClass.name , nsme ) }
+    }
   }
   /**
    *  Create an instance of a class included with the ** * operator. 

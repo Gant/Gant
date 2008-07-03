@@ -430,5 +430,26 @@ target ( test : '' ) { }
     assertEquals ( -2 , processTargets ( 'test' ) )
     assertEquals ( 'Standard input, line 2 -- Error evaluating Gantfile: wrong number of arguments\n' , output )
   }
-  
+
+  //  This test provided by Peter Ledbrook in order to test the change to Gant to allow Script objects to be
+  //  used to initialize a Gant object.
+
+  //  TODO:  There needs to be more testing of this feature.
+
+  void testIncludeCompiledScript ( ) {
+    def script = '''
+testVar = 'Test'
+target ( aTarget : '' ) {
+  println ( 'Tested.' )
+}
+'''
+    def gcl = new GroovyClassLoader ( )
+    def clazz = gcl.parseClass ( script )
+    def binding = new org.codehaus.gant.GantBinding ( )
+    def includeTargets = new org.codehaus.gant.IncludeTargets ( binding )
+    includeTargets << clazz
+    assertEquals ( 'Test', binding.testVar )
+    assertNotNull ( binding.aTarget )
+  }
+
 }
