@@ -305,7 +305,7 @@
           <use>true</use>
           <locale>en_GB</locale>
           <source>1.5</source>
-          <bottom>Copyright &copy; 2006&ndash;2008 Russel Winder.  All rights reserved.</bottom>
+          <bottom>Copyright &#169; 2006&#8211;2008 Russel Winder.  All rights reserved.</bottom>
           <charset>UTF-8</charset>
           <breakIterator>yes</breakIterator>
         </configuration>
