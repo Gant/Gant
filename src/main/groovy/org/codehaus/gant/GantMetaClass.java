@@ -297,7 +297,7 @@ public class GantMetaClass implements MetaClass , GroovyObject {
    * @param methodName the name of the method to pick.
    * @param arguments the method arguments.
    * @return a matching <code>MetaMethod</code> or <code>null</code>.
-   * @throws GroovyRuntimeException if there is more than one matching method.
+   * @throws groovy.lang.GroovyRuntimeException if there is more than one matching method.
    */
   public MetaMethod pickMethod ( final String methodName , final Class[] arguments ) {
     return delegate.pickMethod ( methodName , arguments ) ;
