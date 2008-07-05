@@ -44,6 +44,10 @@
 
   <property name="buildMetadataDirectory" value="${buildClassesDirectory}/META-INF"/>
 
+  <condition property="_skipTests_">
+    <istrue value="${skipTests}"/>
+  </condition>
+
   <!--
       The bootstrap build assumed that GROOVY_HOME is set and points to a Groovy installation.  In order to
       compile the Groovy, Ant, ASM, Antlr and Commons CLI jars are needed.  ASM and Antlr are only needed
@@ -109,7 +113,7 @@
 
   <target name="compileTests" depends="-initializeGroovyHome,-compileTests" description="Compile all the tests for a bootstrap build of Gant."/>
 
-  <target name="-test" depends="-initializeMavenAntTask,-compileTests">
+  <target name="-test" depends="-initializeMavenAntTask,-compileTests" unless="_skipTests_">
     <mkdir dir="${buildTestReportsDirectory}"/>
     <artifact:dependencies pathId="ivyJarPathId">
       <dependency groupId="org.apache.ivy" artifactId="ivy" version="${ivyVersion}"/>
@@ -145,7 +149,7 @@
 
   <target name="test" depends="-initializeGroovyHome,-test" description="Test a boostrap build of Gant."/>
  
-  <target name="-package" depends="-test">
+  <target name="-package" depends="-test,-compile">
     <mkdir dir="${buildMetadataDirectory}"/>
     <copy todir="${buildMetadataDirectory}" file="LICENCE.txt"/>
     <manifest file="${buildMetadataDirectory}/MANIFEST.MF">
