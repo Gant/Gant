@@ -440,12 +440,11 @@ public class GantMetaClass implements MetaClass , GroovyObject {
   public Object invokeMethod ( final Object object , final String methodName , final Object[] arguments ) {
     Object returnObject = null ;
     if ( methodName.equals ( "depends" ) ) {
-      for ( int i = 0 ; i < arguments.length ; ++i ) {
-        if ( arguments[i] instanceof List ) {
-          Iterator<?> iterator = ( (List<?>) arguments[i] ).iterator ( ) ;
-          while ( iterator.hasNext ( ) ) { returnObject = processArgument ( iterator.next ( ) ) ; }
+      for ( Object argument : arguments ) {
+        if ( argument instanceof List ) {
+          for ( Object item : (List<?>) argument ) { returnObject = processArgument ( item ) ; }
         }
-        else { returnObject = processArgument ( arguments[i] ) ; }
+        else { returnObject = processArgument ( argument ) ; }
       }
     }
     else {
