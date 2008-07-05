@@ -309,8 +309,6 @@ public class GantMetaClass implements MetaClass , GroovyObject {
   //////////////////////////////////////////////////////////////////////////////////////////////////////////
   //// Methods required of a MetaObjectProtocol object that are not explicitly mentioned for GroovyObject
   //// and MetaClass.
-  
-  ////  getPropeties and getMethods have been defined above as tehy are required for MetaClass.
 
   /*
    * Obtain a list of all meta properties available on this meta class
@@ -318,14 +316,14 @@ public class GantMetaClass implements MetaClass , GroovyObject {
    * @see groovy.lang.MetaBeanProperty
    * @return A list of MetaBeanProperty instances
    */
-  //List getProperties();
+  //List getProperties(); // Defined above as it is required for conforming to MetaClass.
   /*
    * Obtain a list of all the meta methods available on this meta class
    *
    * @see groovy.lang.MetaMethod
    * @return A list of MetaMethod instances
    */
-  //List getMethods();
+  //List getMethods(); // Defined above as it is required for conforming to MetaClass.
   
   /**
    *  Return an object satisfying Groovy truth if the implementing <code>MetaClass</code> responds to a
