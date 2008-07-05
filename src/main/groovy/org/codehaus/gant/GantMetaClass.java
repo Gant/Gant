@@ -307,7 +307,11 @@ public class GantMetaClass implements MetaClass , GroovyObject {
   
   //////////////////////////////////////////////////////////////////////////////////////////////////////////
   //// Methods required of a MetaObjectProtocol object that are not explicitly mentioned for GroovyObject
+<<<<<<< TREE
   //// and MetaClass.  NB MetaClass is a subinterface of MetaObjectProtocol.
+=======
+  //// and MetaClass.
+>>>>>>> MERGE-SOURCE
 
   /*
    * Obtain a list of all meta properties available on this meta class
