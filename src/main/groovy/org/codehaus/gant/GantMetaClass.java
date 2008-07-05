@@ -57,7 +57,7 @@ public class GantMetaClass implements MetaClass , GroovyObject {
    *  The set of all targets that have been called.  This is a global variable shared by all instances of
    *  <code>GantMetaClass</code>.
    *
-   *  <p>FIXME: This code is a long way from thread safe, and so it needs fixing.  Should this variable be
+   *  <p>TODO: This code is a long way from thread safe, and so it needs fixing.  Should this variable be
    *  moved to the GantState class, which is the class that holds other bits of the internal shared state?
    *  Should a different data structure be used, one that is a bit more thread safe?  Arguably it is
    *  reasonable for this to be a synchronized object.</p>
@@ -75,7 +75,7 @@ public class GantMetaClass implements MetaClass , GroovyObject {
   }
  
   //////////////////////////////////////////////////////////////////////////////////////////////////////////
-  ////  Method required of a GroovyObject
+  ////  Method required of a GroovyObject.
 
   /**
    *  Invoke the given method.
@@ -308,7 +308,7 @@ public class GantMetaClass implements MetaClass , GroovyObject {
   
   //////////////////////////////////////////////////////////////////////////////////////////////////////////
   //// Methods required of a MetaObjectProtocol object that are not explicitly mentioned for GroovyObject
-  //// and MetaClass.
+  //// and MetaClass.  NB MetaClass is a subinterface of MetaObjectProtocol.
 
   /*
    * Obtain a list of all meta properties available on this meta class
@@ -491,10 +491,23 @@ public class GantMetaClass implements MetaClass , GroovyObject {
    *  @return The return value of the method which is null if the return type is void
    */
   public Object invokeMethod ( final Object object , final String methodName , final Object arguments ) {
+    //
+    //  This method started out being implemented with.
+    //
+    //  return delegate.invokeMethod ( object , methodName , arguments ) ;
+    //
+    // However this meant there was 1 error in org.codehaus.gant.tests.Depends_Test and two errors in
+    // org.codehaus.gant.tests.NoAntObject_Test, but org.codehaus.gant.tests.bug.GANT_49_Test worked fine.
+    //  The implementation was changed to:
+    //
     if ( arguments == null ) { return invokeMethod ( object , methodName , MetaClassHelper.EMPTY_ARRAY ) ; }
     else if ( arguments instanceof Tuple ) { return invokeMethod ( object , methodName , ( (Tuple) arguments ).toArray ( ) ) ; }
     else if ( arguments instanceof Object[] ) { return invokeMethod ( object , methodName , (Object[]) arguments ) ; }
     else { return invokeMethod ( object , methodName , new Object[] { arguments } ) ; }
+    //
+    //  and this cures the errors in org.codehaus.gant.tests.Depends_Test and
+    //  org.codehaus.gant.tests.NoAntObject_Test but means that org.codehaus.gant.tests.bug.GANT_49_Test
+    //  fails.
   }
   /**
    *  Invoke a static method on the given object with the given name and arguments.
