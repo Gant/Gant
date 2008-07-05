@@ -28,7 +28,7 @@ target ( hello : '' ) {
 }
 """
     assertEquals ( -13 , processTargets ( 'hello' ) )
-    assertTrue ( output.endsWith ( ' does not exist or is not a directory\n' ) )
+    assertTrue ( output.startsWith ( 'No signature of method: standard_input.groovyc() is applicable for argument types: (java.util.LinkedHashMap) values: ' ) )
   }
   void testGroovyTaskSucceed ( ) {
     try {
