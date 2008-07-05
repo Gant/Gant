@@ -15,7 +15,6 @@
 package org.codehaus.gant ;
 
 import java.util.HashSet ;
-import java.util.Iterator ;
 import java.util.List ;
 
 import groovy.lang.Binding ;
@@ -602,7 +601,7 @@ public class GantMetaClass implements MetaClass , GroovyObject {
    *  process it. If it is a <code>String</code> then do a lookup for the <code>Closure</code> in the
    *  binding, and if found process it.
    *
-   *  @param argument
+   *  @param argument The argument.
    *  @return The result of the <code>Closure</code>.
    */
   private Object processArgument ( final Object argument ) {
