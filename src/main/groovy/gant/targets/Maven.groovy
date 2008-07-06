@@ -35,7 +35,7 @@ final class Maven {
                                   testCompilePath : '' , // Defaults to standard Maven 2 convention.  Set in constructor since it uses a GString dependent on a value in the map.
                                   testReportPath : '' , // Defaults to standard Maven 2 convention.  Set in constructor since it uses a GString dependent on a value in the map.
                                   metadataPath : '' , // Defaults to standard Maven 2 convention.  Set in constructor since it uses a GString dependent on a value in the map.
-                                  javaCompileProperties : [ source : '1.3' , target : '1.3' , debug : 'false' ] ,
+                                  javaCompileProperties : [ source : '1.5' , target : '1.5' , debug : 'false' ] ,
                                   groovyCompileProperties : [ : ] ,
                                   compileClasspath : [ ] ,
                                   testClasspath : [ ] ,
@@ -177,7 +177,7 @@ final class Maven {
              }
              break
             }
-          }        
+          }
         }
         catch ( FileNotFoundException fnfe ) { throw new RuntimeException ( 'Error: ' + owner.mainSourcePath + ' does not exist.' ) }
       }
@@ -339,8 +339,8 @@ final class Maven {
     properties.binding.target.call ( install : 'Install the artefact into the local repository.' ) {
       owner.binding.ant."${owner.antlibXMLns}:pom" ( id : mavenPOMId , file : 'pom.xml' )
       /*
-       *  It seems that there is a wierd problem.  
-        
+       *  It seems that there is a wierd problem.
+
       owner.binding.ant.property ( name : 'flob.adob' , value : 'weed' )
       owner.binding.ant.echo ( '${flob.adob}' )
       println ( owner.binding.ant.project.properties.'flob.adob' )
@@ -375,7 +375,7 @@ final class Maven {
       //
       owner.binding.ant."${owner.antlibXMLns}:deploy" ( file : owner.packagedArtifact  ) {
         pom ( refid : owner.mavenPOMId )
-        remoteRepository ( url : deployURL , id : owner.deployId ) 
+        remoteRepository ( url : deployURL , id : owner.deployId )
       }
     }
     properties.binding.target.call ( site : 'Create the website.' ) {
