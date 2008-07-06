@@ -23,7 +23,6 @@ import java.util.Map ;
 
 import java.io.ByteArrayOutputStream ;
 import java.io.PrintStream ;
-import java.io.OutputStream;
 
 import groovy.lang.Closure ;
 import groovy.util.AntBuilder ;
