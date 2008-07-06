@@ -69,7 +69,7 @@ public class GantBinding extends Binding implements Cloneable {
     setVariable ( 'Ant' , getVariable ( 'ant' ) )
     setVariable ( 'includeTargets' , new IncludeTargets ( this ) )
     setVariable ( 'includeTool' , new IncludeTool ( this ) )
-    setVariable ( 'target' , { Map map , Closure closure ->
+    setVariable ( 'target' , { Map<String, String> map , Closure closure ->
         switch ( map.size ( ) ) {
          case 0 : throw new RuntimeException ( 'Target specified without a name.' )
          case 1 : break

@@ -64,9 +64,9 @@ public abstract class GantTestCase extends GroovyTestCase {
   protected String getOutput ( ) { return output.toString ( ).replace ( "\r" , "" ) ; }
 
   //  When run with Ant or Gant, some tests, but not all tests, output the results of various tasks run by
-  //  Gant before the script is excuted.  When run with Maven this message is output in far more situations.
-  //  It is not entirely clear why this is happening.  For now Ant and Gant runthe tests correctly and Maven
-  //  has many failures.
+  //  Gant before the script is executed.  When run with Maven this message is output in far more
+  //  situations.  It is not entirely clear why this is happening.  For now Ant and Gant run the tests
+  //  correctly and Maven has many failures.
 
   protected static final String prefixMaterial = "  [taskdef] classname : 'org.codehaus.groovy.ant.Groovyc' , name : 'groovyc'\n [property] environment : 'environment'\n" ;
   
