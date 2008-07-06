@@ -15,7 +15,7 @@
 package org.codehaus.gant.tests
 
 /**
- *  A test to ensure that the targets method lookup works. 
+ *  A test to ensure that the targets method lookup works.
  *
  *  @author Russel Winder <russel.winder@concertant.com>
  */
@@ -27,9 +27,9 @@ includeTargets << gant.targets.Clean
 cleanPattern << "**/*~"
 target ( something : "Do something." ) { Ant.echo ( message : "Did something." ) }
 setDefaultTarget ( something )
-''' 
+'''
   }
-    
+
   //  It seems that the same gant.targets.Clean instance is used for all tests in this class which is a bit
   //  sad because it means that there is an accumulation of **/*~ patterns, one for each test method as
   //  addCleanPattern gets executed for each test.  So it is crucial to know when testClean is run to know
@@ -43,18 +43,18 @@ setDefaultTarget ( something )
 ''' , output )
     //  Partly correct Emacs colouring by closing the comment: */
     //  TODO:  Fix fontlock in Groovy mode so '' are treated as strings in which comments
-    //  do not affect fontlock.                   
+    //  do not affect fontlock.
   }
   void testDefault ( ) {
     assertEquals ( 0 , processTargets (  ) )
-    assertEquals (  prefixMaterial + "     [echo] message : 'Did something.'\n" , output ) 
+    assertEquals (  "     [echo] message : 'Did something.'\n" , output )
   }
   void testBlah ( ) {
     assertEquals ( -11 , processTargets ( 'blah' ) )
-    assertEquals ( prefixMaterial + 'Target blah does not exist.\n' , output ) 
+    assertEquals ( 'Target blah does not exist.\n' , output )
   }
   void testSomething ( ) {
     assertEquals ( 0 , processTargets ( 'something' ) )
-    assertEquals ( prefixMaterial + "     [echo] message : 'Did something.'\n" , output ) 
+    assertEquals ( "     [echo] message : 'Did something.'\n" , output ) 
   }
 }

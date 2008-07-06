@@ -16,7 +16,7 @@ package gant
 
 import java.lang.reflect.InvocationTargetException
 
-import org.codehaus.groovy.control.MultipleCompilationErrorsException    
+import org.codehaus.groovy.control.MultipleCompilationErrorsException
 import org.codehaus.groovy.control.CompilerConfiguration
 import org.codehaus.groovy.control.CompilationUnit
 
@@ -49,7 +49,7 @@ import org.apache.commons.cli.OptionBuilder
  *
  *  <p>NB In the following example some extra spaces have had to be introduced because some of the patterns
  *  look like comment ends:-(</p>
- * 
+ *
  *  <p>A trivial example build specification is:</p>
  *
  *  <pre>
@@ -114,7 +114,7 @@ final class Gant {
     *  Constructor that uses the file passed as a parameter as the build script, creates a new instance of
     *  <code>GantBinding</code> for the script binding, and uses the default class loader.
     */
-  public Gant ( File f ) { this ( f.path , null , null ) }  
+  public Gant ( File f ) { this ( f.path , null , null ) }
    /**
     *  Constructor that uses the file passed as a parameter as the build script, the passed
     *  <code>GantBinding</code> for the script binding, and the default class loader.
@@ -135,7 +135,7 @@ final class Gant {
     *  Constructor that uses the filename passed as a parameter as the build script, the passed
     *  <code>GantBinding</code> for the script binding, and uses the default class loader.
     */
-  public Gant ( String s , GantBinding b ) { this ( s , b , null ) }  
+  public Gant ( String s , GantBinding b ) { this ( s , b , null ) }
    /**
     *  Constructor that uses the filename passed as a parameter as the build script, the passed
     *  <code>GantBinding</code> for the script binding, the passed <code>ClassLoader</code> as the class loader.
@@ -262,7 +262,7 @@ final class Gant {
     binding.cacheEnabled = options.c ? true : false
     if ( options.f ) {
       buildFileName = options.f
-      buildClassName = buildFileName.replaceAll ( '\\.' , '_' ) 
+      buildClassName = buildFileName.replaceAll ( '\\.' , '_' )
     }
     if ( options.h ) { cli.usage ( ) ; return 0 }
     if ( options.l ) { binding.gantLib << options.l.split ( System.properties.'path.separator' ) }
@@ -277,7 +277,13 @@ final class Gant {
       options.Ds.each { definition ->
         def pair = definition.split ( '=' ) as List
         if ( pair.size ( ) < 2 ) { pair << '' }
+        //  Do not allow the output to escape.  The problem here is that if the output is allowed out then
+        //  Ant, Gant, Maven, Eclipse and IntelliJ IDEA all behave slightly differently.  This makes testing
+        //  nigh on impossible.  Also the user doesn't need to know about these.
+        final outSave = System.out
+        System.setOut ( new PrintStream ( new ByteArrayOutputStream ( ) ) )
         binding.ant.property ( name : pair[0] , value : pair[1] )
+        System.setOut ( outSave )
         binding.setVariable ( pair[0] , pair[1] )
       }
     }
@@ -304,7 +310,7 @@ final class Gant {
     def gotUnknownOptions = false ;
     targets.each { target ->
       if ( target[0] == '-' ) {
-        println ( 'Unknown option: ' + target ) 
+        println ( 'Unknown option: ' + target )
         gotUnknownOptions = true
       }
     }
@@ -333,7 +339,7 @@ final class Gant {
    */
   protected int processTargets ( String function , List targets ) {
     def buildFileText = ''
-    def buildFileModified = -1  
+    def buildFileModified = -1
     def buildFile = null
     def standardInputClassName = 'standard_input'
     if ( buildFileName == '-' ) {
@@ -341,20 +347,20 @@ final class Gant {
       buildClassName = standardInputClassName
     }
     else if ( buildFileName != null ) {
-      buildFile = new File ( buildFileName ) 
+      buildFile = new File ( buildFileName )
       if ( ! buildFile.isFile ( ) ) { println ( 'Cannot open file ' + buildFileName ) ; return -3 }
       //  Apparently this transformation break debugging in Eclipse cf. GANT-30.
       buildClassName = buildFile.name.replaceAll ( /\./ , '_' )
       buildFileModified = buildFile.lastModified ( )
     }
     // else: the caller has already provided the script instance.
-    if ( binding.cacheEnabled ) {       
+    if ( binding.cacheEnabled ) {
       if ( buildFile == null ) { println 'Caching can only be used in combination with the -f option.' ; return -1 }
       def cacheDirectory = binding.cacheDirectory
       if ( binding.classLoader instanceof URLClassLoader ) { binding.classLoader.addURL ( cacheDirectory.toURL ( ) ) }
-      else { rootLoader?.addURL ( cacheDirectory.toURL ( ) ) }      
+      else { rootLoader?.addURL ( cacheDirectory.toURL ( ) ) }
       def loadClassFromCache = { className , fileLastModified , file  ->
-        try {      
+        try {
           def url = binding.classLoader.getResource ( "${className}.class" )
           if ( url ) {
             if ( fileLastModified > url.openConnection ( ).lastModified ) {
@@ -412,7 +418,7 @@ final class Gant {
     configuration.setTargetDirectory ( destDir )
     def unit = new CompilationUnit ( configuration , null , new GroovyClassLoader ( binding.classLoader ) )
     unit.addSource ( buildClassName , new ByteArrayInputStream ( buildFileText.bytes ) )
-    unit.compile ( )				
+    unit.compile ( )
   }
   /**
    *  The entry point for command line invocation.

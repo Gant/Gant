@@ -63,8 +63,14 @@ public class GantBinding extends Binding implements Cloneable {
       //setVariable ( ant , new GantBuilder ( project ) )
       setVariable ( 'ant' , new GantBuilder ( ) )
     }
-    else { setVariable ( 'ant' , new GantBuilder ( ) ) } 
+    else { setVariable ( 'ant' , new GantBuilder ( ) ) }
+    //  Do not allow the output to escape.  The problem here is that if the output is allowed out then
+    //  Ant, Gant, Maven, Eclipse and IntelliJ IDEA all behave slightly differently.  This makes testing
+    //  nigh on impossible.  Also the user doesn't need to know about these.
+    final outSave = System.out
+    System.setOut ( new PrintStream ( new ByteArrayOutputStream ( ) ) )
     ant.property ( environment : 'environment' )
+    System.setOut ( outSave )
     //  Ensure Ant as well as ant is available to ensure backward compatibility.
     setVariable ( 'Ant' , getVariable ( 'ant' ) )
     setVariable ( 'includeTargets' , new IncludeTargets ( this ) )
@@ -85,9 +91,9 @@ public class GantBinding extends Binding implements Cloneable {
           //throw new RuntimeException ( "Attempt to redefine " + targetName )
           //
           System.err.println ( 'Warning, target causing name overwriting of name ' + targetName )
-          //System.exit ( 101 ) 
+          //System.exit ( 101 )
         }
-        catch ( MissingPropertyException ) { }         
+        catch ( MissingPropertyException ) { }
         def targetDescription = map.get ( targetName )
         if ( targetDescription ) { targetDescriptions.put ( targetName , targetDescription ) }
         closure.metaClass = new GantMetaClass ( closure.metaClass , owner )
@@ -119,7 +125,7 @@ public class GantBinding extends Binding implements Cloneable {
           break
           default :
           throw new RuntimeException ( 'Parameter to setDefaultTarget is of the wrong type -- must be a target reference or a string.' )
-          break 
+          break
          }
       } )
     setVariable ( 'cacheEnabled' , false )

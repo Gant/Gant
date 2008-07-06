@@ -21,6 +21,10 @@ import java.util.HashMap ;
 import java.util.List ;
 import java.util.Map ;
 
+import java.io.ByteArrayOutputStream ;
+import java.io.PrintStream ;
+import java.io.OutputStream;
+
 import groovy.lang.Closure ;
 import groovy.util.AntBuilder ;
 
@@ -117,6 +121,12 @@ public class GantBuilder extends AntBuilder {
     final Map<String,String> parameters = new HashMap<String,String> ( ) ;
     parameters.put ( "name" , "groovyc" ) ;
     parameters.put ( "classname" , "org.codehaus.groovy.ant.Groovyc" ) ;
+    //  Do not allow the output to escape.  The problem here is that if the output is allowed out then
+    //  Ant, Gant, Maven, Eclipse and IntelliJ IDEA all behave slightly differently.  This makes testing
+    //  nigh on impossible.  Also the user doesn't need to know about these.
+    final PrintStream outSave = System.out ;
+    System.setOut ( new PrintStream ( new ByteArrayOutputStream ( ) ) ) ;
     invokeMethod ( "taskdef" , new Object[] { parameters } ) ;
+    System.setOut ( outSave ) ;
   }
 }

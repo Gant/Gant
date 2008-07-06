@@ -15,7 +15,7 @@
 package org.codehaus.gant.tests
 
 /**
- *  A test to ensure that the target listing works. 
+ *  A test to ensure that the target listing works.
  *
  *  @author Russel Winder <russel.winder@concertant.com>
  */
@@ -33,14 +33,14 @@ target ( somethingElse : "Do something else." ) { echo ( message : "Did somethin
   }
   void testMissingNamedTarget ( ) {
     assertEquals ( -11 , gant.processArgs ( [ '-n' ,  '-f' ,  '-'  , 'blah'] as String[] ) )
-    assertEquals ( prefixMaterial + "Target blah does not exist.\n" , output ) 
+    assertEquals ( "Target blah does not exist.\n" , output )
   }
   void testSomething ( ) {
     assertEquals ( 0 , gant.processArgs ( [ '-n' ,  '-f' ,  '-'  , 'something'] as String[] ) )
-    assertEquals ( prefixMaterial + "     [echo] message : 'Did something.'\n" , output ) 
+    assertEquals ( "     [echo] message : 'Did something.'\n" , output )
   }
   void testSomethingElse ( ) {
     assertEquals ( 0 , gant.processArgs ( [ '-n' ,  '-f' ,  '-'  , 'somethingElse'] as String[] ) )
-    assertEquals ( prefixMaterial + "     [echo] message : 'Did something else.'\n" , output ) 
+    assertEquals ( "     [echo] message : 'Did something else.'\n" , output )
   }
 }

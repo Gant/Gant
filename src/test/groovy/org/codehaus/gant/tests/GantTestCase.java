@@ -60,14 +60,6 @@ public abstract class GantTestCase extends GroovyTestCase {
   protected void setScript ( final String script ) { System.setIn ( new ByteArrayInputStream ( script.getBytes ( ) ) ) ; }
   protected int processTargets ( ) { return gant.processTargets ( ) ; }
   protected int processTargets ( final String s ) { return gant.processTargets ( s ) ; }
-  protected int processTargets ( final List<String> l ) { return gant.processTargets ( l ) ; }  
+  protected int processTargets ( final List<String> l ) { return gant.processTargets ( l ) ; }
   protected String getOutput ( ) { return output.toString ( ).replace ( "\r" , "" ) ; }
-
-  //  When run with Ant or Gant, some tests, but not all tests, output the results of various tasks run by
-  //  Gant before the script is executed.  When run with Maven this message is output in far more
-  //  situations.  It is not entirely clear why this is happening.  For now Ant and Gant run the tests
-  //  correctly and Maven has many failures.
-
-  protected static final String prefixMaterial = "  [taskdef] classname : 'org.codehaus.groovy.ant.Groovyc' , name : 'groovyc'\n [property] environment : 'environment'\n" ;
-  
 }

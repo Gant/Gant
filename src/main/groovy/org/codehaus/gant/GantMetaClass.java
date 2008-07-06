@@ -39,7 +39,7 @@ import org.apache.tools.ant.BuildException ;
  *
  *  @author Russel Winder <russel.winder@concertant.com>
  */
-class GantMetaClass extends DelegatingMetaClass {
+public class GantMetaClass extends DelegatingMetaClass {
   /**
    *  The set of all targets that have been called.  This is a global variable shared by all instances of
    *  <code>GantMetaClass</code>.
@@ -70,7 +70,7 @@ class GantMetaClass extends DelegatingMetaClass {
    */
   private Object processClosure ( final Closure closure ) {
     if ( ! methodsInvoked.contains ( closure ) ) {
-      methodsInvoked.add ( closure ) ;         
+      methodsInvoked.add ( closure ) ;
       return closure.call ( ) ;
     }
     return null ;
