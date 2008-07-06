@@ -33,11 +33,11 @@ includeTargets ** gant.targets.Maven * [
                                         version : gantVersion ,
                                         remoteRepositories : [ 'http://snapshots.repository.codehaus.org' ,  'http://repository.codehaus.org' , 'http://repo1.maven.org/maven2' ] ,
                                         compileDependencies : [
-                                                               [ groupId : 'org.codehaus.groovy' , artifactId : 'groovy' , version : '1.5.6' ] ,
-                                                               [ groupId : 'commons-cli' , artifactId : 'commons-cli' , version : '1.0' ]
+                                                               [ groupId : 'org.codehaus.groovy' , artifactId : 'groovy' , version : ant.project.properties.groovyVersion ] ,
+                                                               [ groupId : 'commons-cli' , artifactId : 'commons-cli' , version : ant.project.properties.commonsCliVersion ]
                                                                ] ,
                                         testDependencies : [
-                                                            [ groupId : 'org.apache.ivy' , artifactId : 'ivy' , version : '2.0.0-beta2' ]
+                                                            [ groupId : 'org.apache.ivy' , artifactId : 'ivy' , version : ant.project.properties.ivyVersion ]
                                                             ] ,
                                         javaCompileProperties : [ source : '1.5' , target : '1.5' , debug : 'true' ] ,
                                         deployURL : 'https://dav.codehaus.org/repository/gant' ,
