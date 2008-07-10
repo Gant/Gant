@@ -107,6 +107,7 @@ public class GantMetaClass extends DelegatingMetaClass {
    *  @return The return value of the method which is <code>null</code> if the return type is
    *  <code>void</code>.
    */
+  @Override
   public Object invokeMethod ( final Object object , final String methodName , final Object[] arguments ) {
     Object returnObject = null ;
     if ( methodName.equals ( "depends" ) ) {
@@ -118,22 +119,6 @@ public class GantMetaClass extends DelegatingMetaClass {
       }
     }
     else {
-      //////////////////////////////////////////////////////////////////////////////////////////////////////
-      //  Ensure that we have a GantMetaClass on every closure object so that we guarantee that the
-      //  GantBuilder object is included in the search path.  Unfortunately, even though this changes the
-      //  metaclass on some Closures, it appears to make no difference whatsoever :-(
-      /*
-      for ( Object arg : arguments ) {
-        if ( arg instanceof Closure ) {
-          final Closure closure = (Closure) arg ;
-           if ( ! ( closure.getMetaClass ( ) instanceof GantMetaClass ) ) {
-             System.err.println ( "Setting metaclass on " + arg + " which had class " + closure.getClass ( ) + " and metaclass " + closure.getMetaClass ( ) ) ;
-             closure.setMetaClass ( new GantMetaClass ( closure.getMetaClass ( ) , binding ) ) ;
-           }
-        }
-      }
-      */
-      //////////////////////////////////////////////////////////////////////////////////////////////////////
       try {
         returnObject = super.invokeMethod ( object , methodName , arguments ) ;
         try {
@@ -158,6 +143,7 @@ public class GantMetaClass extends DelegatingMetaClass {
    *  @param arguments The argument to the method
    *  @return The return value of the method which is null if the return type is void
    */
+  @Override
   public Object invokeMethod ( final Object object , final String methodName , final Object arguments ) {
     if ( arguments == null ) { return invokeMethod ( object , methodName , MetaClassHelper.EMPTY_ARRAY ) ; }
     else if ( arguments instanceof Tuple ) { return invokeMethod ( object , methodName , ( (Tuple) arguments ).toArray ( ) ) ; }
@@ -171,14 +157,15 @@ public class GantMetaClass extends DelegatingMetaClass {
    *  @param args the arguments to use for the method call
    *  @return the result of invoking the method
    */
+  @Override
   public Object invokeMethod ( final String name , final Object args ) {
     return invokeMethod ( this , name , args ) ;
   }
   //////////////////////////////////////////////////////////////////////////////////////////////////////////
-  //  Groovy 1.5.x is Java 1.4 and as at 2008-06-09 Groovy 1.6.x groovy.lang.MetaClass and
+  //  Groovy 1.5.x is Java 1.4 and as at 2008-07-10 Groovy 1.6.x groovy.lang.MetaClass and
   //  groovy.lang.GroovyObject have not been marked up for Java 5 generics.  Because there is a problem that
   //  blah(Class<?>) does not override blah(Class) -- at least according to Eclipse -- leave the Class type
-  //  without a type parameter and suffer the compilation warnings.
+  //  without a type parameter and suffer the compilation warning.
   //////////////////////////////////////////////////////////////////////////////////////////////////////////
   /**
    *  Invoke a method on the given receiver for the specified arguments. The sender is the class that
@@ -196,6 +183,7 @@ public class GantMetaClass extends DelegatingMetaClass {
    *  @param fromInsideClass Whether the call was invoked from the inside or the outside of the class.
    *  @return The return value of the method
    */
+  @Override
   public Object invokeMethod ( final Class sender , final Object receiver , final String methodName , final Object[] arguments, final boolean isCallToSuper, final boolean fromInsideClass ) {
     return invokeMethod ( receiver , methodName , arguments ) ;
   }

@@ -64,6 +64,7 @@ public class GantBuilder extends AntBuilder {
    *  @param arguments The parameters to the method call.
    *  @return The value returned by the method call or null if no value is returned.
    */
+  @Override
   @SuppressWarnings ( "unchecked" )
   public Object invokeMethod ( final String name , final Object arguments ) {
     if ( GantState.dryRun ) {
