@@ -91,9 +91,30 @@ import org.apache.commons.cli.OptionBuilder
  *  @author Graeme Rocher <graeme.rocher@gmail.com>
  */
 final class Gant {
+  /**
+   *  The class name to use for a script provided as standard input.
+   */
+  private final standardInputClassName = 'standard_input'
+  /**
+   *  The name of the file used as input, - means standard input.
+   */
   private buildFileName
+  /**
+   *  The <code>File</code> object for the script.
+   */
+  private buildFile
+  /**
+   *  The name of the class actually used for compiling the script.
+   */
   private buildClassName
+  /**
+   *  The <code>Script</code> object used for the script if a <code>Script</code> object gets used.
+   */
   private buildScript
+  /**
+   *  The binding object used for this run of Gant.  This binding object replaces the standard one to ensure
+   *  that all the Gant specific things appear in the binding the script executes with.
+   */
   private final GantBinding binding
    /**
     *  Constructor that uses build.gant as the build script, creates a new instance of
@@ -159,6 +180,20 @@ final class Gant {
     binding.groovyShell = new GroovyShell ( binding.classLoader , binding )
   }
   /**
+   *  Filter the stacktrace of the exception so as to print the line number of the line in the script being
+   *  executed that caused the exception.
+   */
+  private void printMessageFrom ( exception ) {
+    for ( stackEntry in exception.stackTrace ) {
+      if ( ( stackEntry.fileName == buildClassName ) && ( stackEntry.lineNumber  != -1 ) ) {
+        def sourceName = ( buildClassName == standardInputClassName ) ? 'Standard input' : buildFile.name
+        print ( sourceName + ', line ' + stackEntry.lineNumber + ' -- ' )
+      }
+    }
+    if ( exception instanceof InvocationTargetException ) { exception = exception.cause }
+    println ( 'Error evaluating Gantfile: ' + ( ( exception instanceof RuntimeException ) ? exception.message : exception.toString ( ) ) )
+  }
+  /**
    *  The function that implements the creation of the list of targets for the -p and -T options.
    */
   private int targetList ( targets ) {
@@ -184,8 +219,9 @@ final class Gant {
    *  The function that handles actioning the targets.
    */
   private int dispatch ( targets ) {
-    final printDispatchExceptionMessage = { target , method , message ->
-      println ( ( target == method ) ? "Target ${method} does not exist." : "Could not execute method ${method}.\n${message}" )
+    final printDispatchExceptionMessage = { target , mme ->
+      if ( target == mme.property ) { println ( "Target ${target} does not exist." ) }
+      else { printMessageFrom ( mme ) }
     }
     def returnCode = 0
     try {
@@ -196,7 +232,7 @@ final class Gant {
             returnCode = ( returnValue instanceof Number ) ? returnValue.intValue ( ) : 0
           }
           catch ( MissingPropertyException mme ) {
-            printDispatchExceptionMessage ( target , mme.property , mme.message )
+            printDispatchExceptionMessage ( target , mme )
             returnCode = -11
           }
         }
@@ -207,7 +243,7 @@ final class Gant {
           returnCode = ( returnValue instanceof Number ) ? returnValue.intValue ( ) : 0
         }
         catch ( MissingPropertyException mme ) {
-          printDispatchExceptionMessage ( 'default' , mme.property , mme.message )
+          printDispatchExceptionMessage ( 'default' , mme )
           returnCode = -12
         }
       }
@@ -340,8 +376,6 @@ final class Gant {
   protected int processTargets ( String function , List targets ) {
     def buildFileText = ''
     def buildFileModified = -1
-    def buildFile = null
-    def standardInputClassName = 'standard_input'
     if ( buildFileName == '-' ) {
       buildFileText = System.in.text
       buildClassName = standardInputClassName
@@ -396,14 +430,7 @@ final class Gant {
         script.run ( )
       }
       catch ( Exception e ) {
-        for ( stackEntry in e.stackTrace ) {
-          if ( ( stackEntry.fileName == buildClassName ) && ( stackEntry.lineNumber  != -1 ) ) {
-            def sourceName = ( buildClassName == standardInputClassName ) ? 'Standard input' : buildFile.name
-            print ( sourceName + ', line ' + stackEntry.lineNumber + ' -- ' )
-          }
-        }
-        if ( e instanceof InvocationTargetException ) { e = e.cause }
-        println ( 'Error evaluating Gantfile: ' + ( ( e instanceof RuntimeException ) ? e.message : e.toString ( ) ) )
+        printMessageFrom ( e )
         return -2
       }
     }
