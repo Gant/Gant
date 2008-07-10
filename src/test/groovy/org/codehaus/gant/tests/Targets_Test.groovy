@@ -72,4 +72,42 @@ target = 10
     assertEquals ( -2 , processTargets ( 'key' ) )
     assertTrue ( output.startsWith ( 'Standard input, line 1 -- Error evaluating Gantfile: No signature of method: org.codehaus.gant.GantBinding$_initializeGantBinding_closure1.doCall() is applicable for argument types:' ) ) 
   }
+  void testMissingTargetInScriptExplicitTarget ( ) {
+    script = 'setDefaultTarget ( blah )'
+    assertEquals ( -2 , processTargets ( 'blah' ) )
+    assertEquals ( 'Standard input, line 1 -- Error evaluating Gantfile: No such property: blah for class: standard_input\n' , output )
+  }
+  void testMissingTargetInScriptDefaultTarget ( ) {
+    script = 'setDefaultTarget ( blah )'
+    assertEquals ( -2 , processTargets ( ) )
+    assertEquals ( 'Standard input, line 1 -- Error evaluating Gantfile: No such property: blah for class: standard_input\n' , output )
+  }
+  void testFaultyScript ( ) {
+    script = 'XXXXX : YYYYY ->'
+    assertEquals ( -2 , processTargets ( ) )
+    assertEquals ( '''Error evaluating Gantfile: startup failed, standard_input: 1: unexpected token: -> @ line 1, column 15.
+1 error
+
+''' , output )
+  }
+
+  //  Tests resulting from GANT-45.
+
+  final theTarget = 'stuff'
+  final testScript = """
+target ( ${theTarget} : '' ) { println ( home ) }
+setDefaultTarget ( ${theTarget} )
+"""
+  final expectedOutput = 'Standard input, line 2 -- Error evaluating Gantfile: No such property: home for class: standard_input\n'
+  void test_GANT_45_MessageBugDefaultTarget ( ) {
+    script = testScript
+    assertEquals ( -12 , processTargets ( ) )
+    assertEquals ( expectedOutput , output )
+  }
+  void test_GANT_45_MessageBugExplicitTarget ( ) {
+    script = testScript
+    assertEquals ( -11 , processTargets ( theTarget ) )
+    assertEquals ( expectedOutput , output )
+  }
+  
 }
