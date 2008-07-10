@@ -28,6 +28,8 @@ import org.apache.commons.cli.GnuParser
 import org.apache.commons.cli.Option
 import org.apache.commons.cli.OptionBuilder
 
+import org.codehaus.groovy.runtime.InvokerInvocationException
+
 /**
  *  This class provides infrastructure and an executable command for using Groovy + AntBuilder as a build
  *  tool in a way similar to Rake and SCons.  However, where Rake and SCons are dependency programming
@@ -191,6 +193,7 @@ final class Gant {
       }
     }
     if ( exception instanceof InvocationTargetException ) { exception = exception.cause }
+    if ( exception instanceof InvokerInvocationException ) { exception = exception.cause }
     println ( 'Error evaluating Gantfile: ' + ( ( exception instanceof RuntimeException ) ? exception.message : exception.toString ( ) ) )
   }
   /**
