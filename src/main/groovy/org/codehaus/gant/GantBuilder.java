@@ -120,6 +120,22 @@ public class GantBuilder extends AntBuilder {
     final Map<String,String> parameters = new HashMap<String,String> ( ) ;
     parameters.put ( "name" , "groovyc" ) ;
     parameters.put ( "classname" , "org.codehaus.groovy.ant.Groovyc" ) ;
+    //  If execution has been initiated from Gant or some context where the Groovy jar is already in the
+    //  classpath when the Ant objects are created then we have no problems here, we can simply load the
+    //  Groovyc Ant task into the Ant Project object.  However if the initiating context is Ant (e.g. the
+    //  Gant Ant task is being used), then it might be that the Groovy jar was not in the Ant classpath when
+    //  the Ant objects were instantiated.  If the Groovy jar was not in the classpath then the Groovyc Ant
+    //  task cannot be loaded without specifying a path to the Groovy jar.  Fortunately we already know that
+    //  Groovy is accessible since this code is actually running.  So to avoid any sense of doubt and
+    //  uncertainty forcibly set the classpath to search for the Groovyc Ant task -- even though usually
+    //  this is unecessary.  We are protecting here against a situation that is not the majority case but...
+    try {
+      //  The URL should be in the form  jar:file:<path>!<path>
+      parameters.put ( "classpath" , Class.forName ( "org.codehaus.groovy.ant.Groovyc" ).getClassLoader ( ).getResource ( "org/codehaus/groovy/ant/Groovyc.class" ).toString ( ).split ( ":" )[2].split ( "!" )[0] ) ;
+    }
+    catch ( final ClassNotFoundException cnfe ) {
+      throw new RuntimeException ( "Cannot find org.codehaus.groovy.ant.Groovyc!" ) ;
+    }
     //  Do not allow the output to escape.  The problem here is that if the output is allowed out then
     //  Ant, Gant, Maven, Eclipse and IntelliJ IDEA all behave slightly differently.  This makes testing
     //  nigh on impossible.  Also the user doesn't need to know about these.

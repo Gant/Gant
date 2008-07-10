@@ -14,7 +14,10 @@
 
 package org.codehaus.gant.ant.tests ;
 
+import java.io.BufferedReader ;
 import java.io.File ;
+import java.io.IOException ;
+import java.io.InputStreamReader ;
 
 import org.apache.tools.ant.BuildException ;
 import org.apache.tools.ant.Project ;
@@ -81,5 +84,40 @@ public class Gant_Test extends TestCase {
   public void testTaskdef ( ) {
     project.executeTarget ( "gantTaskdef" ) ;
     assertEquals ( "OK." , returnValue ) ;
+  }
+  /**
+   *  Test stemming from GANT-19 and relating to ensuring the right classpath when loading the Groovyc Ant
+   *  task.
+   */
+  public void testRunningAntFromShell ( ) {
+    //
+    //  This Ant task actually fails always and so the return code is 1.  If the Groovyc class cannot be
+    //  loaded then the result is an message:
+    //
+    //    : taskdef class org.codehaus.groovy.ant.Groovyc cannot be found
+    //
+    //  whereas if it succeeds the message is more like:
+    //
+    //    [gant] Error evaluating Gantfile: startup failed, build_gant: 15: unable to resolve class org.codehaus.gant.ant.tests.Gant_Test
+    //    [gant]  @ line 15, column 1.
+    //    [gant] 1 error
+    //    [gant] 
+    //
+    final ProcessBuilder pb = new ProcessBuilder ( "ant" , "-f" , "src/test/groovy/org/codehaus/gant/ant/tests/gantTest.xml" ) ;
+    try {
+      final Process p = pb.start ( ) ;
+      try { assertEquals ( 1 , p.waitFor ( ) ) ; }
+      catch ( final InterruptedException ie ) { fail ( "Got an InterruptedException which should not have happened." ) ; }
+      final StringBuilder sb = new StringBuilder ( ) ;
+      final BufferedReader br = new BufferedReader ( new InputStreamReader ( p.getInputStream ( ) ) ) ;
+      while ( true ) {
+        final String line = br.readLine ( ) ;
+        if ( line == null ) { break ; }
+        sb.append ( line ) ;
+        sb.append ( System.getProperty ( "line.separator" ) ) ;
+      }
+      assertEquals ( "Buildfile: src/test/groovy/org/codehaus/gant/ant/tests/gantTest.xml\n\n-initializationWithGroovyHome:\n\n-initializationOtherwise:\n\ngantTestDefaultTarget:\n     [gant] Error evaluating Gantfile: startup failed, build_gant: 15: unable to resolve class org.codehaus.gant.ant.tests.Gant_Test\n     [gant]  @ line 15, column 1.\n     [gant] 1 error\n     [gant] \n", sb.toString ( ) ) ;
+    }
+    catch ( final IOException ioe ) { fail ( "Got an IOException which should not have happened." ) ; }
   }
 }
