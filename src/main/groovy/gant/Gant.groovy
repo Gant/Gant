@@ -219,34 +219,21 @@ final class Gant {
    *  The function that handles actioning the targets.
    */
   private int dispatch ( targets ) {
-    final printDispatchExceptionMessage = { target , mme ->
-      if ( target == mme.property ) { println ( "Target ${target} does not exist." ) }
-      else { printMessageFrom ( mme ) }
-    }
     def returnCode = 0
+    final processDispatch = { target , errorReturnCode ->
+      try {
+        def returnValue = owner.binding.getVariable ( target ).call ( )
+        returnCode = ( returnValue instanceof Number ) ? returnValue.intValue ( ) : 0
+      }
+      catch ( MissingPropertyException mme ) {
+        if ( target == mme.property ) { println ( "Target ${target} does not exist." ) }
+        else { printMessageFrom ( mme ) }
+        returnCode = errorReturnCode
+      }
+    }
     try {
-      if ( targets.size ( ) > 0 ) {
-        targets.each { target ->
-          try {
-            def returnValue = binding.getVariable ( target ).call ( )
-            returnCode = ( returnValue instanceof Number ) ? returnValue.intValue ( ) : 0
-          }
-          catch ( MissingPropertyException mme ) {
-            printDispatchExceptionMessage ( target , mme )
-            returnCode = -11
-          }
-        }
-      }
-      else {
-        try {
-          def returnValue = binding.getVariable ( 'default' ).call ( )
-          returnCode = ( returnValue instanceof Number ) ? returnValue.intValue ( ) : 0
-        }
-        catch ( MissingPropertyException mme ) {
-          printDispatchExceptionMessage ( 'default' , mme )
-          returnCode = -12
-        }
-      }
+      if ( targets.size ( ) > 0 ) { targets.each { target -> processDispatch ( target , -11 ) } }
+      else { processDispatch ( 'default' , -12 ) }
     }
     catch ( Exception e ) {
       println ( e.message )
