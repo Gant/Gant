@@ -40,4 +40,16 @@ Using a target name of target gives a very weird error message.
 
 The tests currently work fine with Ant or Gant and fail with Maven.  This difference needs investigating.
 
+Why are there all the gant_$$_GarbageCollect_Test.* and gant_$$_GANT_33_Test* files in ~/.gant/cache ?
+
+Handle all the TODO and FIXME.
+
+Maven target set allows test execution after failed compilation.  The Java task has failonerror set true but
+there is no actual termination.  Whatever information the task gives to Ant to terminate is notbeing
+transmitted to the GantBuilder and hence the Maven task.  Clearly the action in the task is not to System.exit!
+
+No Javadoc generation with the Maven target set. 
+
+Loading the groovyc task in Gant startup causes problem when the Gant Ant task is used from Ant.
+
 Add all the above as JIRA issues.
