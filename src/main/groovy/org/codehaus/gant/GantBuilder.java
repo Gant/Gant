@@ -125,7 +125,7 @@ public class GantBuilder extends AntBuilder {
     //  nigh on impossible.  Also the user doesn't need to know about these.
     final PrintStream outSave = System.out ;
     System.setOut ( new PrintStream ( new ByteArrayOutputStream ( ) ) ) ;
-    invokeMethod ( "taskdef" , new Object[] { parameters } ) ;
+    super.invokeMethod ( "taskdef" , new Object[] { parameters } ) ;
     System.setOut ( outSave ) ;
   }
 }
