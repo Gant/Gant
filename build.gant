@@ -99,9 +99,15 @@ final distributionDirectories = [ 'documentation' , 'examples' , '.settings' , s
  //  correctly.  Gant can still be built and distributed against Groovy 1.5.0 and 1.5.1 but it has to be
  //  done the hard (manual) way.
  
+ //  org.codehaus.gant.ant.tests.Gant_Test.testRunningAntFromShell fails when Gant is compiled with
+ //  groovy-1.6-beta-1 due to a problem with the metaclass system resulting in an infinite recursion
+ //  emanating from InvokerHelper when trying to start the Gant Ant task .  1.6-beta-SNAPSHOT does not
+ //  exhibit this problem so whatever caused it has been changed.
+ 
 final distributionVersions = [
                               ( 'groovy-' + groovyVersion ) : [ groupId : 'org.codehaus.groovy' , artifactId : 'groovy' , version : groovyVersion ] ,
-                              'groovy-1.6-beta-1-SNAPSHOT' : [ groupId : 'org.codehaus.groovy' , artifactId : 'groovy' , version : '1.6-beta-1-SNAPSHOT' ] ,
+                              //'groovy-1.6-beta-1' : [ groupId : 'org.codehaus.groovy' , artifactId : 'groovy' , version : '1.6-beta-1' ] ,
+                              'groovy-1.6-beta-2-SNAPSHOT' : [ groupId : 'org.codehaus.groovy' , artifactId : 'groovy' , version : '1.6-beta-2-SNAPSHOT' ] ,
                               standalone : [ groupId : 'org.codehaus.groovy' , artifactId : 'groovy-all' , version : groovyVersion ]
                               ]
 
