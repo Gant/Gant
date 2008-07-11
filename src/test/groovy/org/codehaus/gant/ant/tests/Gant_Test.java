@@ -108,7 +108,7 @@ public class Gant_Test extends TestCase {
     //  InvokerHelper as the Gant Ant task is started leading to a StackOverflowError, and so the correct
     //  output is not received.
     //
-    final ProcessBuilder pb = new ProcessBuilder ( "ant" , "-d" , "-f" , "src/test/groovy/org/codehaus/gant/ant/tests/gantTest.xml" ) ;
+    final ProcessBuilder pb = new ProcessBuilder ( "ant" , "-f" , "src/test/groovy/org/codehaus/gant/ant/tests/gantTest.xml" ) ;
     try {
       final StringBuilder sb = new StringBuilder ( ) ;
       final Process p = pb.start ( ) ;  //  Could throw an IOException hence the try block.
