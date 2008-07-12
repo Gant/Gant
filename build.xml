@@ -1,28 +1,30 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <!--
-  Gant - A Groovy build framework based on scripting Ant tasks.
+Gant - A Groovy build framework based on scripting Ant tasks.
 
-  Copyright © 2006-8 Russel Winder
+Copyright © 2006-8 Russel Winder
 
-  Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in
-  compliance with the License. You may obtain a copy of the License at
+Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in
+compliance with the License. You may obtain a copy of the License at
 
-      http://www.apache.org/licenses/LICENSE-2.0
+http://www.apache.org/licenses/LICENSE-2.0
 
-  Unless required by applicable law or agreed to in writing, software distributed under the License is
-  distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or
-  implied. See the License for the specific language governing permissions and limitations under the
-  License.
+Unless required by applicable law or agreed to in writing, software distributed under the License is
+distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or
+implied. See the License for the specific language governing permissions and limitations under the
+License.
 
-  Author : Russel Winder <russel.winder@concertant.com>
+Author : Russel Winder <russel.winder@concertant.com>
+-->
 
-  This Ant script provides the bootstrap capability to install Gant for the first time for those people
-  installing from a Subversion checkout.  This build assumes the environment variable GROOVY_HOME is set.
+<!--
+This Ant script provides the bootstrap capability to install Gant for the first time for those people
+installing from a Subversion checkout.  This build assumes the environment variable GROOVY_HOME is set.
 
-  This Ant script also provides targets for continuous integration servers.  This build assumes nothing except
-  that that comes with Gant.  In particular, all the Groovy and JUnit jars are brought in from the Maven
-  repository using the Maven Ant task, the jar for which is part of the Gant distribution.
+This Ant script also provides targets for continuous integration servers.  This build assumes nothing except
+that that comes with Gant.  In particular, all the Groovy and JUnit jars are brought in from the Maven
+repository using the Maven Ant task, the jar for which is part of the Gant distribution.
 -->
 
 <project name="Gant" default="compile" basedir="." xmlns:artifact="urn:maven-artifact-ant">
@@ -244,7 +246,7 @@
   <target name="-initializeMavenDownload" depends="-initializeMavenAntTask">
     <path id="compileJarSetId"/>
      <artifact:dependencies pathId="compileJarSetId">
-      <dependency groupId="org.codehaus.groovy" artifactId="groovy" version="${groovyVersion}"/>
+      <dependency groupId="org.codehaus.groovy" artifactId="groovy-all" version="${groovyVersion}"/>
       <dependency groupId="commons-cli" artifactId="commons-cli" version="${commonsCliVersion}"/>
     </artifact:dependencies>
     <path id="testJarSetId">
