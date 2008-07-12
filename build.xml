@@ -18,16 +18,37 @@ License.
 Author : Russel Winder <russel.winder@concertant.com>
 -->
 
-<!--
-This Ant script provides the bootstrap capability to install Gant for the first time for those people
-installing from a Subversion checkout.  This build assumes the environment variable GROOVY_HOME is set.
-
-This Ant script also provides targets for continuous integration servers.  This build assumes nothing except
-that that comes with Gant.  In particular, all the Groovy and JUnit jars are brought in from the Maven
-repository using the Maven Ant task, the jar for which is part of the Gant distribution.
--->
-
 <project name="Gant" default="compile" basedir="." xmlns:artifact="urn:maven-artifact-ant">
+
+  <description>
+    This Ant script provides the bootstrap capability to install Gant for the first time for those people
+    installing from source who do not have a previous installation of Gant.  If the variable GROOVY_HOME is
+    set, a lightweight Gant installation will be created that uses the installed Groovy.  If the variable
+    GROOVY_HOME is not set, a standalone installation of Gant will be created.
+  </description>
+
+  <!--
+      This Ant script also provides targets for continuous integration servers.  Currently active are the
+      Codehaus Bamboo build , the Canoo CruiseControl build and the Concertant Buildbot build.  The Bamboo
+      and CruiseControl builds assume nothing except that that comes with Gant.  In particular, all the
+      Groovy and JUnit jars are brought in from the Maven repository using the Maven Ant task, the jar for
+      which is part of the Gant distribution.
+      
+      Codehaus current sets GROOVY_HOME for the continuous integration builds.  Unfortunately the
+      installation is 1.5.5 which is known to be faulty, and worse Gant doesn't work with it because of that
+      fault.  So ensure that groovyHomeSet is false in this case.
+
+      When using a Groovy installation, in order to compile, the Groovy, ASM, Antlr and Commons CLI jars are
+      needed.  The ASM and Antlr jars are only needed for Groovy, the Commons CLI is needed for Groovy but
+      is also used by Gant directly.  When downloading Groovy use groovy-all to avoid needing ASM and Antlr.
+      Need Commons CLI of course.  NB The Ant jar is already in the classpath since Ant is running!
+      
+      JUnit is needed for compiling and running the tests.
+      
+      When using the Maven Ant task to pull down all the needed jars, we could just read the POM and use
+      those dependencies, but it seems better to explicitly specify them.  Note that we don't need to
+      specify transitive dependencies here, the Maven Ant Task takes care of that.
+  -->
 
   <property file="local.build.properties"/>
   <property file="build.properties"/>
@@ -46,40 +67,33 @@ repository using the Maven Ant task, the jar for which is part of the Gant distr
 
   <property name="buildMetadataDirectory" value="${buildClassesDirectory}/META-INF"/>
 
-  <condition property="_skipTests_">
+  <condition property="installDirectoryIsSet">
+    <isset property="installDirectory"/>
+  </condition>
+
+  <condition property="installStandalone">
+    <and>
+      <isset property="installDirectoryIsSet"/>
+      <not>
+        <isset property="environment.GROOVY_HOME"/>
+      </not>
+    </and>
+  </condition>
+
+  <condition property="skipTestsIsSet">
     <istrue value="${skipTests}"/>
   </condition>
 
-  <!--
-      The bootstrap build assumed that GROOVY_HOME is set and points to a Groovy installation.  In order to
-      compile the Groovy, Ant, ASM, Antlr and Commons CLI jars are needed.  ASM and Antlr are only needed
-      for Groovy, Ant and Commons CLI are actually needed directly.  JUnit is needed only for compiling and
-      running the tests.
- 
-      All compilations use the path id compileJarSetId and the tests the path id testJarSetId.  This
-      parameterization of the targets is important for supporting both bootstrapp installation and
-      continuous integration support.
-  -->
-
-  <target name="-initializeGroovyHome">
-    <property name="groovyHome" value="${environment.GROOVY_HOME}"/>
-    <path id="compileJarSetId">
-      <fileset dir="${groovyHome}/lib" includes="groovy*.jar"/>
-      <fileset dir="${groovyHome}/lib" includes="commons-cli*.jar"/>
-      <fileset dir="${groovyHome}/lib" includes="asm*.jar"/>
-      <fileset dir="${groovyHome}/lib" includes="ant*.jar"/> <!-- Picks up antlr as well as ant. This is intended. -->
-    </path>
-    <path id="testJarSetId">
-      <fileset dir="${groovyHome}/lib" includes="junit*.jar"/>
-      <path refid="compileJarSetId"/>
-    </path>
-    <taskdef name="groovyc" classname="org.codehaus.groovy.ant.Groovyc" classpathref="compileJarSetId"/>
+  <target name="-checkGroovyHome">
+    <!--
+        This is a target so that the test can be completely avoided for the continuous integration runs:
+        only check the test for command line invocations, so that the property is never set for continuous
+        integration runs.
+    -->
+    <condition property="groovyHomeIsSet">
+      <isset property="environment.GROOVY_HOME"/>
+    </condition>
   </target>
-
-  <!--
-      We need to get the Ivy jar from the Maven repository, so we need to set up the Maven Ant Task.  This
-      is also needed for the continuous integration builds hence it is a separate target.
-  -->
 
   <target name="-initializeMavenAntTask">
      <path id="mavenAntTaskJarPathId">
@@ -88,43 +102,74 @@ repository using the Maven Ant task, the jar for which is part of the Gant distr
     <typedef resource="org/apache/maven/artifact/ant/antlib.xml" uri="urn:maven-artifact-ant" classpathref="mavenAntTaskJarPathId"/>
   </target>
 
+  <target name="-initializeWithGroovyHome" if="groovyHomeIsSet">
+    <path id="groovyJarPathId">
+      <fileset dir="${environment.GROOVY_HOME}/lib" includes="groovy-1.*.jar"/>
+    </path>
+    <path id="compileJarSetPathId">
+      <path refid="groovyJarPathId"/>
+      <fileset dir="${environment.GROOVY_HOME}/lib" includes="commons-cli*.jar"/>
+      <fileset dir="${environment.GROOVY_HOME}/lib" includes="asm*.jar"/>
+      <fileset dir="${environment.GROOVY_HOME}/lib" includes="antlr*.jar"/>
+    </path>
+    <path id="testJarSetPathId">
+      <fileset dir="${environment.GROOVY_HOME}/lib" includes="junit*.jar"/>
+      <path refid="compileJarSetPathId"/>
+    </path>
+    <taskdef name="groovyc" classname="org.codehaus.groovy.ant.Groovyc" classpathref="compileJarSetPathId"/>
+    <property name="scriptsExtrasDirectory" value="${scriptsDirectory}/bin_requiresGroovy"/>
+  </target>
+
+  <target name="-initializeNoGroovyHome" depends="-initializeMavenAntTask" unless="groovyHomeIsSet">
+    <artifact:dependencies pathId="groovyJarPathId" filesetId="groovyJarFilesetId">
+      <dependency groupId="org.codehaus.groovy" artifactId="groovy-all" version="${groovyVersion}"/>
+    </artifact:dependencies>
+     <artifact:dependencies pathId="compileJarSet" filesetId="compileJarSetFilesetId">
+      <dependency groupId="commons-cli" artifactId="commons-cli" version="${commonsCliVersion}"/>
+    </artifact:dependencies>
+    <path id="compileJarSetPathId">
+      <path refid="groovyJarPathId"/>
+      <path refid="compileJarSet"/>
+    </path>
+    <path id="testJarSetPathId">
+      <path refid="compileJarSetPathId"/>
+    </path>
+    <taskdef name="groovyc" classname="org.codehaus.groovy.ant.Groovyc" classpathref="compileJarSetPathId"/>
+    <property name="scriptsExtrasDirectory" value="${scriptsDirectory}/bin_standalone"/>
+ </target>
 
   <target name="-compile">
     <mkdir dir="${buildClassesDirectory}"/>
     <groovyc srcdir="${sourceDirectory}" destdir="${buildClassesDirectory}">
       <classpath>
         <pathelement location="${buildClassesDirectory}"/>
-        <path refid="compileJarSetId"/>
+        <path refid="compileJarSetPathId"/>
       </classpath>
       <javac source="1.5" target="1.5" debug="on" encoding="UTF-8"/>
     </groovyc>
   </target>
-
-  <target name="compile" depends="-initializeGroovyHome,-compile" description="Compile everything needed for a bootstrap build of Gant."/>
 
   <target name="-compileTests" depends="-compile">
     <mkdir dir="${buildTestClassesDirectory}"/>
     <groovyc srcdir="${testsDirectory}" destdir="${buildTestClassesDirectory}">
       <classpath>
         <pathelement location="${buildClassesDirectory}"/>
-        <path refid="testJarSetId"/>
+        <path refid="testJarSetPathId"/>
       </classpath>
       <javac source="1.5" target="1.5" debug="on" encoding="UTF-8"/>
     </groovyc>
   </target>
 
-  <target name="compileTests" depends="-initializeGroovyHome,-compileTests" description="Compile all the tests for a bootstrap build of Gant."/>
-
-  <target name="-test" depends="-initializeMavenAntTask,-compileTests" unless="_skipTests_">
+  <target name="-test" depends="-initializeMavenAntTask,-compileTests" unless="skipTestsIsSet">
     <mkdir dir="${buildTestReportsDirectory}"/>
     <artifact:dependencies pathId="ivyJarPathId">
       <dependency groupId="org.apache.ivy" artifactId="ivy" version="${ivyVersion}"/>
     </artifact:dependencies>
-    <path id="testClasspathId">
+    <path id="testClasspathPathId">
       <pathelement location="${buildTestClassesDirectory}"/>
       <path refid="mavenAntTaskJarPathId"/>
       <path refid="ivyJarPathId"/>
-      <path refid="testJarSetId"/>
+      <path refid="testJarSetPathId"/>
     </path>
     <junit printsummary="yes" fork="true" failureproperty="testsFailed">
       <formatter type="plain"/>
@@ -133,7 +178,7 @@ repository using the Maven Ant task, the jar for which is part of the Gant distr
         <fileset dir="${buildTestClassesDirectory}" includes="**/ant/tests/*_Test.class"/>
       </batchtest>
       <classpath>
-        <path refid="testClasspathId"/>
+        <path refid="testClasspathPathId"/>
       </classpath>
     </junit>
     <junit printsummary="yes" fork="true" failureproperty="testsFailed">
@@ -143,14 +188,12 @@ repository using the Maven Ant task, the jar for which is part of the Gant distr
         <fileset dir="${buildTestClassesDirectory}" includes="**/*_Test.class" excludes="**/ant/tests/*"/>
       </batchtest>
       <classpath>
-        <path refid="testClasspathId"/>
+        <path refid="testClasspathPathId"/>
         <pathelement location="${buildClassesDirectory}"/>
       </classpath>
     </junit>
   </target>
 
-  <target name="test" depends="-initializeGroovyHome,-test" description="Test a boostrap build of Gant."/>
- 
   <target name="-package" depends="-test,-compile">
     <mkdir dir="${buildMetadataDirectory}"/>
     <copy todir="${buildMetadataDirectory}" file="LICENCE.txt"/>
@@ -167,22 +210,22 @@ repository using the Maven Ant task, the jar for which is part of the Gant distr
     <jar destfile="${buildDirectory}/gant-${gantVersion}.jar" basedir="${buildClassesDirectory}" manifest="${buildMetadataDirectory}/MANIFEST.MF"/>
   </target>
 
-  <target name="package" depends="-initializeGroovyHome,-package" description="Create the jar file for a bootstrap build of Gant."/>
+  <target name="-installStandalone" if="installStandalone">
+    <copy todir="${installDirectory}/lib">
+      <fileset refid="groovyJarFilesetId"/>
+      <fileset refid="compileJarSetFilesetId"/>
+      <mapper type="flatten"/>
+    </copy>
+  </target>
 
-  <condition property="installDirectoryIsSet">
-    <isset property="installDirectory"/>
-  </condition>
-
-  <target name="-install" depends="-initializeMavenAntTask,package" if="installDirectoryIsSet">
+  <target name="-install" depends="-initializeMavenAntTask,-package,-installStandalone" if="installDirectoryIsSet">
     <pathconvert property="groovyJarName">
-      <path>
-        <fileset dir="${groovyHome}/lib" includes="groovy-1.*.jar"/>
-      </path>
+      <path refid="groovyJarPathId"/>
       <mapper type="flatten"/>
     </pathconvert>
-     <copy todir="${installDirectory}/bin">
+    <copy todir="${installDirectory}/bin">
       <fileset dir="${scriptsDirectory}/bin"/>
-      <fileset dir="${scriptsDirectory}/bin_requiresGroovy"/>
+      <fileset dir="${scriptsExtrasDirectory}"/>
       <filterset>
         <filter token="GANT_VERSION" value="${gantVersion}"/>
         <filter token="GROOVYJAR" value="${groovyJarName}"/>
@@ -194,13 +237,13 @@ repository using the Maven Ant task, the jar for which is part of the Gant distr
      <copy todir="${installDirectory}">
       <fileset dir="${scriptsDirectory}" includes="conf/gant-starter.conf"/>
     </copy>
-   <artifact:dependencies filesetId="ivyFilesetId">
+   <artifact:dependencies filesetId="ivyJarFilesetId">
       <dependency groupId="org.apache.ivy" artifactId="ivy" version="${ivyVersion}"/>
     </artifact:dependencies>
     <copy todir="${installDirectory}/lib">
       <fileset dir="${buildDirectory}" includes="gant*.jar"/>
       <fileset dir="${jarsDirectory}" includes="maven*.jar"/>
-      <fileset refid="ivyFilesetId"/>
+      <fileset refid="ivyJarFilesetId"/>
       <mapper type="flatten"/>
     </copy>
   </target>
@@ -208,8 +251,6 @@ repository using the Maven Ant task, the jar for which is part of the Gant distr
   <target name="-notInstallable" unless="installDirectoryIsSet">
     <echo message="Property installDirectory is not set, so cannot install.  Set installDirectory in file local.build.properties."/>
   </target>
-
-  <target name="install" depends="-install,-notInstallable" description="Package and then install a boostrap build of Gant.  Install destination must be set in the file local.build.properties."/>
 
   <target name="-uninstall" if="installDirectoryIsSet">
     <delete dir="${installDirectory}"/>
@@ -219,8 +260,24 @@ repository using the Maven Ant task, the jar for which is part of the Gant distr
     <echo message="Property installDirectory is not set, so cannot uninstall.  Set installDirectory in file local.build.properties."/>
   </target>
 
- <target name="uninstall" depends="-uninstall,-notUninstallable" description="Uninstall Gant from installation destination."/>
+  <!--
+      The targets usable from the command line.
+  -->
 
+  <target name="-commandLineDependencies" depends="-checkGroovyHome,-initializeWithGroovyHome,-initializeNoGroovyHome"/>
+  
+  <target name="compile" depends="-commandLineDependencies,-compile" description="Compile everything needed for a bootstrap build of Gant."/>
+  
+  <target name="compileTests" depends="-commandLineDependencies,-compileTests" description="Compile all the tests for a bootstrap build of Gant."/>
+  
+  <target name="test" depends="-commandLineDependencies,-test" description="Test a boostrap build of Gant."/>
+  
+  <target name="package" depends="-commandLineDependencies,-package" description="Create the jar file for a bootstrap build of Gant."/>
+  
+  <target name="install" depends="-commandLineDependencies,-install,-notInstallable" description="Package and then install a boostrap build of Gant.  Install destination must be set in the file local.build.properties."/>
+  
+  <target name="uninstall" depends="-commandLineDependencies,-uninstall,-notUninstallable" description="Uninstall Gant from installation destination."/>
+  
   <target name="clean" description="Clean everything up.">
     <delete dir="${buildDirectory}"/>
     <delete>
@@ -233,35 +290,13 @@ repository using the Maven Ant task, the jar for which is part of the Gant distr
   </target>
 
   <!-- 
-       The remainder of this is for the continuous integration builds for Canoo CruiseControl and Codehaus
-       Bamboo.  If these systems worked with Gant directly we wouldn't need any of this.  Avoid any hassles
-       with dependencies by using the Maven Ant task to pull down all the needed jars.  Could just read the
-       POM and use those dependencies, but it seems better to explicitly specify them.  Note that we don't
-       need to specify transitive dependencies here, the Maven Ant Task takes care of that.
-       
-       It is important that all the targets above are parameterized with compileJarSetId as the compile path
-       id and testJarSetId as the test path id.
+       The targets for the Canoo CruiseControl and Codehaus Bamboo continuous integration servers.
   -->
 
-  <target name="-initializeMavenDownload" depends="-initializeMavenAntTask">
-    <path id="compileJarSetId"/>
-     <artifact:dependencies pathId="compileJarSetId">
-      <dependency groupId="org.codehaus.groovy" artifactId="groovy-all" version="${groovyVersion}"/>
-      <dependency groupId="commons-cli" artifactId="commons-cli" version="${commonsCliVersion}"/>
-    </artifact:dependencies>
-    <path id="testJarSetId">
-      <path refid="compileJarSetId"/>
-    </path>
-   <artifact:dependencies pathId="testjarSet">
-      <dependency groupId="junit" artifactId="junit" version="${junitVersion}"/>
-    </artifact:dependencies>
-    <taskdef name="groovyc" classname="org.codehaus.groovy.ant.Groovyc" classpathref="compileJarSetId"/>
-  </target>
-
-  <target name="-ciBuild" depends="clean,-initializeMavenDownload,-package"/>
+  <target name="-ciBuild" depends="clean,-initializeNoGroovyHome,-package"/>
  
-  <target name="cruiseControlBuild" depends="-ciBuild" description="Target for the Canoo CruiseControl build."/>
+  <target name="cruiseControlBuild" depends="-ciBuild"/>
 
-  <target name="bambooBuild" depends="-ciBuild" description="Target for the Codehaus Bamboo build."/>
+  <target name="bambooBuild" depends="-ciBuild"/>
 
 </project>
