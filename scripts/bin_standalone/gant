@@ -31,13 +31,11 @@ then
         GANT_HOME=`dirname $0`
     fi
     GANT_HOME=`dirname $GANT_HOME`
-    export GANT_HOME
 fi
 
 #  Force GROOVY_HOME to be GANT_HOME so that the startGroovy code does the right thing.
 
 GROOVY_HOME="$GANT_HOME"
-export GROOVY_HOME
 
 #  If ANT_HOME is not set, deduce a path -- this is needed in order to discover the location of the jars
 #  associated with the Ant installation.  Assume the executable is in $ANT_HOME/bin.
@@ -47,7 +45,6 @@ then
     ANT_HOME=`which ant`
     ANT_HOME=`dirname "$ANT_HOME"`
     ANT_HOME=`dirname "$ANT_HOME"`
-    export ANT_HOME
 fi
 
 GROOVY_APP_NAME=Gant
@@ -57,8 +54,8 @@ GROOVY_CONF="$GANT_HOME/conf/gant-starter.conf"
 
 if $cygwin
 then
-    export GANT_HOME=`cygpath --path --mixed "$GANT_HOME"`
-    export ANT_HOME=`cygpath --path --mixed "$ANT_HOME"`
+    GANT_HOME=`cygpath --path --mixed "$GANT_HOME"`
+    ANT_HOME=`cygpath --path --mixed "$ANT_HOME"`
 fi
 JAVA_OPTS="$JAVA_OPTS -Dgant.home=$GANT_HOME -Dant.home=$ANT_HOME"
 
