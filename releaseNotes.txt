@@ -1,4 +1,4 @@
-1.4.0 ( rXXXX )
+1.4.0 ( r9604 )
 ---------------
 
 Remove the assumption that all instances of a given class have the same metaclass.
