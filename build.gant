@@ -39,15 +39,14 @@ catch ( MissingPropertyException mpe ) { testCase = null }
 try {  forkCompiles = Boolean.valueOf ( forkCompiles ) }
 catch ( MissingPropertyException mpe ) { forkCompiles = false }
 
-//  The groovy.home property is always set since this is Gant running.  The GROOVY_HOME environment variable
-//  may or may not be set.  If it is set use the installed Groovy, otherwise use the Groovy specified in the
-//  properties file.  This only matters for non-distribution builds.
+//  The groovy.home property is only set if Gant is started from the command line.  When started
+//  programmatically, and in particular via the Gant Ant task, it will have value null.  If the groovy.home
+//  property is set then either it is a copy of the GROOVY_HOME environment variable if that is set or it is
+//  deduced fromt eh location of the groovyc command.  The GROOVY_HOME environment variable may or may not
+//  be set.  If it is set use the installed Groovy, otherwise use the Groovy specified in the properties
+//  file.  This only matters for non-distribution builds.
 
 groovyHome = System.properties.'groovy.home'
-if ( ( groovyHome == null ) || ( groovyHome == '' ) ) {
-  println ( 'Real problem: property groovy.home is not set and this is Gant executing.' )
-  return
-}
 groovyHomeEnvironment = System.getenv ( ).GROOVY_HOME
  if ( groovyHomeEnvironment ) { assert groovyHome == groovyHomeEnvironment }
 else { assert groovyHomeEnvironment == null }
@@ -297,7 +296,6 @@ final prepareZipFromTarAndRegisterForUpload = { String root , Closure closure ->
 compileJarSetPathId = 'compileJarSetPathId'
 testJarSetPathId = 'testJarSetPathId'
 if ( groovyHomeEnvironment ) {
-   assert groovyHome == groovyHomeEnvironment
    groovyJarPathId = 'groovyJarPathId'
    ant.path ( id : groovyJarPathId ) { fileset ( dir : groovyHome + '/lib' , includes : 'groovy-1.*.jar' ) }
    ant.path ( id : compileJarSetPathId ) {
