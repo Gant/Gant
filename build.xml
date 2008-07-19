@@ -29,14 +29,10 @@ Author : Russel Winder <russel.winder@concertant.com>
 
   <!--
       This Ant script also provides targets for continuous integration servers.  Currently active are the
-      Codehaus Bamboo build , the Canoo CruiseControl build and the Concertant Buildbot build.  The Bamboo
+      Codehaus Bamboo build, the Canoo CruiseControl build and the Concertant Buildbot build.  The Bamboo
       and CruiseControl builds assume nothing except that that comes with Gant.  In particular, all the
       Groovy and JUnit jars are brought in from the Maven repository using the Maven Ant task, the jar for
       which is part of the Gant distribution.
-      
-      Codehaus current sets GROOVY_HOME for the continuous integration builds.  Unfortunately the
-      installation is 1.5.5 which is known to be faulty, and worse Gant doesn't work with it because of that
-      fault.  So ensure that groovyHomeSet is false in this case.
 
       When using a Groovy installation, in order to compile, the Groovy, ASM, Antlr and Commons CLI jars are
       needed.  The ASM and Antlr jars are only needed for Groovy, the Commons CLI is needed for Groovy but
