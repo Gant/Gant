@@ -103,6 +103,7 @@ Author : Russel Winder <russel.winder@concertant.com>
   </target>
 
   <target name="-initializeWithGroovyHome" if="groovyHomeIsSet">
+    <echo message="Building with the Groovy installation at $GROOVY_HOME."/>
     <path id="groovyJarPathId">
       <fileset dir="${environment.GROOVY_HOME}/lib" includes="groovy-1.*.jar"/>
     </path>
@@ -121,6 +122,7 @@ Author : Russel Winder <russel.winder@concertant.com>
   </target>
 
   <target name="-initializeNoGroovyHome" depends="-initializeMavenAntTask" unless="groovyHomeIsSet">
+    <echo message="Building without a Groovy installation."/>
     <artifact:dependencies pathId="groovyJarPathId" filesetId="groovyJarFilesetId">
       <dependency groupId="org.codehaus.groovy" artifactId="groovy-all" version="${groovyVersion}"/>
     </artifact:dependencies>

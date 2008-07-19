@@ -296,32 +296,34 @@ final prepareZipFromTarAndRegisterForUpload = { String root , Closure closure ->
 compileJarSetPathId = 'compileJarSetPathId'
 testJarSetPathId = 'testJarSetPathId'
 if ( groovyHomeEnvironment ) {
-   groovyJarPathId = 'groovyJarPathId'
-   ant.path ( id : groovyJarPathId ) { fileset ( dir : groovyHome + '/lib' , includes : 'groovy-1.*.jar' ) }
-   ant.path ( id : compileJarSetPathId ) {
-     path ( refid : groovyJarPathId )
-     fileset ( dir : groovyHome + '/lib' , includes : 'commons-cli*.jar' )
-     fileset ( dir : groovyHome + '/lib' , includes : 'asm*.jar' )
-     fileset ( dir : groovyHome + '/lib' , includes : 'ant*.jar' )  // Picks up antlr as well as ant. This is intended.
-   } 
-   ant.path ( id : testJarSetPathId ) {
+  println ( "Building with the Groovy installation at GROOVY_HOME=${groovyHomeEnvironment}." )
+  groovyJarPathId = 'groovyJarPathId'
+  ant.path ( id : groovyJarPathId ) { fileset ( dir : groovyHome + '/lib' , includes : 'groovy-*.jar' ) }
+  ant.path ( id : compileJarSetPathId ) {
+    path ( refid : groovyJarPathId )
+    fileset ( dir : groovyHome + '/lib' , includes : 'commons-cli*.jar' )
+    fileset ( dir : groovyHome + '/lib' , includes : 'asm*.jar' )
+    fileset ( dir : groovyHome + '/lib' , includes : 'ant*.jar' )  // Picks up antlr as well as ant. This is intended.
+  } 
+  ant.path ( id : testJarSetPathId ) {
      path ( refid : compileJarSetPathId )
      fileset ( dir : groovyHome + '/lib' , includes : 'junit*.jar' )
-   }
- }
- else {
-   getDependency ( 'groovyJar' , [ groupId : 'org.codehaus.groovy' , artifactId : 'groovy-all' , version : ant.project.properties.groovyVersion ] )
-   getDependency ( 'compileJars' , [
-                                    [ groupId : 'org.codehaus.groovy' , artifactId : 'groovy-all' , version : ant.project.properties.groovyVersion ] ,
-                                    [ groupId : 'commons-cli' , artifactId : 'commons-cli' , version : ant.project.properties.commonsCliVersion ]
-                                    ]
-                   )
-   ant.path ( id : compileJarSetPathId ) {
-     path ( refid : groovyJarPathId )
-     path ( refid : compileJarsPathId )
-   }
-   ant.path ( id : testJarSetPathId ) { path ( refid : compileJarSetPathId ) }
- }
+  }
+}
+else {
+  println ( 'Building without a Groovy installation.' )
+  getDependency ( 'groovyJar' , [ groupId : 'org.codehaus.groovy' , artifactId : 'groovy-all' , version : ant.project.properties.groovyVersion ] )
+  getDependency ( 'compileJars' , [
+                                   [ groupId : 'org.codehaus.groovy' , artifactId : 'groovy-all' , version : ant.project.properties.groovyVersion ] ,
+                                   [ groupId : 'commons-cli' , artifactId : 'commons-cli' , version : ant.project.properties.commonsCliVersion ]
+                                   ]
+                  )
+  ant.path ( id : compileJarSetPathId ) {
+    path ( refid : groovyJarPathId )
+    path ( refid : compileJarsPathId )
+  }
+  ant.path ( id : testJarSetPathId ) { path ( refid : compileJarSetPathId ) }
+}
 
 //  --------------------------------------------------------------------------------------------------------
 //  --------------------------------------------------------------------------------------------------------
