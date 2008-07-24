@@ -135,6 +135,18 @@ public class GantBinding extends Binding implements Cloneable {
     initializing = false
   }
   /**
+   *  The method for getting values from the binding.  Ensures that Ant properties appear to be in the binding object.
+   */
+  Object getVariable ( final String name ) {
+    Object returnValue = null
+    try { returnValue = super.getVariable ( name ) }
+    catch ( final MissingPropertyException mpe ) {
+      returnValue = super.getProperty ( 'ant' ).getProject ( ).getProperty ( name )
+      if ( returnValue == null ) { throw mpe }
+    }
+    returnValue
+  }
+  /**
    *  The method for setting values in the binding.  Ensures that read-only values cannot be reset after
    *  initialization.
    *
