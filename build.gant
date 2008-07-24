@@ -21,9 +21,6 @@ final tgzExtension = '.tgz'
 ant.property ( file : 'local.build.properties' )
 ant.property ( file : 'build.properties' )
 
-gantVersion = ant.project.properties.gantVersion
-groovyVersion = ant.project.properties.groovyVersion
-
 try { usingCobertura = Boolean.valueOf ( usingCobertura ) }
 catch ( MissingPropertyException mpe ) { usingCobertura = false }
 
@@ -183,7 +180,7 @@ final performTests =  { classpathId ->
       ant.taskdef ( resource : 'tasks.properties' , classpathref : 'coberturaJarPathId' )
       ant.'cobertura-instrument' ( todir : buildCoberturaClassesDirectory ) { fileset ( dir : buildClassesDirectory ) }
     }
-    getDependency ( 'ivyJar' , [ groupId : 'org.apache.ivy' , artifactId : 'ivy' , version : ant.project.properties.ivyVersion ] )
+    getDependency ( 'ivyJar' , [ groupId : 'org.apache.ivy' , artifactId : 'ivy' , version : ivyVersion ] )
     ant.path ( id : 'testClasspathId' ) {
       if ( usingCobertura ) {
         // MUST appear in classpath before the uninstrumented classes.
@@ -215,6 +212,9 @@ final performTests =  { classpathId ->
     }
     if ( usingCobertura ) { ant.'cobertura-report' ( srcdir : sourceDirectory , destdir : buildCoberturaReportsDirectory ) }
   }
+  //  Do not use the mapping of Ant properties to binding values here since that generates a
+  //  MissingPropertyException in the case that the property doesn't exist whereas accessing it through the
+  //  fully qualified name generates a null return.
   ant.project.properties.testsFailed == null
 }
 
@@ -251,7 +251,6 @@ final prepareInstallDirectory = { path , gantJarName , pathIdRoots , isStandalon
       ant.path ( refid : groovyJarPathId )
       mapper ( type : 'flatten' )
     }
-    groovyJarName = ant.project.properties.groovyJarName
   }
   ant.copy ( todir : installationBinDirectory ) {
     fileset ( dir : scriptsDirectory + ( isStandalone ? '/bin_standalone' : '/bin_requiresGroovy' ) )
@@ -261,7 +260,7 @@ final prepareInstallDirectory = { path , gantJarName , pathIdRoots , isStandalon
    }
   ant.chmod ( perm : 'a+x' ) { fileset ( dir : installationBinDirectory , includes : 'gant*' ) }
   ant.copy ( todir : installationDirectory ) { fileset ( dir : scriptsDirectory , includes : 'conf/gant-starter.conf' ) }
-  getDependency ( 'ivyJar' , [ groupId : 'org.apache.ivy' , artifactId : 'ivy' , version : ant.project.properties.ivyVersion ] )
+  getDependency ( 'ivyJar' , [ groupId : 'org.apache.ivy' , artifactId : 'ivy' , version : ivyVersion ] )
   ant.copy ( todir : installationDirectory + '/lib' ) {
     fileset ( dir : buildDirectory , includes : gantJarName ) 
     fileset ( dir : jarfilesDirectory , includes : 'maven*.jar' )
@@ -312,10 +311,10 @@ if ( groovyHomeEnvironment ) {
 }
 else {
   println ( 'Building without a Groovy installation.' )
-  getDependency ( 'groovyJar' , [ groupId : 'org.codehaus.groovy' , artifactId : 'groovy-all' , version : ant.project.properties.groovyVersion ] )
+  getDependency ( 'groovyJar' , [ groupId : 'org.codehaus.groovy' , artifactId : 'groovy-all' , version : groovyVersion ] )
   getDependency ( 'compileJars' , [
-                                   [ groupId : 'org.codehaus.groovy' , artifactId : 'groovy-all' , version : ant.project.properties.groovyVersion ] ,
-                                   [ groupId : 'commons-cli' , artifactId : 'commons-cli' , version : ant.project.properties.commonsCliVersion ]
+                                   [ groupId : 'org.codehaus.groovy' , artifactId : 'groovy-all' , version : groovyVersion ] ,
+                                   [ groupId : 'commons-cli' , artifactId : 'commons-cli' , version : commonsCliVersion ]
                                    ]
                   )
   ant.path ( id : compileJarSetPathId ) {
@@ -407,11 +406,11 @@ target ( documentation : 'Create the API documentation of Gant.' ) {
 
 target ( install : "Install a Groovy installation dependent build of Gant." ) {
   depends ( 'package' )
-  prepareInstallDirectory ( ant.project.properties.installDirectory , 'gant-' + gantVersion + '.jar' , ( groovyHomeEnvironment ? 'compileJarSet' : 'compileJars' ) , groovyHomeEnvironment == null , null )
+  prepareInstallDirectory ( installDirectory , 'gant-' + gantVersion + '.jar' , ( groovyHomeEnvironment ? 'compileJarSet' : 'compileJars' ) , groovyHomeEnvironment == null , null )
 }
 
 target ( uninstall : "Uninstall Gant." ) {
-  setInstallationDirectory ( ant.project.properties.installDirectory )
+  setInstallationDirectory ( installDirectory )
   delete ( dir : installationDirectory )
 }
 
@@ -426,10 +425,10 @@ target ( distribution : 'Create the distributions of Gant.' ) {
     def pathId = pathIdRoot + 'PathId'
     getDependency ( pathIdRoot , [
                                       [ groupId : item.groupId , artifactId : item.artifactId , version : item.version ] ,
-                                      [ groupId : 'org.apache.ant' , artifactId : 'ant' , version : ant.project.properties.antVersion  ] ,
-                                      [ groupId : 'org.apache.ant' , artifactId : 'ant-junit' , version : ant.project.properties.antVersion ] ,
-                                      [ groupId : 'commons-cli' , artifactId : 'commons-cli' , version : ant.project.properties.commonsCliVersion ] ,
-                                      [ groupId : 'junit' , artifactId : 'junit' , version : ant.project.properties.junitVersion ]
+                                      [ groupId : 'org.apache.ant' , artifactId : 'ant' , version : antVersion  ] ,
+                                      [ groupId : 'org.apache.ant' , artifactId : 'ant-junit' , version : antVersion ] ,
+                                      [ groupId : 'commons-cli' , artifactId : 'commons-cli' , version : commonsCliVersion ] ,
+                                      [ groupId : 'junit' , artifactId : 'junit' , version : junitVersion ]
                                       ]
                     )
     //  Remove the compilation products of the last compilation so as not to affect this one!
@@ -439,7 +438,7 @@ target ( distribution : 'Create the distributions of Gant.' ) {
     delete ( dir : buildInstallDirectory )
     performCompile ( pathId , true )
     performCompileTests ( pathId , true )
-    if ( ! performTests ( pathId ) ) { someTestsFailed = true }
+    if ( ! skipTests && ! performTests ( pathId ) ) { someTestsFailed = true }
     makeManifest ( )
     def discriminator = prefix + '_groovy-' + item.version
     if ( isStandalone ) { discriminator = prefix }                          
