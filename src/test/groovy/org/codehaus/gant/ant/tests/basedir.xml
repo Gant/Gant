@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!--
+Gant - A Groovy build framework based on scripting Ant tasks.
+
+Copyright © 2008 Russel Winder
+
+Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in
+compliance with the License. You may obtain a copy of the License at
+
+http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software distributed under the License is
+distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or
+implied. See the License for the specific language governing permissions and limitations under the
+License.
+  
+Author : Russel Winder <russel.winder@concertant.com>
+
+This test results from emails by Chris Miles on the Groovy Developer email list.  cf. GANT-50.
+-->
+
+<project name="Basedir Tests" default="build" xmlns:artifact="urn:maven-artifact-ant" >
+
+  <echo>basedir::ant basedir=${basedir}</echo>
+
+  <dirname property="this.basedir" file="${ant.file.Basedir_Subdir}"/>
+
+  <property name="theDirectory" value="src/test/groovy/org/codehaus/gant/ant/tests"/>
+  <property name ="toplevelDirectory" value="../../../../../../../.."/>
+
+  <property file="${toplevelDirectory}/local.build.properties"/>
+  <property file="${toplevelDirectory}/build.properties"/>
+
+  <property environment="environment"/>
+
+  <condition property="groovyHomeIsSet">
+    <isset property="environment.GROOVY_HOME"/>
+  </condition>
+
+  <target name="-initializeWithGroovyHome" if="groovyHomeIsSet">
+    <path id="classpathId">
+      <pathelement location="${toplevelDirectory}/target/classes"/>
+      <fileset dir="${environment.GROOVY_HOME}/lib" includes="groovy-*.jar"/>
+      <fileset dir="${environment.GROOVY_HOME}/lib" includes="commons-cli*.jar"/>
+      <fileset dir="${environment.GROOVY_HOME}/lib" includes="asm*.jar"/>
+      <fileset dir="${environment.GROOVY_HOME}/lib" includes="antlr*.jar"/>
+    </path>
+    <taskdef name="groovy" classname="org.codehaus.groovy.ant.Groovy" classpathref="classpathId" />
+    <taskdef name="gant" classname="org.codehaus.gant.ant.Gant" classpathref="classpathId"/>
+  </target>
+
+  <target name="-initializeNoGroovyHome" unless="groovyHomeIsSet">
+    <path id="mavenAntTaskJarPathId">
+      <fileset dir="${toplevelDirectory}/jarfiles" includes="maven-ant-tasks-*.jar"/>
+    </path>
+    <typedef resource="org/apache/maven/artifact/ant/antlib.xml" uri="urn:maven-artifact-ant" classpathref="mavenAntTaskJarPathId"/>
+    <artifact:dependencies pathId="groovyJarsId">
+      <dependency groupId="org.codehaus.groovy" artifactId="groovy-all" version="${groovyVersion}"/>
+    </artifact:dependencies>
+    <path id="classpathId">
+      <pathelement location="${toplevelDirectory}/target/classes"/>
+      <path refid="groovyJarsId"/>
+    </path>
+    <taskdef name="groovy" classname="org.codehaus.groovy.ant.Groovy" classpathref="classpathId" />
+    <taskdef name="gant" classname="org.codehaus.gant.ant.Gant" classpathref="classpathId"/>
+  </target>
+
+  <target name="build" depends="-initializeWithGroovyHome,-initializeNoGroovyHome">
+    <groovy>
+      println ( "basedir::groovy basedir=${ant.project.properties.basedir}" )
+      def script = ant.project.properties.'this.basedir' + '/basedir.gant'
+      def gant = new gant.Gant ( script )
+      gant.processArgs (  )
+    </groovy>
+    <gant file="${this.basedir}/basedir.gant"/>
+  </target>
+  
+</project>

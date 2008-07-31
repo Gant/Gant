@@ -47,17 +47,28 @@ public class GantBinding extends Binding implements Cloneable {
     //
     //  When this class is instantiated from a Gant command line or via a Groovy script then the classloader
     //  is a org.codehaus.groovy.tools.RootLoader, and is used to load all the Ant-related classes.  This
-    //  means that all Ant classes already know about all the Groovy jars in the classpath.  When this class is
-    //  instantiated from the Gant Ant Task, all the Ant classes have already been loaded using an instance
-    //  of URLLoader and have no knowledge of the Groovy jars.  Fortunately, this class has to have been
-    //  loaded by an org.apache.tools.ant.AntClassLoader which does have all the necessary classpath
-    //  information.  In this situation we must force a reload of the org.apache.tools.ant.Project class so
-    //  that it has the right classpath.
+    //  means that all Ant classes already know about all the Groovy jars in the classpath.  When this class
+    //  is instantiated from the Gant Ant Task or from a Groovy Ant task script, all the Ant classes have
+    //  already been loaded using an instance of URLLoader and have no knowledge of the Groovy jars.
+    //  Fortunately, this class has to have been loaded by an org.apache.tools.ant.AntClassLoader which does
+    //  have all the necessary classpath information.  In this situation we must force a reload of the
+    //  org.apache.tools.ant.Project class so that it has the right classpath.
     //
-    //  There is as yet though no unit test to require making the change!
+    //  Having said this there is no unit test to require making the change!
+    //
+    //  GANT-50 raises the issue that in an Ant initiated context, the org.apache.tools.ant.Project backing
+    //  the GantBuilder instance should be the already existing one so that the basedir is correct -- which
+    //  it isn't up to the revision that fixes GANT-50.
+    //
+    //  NB The property ant.library.dir seems to be set only when Gant is started in an Ant initiated
+    //  context.
     //
     final classLoader = getClass ( ).classLoader
     if ( classLoader.class.name == "org.apache.tools.ant.AntClassLoader" ) {
+      //
+      //  Need to get a reference to the already existing org.apache.tools.ant.Project instance.  How to do
+      //  this?
+      //
       //final project = classLoader.forceLoadClass ( 'org.apache.tools.ant.Project' ).newInstance ( )
       //project.init ( )
       //setVariable ( ant , new GantBuilder ( project ) )
