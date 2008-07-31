@@ -91,7 +91,7 @@ public class GantBinding extends Binding implements Cloneable {
           //throw new RuntimeException ( "Attempt to redefine " + targetName )
           //
           System.err.println ( 'Warning, target causing name overwriting of name ' + targetName )
-          //System.exit ( 101 )
+          //System.exit ( -101 )
         }
         catch ( MissingPropertyException ) { }
         def targetDescription = map.get ( targetName )
@@ -100,6 +100,10 @@ public class GantBinding extends Binding implements Cloneable {
         owner.setVariable ( targetName , closure )
         owner.setVariable ( targetName + '_description' , targetDescription )
       } )
+    setVariable ( 'task' , { Map<String, String> map , Closure closure ->
+        System.err.println ( "task has now been removed from Gant, please update your Gant files to use target instead of task." )
+        System.exit ( -99 ) ;
+      } )             
     setVariable ( 'targetDescriptions' , new TreeMap ( ) )
     setVariable ( 'message' , { String tag , Object message ->
         def padding = 9 - tag.length ( )
