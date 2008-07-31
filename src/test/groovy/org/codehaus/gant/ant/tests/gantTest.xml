@@ -45,14 +45,18 @@ Author : Russel Winder <russel.winder@concertant.com>
     <isset property="environment.GROOVY_HOME"/>
   </condition>
 
-  <target name="-initializeWithGroovyHome" if="groovyHomeIsSet"> 
+  <target name="-initializeWithGroovyHome" if="groovyHomeIsSet">
+    <path id="groovyJarsId">
+      <fileset dir="${environment.GROOVY_HOME}/lib" includes="groovy-*.jar"/>
+      <fileset dir="${environment.GROOVY_HOME}/lib" includes="commons-cli*.jar"/>
+      <fileset dir="${environment.GROOVY_HOME}/lib" includes="asm*.jar"/>
+      <fileset dir="${environment.GROOVY_HOME}/lib" includes="antlr*.jar"/>
+    </path>
+    <!--taskdef name="groovy" classname="org.codehaus.groovy.ant.Groovy" classpathref="groovyJarsId" /-->
     <taskdef name="gant" classname="org.codehaus.gant.ant.Gant">
       <classpath>
         <pathelement location="${toplevelDirectory}/target/classes"/>
-        <fileset dir="${environment.GROOVY_HOME}/lib" includes="groovy-1.*.jar"/>
-        <fileset dir="${environment.GROOVY_HOME}/lib" includes="commons-cli*.jar"/>
-        <fileset dir="${environment.GROOVY_HOME}/lib" includes="asm*.jar"/>
-        <fileset dir="${environment.GROOVY_HOME}/lib" includes="antlr*.jar"/>
+        <path refid="groovyJarsId"/>
       </classpath>
     </taskdef>
   </target>
@@ -62,13 +66,14 @@ Author : Russel Winder <russel.winder@concertant.com>
       <fileset dir="${toplevelDirectory}/jarfiles" includes="maven-ant-tasks-*.jar"/>
     </path>
     <typedef resource="org/apache/maven/artifact/ant/antlib.xml" uri="urn:maven-artifact-ant" classpathref="mavenAntTaskJarPathId"/>
-    <artifact:dependencies pathId="dependencyClasspath">
+    <artifact:dependencies pathId="groovyJarsId">
       <dependency groupId="org.codehaus.groovy" artifactId="groovy-all" version="${groovyVersion}"/>
     </artifact:dependencies>
+    <!--taskdef name="groovy" classname="org.codehaus.groovy.ant.Groovy" classpathref="groovyJarsId" /-->
     <taskdef name="gant" classname="org.codehaus.gant.ant.Gant">
       <classpath>
         <pathelement location="${toplevelDirectory}/target/classes"/>
-        <path refid="dependencyClasspath"/>
+        <path refid="groovyJarsId"/>
       </classpath>
     </taskdef>
   </target>

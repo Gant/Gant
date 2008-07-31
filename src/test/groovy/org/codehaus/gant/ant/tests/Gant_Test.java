@@ -33,7 +33,8 @@ import junit.framework.TestCase ;
  *  @author Russel Winder
  */
 public class Gant_Test extends TestCase {
-  private final File antFile = new File ( "src/test/groovy/org/codehaus/gant/ant/tests/gantTest.xml" ) ;
+  private final String path = "src/test/groovy/org/codehaus/gant/ant/tests" ;
+  private final File antFile = new File ( path + "/gantTest.xml" ) ;
   private Project project ;
 
   //  This variable is assigned in the Gant script hence the public static.
@@ -85,29 +86,11 @@ public class Gant_Test extends TestCase {
     project.executeTarget ( "gantTaskdef" ) ;
     assertEquals ( "OK." , returnValue ) ;
   }
-  /**
-   *  Test stemming from GANT-19 and relating to ensuring the right classpath when loading the Groovyc Ant
-   *  task.
+  /*
+   *  Run ant explicitly in a separate process.  Return the string that results.
    */
-  public void testRunningAntFromShell ( ) {
-    //
-    //  This Ant task actually fails always and so the return code is 1.  If the Groovyc class cannot be
-    //  loaded then the result is a message:
-    //
-    //    : taskdef class org.codehaus.groovy.ant.Groovyc cannot be found
-    //
-    //  whereas if it succeeds the message is more like:
-    //
-    //    [gant] Error evaluating Gantfile: startup failed, build_gant: 15: unable to resolve class org.codehaus.gant.ant.tests.Gant_Test
-    //    [gant]  @ line 15, column 1.
-    //    [gant] 1 error
-    //    [gant] 
-    //
-    //  If Gant is compiled against Groovy 1.6-beta-1 then there is an infinite recursion in the metaclass
-    //  system emanating from InvokerHelper as the Gant Ant task is started leading to a StackOverflowError,
-    //  and so the correct output is not received.
-    //
-    final ProcessBuilder pb = new ProcessBuilder ( "ant" , "-f" , "src/test/groovy/org/codehaus/gant/ant/tests/gantTest.xml" ) ;
+  private String runAnt ( final String xmlFile , final int expectedReturnCode ) {
+    final ProcessBuilder pb = new ProcessBuilder ( "ant" , "-f" , xmlFile ) ;
     try {
       final StringBuilder sb = new StringBuilder ( ) ;
       final Process p = pb.start ( ) ;  //  Could throw an IOException hence the try block.
@@ -126,17 +109,62 @@ public class Gant_Test extends TestCase {
           }
         } ;
       readThread.start ( ) ;
-      try { assertEquals ( 1 , p.waitFor ( ) ) ; }
+      try { assertEquals ( expectedReturnCode , p.waitFor ( ) ) ; }
       catch ( final InterruptedException ie ) { fail ( "Got an InterruptedException waiting for the Ant process to finish." ) ; }
       try { readThread.join ( ) ;}
       catch ( final InterruptedException ie ) { fail ( "Got an InterruptedException waiting for the read thread to terminate." ) ; }
-      /*
-       *  If the spawned Ant runs using Groovy 1.6-beta-2 then the full and complete error message is
-       *  output.  If the spawned Ant user any previous version of Groovy then it fails to print things out.
-       */
-      assertEquals ( "Buildfile: src/test/groovy/org/codehaus/gant/ant/tests/gantTest.xml\n\n-initializeWithGroovyHome:\n\n-initializeNoGroovyHome:\n\ngantTestDefaultTarget:\n     [gant] Error evaluating Gantfile: startup failed, build_gant: 15: unable to resolve class org.codehaus.gant.ant.tests.Gant_Test\n     [gant]  @ line 15, column 1.\n     [gant] 1 error\n     [gant] \n", sb.toString ( ) ) ;
-      /**/
+      return sb.toString ( ) ;
     }
     catch ( final IOException ioe ) { fail ( "Got an IOException from starting the process." ) ; }
+    //  Keep the compiler happy, it doesn't realize that execution cannot get here.
+    return null ;
+  }
+  /**
+   *  Test stemming from GANT-19 and relating to ensuring the right classpath when loading the Groovyc Ant
+   *  task.
+   */
+  public void testRunningAntFromShell ( ) {
+    //
+    //  This Ant task actually fails always and so the return code is 1.  If the Groovyc class cannot be
+    //  loaded then the result is a message:
+    //
+    //    : taskdef class org.codehaus.groovy.ant.Groovyc cannot be found
+    //
+    //  whereas if it succeeds the message is more like:
+    //
+    //    [gant] Error evaluating Gantfile: startup failed, build_gant: 15: unable to resolve class org.codehaus.gant.ant.tests.Gant_Test
+    //    [gant]  @ line 15, column 1.
+    //    [gant] 1 error
+    //    [gant]
+    // 
+    //  If Gant is compiled against Groovy 1.6-beta-1 then there is an infinite recursion in the metaclass
+    //  system emanating from InvokerHelper as the Gant Ant task is started leading to a StackOverflowError,
+    //  and so the correct output is not received.
+    //
+    final StringBuilder sb = new StringBuilder ( ) ;
+    sb.append ( "Buildfile: " ) ;
+    sb.append ( path ) ;
+    sb.append ( "/gantTest.xml\n\n-initializeWithGroovyHome:\n\n-initializeNoGroovyHome:\n\ngantTestDefaultTarget:\n     [gant] Error evaluating Gantfile: startup failed, build_gant: 15: unable to resolve class org.codehaus.gant.ant.tests.Gant_Test\n     [gant]  @ line 15, column 1.\n     [gant] 1 error\n     [gant] \n" ) ;
+    assertEquals ( sb.toString ( ) , runAnt ( path + "/gantTest.xml" , 1 ) ) ;
+  }
+  /*
+   *  The following test is based on the code presented in email exchanges on the Groovy developer list by
+   *  Chris Miles.  cf.  GANT-50.
+   *
+   *  TODO:  Fix the case of creating a Gant object in a Groovy Ant Task script.
+   */
+  public void testBasedirInSubdir ( ) {
+    final String pathToDirectory = System.getProperty ( "user.dir" )  + "/" + path ;
+    final StringBuilder sb = new StringBuilder ( ) ;
+    sb.append ( "Buildfile: src/test/groovy/org/codehaus/gant/ant/tests/basedir.xml\n     [echo] basedir::ant basedir=" ) ;
+    sb.append ( pathToDirectory ) ;
+    sb.append ( "\n\n-initializeWithGroovyHome:\n\n-initializeNoGroovyHome:\n\nbuild:\n   [groovy] basedir::groovy basedir=" ) ;
+    sb.append ( pathToDirectory ) ;
+    sb.append ( "\n   [groovy] basedir::gant basedir=" ) ;
+    sb.append ( System.getProperty ( "user.dir" ) ) ; //  Should be sb.append ( pathToDirectory ) ;
+    sb.append ( "\n     [gant] basedir::gant basedir=" ) ;
+    sb.append ( pathToDirectory ) ;
+    sb.append ( "\n\nBUILD SUCCESSFUL\n\n" ) ;
+    assertEquals ( sb.toString ( ) , runAnt ( path + "/basedir.xml" , 0 ).replaceFirst ( "Total time: [0-9]*.*" , "" ) ) ;
   }
 }

@@ -25,20 +25,23 @@ target ( blah : 'Another target in the default file.' ) { Gant_Test.returnValue 
 ////  MUST ensure that the same dependecies as in gantTest.xml and ${toplevelDirectory}/build.xml
 
 target ( gantTaskdef : 'Check that a taskdef works.' ) {
-  if ( System.getenv ( ).'GROOVY_HOME' != null ) {
+  final groovyHome = System.getenv ( ).'GROOVY_HOME'
+  //  Just ensure that the environment variables really have been brought in.
+  assert groovyHome == ant.project.properties.'environment.GROOVY_HOME'
+  if ( groovyHome != null ) {
     taskdef ( name : 'groovyc' , classname: 'org.codehaus.groovy.ant.Groovyc' ) {
       classpath {
-        fileset ( dir : ant.project.properties.'environment.GROOVY_HOME' + '/lib' , includes : 'groovy*.jar' )
-        fileset ( dir : ant.project.properties.'environment.GROOVY_HOME' + '/lib' , includes : 'commons-cli*.jar' )
+        fileset ( dir : groovyHome + '/lib' , includes : 'groovy*.jar' )
+        fileset ( dir : groovyHome + '/lib' , includes : 'commons-cli*.jar' )
       }
     }
   }
-  //  Assume execution is at the toplevel directory.
+  //  Paths are relative to the directory in which this file resides -- this is new since fixing GANT-50.
   def artifact = 'urn:maven-artifact-ant'
-  def dependencyClasspathId = 'dependencyClasspath'
   typedef ( resource : 'org/apache/maven/artifact/ant/antlib.xml' , uri : artifact ) {
-    classpath { fileset ( dir : 'jarfiles' , includes : 'maven-ant-tasks-*.jar' ) }
+    classpath { fileset ( dir : '../../../../../../../../jarfiles' , includes : 'maven-ant-tasks-*.jar' ) }
   }
+  def dependencyClasspathId = 'dependencyClasspath'
   "${artifact}:dependencies" ( pathId : dependencyClasspathId ) {
     dependency ( groupId : 'org.codehaus.groovy' , artifactId : 'groovy' , version : '1.5.6' )
     dependency ( groupId : 'commons-cli' , artifactId : 'commons-cli' , version : '1.0' )
