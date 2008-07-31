@@ -76,4 +76,32 @@ target ( antProperty : '' ) {
     assertEquals ( 0 , processTargets ( 'antProperty' ) )
     assertEquals ( '' , output )
   }
+  void testPropertySettingWorksAsExpectedOutsideTarget ( ) {
+    script = '''
+final name = 'flobadob'
+final value = 'burble'
+assert null == ant.project.properties."${name}"
+ant.property ( name : name , value : value )
+assert value == ant.project.properties."${name}"
+assert value == binding."${name}"
+target ( antProperty : '' ) {
+}
+'''
+    assertEquals ( 0 , processTargets ( 'antProperty' ) )
+    assertEquals ( '' , output )
+  }
+  void testPropertySettingWorksAsExpectedInTarget ( ) {
+    script = '''
+target ( antProperty : '' ) {
+  final name = 'flobadob'
+  final value = 'burble'
+  assert null == ant.project.properties."${name}"
+  property ( name : name , value : value )
+  assert value == ant.project.properties."${name}"
+  assert value == binding."${name}"
+}
+'''
+    assertEquals ( 0 , processTargets ( 'antProperty' ) )
+    assertEquals ( '' , output )
+  }
 }
