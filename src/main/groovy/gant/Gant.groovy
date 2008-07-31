@@ -170,6 +170,16 @@ final class Gant {
     binding.classLoader = ( cl != null ) ? cl : getClass ( ).classLoader
     binding.groovyShell = new GroovyShell ( binding.classLoader , binding )
   }
+   /**
+    *  Constructor that uses the passed script as the build script, creates a new instance of
+    *  <code>GantBinding</code> for the script binding and uses the default class loader.
+    */
+  public Gant ( Script s ) { this ( s , null , null ) }
+   /**
+    *  Constructor that uses the passed script as the build script, the passed <code>GantBinding</code> for
+    *  the script binding, and uses the default class loader.
+    */
+  public Gant ( Script s , GantBinding b ) { this ( s , b , null ) }
   /**
    *  Constructor that uses the <code>InputStream</code> passed as a parameter as the source of the build
    *  script, the passed <code>GantBinding</code> for the script binding, and the passed
@@ -250,38 +260,42 @@ final class Gant {
   public int processArgs ( String[] args ) {
     final rootLoader = binding.classLoader.rootLoader
     //
-    //  Commons CLI is broken.  1.0 has one set of ideas about multiple args and is broken.  1.1 has a
-    //  different set of ideas about multiple args and is broken.  For the moment we leave things so that
-    //  they work in 1.0.
+    //  Commons CLI 1.0 and 1.1 are broken.  1.0 has one set of ideas about multiple args and is broken.
+    //  1.1 has a different set of ideas about multiple args and is broken. 1.2 appears to be actually
+    //  fixed.  Multiple args are handled in the 1.0 semantics and are not broken :-)
     //
     //  1.0 PosixParser silently absorbs unknown single letter options.
     //
     //  1.0 cannot deal with options having only a long form as the access mechanism that works only works
-    //  for short form.
+    //  for short form.  This is fixed in 1.1 and 1.2.
     //
     //  The PosixParser does not handle incorrectly formed options at all well.  Also the standard printout
     //  actually assumes GnuParser form.  So although PosixParser is the default for CliBuilder, we actually
     //  want GnuParser.
     //
+    //  We can either specify the parser explicitly or simply say "do not use the PosixParser".  The latter
+    //  does of course require knowing that setting posix to false causes teh GnuParser to be used.  This
+    //  information is only gleanable by reading the source code.  Given that teh BasicParser is more or
+    //  less totally useless and there are only three parsers available, there is not a big issue here.
+    //  However, be explicit for comprehensibility.
+    //
+    //def cli = new CliBuilder ( usage : 'gant [option]* [target]*' , posix : false )
     def cli = new CliBuilder ( usage : 'gant [option]* [target]*' , parser : new GnuParser ( ) )
     cli.c ( longOpt : 'usecache' , 'Whether to cache the generated class and perform modified checks on the file before re-compilation.' )
     cli.d ( longOpt : 'debug' , 'Print debug levels of information.' )
     cli.f ( longOpt : 'file' , args : 1 , argName : 'build-file' , 'Use the named build file instead of the default, build.gant.' )
     cli.h ( longOpt : 'help' , 'Print out this message.' )
-    //  This option should have "args : Option.UNLIMITED_VALUES" but that doesn't work.
     cli.l ( longOpt : 'gantlib' , args : 1 , argName : 'library' , 'A directory that contains classes to be used as extra Gant modules,' )
     cli.n ( longOpt : 'dry-run' , 'Do not actually action any tasks.' )
-    cli.p ( longOpt : 'projecthelp' , 'Print out a list of the possible targets.' )
+    cli.p ( longOpt : 'projecthelp' , 'Print out a list of the possible targets.' ) // Ant uses -p|-projecthelp for this.
     cli.q ( longOpt : 'quiet' , 'Do not print out much when executing.' )
     cli.s ( longOpt : 'silent' , 'Print out nothing when executing.' )
     cli.v ( longOpt : 'verbose' , 'Print lots of extra information.' )
-    //  This option should have "args : Option.UNLIMITED_VALUES" but that doesn't work.
     cli.C ( longOpt : 'cachedir' , args : 1 , argName : 'cache-file' , 'The directory where to cache generated classes to.' )
     cli.D ( argName : 'name>=<value' , args : 1 , 'Define <name> to have value <value>.  Creates a variable named <name> for use in the scripts and a property named <name> for the Ant tasks.' )
-    //  This option should have "args : Option.UNLIMITED_VALUES" but that doesn't work.
     cli.L ( longOpt : 'lib' , args : 1 , argName : 'path' , 'Add a directory to search for jars and classes.' )
     cli.P ( longOpt : 'classpath' , args : 1 , argName : 'path-list' , 'Specify a path list to search for jars and classes.' )
-    cli.T ( longOpt : 'targets' , 'Print out a list of the possible targets.' )
+    cli.T ( longOpt : 'targets' , 'Print out a list of the possible targets.' ) // Rake and Rant use -T|--tasks for this.
     cli.V ( longOpt : 'version' , 'Print the version number and exit.' )
     def options = cli.parse ( args )
     if ( options == null ) { println ( 'Error in processing command line options.' ) ; return -1 }
