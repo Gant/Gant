@@ -3,3 +3,7 @@ local.build.properties
 artwork/*.png
 bin-groovy
 bin
+out
+Gant_Trunk.iws
+build
+dist
