@@ -58,7 +58,7 @@ final testsDirectory = 'src/test/groovy'
 final jarfilesDirectory = 'jarfiles'
 final scriptsDirectory = 'scripts'
 
-final buildDirectory = 'target'
+final buildDirectory = 'target_gant'
 final buildClassesDirectory = buildDirectory + '/classes' 
 final buildTestClassesDirectory = buildDirectory + '/test-classes' 
 final buildTestReportsDirectory = buildDirectory + '/test-reports'
@@ -439,7 +439,7 @@ target ( distribution : 'Create the distributions of Gant.' ) {
     delete ( dir : buildInstallDirectory )
     performCompile ( pathId , true )
     performCompileTests ( pathId , true )
-    if ( ! performTests ( pathId ) ) { someTestsFailed = true }
+    if ( ! skipTests && ! performTests ( pathId ) ) { someTestsFailed = true }
     makeManifest ( )
     def discriminator = prefix + '_groovy-' + item.version
     if ( isStandalone ) { discriminator = prefix }                          

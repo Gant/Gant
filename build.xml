@@ -56,7 +56,7 @@ Author : Russel Winder <russel.winder@concertant.com>
   <property name="jarsDirectory" value="jarfiles"/>
   <property name="scriptsDirectory" value="scripts"/>
 
-  <property name="buildDirectory" value="target"/>
+  <property name="buildDirectory" value="target_gant"/>
   <property name="buildClassesDirectory" value="${buildDirectory}/classes"/>
   <property name="buildTestClassesDirectory" value="${buildDirectory}/test-classes"/>
   <property name="buildTestReportsDirectory" value="${buildDirectory}/test-reports"/>
@@ -192,7 +192,7 @@ Author : Russel Winder <russel.winder@concertant.com>
     </junit>
   </target>
 
-  <target name="-package" depends="-test,-compile">
+  <target name="-package" depends="-compile,-test" unless="testsFailed">
     <mkdir dir="${buildMetadataDirectory}"/>
     <copy todir="${buildMetadataDirectory}" file="LICENCE.txt"/>
     <manifest file="${buildMetadataDirectory}/MANIFEST.MF">
@@ -208,7 +208,7 @@ Author : Russel Winder <russel.winder@concertant.com>
     <jar destfile="${buildDirectory}/gant-${gantVersion}.jar" basedir="${buildClassesDirectory}" manifest="${buildMetadataDirectory}/MANIFEST.MF"/>
   </target>
 
-  <target name="-installStandalone" if="installStandalone">
+  <target name="-installStandalone" if="installStandalone" unless="testsFailed">
     <copy todir="${installDirectory}/lib">
       <fileset refid="groovyJarFilesetId"/>
       <fileset refid="compileJarSetFilesetId"/>
@@ -216,7 +216,7 @@ Author : Russel Winder <russel.winder@concertant.com>
     </copy>
   </target>
 
-  <target name="-install" depends="-initializeMavenAntTask,-package,-installStandalone" if="installDirectoryIsSet">
+  <target name="-install" depends="-initializeMavenAntTask,-package,-installStandalone" if="installDirectoryIsSet" unless="testsFailed">
     <pathconvert property="groovyJarName">
       <path refid="groovyJarPathId"/>
       <mapper type="flatten"/>
