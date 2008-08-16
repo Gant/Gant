@@ -196,14 +196,14 @@ final performTests =  { classpathId ->
       path ( refid : classpathId )
     }                        
     if ( ( testCase == null ) || ( testCase ==~ 'org.codehaus.gant.ant.tests.*_Test' ) ) {                        
-      ant.junit ( printsummary : 'yes' , failureproperty : 'testsFailed' , fork : 'true' ) {
+      ant.junit ( printsummary : 'yes' , failureproperty : 'testsFailed' , fork : 'true' , forkmode : 'once' ) {
         formatter ( type : 'plain' )
         batchtest ( todir : buildTestReportsDirectory ) { fileset ( dir : buildTestClassesDirectory , includes : '**/ant/tests/*_Test.class' ) }
         classpath { path ( refid : 'testClasspathId' ) }
       }
     }
     if ( ! ( testCase ==~ 'org.codehaus.gant.ant.tests.*_Test' ) ) {                        
-      ant.junit ( printsummary : 'yes' , failureproperty : 'testsFailed' , fork : 'true' ) {
+      ant.junit ( printsummary : 'yes' , failureproperty : 'testsFailed' , fork : 'true' , forkmode : 'perTest' ) {
         formatter ( type : 'plain' )
         if ( testCase != null) { ant.test ( name : testCase , todir : buildTestReportsDirectory ) }
         else { batchtest ( todir : buildTestReportsDirectory ) { fileset ( dir : buildTestClassesDirectory , includes : '**/*_Test.class' , excludes : '**/ant/tests/*' ) } }
