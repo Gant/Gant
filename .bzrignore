@@ -4,6 +4,6 @@ artwork/*.png
 bin-groovy
 bin
 out
-Gant_Trunk.iws
+Gant_1.4.x.iws
 build
 dist
