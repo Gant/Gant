@@ -29,13 +29,20 @@ includeTargets << gant.targets.Maven
     assertEquals ( 0 , processTargets ( 'initialize' ) )
     assertEquals ( '' , output ) 
   }
-  void testCompileTarget ( ) {
+  void testCompileTargetInDirectoryOtherThanTheCurrentBuildDirectory ( ) {
+    final compileDirectory = 'target_forMavenTest'
     script = """
-includeTargets << gant.targets.Maven
+includeTargets ** gant.targets.Maven * [
+    targetPath : '${compileDirectory}'
+]
 """
-    //  This is a noop since there is nothing to compile in the default path.
     assertEquals ( 0 , processTargets ( 'compile' ) )
-    assertEquals ( '' , output ) 
+    assertTrue ( output.startsWith( '    [mkdir] Created dir:' ) )
+    assertTrue ( output.contains( ' [groovyc] Compiling' ) )
+    final file = new File ( compileDirectory )
+    assertTrue ( file.isDirectory ( ) )
+    ( new AntBuilder ( ) ).delete ( dir : compileDirectory )
+    assertFalse ( file.exists ( ) )
   }
   void testPackageNoGroupIdLeftShift ( ) {
     script = """
