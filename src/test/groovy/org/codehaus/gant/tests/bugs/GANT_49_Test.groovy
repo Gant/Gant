@@ -20,17 +20,22 @@ import org.codehaus.gant.tests.GantTestCase
 
 class GANT_49_Test extends GantTestCase {
   void testBuilderBug() {
+    //
+    //  NB Codehaus Bamboo execution is not in a context such that
+    //  org.codehaus.groovy.runtime.HandleMetaClass exists since it is running against Groovy 1.5.6 and not
+    //  Subversion HEAD.
+    //
     script = '''
 import groovy.xml.MarkupBuilder
 target ( test : '' ) {
   def builder = new MarkupBuilder ( )
 
-  assert builder.metaClass instanceof org.codehaus.groovy.runtime.HandleMetaClass
+  //assert builder.metaClass instanceof org.codehaus.groovy.runtime.HandleMetaClass
   assert this.is ( owner )
   assert this.is ( delegate )
-  assert this.metaClass instanceof org.codehaus.groovy.runtime.HandleMetaClass
+  //assert this.metaClass instanceof org.codehaus.groovy.runtime.HandleMetaClass
   assert binding instanceof org.codehaus.gant.GantBinding
-  assert binding.metaClass instanceof org.codehaus.groovy.runtime.HandleMetaClass
+  //assert binding.metaClass instanceof org.codehaus.groovy.runtime.HandleMetaClass
 
   def outerThis = this
 
