@@ -52,7 +52,7 @@ target ( test : '' ) {
 }
 setDefaultTarget ( 'test' )
 '''
-    assertEquals ( 0 , processTargets ( ) )
+    assertEquals ( -2 , processTargets ( ) )
     assertEquals ( '''<beans>
   <resourceHolder>Something 1</resourceHolder>
   <container>
