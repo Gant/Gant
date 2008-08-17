@@ -39,9 +39,11 @@ The LaTeX tool does not make use of the return code from (pdf)latex, and it shou
 
 Using a target name of target gives a very weird error message.
 
+The tests currently work fine with Ant or Gant and fail with Maven.  This difference needs investigating.
+
 Why are there all the gant_$$_GarbageCollect_Test.* and gant_$$_GANT_33_Test* files in ~/.gant/cache ?
 
-Handle all the TODO and FIXME.
+Deal with all the TODOs.
 
 Maven target set allows test execution after failed compilation.  The Java task has failonerror set true but
 there is no actual termination.  Whatever information the task gives to Ant to terminate is notbeing
