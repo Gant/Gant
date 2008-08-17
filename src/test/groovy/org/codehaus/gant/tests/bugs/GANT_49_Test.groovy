@@ -23,7 +23,24 @@ class GANT_49_Test extends GantTestCase {
     script = '''
 import groovy.xml.MarkupBuilder
 target ( test : '' ) {
-  ( new MarkupBuilder ( ) ).beans {
+  def builder = new MarkupBuilder ( )
+
+  assert builder.metaClass instanceof org.codehaus.groovy.runtime.HandleMetaClass
+  assert this.is ( owner )
+  assert this.is ( delegate )
+  assert this.metaClass instanceof org.codehaus.groovy.runtime.HandleMetaClass
+  assert binding instanceof org.codehaus.gant.GantBinding
+  assert binding.metaClass instanceof org.codehaus.groovy.runtime.HandleMetaClass
+
+  def outerThis = this
+
+   builder.beans {
+
+    assert outerThis.is ( this )
+    assert delegate.is ( builder )
+    assert owner instanceof Closure
+    assert owner.metaClass instanceof org.codehaus.gant.GantMetaClass
+
     resourceHolder ( 'Something 1' )
     container {
       item ( '1' )
