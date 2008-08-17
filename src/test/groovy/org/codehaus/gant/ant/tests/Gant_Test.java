@@ -43,7 +43,6 @@ public class Gant_Test extends TestCase {
   protected void setUp ( ) throws Exception {
     super.setUp ( ) ;
     project = new Project ( ) ;
-    //  The Ant jar is not on the classpath of the class loader :-(
     project.init ( ) ;
     ProjectHelper.getProjectHelper ( ).parse ( project , antFile ) ;
     returnValue = "" ;
