@@ -114,7 +114,7 @@ public class Gant_Test extends TestCase {
       catch ( final InterruptedException ie ) { fail ( "Got an InterruptedException waiting for the read thread to terminate." ) ; }
       return sb.toString ( ) ;
     }
-    catch ( final IOException ioe ) { fail ( "Got an IOException from starting the process." ) ; }
+    catch ( final Exception e ) { fail ( "Got an " +  e.getClass ( ).getName ( ) + " from starting the process." ) ; }
     //  Keep the compiler happy, it doesn't realize that execution cannot get here.
     return null ;
   }
