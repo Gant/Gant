@@ -38,4 +38,40 @@ final class GantBinding_Test extends GantTestCase {
     assertTrue ( object.cacheEnabled instanceof Boolean )
     assertTrue ( object.gantLib instanceof List )
   }
+  void testGantBindingIsActuallyUsedOutsideTarget ( ) {
+    script = '''
+assert binding instanceof org.codehaus.gant.GantBinding
+target ( testBindingObject : '' ) {
+}
+'''
+    assertEquals ( 0 , processTargets ( 'testBindingObject' ) )
+    assertEquals ( '' , output )
+  }
+  void testGantBindingIsActuallyUsedInsideTarget ( ) {
+    script = '''
+target ( testBindingObject : '' ) {
+  assert binding instanceof org.codehaus.gant.GantBinding
+}
+'''
+    assertEquals ( 0 , processTargets ( 'testBindingObject' ) )
+    assertEquals ( '' , output )
+  }
+  void testAntPropertyAccessAsAntPropertyOutsideTarget ( ) {
+    script = '''
+assert ant.project.properties.'java.vm.specification.version' == '1.0'
+target ( antProperty : '' ) {
+}
+'''
+    assertEquals ( 0 , processTargets ( 'antProperty' ) )
+    assertEquals ( '' , output )
+  }
+  void testAntPropertyAccessAsAntPropertyInsideTarget ( ) {
+    script = '''
+target ( antProperty : '' ) {
+  assert ant.project.properties.'java.vm.specification.version' == '1.0'
+}
+'''
+    assertEquals ( 0 , processTargets ( 'antProperty' ) )
+    assertEquals ( '' , output )
+  }
 }
