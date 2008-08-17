@@ -169,7 +169,7 @@ Author : Russel Winder <russel.winder@concertant.com>
       <path refid="ivyJarPathId"/>
       <path refid="testJarSetPathId"/>
     </path>
-    <junit printsummary="yes" fork="true" forkmode="perTest" failureproperty="testsFailed">
+    <junit printsummary="yes" fork="true" forkmode="once" failureproperty="testsFailed">
       <formatter type="plain"/>
       <formatter type="xml"/> <!-- Must have XML output for the continuous integration builds. -->
       <batchtest todir="${buildTestReportsDirectory}">
