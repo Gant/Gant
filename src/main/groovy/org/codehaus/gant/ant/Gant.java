@@ -54,7 +54,7 @@ public class Gant extends Task {
   /**
    * Target to achieve.
    */
-  private String target = "" ;
+  private String targetName = "" ;
   /**
    *  Set the name of the Gantfile.
    *
@@ -66,7 +66,7 @@ public class Gant extends Task {
    *
    *  @param target The target to achieve.
    */
-  public void setTarget ( final String target ) { this.target = target ; }
+  public void setTarget ( final String target ) { this.targetName = target ; }
   /**
    * Load the file and then execute it
    */
@@ -101,8 +101,8 @@ public class Gant extends Task {
     binding.setVariable ( "Ant" , ant ) ;
     final gant.Gant gant = new gant.Gant ( file , binding ) ;
     final int returnCode ;
-    if ( target.equals ( "" ) ) { returnCode = gant.processTargets ( ) ; }
-    else { returnCode = gant.processTargets ( target ) ; }
+    if ( targetName.equals ( "" ) ) { returnCode = gant.processTargets ( ) ; }
+    else { returnCode = gant.processTargets ( targetName  ) ; }
     if ( returnCode != 0 ) { throw new BuildException ( "Gant execution failed with return code " + Integer.toString ( returnCode ) + "." , getLocation ( ) ) ; }
   }
 }
