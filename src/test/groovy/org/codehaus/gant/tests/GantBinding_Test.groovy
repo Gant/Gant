@@ -38,7 +38,16 @@ final class GantBinding_Test extends GantTestCase {
     assertTrue ( object.cacheEnabled instanceof Boolean )
     assertTrue ( object.gantLib instanceof List )
   }
-  void testGantBindingIsActuallyUsed ( ) {
+  void testGantBindingIsActuallyUsedOutsideTarget ( ) {
+    script = '''
+assert binding instanceof org.codehaus.gant.GantBinding
+target ( testBindingObject : '' ) {
+}
+'''
+    assertEquals ( 0 , processTargets ( 'testBindingObject' ) )
+    assertEquals ( '' , output )
+  }
+  void testGantBindingIsActuallyUsedInsideTarget ( ) {
     script = '''
 target ( testBindingObject : '' ) {
   assert binding instanceof org.codehaus.gant.GantBinding
@@ -47,7 +56,16 @@ target ( testBindingObject : '' ) {
     assertEquals ( 0 , processTargets ( 'testBindingObject' ) )
     assertEquals ( '' , output )
   }
-  void testAntPropertyAccessAsAntProperty ( ) {
+  void testAntPropertyAccessAsAntPropertyOutsideTarget ( ) {
+    script = '''
+assert ant.project.properties.'java.vm.specification.version' == '1.0'
+target ( antProperty : '' ) {
+}
+'''
+    assertEquals ( 0 , processTargets ( 'antProperty' ) )
+    assertEquals ( '' , output )
+  }
+  void testAntPropertyAccessAsAntPropertyInsideTarget ( ) {
     script = '''
 target ( antProperty : '' ) {
   assert ant.project.properties.'java.vm.specification.version' == '1.0'
@@ -56,7 +74,16 @@ target ( antProperty : '' ) {
     assertEquals ( 0 , processTargets ( 'antProperty' ) )
     assertEquals ( '' , output )
   }
-  void testAntPropertyAccessAsBindingVariable ( ) {
+  void testAntPropertyAccessAsBindingVariableOutsideTarget ( ) {
+    script = '''
+assert binding.'java.vm.specification.version' == '1.0'
+target ( antProperty : '' ) {
+}
+'''
+    assertEquals ( 0 , processTargets ( 'antProperty' ) )
+    assertEquals ( '' , output )
+  }
+  void testAntPropertyAccessAsBindingVariableInsideTarget ( ) {
     script = '''
 target ( antProperty : '' ) {
   assert binding.'java.vm.specification.version' == '1.0'
@@ -65,7 +92,16 @@ target ( antProperty : '' ) {
     assertEquals ( 0 , processTargets ( 'antProperty' ) )
     assertEquals ( '' , output )
   }
-  void testAntPropertyAccessViaObjectSpecifier ( ) {
+  void testAntPropertyAccessViaObjectSpecifierOutsideTarget ( ) {
+    script = '''
+assert this.'java.vm.specification.version' == '1.0'
+target ( antProperty : '' ) {
+}
+'''
+    assertEquals ( 0 , processTargets ( 'antProperty' ) )
+    assertEquals ( '' , output )
+  }
+  void testAntPropertyAccessViaObjectSpecifierInsideTarget ( ) {
     script = '''
 target ( antProperty : '' ) {
   assert this.'java.vm.specification.version' == '1.0'
@@ -76,6 +112,11 @@ target ( antProperty : '' ) {
     assertEquals ( 0 , processTargets ( 'antProperty' ) )
     assertEquals ( '' , output )
   }
+
+  //  The following two tests behave differently depending on the forkmode of the junit task: it works if
+  //  using perTest mode but fails with perBatch or once mode.  So why does the property call work for
+  //  perTest and not otherwise?
+
   void testPropertySettingWorksAsExpectedOutsideTarget ( ) {
     script = '''
 final name = 'flobadob'
@@ -84,6 +125,7 @@ assert null == ant.project.properties."${name}"
 ant.property ( name : name , value : value )
 assert value == ant.project.properties."${name}"
 assert value == binding."${name}"
+assert value == this."${name}"
 target ( antProperty : '' ) {
 }
 '''
@@ -99,6 +141,9 @@ target ( antProperty : '' ) {
   property ( name : name , value : value )
   assert value == ant.project.properties."${name}"
   assert value == binding."${name}"
+  assert value == this."${name}"
+  assert value == owner."${name}"
+  assert value == delegate."${name}"
 }
 '''
     assertEquals ( 0 , processTargets ( 'antProperty' ) )
