@@ -120,6 +120,7 @@ final class Maven {
           owner.testDependencies.each { item -> dependency ( createDependencyMap ( [ scope : 'test' ] , item ) ) }
         }
       }
+      owner.binding.ant.taskdef ( name : 'groovyc' , classname : 'org.codehaus.groovy.ant.Groovyc' )
     }
     /*
     properties.binding.target.call ( validate : 'Validate the project is correct and all necessary information is available.' ) {

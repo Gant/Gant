@@ -17,12 +17,12 @@ package org.codehaus.gant ;
 import java.lang.reflect.Field ;
 
 import java.util.Iterator ;
-import java.util.HashMap ;
+//import java.util.HashMap ;
 import java.util.List ;
 import java.util.Map ;
 
-import java.io.ByteArrayOutputStream ;
-import java.io.PrintStream ;
+//import java.io.ByteArrayOutputStream ;
+//import java.io.PrintStream ;
 
 import groovy.lang.Closure ;
 import groovy.util.AntBuilder ;
@@ -118,6 +118,7 @@ public class GantBuilder extends AntBuilder {
    *  Add the Groovyc Ant task to the set of tasks loaded.
    */
   private void addGroovycTask ( ) {
+    /*
     final Map<String,String> parameters = new HashMap<String,String> ( ) ;
     parameters.put ( "name" , "groovyc" ) ;
     parameters.put ( "classname" , "org.codehaus.groovy.ant.Groovyc" ) ;
@@ -144,5 +145,6 @@ public class GantBuilder extends AntBuilder {
     System.setOut ( new PrintStream ( new ByteArrayOutputStream ( ) ) ) ;
     super.invokeMethod ( "taskdef" , new Object[] { parameters } ) ;
     System.setOut ( outSave ) ;
+    */
   }
 }
