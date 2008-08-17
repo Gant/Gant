@@ -9,7 +9,8 @@ If there are compilation errors in the Gant file then sometimes the proper error
 just an exception stack trace.  Using groovy on the Gant file generally shows the errors but Gant should
 have done the right thing in the first place.
 
-Get the GANTLIB stuff finished so it actually works.  First of all decide what it is all for :-)
+Get the GANTLIB stuff finished so it actually works.  First of all decide what it is all for :-)  i.e. is the
+concept of a GANTLIB actually useful?
 
 target ( flob ) { . . .} does not generate a sane error message.  Yes, it does. :-)
 
@@ -23,7 +24,7 @@ Error messages for things like:
 
 are not good.  Need to provide error handling versions of target.
 
-Add a --propertyfile <filename> option.
+Add a --propertyfile <filename> option.  Does this achieve anything useful.
 
 In the Maven target set, the compilation always happens against the Groovy installation that initiated the
 Gant run.  Need to add a way of specifying which Groovy jar to compile against.
@@ -42,7 +43,7 @@ The tests currently work fine with Ant or Gant and fail with Maven.  This differ
 
 Why are there all the gant_$$_GarbageCollect_Test.* and gant_$$_GANT_33_Test* files in ~/.gant/cache ?
 
-Handle all the TODO and FIXME.
+Deal with all the TODOs.
 
 Maven target set allows test execution after failed compilation.  The Java task has failonerror set true but
 there is no actual termination.  Whatever information the task gives to Ant to terminate is notbeing
