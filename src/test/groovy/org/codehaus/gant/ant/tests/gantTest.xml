@@ -41,6 +41,8 @@ Author : Russel Winder <russel.winder@concertant.com>
 
   <property environment="environment"/>
 
+  <property name="targetDirectoryName" value="target_gant"/>
+
   <condition property="groovyHomeIsSet">
     <isset property="environment.GROOVY_HOME"/>
   </condition>
@@ -55,7 +57,7 @@ Author : Russel Winder <russel.winder@concertant.com>
     <!--taskdef name="groovy" classname="org.codehaus.groovy.ant.Groovy" classpathref="groovyJarsId" /-->
     <taskdef name="gant" classname="org.codehaus.gant.ant.Gant">
       <classpath>
-        <pathelement location="${toplevelDirectory}/target/classes"/>
+        <pathelement location="${toplevelDirectory}/${targetDirectoryName}/classes"/>
         <path refid="groovyJarsId"/>
       </classpath>
     </taskdef>
@@ -72,7 +74,7 @@ Author : Russel Winder <russel.winder@concertant.com>
     <!--taskdef name="groovy" classname="org.codehaus.groovy.ant.Groovy" classpathref="groovyJarsId" /-->
     <taskdef name="gant" classname="org.codehaus.gant.ant.Gant">
       <classpath>
-        <pathelement location="${toplevelDirectory}/target/classes"/>
+        <pathelement location="${toplevelDirectory}/${targetDirectoryName}/classes"/>
         <path refid="groovyJarsId"/>
       </classpath>
     </taskdef>
