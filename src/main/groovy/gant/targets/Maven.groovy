@@ -57,16 +57,6 @@ final class Maven {
                                   ( readOnlyKeys[3] ) : 'antlib:org.apache.maven.artifact.ant' ,
                                   ( readOnlyKeys[4] ) : 'maven.pom'
                                   ]
-   /**
-   *  Constructor for the "includeTargets **" usage.
-   *
-   *  @param binding The <code>GantBinding</code> to bind to.
-   *  @param map The <code>Map</code> of initialization parameters.
-   */
-   Maven ( GantBinding binding , Map map ) {
-     this ( binding )
-     map.each { key , value -> owner.setProperty ( key , value ) }
-   }
   /**
    *  Constructor for the "includeTargets <<" usage.
    *
@@ -75,6 +65,29 @@ final class Maven {
   Maven ( GantBinding binding ) {
     properties.binding = binding
     properties.binding.maven = this
+    initialize ( )
+  }
+   /**
+   *  Constructor for the "includeTargets **" usage.
+   *
+   *  @param binding The <code>GantBinding</code> to bind to.
+   *  @param map The <code>Map</code> of initialization parameters.
+   */
+   Maven ( GantBinding binding , Map map ) {
+    properties.binding = binding
+    properties.binding.maven = this
+     map.each { key , value -> owner.setProperty ( key , value ) }
+     initialize ( )
+   }
+  /**
+   *  Initialize all the values given the information presented to the constructors.  This is the second
+   *  stage of construction and is separated out from the constructors since the GStrings will be
+   *  initialized using the extant values at teh moment of construction and the two constructors need to
+   *  preinitialize things in slightly different ways.
+   *
+   *  @param binding The <code>GantBinding</code> to bind to.
+   */
+  private initialize ( ) {
     properties.default_mainSourcePath = "${properties.sourcePath}${System.properties.'file.separator'}main"
     properties.mainSourcePath = properties.default_mainSourcePath
     properties.default_testSourcePath = "${properties.sourcePath}${System.properties.'file.separator'}test"
