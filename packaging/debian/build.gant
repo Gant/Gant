@@ -19,8 +19,10 @@
 try { ignoreBuildDeb = Boolean.valueOf ( ignoreBuildDeb ) }
 catch ( Exception e ) { ignoreBuildDeb = false }
 
+final targetDirectoryName = 'target_gant'
+
 final rootDirectory = '..' + System.properties.'file.separator' + '..'
-final buildDirectory = rootDirectory + System.properties.'file.separator' + 'target'
+final buildDirectory = rootDirectory + System.properties.'file.separator' + targetDirectoryName
 
 ant.property ( file : rootDirectory + System.properties.'file.separator' + 'local.build.properties' )
 ant.property ( file : rootDirectory + System.properties.'file.separator' + 'build.properties' )
@@ -117,8 +119,8 @@ included in the package.
 .
 ''' ) )
     tarfileset ( file : scriptsStandaloneDirectory + '/gant' , prefix : installPrefixBase + '/bin' , filemode : '755' )
-    tarfileset ( file : [ rootDirectory , 'target' , 'install' , 'bin' , 'startGroovy' ].join ( System.properties.'file.separator' ) , prefix : installPrefixBase + '/bin' )
-    tarfileset ( file : [ rootDirectory , 'target' , 'install' , 'conf' , 'gant-starter.conf' ].join ( System.properties.'file.separator' ) , prefix : installPrefixBase + '/conf' )
+    tarfileset ( file : [ rootDirectory , targetDirectoryName , 'install' , 'bin' , 'startGroovy' ].join ( System.properties.'file.separator' ) , prefix : installPrefixBase + '/bin' )
+    tarfileset ( file : [ rootDirectory , targetDirectoryName , 'install' , 'conf' , 'gant-starter.conf' ].join ( System.properties.'file.separator' ) , prefix : installPrefixBase + '/conf' )
     tarfileset ( file : buildDirectory + System.properties.'file.separator' + 'gant-' + gantVersion  + '.jar' , prefix : installPrefixBase + '/lib' )
     tarfileset ( dir : [ buildDirectory , 'install' , 'lib'].join (  System.properties.'file.separator' ) , includes : '*.jar' , prefix : installPrefixBase + '/lib' )
   }
