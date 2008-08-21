@@ -89,17 +89,11 @@ public class Gant_Test extends TestCase {
    *  Run ant explicitly in a separate process.  Return the string that results.
    */
   private String runAnt ( final String xmlFile , final int expectedReturnCode ) {
-
-    System.err.println ( "runAnt A:" ) ;
-    
     final ProcessBuilder pb = new ProcessBuilder ( "ant" , "-f" , xmlFile ) ;
     try {
       final StringBuilder sb = new StringBuilder ( ) ;
       final Process p = pb.start ( ) ;  //  Could throw an IOException hence the try block.
       final BufferedReader br = new BufferedReader ( new InputStreamReader ( p.getInputStream ( ) ) ) ;
-
-      System.err.println ( "runAnt B:" ) ;
-    
       final Thread readThread = new Thread ( ) {
           public void run ( ) {
             try {
@@ -110,43 +104,18 @@ public class Gant_Test extends TestCase {
                 sb.append ( System.getProperty ( "line.separator" ) ) ;
               }
             }
-            catch ( final IOException ioe ) {
-
-              System.err.println ( "runAnt Fail A" ) ;
-
- fail ( "Got an IOException reading a line in the read thread." ) ; }
+            catch ( final IOException ioe ) { fail ( "Got an IOException reading a line in the read thread." ) ; }
           }
         } ;
       readThread.start ( ) ;
       try { assertEquals ( expectedReturnCode , p.waitFor ( ) ) ; }
-      catch ( final InterruptedException ie ) { 
-
-              System.err.println ( "runAnt Fail B" ) ;
-
- fail ( "Got an InterruptedException waiting for the Ant process to finish." ) ; }
-
-      System.err.println ( "runAnt C:" ) ;
-    
+      catch ( final InterruptedException ie ) { fail ( "Got an InterruptedException waiting for the Ant process to finish." ) ; }
       try { readThread.join ( ) ;}
-      catch ( final InterruptedException ie ) { 
-
-              System.err.println ( "runAnt Fail C" ) ;
-
- fail ( "Got an InterruptedException waiting for the read thread to terminate." ) ; }
-
-      System.err.println ( "runAnt D:" ) ;
-    
+      catch ( final InterruptedException ie ) { fail ( "Got an InterruptedException waiting for the read thread to terminate." ) ; }
       return sb.toString ( ) ;
     }
-    catch ( final Exception e ) { 
-
-              System.err.println ( "runAnt Fail D" ) ;
-
- fail ( "Got a " +  e.getClass ( ).getName ( ) + " from starting the process." ) ; }
+    catch ( final Exception e ) { fail ( "Got a " +  e.getClass ( ).getName ( ) + " from starting the process." ) ; }
     //  Keep the compiler happy, it doesn't realize that execution cannot get here.
-
-      System.err.println ( "runAnt E:" ) ;
-    
     return null ;
   }
   /**
