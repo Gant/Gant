@@ -274,8 +274,8 @@ final class Gant {
     //  want GnuParser.
     //
     //  We can either specify the parser explicitly or simply say "do not use the PosixParser".  The latter
-    //  does of course require knowing that setting posix to false causes teh GnuParser to be used.  This
-    //  information is only gleanable by reading the source code.  Given that teh BasicParser is more or
+    //  does of course require knowing that setting posix to false causes the GnuParser to be used.  This
+    //  information is only gleanable by reading the source code.  Given that the BasicParser is more or
     //  less totally useless and there are only three parsers available, there is not a big issue here.
     //  However, be explicit for comprehensibility.
     //
