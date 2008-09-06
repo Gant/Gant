@@ -39,7 +39,7 @@ catch ( MissingPropertyException mpe ) { forkCompiles = false }
 //  The groovy.home property is only set if Gant is started from the command line.  When started
 //  programmatically, and in particular via the Gant Ant task, it will have value null.  If the groovy.home
 //  property is set then either it is a copy of the GROOVY_HOME environment variable if that is set or it is
-//  deduced fromt eh location of the groovyc command.  The GROOVY_HOME environment variable may or may not
+//  deduced from the location of the groovyc command.  The GROOVY_HOME environment variable may or may not
 //  be set.  If it is set use the installed Groovy, otherwise use the Groovy specified in the properties
 //  file.  This only matters for non-distribution builds.
 
