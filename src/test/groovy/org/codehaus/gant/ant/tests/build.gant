@@ -50,4 +50,8 @@ target ( gantTaskdef : 'Check that a taskdef works.' ) {
   Gant_Test.returnValue = 'OK.'
 }
 
+target ( gantParameters : '' ) {  
+  Gant_Test.returnValue = 'gant' + ( flob ? ' -Dflob=' + flob : '' ) + ( burble ? ' -Dburble' : '' ) + ' gantParameters' 
+}
+
 setDefaultTarget ( test )

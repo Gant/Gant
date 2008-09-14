@@ -18,7 +18,9 @@ import java.io.ByteArrayOutputStream ;
 import java.io.File ;
 import java.io.PrintStream ;
 
+import java.util.ArrayList ;
 import java.util.HashMap ;
+import java.util.List ;
 import java.util.Map ;
 
 import org.apache.tools.ant.BuildException ;
@@ -31,19 +33,23 @@ import org.codehaus.gant.GantBuilder ;
 /**
  *  Execute a Gant script.
  *
- * <p>This Ant task provides a Gant capability for continuous integration systems that do not directly
- * support Gant but only Ant.</p>
+ * <p>This Ant task provides a Gant calling capability. The original intention behind this was to support
+ * continuous integration systems that do not directly support Gant but only Ant.</p>
  *
  *  <p>Possible attributes are:</p>
  *
  *  <ul>
  *    <li>file &ndash; the path to the Gant script to execute.</li>
  *    <li>target &ndash; the target to execute.</li>
+ *    <li>args &ndash; a string giving all the options for the call of Gant</li>
  *  </ul>
  *
- *  <p>Both of these are optional.  The file 'build.gant' and the default target are used by default.  An
+ *  <p>All of these are optional.  The file 'build.gant' and the default target are used by default.  An
  *  error results if there is no default target and no target is specified.</p>
  *
+ *  <p>Options can be specified instead by nested <code>arg</code> tags, one for each option.  Each
+ *  <code>arg</code> tag takes a single compulsory value or line attribute.</p>
+ *  
  * @author Russel Winder
  */
 public class Gant extends Task {
@@ -56,6 +62,21 @@ public class Gant extends Task {
    */
   private String targetName = "" ;
   /**
+   *  A class representing a nested definition tag.
+   */
+  public static class Definition {
+    private String name ;
+    private String value ;
+    public void setName ( final String s ) { name = s ; }
+    public String getName ( ) { return name ; }
+    public void setValue ( final String s ) { value = s ; }
+    public String getValue ( ) { return value ; }
+  }
+  /**
+   *  A list of definitions that need to be defined in the Gant instance.
+   */
+  private List<Definition> definitions = new ArrayList<Definition> ( ) ;
+  /**
    *  Set the name of the Gantfile.
    *
    *  @param file The name of the file to be used to drive the build.
@@ -67,6 +88,14 @@ public class Gant extends Task {
    *  @param target The target to achieve.
    */
   public void setTarget ( final String target ) { this.targetName = target ; }
+  /**
+   *  Handle a nested <code>definition</code> tag.
+   */
+  public Definition createDefinition ( ) {
+    final Definition definition = new Definition ( ) ;
+    definitions.add ( definition ) ;
+    return definition ;
+  }
   /**
    * Load the file and then execute it
    */
@@ -87,18 +116,25 @@ public class Gant extends Task {
     newProject.init ( ) ;
     newProject.setBaseDir ( getOwningTarget ( ).getProject ( ).getBaseDir ( ) ) ;
     final GantBuilder ant = new GantBuilder ( newProject ) ;
-    final Map<String,String> parameters = new HashMap<String,String> ( ) ;
-    parameters.put ( "environment" , "environment" ) ;
+    final Map<String,String> environmentParameter = new HashMap<String,String> ( ) ;
+    environmentParameter.put ( "environment" , "environment" ) ;
     //  Do not allow the output to escape.  The problem here is that if the output is allowed out then
     //  Ant, Gant, Maven, Eclipse and IntelliJ IDEA all behave slightly differently.  This makes testing
     //  nigh on impossible.  Also the user doesn't need to know about these.
     final PrintStream outSave = System.out ;
     System.setOut ( new PrintStream ( new ByteArrayOutputStream ( ) ) ) ;
-    ant.invokeMethod ( "property" , new Object[] { parameters } ) ;
-    System.setOut ( outSave ) ;
+    ant.invokeMethod ( "property" , new Object[] { environmentParameter } ) ;
     final GantBinding binding = new GantBinding ( ) ;
     binding.setVariable ( "ant" , ant ) ;
     binding.setVariable ( "Ant" , ant ) ;
+    for ( Definition definition : definitions ) {
+      final Map<String,String> definitionParameter = new HashMap<String,String> ( ) ;
+      definitionParameter.put ( "name" , definition.getName ( ) ) ;
+      definitionParameter.put ( "value" , definition.getValue ( ) ) ;
+      ant.invokeMethod ( "property" , new Object[] { definitionParameter } ) ;
+      //binding.setVariable ( definition.getName ( ) , definition.getValue ( ) ) ; //  Don't need this because of the new lookup algorithm.
+    }
+    System.setOut ( outSave ) ;
     final gant.Gant gant = new gant.Gant ( file , binding ) ;
     final int returnCode ;
     if ( targetName.equals ( "" ) ) { returnCode = gant.processTargets ( ) ; }

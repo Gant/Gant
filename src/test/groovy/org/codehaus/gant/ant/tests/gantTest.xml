@@ -84,7 +84,6 @@ Author : Russel Winder <russel.winder@concertant.com>
       Cannot test not having a file attribute easily since the tests are initiated in the project top
       directory :-(
   -->
-  
   <target name="gantTestDefaultTarget" depends="-initializeWithGroovyHome,-initializeNoGroovyHome">
     <gant file="${theDirectory}/build.gant"/>
   </target>
@@ -94,15 +93,21 @@ Author : Russel Winder <russel.winder@concertant.com>
   </target>
 
   <!--  Ensure there is no file of the name used in the Gant Ant task here. -->
-
   <target name="missingGantfile" depends="-initializeWithGroovyHome,-initializeNoGroovyHome">
     <gant file="blahBlahBlahBlah.blah"/>
   </target>
 
   <!--  Ensure there is no target called blahBlahBlahBlah. -->
-
   <target name="gantTaskdef" depends="-initializeWithGroovyHome,-initializeNoGroovyHome">
     <gant file="${theDirectory}/build.gant" target="gantTaskdef"/>
+  </target>
+
+  <!-- Test to see if definitions can be added using nested tags. -->
+  <target name="gantWithParametersAsNestedTags" depends="-initializeWithGroovyHome,-initializeNoGroovyHome">
+    <gant file="${theDirectory}/build.gant" target="gantParameters">
+      <definition name="flob" value="adob"/>
+      <definition name="burble"/>
+    </gant>
   </target>
 
 </project>

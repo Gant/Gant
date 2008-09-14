@@ -167,4 +167,9 @@ public class Gant_Test extends TestCase {
     sb.append ( "\n\nBUILD SUCCESSFUL\n\n" ) ;
     assertEquals ( sb.toString ( ) , runAnt ( path + "/basedir.xml" , 0 ).replaceFirst ( "Total time: [0-9]*.*" , "" ) ) ;
   }
+  public void testGantWithParametersAsNestedTags ( ) {
+    project.executeTarget ( "gantWithParametersAsNestedTags" ) ;
+    assertEquals ( "gant -Dflob=adob -Dburble gantParameters" , returnValue ) ;
+  }
+  
 }

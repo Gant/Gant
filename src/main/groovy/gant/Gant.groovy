@@ -324,7 +324,7 @@ final class Gant {
         System.setOut ( new PrintStream ( new ByteArrayOutputStream ( ) ) )
         binding.ant.property ( name : pair[0] , value : pair[1] )
         System.setOut ( outSave )
-        binding.setVariable ( pair[0] , pair[1] )
+                        //binding.setVariable ( pair[0] , pair[1] )  //  TODO:  Can this now be removed since the ant properties are searched?
       }
     }
     if ( options.L ) {
@@ -356,6 +356,8 @@ final class Gant {
     }
     if ( gotUnknownOptions ) { cli.usage ( ) ; return -1 ; }
     /*
+     *  TODO:  Isn't this all now redundant are therefore removable?
+     *
     def jarPattern = ~/.*\.jar/
     def userAntLib = new File ( "${System.properties.'user.home'}/.ant/lib" )
     if ( userAntLib.isDirectory ( ) ) { userAntLib.eachFileMatch ( jarPattern ) { file -> rootLoader?.addURL ( file.toURL ( ) ) } }
@@ -425,6 +427,8 @@ final class Gant {
     else {
       if ( buildFile )  { buildFileText = buildFile.text }
       try {
+        //  TODO:  Sort out whether this attempt to change the metaclass is ever going to work.
+        //
         //binding.groovyShell.evaluate ( buildFileText , buildClassName )
         def script = binding.groovyShell.parse ( buildFileText , buildClassName )
         script.binding = binding
