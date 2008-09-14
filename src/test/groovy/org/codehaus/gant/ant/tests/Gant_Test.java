@@ -150,9 +150,8 @@ public class Gant_Test extends TestCase {
    *  The following test is based on the code presented in email exchanges on the Groovy developer list by
    *  Chris Miles.  cf.  GANT-50.
    *
-   *  TODO:  Fix the case of creating a Gant object in a Groovy Ant Task script.
+   *  TODO:  Fix this test so it can be run.
    */
-  //  This test passes when tried locally on all machines but fails on Codehaus Bamboo and Canoo CruiseControl.
   public void XXX_testBasedirInSubdir ( ) {
     final String pathToDirectory = System.getProperty ( "user.dir" )  + "/" + path ;
     final StringBuilder sb = new StringBuilder ( ) ;
@@ -165,7 +164,7 @@ public class Gant_Test extends TestCase {
     sb.append ( "\n     [gant] basedir::gant basedir=" ) ;
     sb.append ( pathToDirectory ) ;
     sb.append ( "\n\nBUILD SUCCESSFUL\n\n" ) ;
-    assertEquals ( sb.toString ( ) , runAnt ( path + "/basedir.xml" , 0 ).replaceFirst ( "Total time: [0-9]*.*" , "" ) ) ;
+    assertEquals ( sb.toString ( ) , runAnt ( path + "/basedir.xml" , 1 ).replaceFirst ( "Total time: [0-9]*.*" , "" ) ) ;
   }
   public void testGantWithParametersAsNestedTags ( ) {
     project.executeTarget ( "gantWithParametersAsNestedTags" ) ;

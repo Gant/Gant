@@ -33,32 +33,35 @@ import org.codehaus.gant.GantBuilder ;
 /**
  *  Execute a Gant script.
  *
- * <p>This Ant task provides a Gant calling capability. The original intention behind this was to support
- * continuous integration systems that do not directly support Gant but only Ant.</p>
+ *  <p>This Ant task provides a Gant calling capability. The original intention behind this was to support
+ *  continuous integration systems that do not directly support Gant but only Ant.  However it also allows
+ *  for gradual evolution of an Ant build into a Gant build.</p>
  *
  *  <p>Possible attributes are:</p>
  *
  *  <ul>
- *    <li>file &ndash; the path to the Gant script to execute.</li>
+ *    <li>file &ndash; the path of the Gant script to execute.</li>
  *    <li>target &ndash; the target to execute.</li>
- *    <li>args &ndash; a string giving all the options for the call of Gant</li>
  *  </ul>
  *
- *  <p>All of these are optional.  The file 'build.gant' and the default target are used by default.  An
+ *  <p>Both of these are optional.  The file 'build.gant' and the default target are used by default.  An
  *  error results if there is no default target and no target is specified.</p>
  *
- *  <p>Options can be specified instead by nested <code>arg</code> tags, one for each option.  Each
- *  <code>arg</code> tag takes a single compulsory value or line attribute.</p>
+ *  <p>Definitions, if needed, are specified using nested <code>definition</code> tags, one for each symbol
+ *  to be defined.  Each <code>definition</code> tag takes a compulsory <code>name</code> attribute and an
+ *  optional <code>value</code> attribute.</p>
  *  
  * @author Russel Winder
  */
 public class Gant extends Task {
   /**
-   * The name of the file to use to drive the build, default is build.gant.
+   *  The path to the file to use to drive the Gant build.  The default is build.gant.  This path is
+   *  relative to the basedir of the Ant project if it is set, or the directory in which the job was started
+   *  if the basedir is not set.
    */
   private String file = "build.gant" ;
   /**
-   * Target to achieve.
+   *  Target to achieve.
    */
   private String targetName = "" ;
   /**
@@ -73,11 +76,12 @@ public class Gant extends Task {
     public String getValue ( ) { return value ; }
   }
   /**
-   *  A list of definitions that need to be defined in the Gant instance.
+   *  A list of definitions to be set in the Gant instance.
    */
   private List<Definition> definitions = new ArrayList<Definition> ( ) ;
   /**
-   *  Set the name of the Gantfile.
+   *  Set the name of the build file to use.  This path is relative to the basedir of the Ant project if it
+   *  is set, or the directory in which the job was started if the basedir is not set.
    *
    *  @param file The name of the file to be used to drive the build.
    */
@@ -89,7 +93,7 @@ public class Gant extends Task {
    */
   public void setTarget ( final String target ) { this.targetName = target ; }
   /**
-   *  Handle a nested <code>definition</code> tag.
+   *  Create a node to represent a nested <code>definition</code> tag.
    */
   public Definition createDefinition ( ) {
     final Definition definition = new Definition ( ) ;
@@ -135,7 +139,7 @@ public class Gant extends Task {
       //binding.setVariable ( definition.getName ( ) , definition.getValue ( ) ) ; //  Don't need this because of the new lookup algorithm.
     }
     System.setOut ( outSave ) ;
-    final gant.Gant gant = new gant.Gant ( file , binding ) ;
+    final gant.Gant gant = new gant.Gant ( newProject.getBaseDir ( ) + System.getProperty ( "file.separator" ) + file , binding ) ;
     final int returnCode ;
     if ( targetName.equals ( "" ) ) { returnCode = gant.processTargets ( ) ; }
     else { returnCode = gant.processTargets ( targetName  ) ; }
