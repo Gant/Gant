@@ -7,6 +7,9 @@ skipTests.  Where there is a name conflict Groovy variables take precedence over
 
 Added the nested <definition> tag to the Gant Ant task so as to allow -D... parameters to be specified.
 
+Correct the Gant Ant task file lookup to use basedir rather than the start directory as the base from which
+to search for the file.
+
 
 1.4.0 ( r9604 )
 ---------------
