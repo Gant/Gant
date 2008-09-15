@@ -48,16 +48,22 @@ public class Gant_Test extends TestCase {
     returnValue = "" ;
   }
   
-  public void testDefaultTarget ( ) {
-    project.executeTarget ( "gantTestDefaultTarget" ) ;
+  public void testDefaultFileDefaultTarget ( ) {
+    project.executeTarget ( "gantTestDefaultFileDefaultTarget" ) ;
     assertEquals ( "A test target in the default file." , returnValue ) ;
   }
-  
-  public void testNamedTarget ( ) {
-    project.executeTarget ( "gantTestNamedTarget" ) ;
+  public void testDefaultFileNamedTarget ( ) {
+    project.executeTarget ( "gantTestDefaultFileNamedTarget" ) ;
     assertEquals ( "Another target in the default file." , returnValue ) ;
   }
-
+  public void testNamedFileDefaultTarget ( ) {
+    project.executeTarget ( "gantTestNamedFileDefaultTarget" ) ;
+    assertEquals ( "A test target in the default file." , returnValue ) ;
+  }
+  public void testNamedFileNamedTarget ( ) {
+    project.executeTarget ( "gantTestNamedFileNamedTarget" ) ;
+    assertEquals ( "Another target in the default file." , returnValue ) ;
+  }
   public void testMissingGantfile ( ) {
     try { project.executeTarget ( "missingGantfile" ) ; }
     catch ( final BuildException be ) {
@@ -170,5 +176,8 @@ public class Gant_Test extends TestCase {
     project.executeTarget ( "gantWithParametersAsNestedTags" ) ;
     assertEquals ( "gant -Dflob=adob -Dburble gantParameters" , returnValue ) ;
   }
-  
+  public void testMultipleGantTargets ( ) {
+    project.executeTarget ( "gantWithMultipleTargets" ) ;
+    assertEquals ( "A test target in the default file.\nAnother target in the default file.\n" , returnValue ) ;
+  }
 }
