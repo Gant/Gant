@@ -18,7 +18,7 @@ License.
 Author : Russel Winder <russel.winder@concertant.com>
 -->
 
-<project name="Gant Ant Task Test" default="gantTestDefaultTarget" xmlns:artifact="urn:maven-artifact-ant" basedir=".">
+<project name="Gant Ant Task Test" default="gantTestDefaultFileDefaultTarget" xmlns:artifact="urn:maven-artifact-ant" basedir=".">
 
   <!--
       This build file has to work in two contexts.  If GROOVY_HOME is set, the jars from that installation
