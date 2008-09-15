@@ -18,9 +18,9 @@ import org.codehaus.gant.ant.tests.Gant_Test
 //// from that installation of Groovy should be used so as to ensure testing in the right context.  If the
 //// environment does not have a GROOVY_HOME set then grab some specific versions to make things work.
 
-target ( test : 'A test target in the default file.' ) { Gant_Test.returnValue = test_description }
+target ( test : 'A test target in the default file.' ) { Gant_Test.returnValue = Gant_Test.returnValue + test_description }
 
-target ( blah : 'Another target in the default file.' ) { Gant_Test.returnValue = blah_description }
+target ( blah : 'Another target in the default file.' ) { Gant_Test.returnValue = Gant_Test.returnValue + blah_description }
 
 ////  MUST ensure that the same dependecies as in gantTest.xml and ${toplevelDirectory}/build.xml
 
@@ -36,7 +36,7 @@ target ( gantTaskdef : 'Check that a taskdef works.' ) {
       }
     }
   }
-  //  Paths are relative to the directory in which this file resides -- this is new since fixing GANT-50.
+  //  Paths are relative to the directory in which this file resides.
   def artifact = 'urn:maven-artifact-ant'
   typedef ( resource : 'org/apache/maven/artifact/ant/antlib.xml' , uri : artifact ) {
     classpath { fileset ( dir : '../../../../../../../../jarfiles' , includes : 'maven-ant-tasks-*.jar' ) }

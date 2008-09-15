@@ -61,13 +61,9 @@ public class Gant extends Task {
    */
   private String file = "build.gant" ;
   /**
-   *  Target to achieve.
-   */
-  private String targetName = "" ;
-  /**
    *  A class representing a nested definition tag.
    */
-  public static class Definition {
+  public final static class Definition {
     private String name ;
     private String value ;
     public void setName ( final String s ) { name = s ; }
@@ -78,7 +74,19 @@ public class Gant extends Task {
   /**
    *  A list of definitions to be set in the Gant instance.
    */
-  private List<Definition> definitions = new ArrayList<Definition> ( ) ;
+  private final List<Definition> definitions = new ArrayList<Definition> ( ) ;
+  /**
+   *  A class representing a nested target tag.
+   */
+  public final static class GantTarget {
+    private String value ;
+    public void setValue ( final String s ) { value = s ; }
+    public String getValue ( ) { return value ; }
+  }
+  /**
+   *  A list of targets to be achieved by the Gant instance.
+   */
+  private final List<GantTarget> targets = new ArrayList<GantTarget> ( ) ;
   /**
    *  Set the name of the build file to use.  This path is relative to the basedir of the Ant project if it
    *  is set, or the directory in which the job was started if the basedir is not set.
@@ -91,7 +99,19 @@ public class Gant extends Task {
    *
    *  @param target The target to achieve.
    */
-  public void setTarget ( final String target ) { this.targetName = target ; }
+  public void setTarget ( final String t ) {
+    final GantTarget target = new GantTarget ( ) ;
+    target.setValue ( t ) ;
+    targets.add ( target ) ;
+  }
+  /**
+   *  Create a node to represent a nested <code>target</code> tag.
+   */
+  public GantTarget createGantTarget ( ) {
+    final GantTarget target = new GantTarget ( ) ;
+    targets.add ( target ) ;
+    return target ;
+  }
   /**
    *  Create a node to represent a nested <code>definition</code> tag.
    */
@@ -141,8 +161,12 @@ public class Gant extends Task {
     System.setOut ( outSave ) ;
     final gant.Gant gant = new gant.Gant ( newProject.getBaseDir ( ) + System.getProperty ( "file.separator" ) + file , binding ) ;
     final int returnCode ;
-    if ( targetName.equals ( "" ) ) { returnCode = gant.processTargets ( ) ; }
-    else { returnCode = gant.processTargets ( targetName  ) ; }
+    if ( targets.size ( ) == 0 ) { returnCode = gant.processTargets ( ) ; }
+    else {
+      final List<String> targetStrings = new ArrayList<String> ( ) ;
+      for ( GantTarget g : targets ) { targetStrings.add ( g.getValue ( ) ) ; }
+      returnCode = gant.processTargets ( targetStrings ) ;
+    }
     if ( returnCode != 0 ) { throw new BuildException ( "Gant execution failed with return code " + Integer.toString ( returnCode ) + "." , getLocation ( ) ) ; }
   }
 }

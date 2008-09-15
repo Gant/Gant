@@ -178,6 +178,6 @@ public class Gant_Test extends TestCase {
   }
   public void testMultipleGantTargets ( ) {
     project.executeTarget ( "gantWithMultipleTargets" ) ;
-    assertEquals ( "A test target in the default file.\nAnother target in the default file.\n" , returnValue ) ;
+    assertEquals ( "A test target in the default file.Another target in the default file." , returnValue ) ;
   }
 }
