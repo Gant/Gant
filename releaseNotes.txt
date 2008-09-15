@@ -5,7 +5,9 @@ Amend property lookup so that Ant properties appear as entries in the Gant bindi
 directly accessible as variables -- no need any more for ant.project.properties.skipTests, can just use
 skipTests.  Where there is a name conflict Groovy variables take precedence over Ant properties.
 
-Added the nested <definition> tag to the Gant Ant task so as to allow -D... parameters to be specified.
+Added nested <definition> tags to the Gant Ant task so as to allow -D... parameters to be specified.
+
+Added nested <gantTarget> tags to the Gant Ant task so as to allow multiple targets to be run.
 
 Correct the Gant Ant task file lookup to use basedir rather than the start directory as the base from which
 to search for the file.
