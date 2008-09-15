@@ -79,15 +79,19 @@ Author : Russel Winder <russel.winder@concertant.com>
     </taskdef>
   </target>
 
-  <!--
-      Cannot test not having a file attribute easily since the tests are initiated in the project top
-      directory :-(
-  -->
-  <target name="gantTestDefaultTarget" depends="-initializeWithGroovyHome,-initializeNoGroovyHome">
+  <target name="gantTestDefaultFileDefaultTarget" depends="-initializeWithGroovyHome,-initializeNoGroovyHome">
+    <gant/>
+  </target>
+ 
+  <target name="gantTestDefaultFileNamedTarget" depends="-initializeWithGroovyHome,-initializeNoGroovyHome">
+    <gant target="blah"/>
+  </target>
+
+ <target name="gantTestNamedFileDefaultTarget" depends="-initializeWithGroovyHome,-initializeNoGroovyHome">
     <gant file="build.gant"/>
   </target>
  
-  <target name="gantTestNamedTarget" depends="-initializeWithGroovyHome,-initializeNoGroovyHome">
+  <target name="gantTestNamedFileNamedTarget" depends="-initializeWithGroovyHome,-initializeNoGroovyHome">
     <gant file="build.gant" target="blah"/>
   </target>
 
@@ -101,11 +105,17 @@ Author : Russel Winder <russel.winder@concertant.com>
     <gant file="build.gant" target="gantTaskdef"/>
   </target>
 
-  <!-- Test to see if definitions can be added using nested tags. -->
   <target name="gantWithParametersAsNestedTags" depends="-initializeWithGroovyHome,-initializeNoGroovyHome">
     <gant file="build.gant" target="gantParameters">
       <definition name="flob" value="adob"/>
       <definition name="burble"/>
+    </gant>
+  </target>
+
+  <target name="gantWithMultipleTargets" depends="-initializeWithGroovyHome,-initializeNoGroovyHome">
+    <gant>
+      <gantTarget value="test"/>
+      <gantTarget value="blah"/>
     </gant>
   </target>
 
