@@ -43,23 +43,27 @@ public abstract class GantTestCase extends GroovyTestCase {
   public static final boolean isWindows ;
   static {
     final String osName = System.getProperty ( "os.name" ) ;
-    isWindows = ( osName.length ( ) > 6 ) ? osName.substring ( 0 , 7 ).equals ( "Windows" ) : false ;
+    isWindows = ( osName.length ( ) > 6 ) && osName.substring ( 0 , 7 ).equals ( "Windows" ) ;
   }
   private ByteArrayOutputStream output ;
   private PrintStream savedOut ;
   protected Gant gant ;
   protected String script ;
-  protected void setUp ( ) {
+  @Override protected void setUp ( ) throws Exception {
+    super.setUp ( ) ;
     savedOut = System.out ;
     output = new ByteArrayOutputStream ( ) ;
     System.setOut ( new PrintStream ( output ) ) ;
     gant = new Gant ( "-" ) ;
     script = "" ;
   }
-  protected void tearDown ( ) { System.setOut ( savedOut ) ; }
+  @Override protected void tearDown ( ) throws Exception {
+    System.setOut ( savedOut ) ;
+    super.tearDown ( ) ;
+  }
   protected void setScript ( final String script ) { System.setIn ( new ByteArrayInputStream ( script.getBytes ( ) ) ) ; }
-  protected int processTargets ( ) { return gant.processTargets ( ) ; }
-  protected int processTargets ( final String s ) { return gant.processTargets ( s ) ; }
-  protected int processTargets ( final List<String> l ) { return gant.processTargets ( l ) ; }
+  protected Integer processTargets ( ) { return (Integer) gant.processTargets ( ) ; } // IntelliJ IDEA thinks processTargets returns an Object.
+  protected Integer processTargets ( final String s ) { return (Integer) gant.processTargets ( s ) ; } // IntelliJ IDEA thinks processTargets returns an Object.
+  protected Integer processTargets ( final List<String> l ) { return (Integer) gant.processTargets ( l ) ; } // IntelliJ IDEA thinks processTargets returns an Object.
   protected String getOutput ( ) { return output.toString ( ).replace ( "\r" , "" ) ; }
 }

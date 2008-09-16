@@ -39,7 +39,8 @@ public class Gant_Test extends TestCase {
 
   //  This variable is assigned in the Gant script hence the public static.
   public static String returnValue ;
-  
+
+  @Override
   protected void setUp ( ) throws Exception {
     super.setUp ( ) ;
     project = new Project ( ) ;
@@ -47,7 +48,7 @@ public class Gant_Test extends TestCase {
     ProjectHelper.getProjectHelper ( ).parse ( project , antFile ) ;
     returnValue = "" ;
   }
-  
+
   public void testDefaultFileDefaultTarget ( ) {
     project.executeTarget ( "gantTestDefaultFileDefaultTarget" ) ;
     assertEquals ( "A test target in the default file." , returnValue ) ;
@@ -100,8 +101,8 @@ public class Gant_Test extends TestCase {
       final StringBuilder sb = new StringBuilder ( ) ;
       final Process p = pb.start ( ) ;  //  Could throw an IOException hence the try block.
       final BufferedReader br = new BufferedReader ( new InputStreamReader ( p.getInputStream ( ) ) ) ;
-      final Thread readThread = new Thread ( ) {
-          public void run ( ) {
+      final Thread readThread = new Thread ( new Runnable ( ) {
+          @Override public void run ( ) {
             try {
               while ( true ) {
                 final String line = br.readLine ( ) ;  //  Could throw an IOException hence the try block.
@@ -112,7 +113,7 @@ public class Gant_Test extends TestCase {
             }
             catch ( final IOException ioe ) { fail ( "Got an IOException reading a line in the read thread." ) ; }
           }
-        } ;
+        } ) ;
       readThread.start ( ) ;
       try { assertEquals ( expectedReturnCode , p.waitFor ( ) ) ; }
       catch ( final InterruptedException ie ) { fail ( "Got an InterruptedException waiting for the Ant process to finish." ) ; }
@@ -141,7 +142,7 @@ public class Gant_Test extends TestCase {
     //    [gant]  @ line 15, column 1.
     //    [gant] 1 error
     //    [gant]
-    // 
+    //
     //  If Gant is compiled against Groovy 1.6-beta-1 then there is an infinite recursion in the metaclass
     //  system emanating from InvokerHelper as the Gant Ant task is started leading to a StackOverflowError,
     //  and so the correct output is not received.
@@ -158,7 +159,7 @@ public class Gant_Test extends TestCase {
    *
    *  TODO:  Fix this test so it can be run.
    */
-  public void XXX_testBasedirInSubdir ( ) {
+  public void xxxxtestBasedirInSubdir ( ) {
     final String pathToDirectory = System.getProperty ( "user.dir" )  + "/" + path ;
     final StringBuilder sb = new StringBuilder ( ) ;
     sb.append ( "Buildfile: src/test/groovy/org/codehaus/gant/ant/tests/basedir.xml\n     [echo] basedir::ant basedir=" ) ;

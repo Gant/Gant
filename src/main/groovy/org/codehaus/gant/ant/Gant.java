@@ -50,7 +50,7 @@ import org.codehaus.gant.GantBuilder ;
  *  <p>Definitions, if needed, are specified using nested <code>definition</code> tags, one for each symbol
  *  to be defined.  Each <code>definition</code> tag takes a compulsory <code>name</code> attribute and an
  *  optional <code>value</code> attribute.</p>
- *  
+ *
  * @author Russel Winder
  */
 public class Gant extends Task {
@@ -63,7 +63,7 @@ public class Gant extends Task {
   /**
    *  A class representing a nested definition tag.
    */
-  public final static class Definition {
+  public static final class Definition {
     private String name ;
     private String value ;
     public void setName ( final String s ) { name = s ; }
@@ -78,7 +78,7 @@ public class Gant extends Task {
   /**
    *  A class representing a nested target tag.
    */
-  public final static class GantTarget {
+  public static final class GantTarget {
     private String value ;
     public void setValue ( final String s ) { value = s ; }
     public String getValue ( ) { return value ; }
@@ -97,23 +97,27 @@ public class Gant extends Task {
   /**
    *  Set the target to be achieved.
    *
-   *  @param target The target to achieve.
+   *  @param t The target to achieve.
    */
   public void setTarget ( final String t ) {
-    final GantTarget target = new GantTarget ( ) ;
-    target.setValue ( t ) ;
-    targets.add ( target ) ;
+    final GantTarget gt = new GantTarget ( ) ;
+    gt.setValue ( t ) ;
+    targets.add ( gt ) ;
   }
   /**
    *  Create a node to represent a nested <code>target</code> tag.
+   *
+   *  @return a new <code>GantTarget</code> instance ready for values to be added.
    */
   public GantTarget createGantTarget ( ) {
-    final GantTarget target = new GantTarget ( ) ;
-    targets.add ( target ) ;
-    return target ;
+    final GantTarget gt = new GantTarget ( ) ;
+    targets.add ( gt ) ;
+    return gt ;
   }
   /**
    *  Create a node to represent a nested <code>definition</code> tag.
+   *
+   *  @return a new <code>Definition</code> instance ready for values to be added.
    */
   public Definition createDefinition ( ) {
     final Definition definition = new Definition ( ) ;
@@ -123,8 +127,7 @@ public class Gant extends Task {
   /**
    * Load the file and then execute it
    */
-  @Override
-  public void execute ( ) throws BuildException {
+  @Override public void execute ( ) throws BuildException {
     if ( ! ( new File ( file ) ).exists ( ) ) { throw new BuildException ( "Gantfile does not exist." , getLocation ( ) ) ; }
     //
     //  To address the issues raised in GANT-50, we need to ensure that the org.apache.tools.ant.Project
@@ -156,17 +159,16 @@ public class Gant extends Task {
       definitionParameter.put ( "name" , definition.getName ( ) ) ;
       definitionParameter.put ( "value" , definition.getValue ( ) ) ;
       ant.invokeMethod ( "property" , new Object[] { definitionParameter } ) ;
-      //binding.setVariable ( definition.getName ( ) , definition.getValue ( ) ) ; //  Don't need this because of the new lookup algorithm.
     }
     System.setOut ( outSave ) ;
     final gant.Gant gant = new gant.Gant ( newProject.getBaseDir ( ) + System.getProperty ( "file.separator" ) + file , binding ) ;
-    final int returnCode ;
-    if ( targets.size ( ) == 0 ) { returnCode = gant.processTargets ( ) ; }
+    final Integer returnCode ;
+    if ( targets.isEmpty ( ) ) { returnCode = (Integer) gant.processTargets ( ) ; } // IntelliJ IDEA thinks processTargets returns an Object.
     else {
       final List<String> targetStrings = new ArrayList<String> ( ) ;
       for ( GantTarget g : targets ) { targetStrings.add ( g.getValue ( ) ) ; }
-      returnCode = gant.processTargets ( targetStrings ) ;
+      returnCode = (Integer) gant.processTargets ( targetStrings ) ; // IntelliJ IDEA thinks processTargets returns an Object.
     }
-    if ( returnCode != 0 ) { throw new BuildException ( "Gant execution failed with return code " + Integer.toString ( returnCode ) + "." , getLocation ( ) ) ; }
+    if ( returnCode != 0 ) { throw new BuildException ( "Gant execution failed with return code " + returnCode + '.' , getLocation ( ) ) ; }
   }
 }

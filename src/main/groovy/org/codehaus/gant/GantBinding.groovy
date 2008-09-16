@@ -79,9 +79,9 @@ public class GantBinding extends Binding implements Cloneable {
     //  Ant, Gant, Maven, Eclipse and IntelliJ IDEA all behave slightly differently.  This makes testing
     //  nigh on impossible.  Also the user doesn't need to know about these.
     final outSave = System.out
-    System.setOut ( new PrintStream ( new ByteArrayOutputStream ( ) ) )
+    System.out = new PrintStream ( new ByteArrayOutputStream ( ) )
     ant.property ( environment : 'environment' )
-    System.setOut ( outSave )
+    System.out = outSave
     //  Ensure Ant as well as ant is available to ensure backward compatibility.
     setVariable ( 'Ant' , getVariable ( 'ant' ) )
     setVariable ( 'includeTargets' , new IncludeTargets ( this ) )
@@ -104,8 +104,8 @@ public class GantBinding extends Binding implements Cloneable {
           System.err.println ( 'Warning, target causing name overwriting of name ' + targetName )
           //System.exit ( -101 )
         }
-        catch ( MissingPropertyException ) { }
-        def targetDescription = map.get ( targetName )
+        catch ( MissingPropertyException mpe ) { }
+        def targetDescription = map [ targetName ]
         if ( targetDescription ) { targetDescriptions.put ( targetName , targetDescription ) }
         closure.metaClass = new GantMetaClass ( closure.metaClass , owner )
         owner.setVariable ( targetName , closure )
@@ -114,7 +114,7 @@ public class GantBinding extends Binding implements Cloneable {
     setVariable ( 'task' , { Map<String, String> map , Closure closure ->
         System.err.println ( "task has now been removed from Gant, please update your Gant files to use target instead of task." )
         System.exit ( -99 ) ;
-      } )             
+      } )
     setVariable ( 'targetDescriptions' , new TreeMap ( ) )
     setVariable ( 'message' , { String tag , Object message ->
         def padding = 9 - tag.length ( )
@@ -122,25 +122,25 @@ public class GantBinding extends Binding implements Cloneable {
         println ( "           ".substring ( 0 , padding ) + '[' + tag + '] ' + message )
       } )
     setVariable ( 'setDefaultTarget' , { defaultTarget -> // Deal with Closure or String arguments.
-         switch ( defaultTarget.getClass ( ) ) {
+         switch ( defaultTarget.class ) {
           case Closure :
-          def targetName = null
-          owner.variables.each { key , value -> if ( value.is ( defaultTarget ) ) { targetName = key } }
-          if ( targetName == null ) { throw new RuntimeException ( 'Parameter to setDefaultTarget method is not a known target.  This can never happen!' ) }
-          owner.target.call ( 'default' : targetName ) { defaultTarget ( ) }
-          break
+           def targetName = null
+           owner.variables.each { key , value -> if ( value.is ( defaultTarget ) ) { targetName = key } }
+           if ( targetName == null ) { throw new RuntimeException ( 'Parameter to setDefaultTarget method is not a known target.  This can never happen!' ) }
+           owner.target.call ( 'default' : targetName ) { defaultTarget ( ) }
+           break
           case String :
-          def failed = true
-          try {
-            def targetClosure = owner.getVariable ( defaultTarget )
-            if ( targetClosure != null ) { owner.target.call ( 'default' : defaultTarget ) { targetClosure ( ) } ; failed = false }
-          }
-          catch ( MissingPropertyException mpe ) { }
-          if ( failed ) { throw new RuntimeException ( "Target ${defaultTarget} does not exist so cannot be made the default." ) }
-          break
+           def failed = true
+           try {
+             def targetClosure = owner.getVariable ( defaultTarget )
+             if ( targetClosure != null ) { owner.target.call ( 'default' : defaultTarget ) { targetClosure ( ) } ; failed = false }
+           }
+           catch ( MissingPropertyException mpe ) { }
+           if ( failed ) { throw new RuntimeException ( "Target ${defaultTarget} does not exist so cannot be made the default." ) }
+           break
           default :
-          throw new RuntimeException ( 'Parameter to setDefaultTarget is of the wrong type -- must be a target reference or a string.' )
-          break
+           throw new RuntimeException ( 'Parameter to setDefaultTarget is of the wrong type -- must be a target reference or a string.' )
+           break
          }
       } )
     setVariable ( 'cacheEnabled' , false )
@@ -153,10 +153,10 @@ public class GantBinding extends Binding implements Cloneable {
    *  The method for getting values from the binding.  Ensures that Ant properties appear to be in the binding object.
    */
   Object getVariable ( final String name ) {
-    Object returnValue = null
+    def returnValue
     try { returnValue = super.getVariable ( name ) }
     catch ( final MissingPropertyException mpe ) {
-      returnValue = super.getProperty ( 'ant' ).getProject ( ).getProperty ( name )
+      returnValue = super.getProperty ( 'ant' ).project.getProperty ( name )
       if ( returnValue == null ) { throw mpe }
     }
     returnValue

@@ -19,7 +19,7 @@ import org.codehaus.gant.tests.GantTestCase
 //  Original provided by Peter Ledbrook.
 
 class GANT_49_Test extends GantTestCase {
-  void testBuilderBug() {
+  void testBuilderBug ( ) {
     //
     //  NB Codehaus Bamboo execution is not in a context such that
     //  org.codehaus.groovy.runtime.HandleMetaClass exists since it is running against Groovy 1.5.6 and not

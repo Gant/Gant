@@ -41,9 +41,6 @@ setDefaultTarget ( something )
     assertEquals ( '''   [delete] quiet : 'false'
   [fileset] dir : '.' , includes : '**/*~' , defaultexcludes : 'false'
 ''' , output )
-    //  Partly correct Emacs colouring by closing the comment: */
-    //  TODO:  Fix fontlock in Groovy mode so '' are treated as strings in which comments
-    //  do not affect fontlock.
   }
   void testDefault ( ) {
     assertEquals ( 0 , processTargets (  ) )
@@ -55,6 +52,6 @@ setDefaultTarget ( something )
   }
   void testSomething ( ) {
     assertEquals ( 0 , processTargets ( 'something' ) )
-    assertEquals ( "     [echo] message : 'Did something.'\n" , output ) 
+    assertEquals ( "     [echo] message : 'Did something.'\n" , output )
   }
 }

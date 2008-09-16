@@ -69,8 +69,8 @@ final class Execute {
    */
   def executable ( final Map keywordParameters = [:] , final String command ) {
     manageProcess ( command.execute ( ) ,
-                    keywordParameters['errProcessing'] ?: { System.err.println ( it ) },
-                    keywordParameters['outProcessing'] ?: { println ( it ) } ,
+                    (Closure) ( keywordParameters['errProcessing'] ?: { System.err.println ( it ) } ) ,
+                    (Closure) ( keywordParameters['outProcessing'] ?: { println ( it ) } ) ,
                     command ,
                     'execute' )
   }
@@ -86,8 +86,8 @@ final class Execute {
    */
   def executable ( final Map keywordParameters = [:] , final List command ) {
     manageProcess ( command.execute ( ) ,
-                    keywordParameters['errProcessing'] ?: { System.err.println ( it ) },
-                    keywordParameters['outProcessing'] ?: { println ( it ) } ,
+                    (Closure) ( keywordParameters['errProcessing'] ?: { System.err.println ( it ) } ) ,
+                    (Closure) ( keywordParameters['outProcessing'] ?: { println ( it ) } ) ,
                     command ,
                     'execute' )
   }
@@ -106,8 +106,8 @@ final class Execute {
     final boolean isWindows = ( osName.length ( ) > 6 ) ? osName.substring ( 0 , 7 ).equals ( "Windows" ) : false
     final commandArray = isWindows ? [ 'cmd' , '/c' , command ] : [ 'sh' , '-c' , command ]
     manageProcess ( commandArray.execute ( ) ,
-                    keywordParameters['errProcessing'] ?: { System.err.println ( it ) },
-                    keywordParameters['outProcessing'] ?: { println ( it ) } ,
+                    (Closure) ( keywordParameters['errProcessing'] ?: { System.err.println ( it ) } ) ,
+                    (Closure) ( keywordParameters['outProcessing'] ?: { println ( it ) } ) ,
                     command ,
                     'shell' )
   }

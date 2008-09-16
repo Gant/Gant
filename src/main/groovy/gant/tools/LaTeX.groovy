@@ -15,7 +15,6 @@
 package gant.tools
 
 import org.codehaus.gant.GantBinding
-import org.codehaus.gant.GantState
 
 /**
  *  Provide support for supporting LaTeX document processing.
@@ -67,7 +66,7 @@ class LaTeX {
    */
   public LaTeX ( final GantBinding binding ) {
     this.binding = binding
-    executor = new Execute ( binding ) 
+    executor = new Execute ( binding )
   }
  /**
    *  Constructor for the "includeTool **" usage.
@@ -77,7 +76,7 @@ class LaTeX {
    */
   public LaTeX ( final GantBinding binding , final Map map ) {
     this.binding = binding
-    executor = new Execute ( binding ) 
+    executor = new Execute ( binding )
     map.each { key , value -> addOption ( key , value ) }
   }
   private void addOption ( key , option ) {
@@ -115,7 +114,7 @@ class LaTeX {
    */
   public void addPs2pdfOption ( option ) { addOption ( 'ps2pdfOptions' , option ) }
   /**
-   *  Add a collection of options for the build. 
+   *  Add a collection of options for the build.
    *
    *  @param keywordOptions The collection of options to add.
    */
@@ -125,7 +124,7 @@ class LaTeX {
    *  and Makeindex requirements are completed.
    */
   private void executeLaTeX ( ) {
-    def root = environment.root
+    String root = (String) environment.root
     def sourceName = root + ltxExtension
     def sourceFile = new File ( sourceName )
     if ( ! sourceFile.exists ( ) ) {
@@ -136,13 +135,13 @@ class LaTeX {
     def targetName = root + targetExtension
     def targetFile = new File ( targetName )
     def needToUpdate = false
-    if ( ! targetFile.exists ( ) ) { needToUpdate = true }
-    else {
+    if ( targetFile.exists ( ) ) {
       ( environment.dependents + [ sourceName ] ).each { dependent ->
-        if ( ! ( dependent instanceof File ) ) { dependent = new File ( dependent ) }
+        if ( ! ( dependent instanceof File ) ) { dependent = new File ( (String) dependent ) }
         if ( dependent.lastModified ( ) > targetFile.lastModified ( ) ) { needToUpdate = true }
       }
     }
+    else { needToUpdate = true }
     if ( needToUpdate ) {
       def latexAction = [ environment.latexCommand , *environment.latexOptions , sourceName ]
       def runLaTeX = { executor.executable ( latexAction ) }
@@ -197,8 +196,8 @@ class LaTeX {
     arguments.each { key , value -> environment[ key ] = value }
     environment.latexCommand = 'latex'
     executeLaTeX ( )
-    def dviFile = new File ( environment.root + dviExtension )
-    def psFile = new File ( environment.root + psExtension )
+    def dviFile = new File ( (String) environment.root + dviExtension )
+    def psFile = new File ( (String) environment.root + psExtension )
     if ( ( ! psFile.exists ( ) ) || ( dviFile.lastModified ( ) > psFile.lastModified ( ) ) ) {
       executor.executable ( [ environment.dvipsCommand , * environment.dvipsOptions , '-o' , psFile.name , dviFile.name ] )
     }

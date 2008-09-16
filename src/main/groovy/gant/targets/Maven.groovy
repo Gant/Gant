@@ -169,7 +169,7 @@ final class Maven {
       }
       else {
         try {
-          new File ( owner.mainSourcePath ).eachDir { directory ->
+          new File ( (String) owner.mainSourcePath ).eachDir { directory ->
             switch ( directory.name ) {
              case 'java' :
              //  Need to use the joint Groovy compiler here to deal wuth the case where Groovy files are in the
@@ -217,7 +217,7 @@ final class Maven {
       depends ( owner.binding.compile )
       owner.binding.ant.mkdir ( dir : owner.testCompilePath  )
       if ( owner.testSourcePath != owner.default_testSourcePath ) {
-        if ( ( new File ( owner.testSourcePath ) ).isDirectory ( ) ) {
+        if ( ( new File ( (String) owner.testSourcePath ) ).isDirectory ( ) ) {
           owner.binding.ant.groovyc ( [ srcdir : owner.testSourcePath , destdir : owner.testCompilePath , fork : 'true' ] + owner.groovyCompileProperties ) {
             javac ( owner.javaCompileProperties )
             classpath {
@@ -231,9 +231,9 @@ final class Maven {
         }
       }
       else {
-        if ( ( new File ( owner.testSourcePath ) ).isDirectory ( ) ) {
+        if ( ( new File ( (String) owner.testSourcePath ) ).isDirectory ( ) ) {
           try {
-            new File ( owner.default_testSourcePath ).eachDir { directory ->
+            new File ( (String) owner.default_testSourcePath ).eachDir { directory ->
               switch ( directory.name ) {
                case 'java' :
                //  Need to use the joint Groovy compiler here to deal with the case where Groovy files are in the
@@ -306,7 +306,7 @@ final class Maven {
         // owner.binding.ant.project.properties.testsFailed may not exist, hence the MissingPropertyException capture.
         if ( ! owner.binding.testFailIgnore && owner.binding.ant.project.properties.testsFailed ) { throw new RuntimeException ( 'Tests failed, execution terminating.' ) }
       }
-      catch ( MissingPropertyException mpe ) { }
+      catch ( MissingPropertyException mpe ) { /* Intentionally blank */ }
     }
     properties.binding.target.call ( 'package' : "Package the artefact as a ${properties.packaging} in ${properties.mainCompilePath}." ) {
       [ 'groupId' , 'artifactId' , 'version' ].each { item ->
@@ -322,7 +322,7 @@ final class Maven {
       if ( owner.manifestIncludes ) {
         owner.binding.ant.mkdir ( dir : owner.metadataPath )
         owner.manifestIncludes.each { item ->
-          if ( new File ( item ).isDirectory ( ) ) { owner.binding.ant.copy ( todir : owner.metadataPath ) { fileset ( dir : item , includes : '*' ) } }
+          if ( new File ( (String) item ).isDirectory ( ) ) { owner.binding.ant.copy ( todir : owner.metadataPath ) { fileset ( dir : item , includes : '*' ) } }
           else { owner.binding.ant.copy ( todir : owner.metadataPath , file : item ) }
         }
       }
@@ -377,7 +377,7 @@ final class Maven {
       depends ( owner.binding.'package' )
       owner.binding.ant."${owner.antlibXMLns}:install" ( file : owner.packagedArtifact  ) { pom ( refid : mavenPOMId ) }
     }
-    properties.binding.target.call ( deploy : "Deploy the artefact: copy the artefact to the remote repository ${ properties.version =~ 'SNAPSHOT' ? properties.deploySnapshotURL : properties.deployURL }." ) {
+    properties.binding.target.call ( deploy : "Deploy the artefact: copy the artefact to the remote repository ${ properties.version =~ ( 'SNAPSHOT' ? properties.deploySnapshotURL : properties.deployURL ) }." ) {
       def label = 'deployURL'
       if ( owner.version =~ 'SNAPSHOT' ) { label = 'deploySnapshotURL' }
       def deployURL = owner."${label}"

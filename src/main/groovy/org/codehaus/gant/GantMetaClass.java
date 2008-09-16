@@ -16,6 +16,7 @@ package org.codehaus.gant ;
 
 import java.util.HashSet ;
 import java.util.List ;
+import java.util.Set ;
 
 import groovy.lang.Closure ;
 import groovy.lang.DelegatingMetaClass ;
@@ -49,7 +50,7 @@ public class GantMetaClass extends DelegatingMetaClass {
    *  Should a different data structure be used, one that is a bit more thread safe?  Arguably it is
    *  reasonable for this to be a synchronized object.</p>
    */
-  private final static HashSet<Closure> methodsInvoked = new HashSet<Closure> ( ) ;
+  private static final Set<Closure> methodsInvoked = new HashSet<Closure> ( ) ;
   /**
    *  The binding (aka global shared state) that is being used.
    */
@@ -84,7 +85,7 @@ public class GantMetaClass extends DelegatingMetaClass {
    *  @return The result of the <code>Closure</code>.
    */
   private Object processArgument ( final Object argument ) {
-    Object returnObject = null ;
+    Object returnObject ;
     final String errorReport = "depends called with an argument (" + argument + ") that is not a known target or list of targets." ;
     if ( argument instanceof Closure ) { returnObject = processClosure ( (Closure) argument ) ; }
     else if ( argument instanceof String ) {
@@ -100,15 +101,14 @@ public class GantMetaClass extends DelegatingMetaClass {
    *  will attempt to pick the best method for the given name and arguments. If a method cannot be invoked a
    *  <code>MissingMethodException</code> will be thrown.
    *
-   *  @see groovy.lang.MissingMethodException
+   *  @see MissingMethodException
    *  @param object The instance on which the method is invoked.
    *  @param methodName The name of the method.
    *  @param arguments The arguments to the method.
    *  @return The return value of the method which is <code>null</code> if the return type is
    *  <code>void</code>.
    */
-  @Override
-  public Object invokeMethod ( final Object object , final String methodName , final Object[] arguments ) {
+  @Override public Object invokeMethod ( final Object object , final String methodName , final Object[] arguments ) {
     Object returnObject = null ;
     if ( methodName.equals ( "depends" ) ) {
       for ( Object argument : arguments ) {
@@ -125,7 +125,7 @@ public class GantMetaClass extends DelegatingMetaClass {
           final Closure closure = (Closure) binding.getVariable ( methodName ) ;
           if ( closure != null ) { methodsInvoked.add ( closure ) ; }
         }
-        catch ( final MissingPropertyException mpe ) { }
+        catch ( final MissingPropertyException mpe ) { /* Purposefully empty */ }
       }
       catch ( final MissingMethodException mme ) {
         try { returnObject = ( (GantBuilder) ( binding.getVariable ( "ant" ) ) ).invokeMethod ( methodName , arguments ) ; }
@@ -143,8 +143,7 @@ public class GantMetaClass extends DelegatingMetaClass {
    *  @param arguments The argument to the method
    *  @return The return value of the method which is null if the return type is void
    */
-  @Override
-  public Object invokeMethod ( final Object object , final String methodName , final Object arguments ) {
+  @Override public Object invokeMethod ( final Object object , final String methodName , final Object arguments ) {
     if ( arguments == null ) { return invokeMethod ( object , methodName , MetaClassHelper.EMPTY_ARRAY ) ; }
     else if ( arguments instanceof Tuple ) { return invokeMethod ( object , methodName , ( (Tuple) arguments ).toArray ( ) ) ; }
     else if ( arguments instanceof Object[] ) { return invokeMethod ( object , methodName , (Object[]) arguments ) ; }
@@ -157,8 +156,7 @@ public class GantMetaClass extends DelegatingMetaClass {
    *  @param args the arguments to use for the method call
    *  @return the result of invoking the method
    */
-  @Override
-  public Object invokeMethod ( final String name , final Object args ) {
+  @Override public Object invokeMethod ( final String name , final Object args ) {
     return invokeMethod ( this , name , args ) ;
   }
   //////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -183,8 +181,7 @@ public class GantMetaClass extends DelegatingMetaClass {
    *  @param fromInsideClass Whether the call was invoked from the inside or the outside of the class.
    *  @return The return value of the method
    */
-  @Override
-  public Object invokeMethod ( final Class sender , final Object receiver , final String methodName , final Object[] arguments, final boolean isCallToSuper, final boolean fromInsideClass ) {
+  @Override public Object invokeMethod ( final Class sender , final Object receiver , final String methodName , final Object[] arguments, final boolean isCallToSuper, final boolean fromInsideClass ) {
     return invokeMethod ( receiver , methodName , arguments ) ;
   }
 }

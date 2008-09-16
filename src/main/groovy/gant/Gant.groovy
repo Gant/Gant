@@ -16,17 +16,13 @@ package gant
 
 import java.lang.reflect.InvocationTargetException
 
-import org.codehaus.groovy.control.MultipleCompilationErrorsException
 import org.codehaus.groovy.control.CompilerConfiguration
 import org.codehaus.groovy.control.CompilationUnit
 
 import org.codehaus.gant.GantBinding
-import org.codehaus.gant.GantMetaClass
 import org.codehaus.gant.GantState
 
 import org.apache.commons.cli.GnuParser
-import org.apache.commons.cli.Option
-import org.apache.commons.cli.OptionBuilder
 
 import org.codehaus.groovy.runtime.InvokerInvocationException
 
@@ -100,19 +96,19 @@ final class Gant {
   /**
    *  The name of the file used as input, - means standard input.
    */
-  private buildFileName
+  private String buildFileName
   /**
    *  The <code>File</code> object for the script.
    */
-  private buildFile
+  private File buildFile
   /**
    *  The name of the class actually used for compiling the script.
    */
-  private buildClassName
+  private String buildClassName
   /**
    *  The <code>Script</code> object used for the script if a <code>Script</code> object gets used.
    */
-  private buildScript
+  private Script buildScript
   /**
    *  The binding object used for this run of Gant.  This binding object replaces the standard one to ensure
    *  that all the Gant specific things appear in the binding the script executes with.
@@ -166,9 +162,9 @@ final class Gant {
   public Gant ( String s , GantBinding b , ClassLoader cl ) {
     buildFileName = s
     buildClassName = buildFileName.replaceAll ( '\\.' , '_' )
-    binding = ( b != null ) ? b : new GantBinding ( )
-    binding.classLoader = ( cl != null ) ? cl : getClass ( ).classLoader
-    binding.groovyShell = new GroovyShell ( binding.classLoader , binding )
+    binding = b ?: new GantBinding ( )
+    binding.classLoader = cl ?: getClass ( ).classLoader
+    binding.groovyShell = new GroovyShell ( (ClassLoader) binding.classLoader , binding )
   }
    /**
     *  Constructor that uses the passed script as the build script, creates a new instance of
@@ -187,9 +183,9 @@ final class Gant {
    */
   public Gant ( Script script , GantBinding b , ClassLoader cl ) {
     buildScript = script
-    binding = ( b != null ) ? b : new GantBinding ( )
-    binding.classLoader = ( cl != null ) ? cl : getClass ( ).classLoader
-    binding.groovyShell = new GroovyShell ( binding.classLoader , binding )
+    binding = b ?: new GantBinding ( )
+    binding.classLoader = cl ?: getClass ( ).classLoader
+    binding.groovyShell = new GroovyShell ( (ClassLoader) binding.classLoader , binding )
   }
   /**
    *  Filter the stacktrace of the exception so as to print the line number of the line in the script being
@@ -209,7 +205,7 @@ final class Gant {
   /**
    *  The function that implements the creation of the list of targets for the -p and -T options.
    */
-  private int targetList ( targets ) {
+  private Integer targetList ( targets ) {
     def max = 0
     binding.targetDescriptions.entrySet ( ).each { item ->
       if ( item.key != 'default' ) {
@@ -231,8 +227,8 @@ final class Gant {
   /**
    *  The function that handles actioning the targets.
    */
-  private int dispatch ( targets ) {
-    def returnCode = 0
+  private Integer dispatch ( targets ) {
+    Integer returnCode = 0
     final processDispatch = { target , errorReturnCode ->
       try {
         def returnValue = owner.binding.getVariable ( target ).call ( )
@@ -257,7 +253,7 @@ final class Gant {
   /**
    *  Process the command line options and then call the function to process the targets.
    */
-  public int processArgs ( String[] args ) {
+  public Integer processArgs ( String[] args ) {
     final rootLoader = binding.classLoader.rootLoader
     //
     //  Commons CLI 1.0 and 1.1 are broken.  1.0 has one set of ideas about multiple args and is broken.
@@ -312,7 +308,7 @@ final class Gant {
     if ( options.q ) { GantState.verbosity = GantState.QUIET ; binding.ant.setMessageOutputLevel ( ) }
     if ( options.s ) { GantState.verbosity = GantState.SILENT  ; binding.ant.setMessageOutputLevel ( ) }
     if ( options.v ) { GantState.verbosity = GantState.VERBOSE  ; binding.ant.setMessageOutputLevel ( ) }
-    binding.cacheDirectory = binding.cacheEnabled && options.C ? new File ( options.C ) : new File ( "${System.properties.'user.home'}/.gant/cache" )
+    binding.cacheDirectory = binding.cacheEnabled && options.C ? new File ( (String) options.C ) : new File ( "${System.properties.'user.home'}/.gant/cache" )
     if ( options.D ) {
       options.Ds.each { definition ->
         def pair = definition.split ( '=' ) as List
@@ -321,24 +317,23 @@ final class Gant {
         //  Ant, Gant, Maven, Eclipse and IntelliJ IDEA all behave slightly differently.  This makes testing
         //  nigh on impossible.  Also the user doesn't need to know about these.
         final outSave = System.out
-        System.setOut ( new PrintStream ( new ByteArrayOutputStream ( ) ) )
+        System.out = new PrintStream ( new ByteArrayOutputStream ( ) )
         binding.ant.property ( name : pair[0] , value : pair[1] )
-        System.setOut ( outSave )
-                        //binding.setVariable ( pair[0] , pair[1] )  //  TODO:  Can this now be removed since the ant properties are searched?
+        System.out = outSave
       }
     }
     if ( options.L ) {
-      options.Ls.each { directoryName ->
+      options.Ls.each { String directoryName ->
         def directory = new File ( directoryName )
         if ( directory.isDirectory ( ) ) { directory.eachFile { item -> rootLoader?.addURL ( item.toURL ( ) ) } }
         else { println ( 'Parameter to -L|--lib option is not a directory: ' + directory.name ) }
       }
     }
-    if ( options.P ) { options.P.split ( System.properties.'path.separator' ).each { pathitem -> rootLoader?.addURL ( ( new File ( pathitem ) ).toURL ( ) ) } }
+    if ( options.P ) { options.P.split ( System.properties.'path.separator' ).each { String pathitem -> rootLoader?.addURL ( ( new File ( pathitem ) ).toURL ( ) ) } }
     if ( options.V ) {
       def version = ''
       final gantPackage = binding.classLoader.getPackage ( 'gant' )
-      if ( gantPackage != null ) { version = gantPackage.getImplementationVersion ( ) }
+      if ( gantPackage != null ) { version = gantPackage.implementationVersion }
       println ( 'Gant version ' + ( ( ( version == null ) || ( version == '' ) ) ? '<unknown>' : version ) )
       return 0
     }
@@ -355,33 +350,18 @@ final class Gant {
       }
     }
     if ( gotUnknownOptions ) { cli.usage ( ) ; return -1 ; }
-    /*
-     *  TODO:  Isn't this all now redundant are therefore removable?
-     *
-    def jarPattern = ~/.*\.jar/
-    def userAntLib = new File ( "${System.properties.'user.home'}/.ant/lib" )
-    if ( userAntLib.isDirectory ( ) ) { userAntLib.eachFileMatch ( jarPattern ) { file -> rootLoader?.addURL ( file.toURL ( ) ) } }
-    def userGantLib = new File ( "${System.properties.'user.home'}/.gant/lib" )
-    if ( userGantLib.isDirectory ( ) ) { userGantLib.eachFileMatch ( jarPattern ) { file -> rootLoader?.addURL ( file.toURL ( ) ) } }
-    //def antHome = System.getenv ( ).'ANT_HOME'
-    def antHome = binding.ant.project.properties.'environment.ANT_HOME'
-    if ( ( antHome != null ) && ( antHome != '' ) ) {
-      def antLib = new File ( antHome + '/lib' )
-      if ( antLib.isDirectory ( ) ) { antLib.eachFileMatch ( jarPattern ) { file -> rootLoader?.addURL ( file.toURL ( ) ) } }
-    }
-    */
     processTargets ( function , targets )
   }
-  public int processTargets ( ) { processTargets ( 'dispatch' , [ ] ) }
-  public int processTargets ( String s ) { processTargets ( 'dispatch' , [ s ] ) }
-  public int processTargets ( List l ) { processTargets ( 'dispatch' , l ) }
+  public Integer processTargets ( ) { processTargets ( 'dispatch' , [ ] ) }
+  public Integer processTargets ( String s ) { processTargets ( 'dispatch' , [ s ] ) }
+  public Integer processTargets ( List l ) { processTargets ( 'dispatch' , l ) }
   /**
    *  Process the targets, but first deal with getting the build script loaded, either by compiling the text
    *  of the file or standard input, or using the cached compiled file.
    */
-  protected int processTargets ( String function , List targets ) {
-    def buildFileText = ''
-    def buildFileModified = -1
+  protected Integer processTargets ( String function , List targets ) {
+    String buildFileText = ''
+    Integer buildFileModified = -1
     if ( buildFileName == '-' ) {
       buildFileText = System.in.text
       buildClassName = standardInputClassName
@@ -450,13 +430,13 @@ final class Gant {
   private void compileScript ( destDir , buildFileText , buildClassName ) {
     if ( ! destDir.exists ( ) ) { destDir.mkdirs ( ) }
     def configuration = new CompilerConfiguration ( )
-    configuration.setTargetDirectory ( destDir )
-    def unit = new CompilationUnit ( configuration , null , new GroovyClassLoader ( binding.classLoader ) )
-    unit.addSource ( buildClassName , new ByteArrayInputStream ( buildFileText.bytes ) )
+    configuration.targetDirectory = destDir
+    def unit = new CompilationUnit ( configuration , null , new GroovyClassLoader ( (ClassLoader) binding.classLoader ) )
+    unit.addSource ( buildClassName , new ByteArrayInputStream ( (byte[]) buildFileText.bytes ) )
     unit.compile ( )
   }
   /**
    *  The entry point for command line invocation.
    */
-  public static void main ( String[] args ) { System.exit ( ( new Gant ( ) ).processArgs ( args ) ) }
+  public static void main ( String[] args ) { System.exit ( (Integer) ( ( new Gant ( ) ).processArgs ( args ) ) ) }  // IntelliJ IDEA thinks processTargets returns an Object.
 }

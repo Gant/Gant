@@ -33,23 +33,23 @@ public class GantState {
   /**
    *  Output no information ever.
    */
-  public final static int SILENT = Project.MSG_ERR ;
+  public static final int SILENT = Project.MSG_ERR ;
   /**
    *  Output only the meagrest of information.
    */
-  public final static int QUIET = Project.MSG_WARN ;
+  public static final int QUIET = Project.MSG_WARN ;
   /**
    *  Output information about which task is executing, and other things.
    */
-  public final static int NORMAL = Project.MSG_INFO ;
+  public static final int NORMAL = Project.MSG_INFO ;
   /**
    *  Output lots of information about what is going on.
    */
-  public final static int VERBOSE = Project.MSG_VERBOSE ;
+  public static final int VERBOSE = Project.MSG_VERBOSE ;
   /**
    *  Output huge amounts of information about what is going on.
    */
-  public final static int DEBUG = Project.MSG_DEBUG ;
+  public static final int DEBUG = Project.MSG_DEBUG ;
   /**
    *  The current state of the verbosity of execution -- default is <code>NORMAL</code>.
    */
