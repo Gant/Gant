@@ -53,11 +53,11 @@ public class GantState {
   /**
    *  The current state of the verbosity of execution -- default is <code>NORMAL</code>.
    */
-  static int verbosity = NORMAL ;
+  public static int verbosity = NORMAL ;
   /**
    *  Whether this is a dry drun, i.e. no actual execution occur.
    */
-  static boolean dryRun = false ;
+  public static boolean dryRun = false ;
   /**
    *  We never want an instance of this class.
    */
