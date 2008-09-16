@@ -30,22 +30,4 @@ target ( hello : '' ) {
     assertEquals ( -13 , processTargets ( 'hello' ) )
     assertTrue ( output.startsWith ( 'No signature of method: standard_input.groovyc() is applicable for argument types: (java.util.LinkedHashMap) values: ' ) )
   }
-  /*
-  void testGroovyTaskSucceed ( ) {
-    try {
-      def directory = File.createTempFile ( 'gant-' , '-GantBuilder_Test' )
-      directory.delete ( )
-      directory.mkdir ( )
-      directory.deleteOnExit ( )
-      script = """
-target ( hello : '' ) {
-  groovyc ( srcdir : '.' , destdir : '${directory.path.replace ( '\\' , '\\\\' )}' )
-}
-"""
-      assertEquals ( 0 , processTargets ( 'hello' ) )
-      assertTrue ( output.startsWith ( '  [groovyc] Compiling ' ) )
-    }
-    catch ( IOException ioe ) { fail ( 'Failed to create a temporary directory.' ) }
-  }
-*/
 }
