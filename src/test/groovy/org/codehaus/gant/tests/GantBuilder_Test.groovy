@@ -20,7 +20,7 @@ package org.codehaus.gant.tests
  *  @author Russel Winder <russel.winder@concertant.com>
  */
 final class GantBuilder_Test extends GantTestCase {
-  void testGroovyTaskFail ( ) {
+  void testGroovycTaskFail ( ) {
     def path = '/tmp/tmp/tmp/tmp'
     script = """
 target ( hello : '' ) {
