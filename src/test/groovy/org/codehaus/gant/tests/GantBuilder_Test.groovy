@@ -14,13 +14,30 @@
 
 package org.codehaus.gant.tests
 
+import org.codehaus.gant.GantBuilder
+import org.codehaus.gant.GantState
+
 /**
  *  A test for the <code>GantBuilder</code> class.
  *
  *  @author Russel Winder <russel.winder@concertant.com>
  */
 final class GantBuilder_Test extends GantTestCase {
-  void testGroovycTaskFail ( ) {
+  void testSetMessageOutputLevel ( ) {
+    //  org.apache.tools.ant.BuildLogger appears to have no way of querying the message output level only of
+    //  setting it. This means we can only test that using the setMessageOutputLevel fails to fail.
+    assertEquals ( GantState.NORMAL , GantState.verbosity )
+    final def gantBuilder = new GantBuilder ( )
+    GantState.verbosity = GantState.VERBOSE
+    gantBuilder.setMessageOutputLevel ( )
+    assertEquals ( GantState.VERBOSE , GantState.verbosity )
+  }
+  
+  void XXXX_testGroovycTaskFail ( ) {
+    //
+    //  This test can only be guaranteed to work if JUnit is operating in perTest fork mode since otherwise
+    //  another test may have caused the Groovyc task to be loaded which leads to a 0 return value.
+    //
     def path = '/tmp/tmp/tmp/tmp'
     script = """
 target ( hello : '' ) {
