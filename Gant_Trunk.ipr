@@ -1314,6 +1314,7 @@
   </component>
   <component name="VcsDirectoryMappings">
     <mapping directory="" vcs="" />
+    <mapping directory="$PROJECT_DIR$" vcs="Bazaar" />
   </component>
   <component name="WebServicesPlugin" addRequiredLibraries="true" />
 </project>
