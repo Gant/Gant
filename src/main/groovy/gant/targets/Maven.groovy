@@ -133,7 +133,13 @@ final class Maven {
           owner.testDependencies.each { item -> dependency ( createDependencyMap ( [ scope : 'test' ] , item ) ) }
         }
       }
+      //  Do not allow the output to escape.  The problem here is that if the output is allowed out then
+      //  Ant, Gant, Maven, Eclipse and IntelliJ IDEA all behave slightly differently.  This makes testing
+      //  nigh on impossible.  Also the user doesn't need to know about this.
+      final outSave = System.out
+      System.out = new PrintStream ( new ByteArrayOutputStream ( ) )
       owner.binding.ant.taskdef ( name : 'groovyc' , classname : 'org.codehaus.groovy.ant.Groovyc' )
+      System.out = outSave
     }
     /*
     properties.binding.target.call ( validate : 'Validate the project is correct and all necessary information is available.' ) {
