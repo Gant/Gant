@@ -67,14 +67,14 @@ public class GantBuilder extends AntBuilder {
       if ( GantState.verbosity > GantState.SILENT ) {
         int padding = 9 - name.length ( ) ;
         if ( padding < 0 ) { padding = 0 ; }
-        System.out.print ( "         ".substring ( 0 , padding ) + "[" + name + "] ") ;
+        System.out.print ( "         ".substring ( 0 , padding ) + '[' + name + "] ") ;
         final Object[] args = (Object[]) arguments ;
         if ( args[0] instanceof Map ) {
           // NB: Using the cast (Map<?,?>) here causes a type check error.
           final Iterator<Map.Entry<?,?>> i = ( (Map) args[0] ).entrySet ( ).iterator ( ) ;
           while ( i.hasNext ( ) ) {
             final Map.Entry<?,?> e = i.next ( ) ;
-            System.out.print ( e.getKey ( ) + " : '" + e.getValue ( ) + "'" ) ;
+            System.out.print ( e.getKey ( ) + " : '" + e.getValue ( ) + '\'' ) ;
             if ( i.hasNext ( ) ) { System.out.print ( " , " ) ; }
           }
           System.out.println ( ) ;
