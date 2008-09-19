@@ -25,7 +25,7 @@ final class TargetMetaClassLookup_Test extends GantTestCase {
     script = '''
 includeTargets << gant.targets.Clean
 cleanPattern << "**/*~"
-target ( something : "Do something." ) { Ant.echo ( message : "Did something." ) }
+target ( something : "Do something." ) { ant.echo ( message : "Did something." ) }
 setDefaultTarget ( something )
 '''
   }
@@ -40,11 +40,11 @@ setDefaultTarget ( something )
     assertEquals ( 0 , gant.processArgs ( [ '-n' , '-f' ,  '-'  , 'clean' ] as String[] ) )
     assertEquals ( '''   [delete] quiet : 'false'
   [fileset] dir : '.' , includes : '**/*~' , defaultexcludes : 'false'
-''' , output )
+''' , output ) //// */ Emacs fontlock fixup.
   }
   void testDefault ( ) {
     assertEquals ( 0 , processTargets (  ) )
-    assertEquals (  "     [echo] message : 'Did something.'\n" , output )
+    assertEquals (  "     [echo] Did something.\n" , output )
   }
   void testBlah ( ) {
     assertEquals ( -11 , processTargets ( 'blah' ) )
@@ -52,6 +52,6 @@ setDefaultTarget ( something )
   }
   void testSomething ( ) {
     assertEquals ( 0 , processTargets ( 'something' ) )
-    assertEquals ( "     [echo] message : 'Did something.'\n" , output )
+    assertEquals ( "     [echo] Did something.\n" , output )
   }
 }
