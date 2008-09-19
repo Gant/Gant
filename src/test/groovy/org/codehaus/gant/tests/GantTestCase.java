@@ -24,6 +24,8 @@ import groovy.util.GroovyTestCase ;
 
 import gant.Gant ;
 
+import org.codehaus.gant.GantState ;
+
 import org.codehaus.groovy.runtime.InvokerHelper ;
 
 /**
@@ -56,6 +58,13 @@ public abstract class GantTestCase extends GroovyTestCase {
     System.setOut ( new PrintStream ( output ) ) ;
     gant = new Gant ( "-" ) ;
     script = "" ;
+    //
+    //  If the JUnit is run with fork mode 'perTest' then we do not have to worry about the static state.
+    //  However, when the fork mode is 'perBatch' or 'once' then we have to ensure that the static state
+    //  is reset to the normal state.
+    //
+    GantState.verbosity = GantState.NORMAL ;
+    GantState.dryRun = false ;
   }
   @Override protected void tearDown ( ) throws Exception {
     System.setOut ( savedOut ) ;
