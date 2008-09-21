@@ -28,7 +28,6 @@ final class GantBinding_Test extends GantTestCase {
   void testCreate ( ) {
     def object = new GantBinding ( )
     assertTrue ( object.ant instanceof GantBuilder )
-    assertTrue ( object.Ant instanceof GantBuilder )
     assertTrue ( object.includeTargets instanceof IncludeTargets )
     assertTrue ( object.includeTool instanceof IncludeTool )
     assertTrue ( object.target instanceof Closure )
