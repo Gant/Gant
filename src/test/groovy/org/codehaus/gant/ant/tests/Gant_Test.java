@@ -164,10 +164,12 @@ public class Gant_Test extends TestCase {
     sb.append ( "\n\n-initializeWithGroovyHome:\n\n-initializeNoGroovyHome:\n\nbuild:\n   [groovy] basedir::groovy basedir=" ) ;
     sb.append ( pathToDirectory ) ;
     sb.append ( "\n   [groovy] basedir::gant basedir=" ) ;
-    //
-    //  TODO : This is the wrong result and should be changed when the problem in Gant is corrected.
-    //
-    sb.append ( System.getProperty ( "user.dir" ) ) ; // sb.append ( pathToDirectory ) ;
+    sb.append ( System.getProperty ( "user.dir" ) ) ;
+    sb.append ( "\n   [groovy] basedir::groovy basedir=" ) ;
+    sb.append ( pathToDirectory ) ;
+    //  TODO : Why no groovy tag here?
+    sb.append ( "\nbasedir::gant basedir=" ) ; // sb.append ( "\n   [groovy] basedir::gant basedir=" ) ;
+    sb.append ( pathToDirectory ) ;
     //
     //  TODO : The <gant/> tag fails at the moment.
     //

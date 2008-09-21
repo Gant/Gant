@@ -65,8 +65,12 @@ This test results from emails by Chris Miles on the Groovy Developer email list.
   <target name="build" depends="-initializeWithGroovyHome,-initializeNoGroovyHome">
     <groovy>
       println ( "basedir::groovy basedir=${ant.project.properties.basedir}" )
-      def script = ant.project.properties.'this.basedir' + '/basedir.gant'
-      def gant = new gant.Gant ( script )
+      def gant = new gant.Gant ( ant.project.properties.'this.basedir' + '/basedir.gant' )
+      gant.processArgs (  )
+    </groovy>
+    <groovy>
+      println ( "basedir::groovy basedir=${ant.project.properties.basedir}" )
+      def gant = new gant.Gant ( ant.project.properties.'this.basedir' + '/basedir.gant' , ant.project )
       gant.processArgs (  )
     </groovy>
     <!--gant file="basedir.gant"/-->

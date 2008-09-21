@@ -29,52 +29,36 @@ public class GantBinding extends Binding implements Cloneable {
   /**
    *  Default constructor.
    */
-  public GantBinding ( ) { initializeGantBinding ( ) }
+  public GantBinding ( ) {
+    setVariable ( 'ant' , new GantBuilder ( ) )
+    initializeGantBinding ( )
+  }
   /**
    *  Constructor taking an explicit <code>Binding</code> as parameter.
    *
    *  @param binding The <code>Binding</code> to use as a base of maplets to initialize the
    *  <code>GantBinding</code> with.
    */
+  //  TODO : Check to see if this constructor is ever needed.
   public GantBinding ( final Binding binding ) {
     super ( binding.variables )
+    setVariable ( 'ant' , new GantBuilder ( ) )
+    initializeGantBinding ( )
+  }
+  /**
+   *  Constructor taking an explicit <code>org.apache.tools.ant.Project</code> as parameter.
+   *
+   *  @param p The <code>org.apache.tools.ant.Project</code> to use when initializing the
+   *  <code>GantBuilder</code>.
+   */
+  public GantBinding ( final org.apache.tools.ant.Project p ) {
+    setVariable ( 'ant' , new GantBuilder ( p ) )
     initializeGantBinding ( )
   }
   /**
    *  Method holding all the code common to all construction.
    */
   private void initializeGantBinding ( ) {
-    //
-    //  When this class is instantiated from a Gant command line or via a Groovy script then the classloader
-    //  is a org.codehaus.groovy.tools.RootLoader, and is used to load all the Ant-related classes.  This
-    //  means that all Ant classes already know about all the Groovy jars in the classpath.  When this class
-    //  is instantiated from the Gant Ant Task or from a Groovy Ant task script, all the Ant classes have
-    //  already been loaded using an instance of URLLoader and have no knowledge of the Groovy jars.
-    //  Fortunately, this class has to have been loaded by an org.apache.tools.ant.AntClassLoader which does
-    //  have all the necessary classpath information.  In this situation we must force a reload of the
-    //  org.apache.tools.ant.Project class so that it has the right classpath.
-    //
-    //  Having said this there is no unit test to require making the change!
-    //
-    //  GANT-50 raises the issue that in an Ant initiated context, the org.apache.tools.ant.Project backing
-    //  the GantBuilder instance should be the already existing one so that the basedir is correct -- which
-    //  it isn't up to the revision that fixes GANT-50.
-    //
-    //  NB The property ant.library.dir seems to be set only when Gant is started in an Ant initiated
-    //  context.
-    //
-    final classLoader = getClass ( ).classLoader
-    if ( classLoader.class.name == "org.apache.tools.ant.AntClassLoader" ) {
-      //
-      //  Need to get a reference to the already existing org.apache.tools.ant.Project instance.  How to do
-      //  this?
-      //
-      //final project = classLoader.forceLoadClass ( 'org.apache.tools.ant.Project' ).newInstance ( )
-      //project.init ( )
-      //setVariable ( ant , new GantBuilder ( project ) )
-      setVariable ( 'ant' , new GantBuilder ( ) )
-    }
-    else { setVariable ( 'ant' , new GantBuilder ( ) ) }
     //  Do not allow the output to escape.  The problem here is that if the output is allowed out then
     //  Ant, Gant, Maven, Eclipse and IntelliJ IDEA all behave slightly differently.  This makes testing
     //  nigh on impossible.  Also the user doesn't need to know about these.

@@ -211,6 +211,19 @@ final class Gant {
     binding.groovyShell = new GroovyShell ( (ClassLoader) binding.classLoader , binding )
   }
   /**
+    *  Constructor intended for use in code to be called from the Groovy Ant Task.
+    *
+    *  @param s the <code>String</code> comprising the Gant script to use.
+    *  @param p the <code>org.apache.tools.ant.Project</code> to use.
+    */
+  public Gant ( String s , org.apache.tools.ant.Project p ) {
+    buildFileName = s
+    buildClassName = buildFileName.replaceAll ( '\\.' , '_' )
+    binding = new GantBinding ( p )
+    binding.classLoader = getClass ( ).classLoader
+    binding.groovyShell = new GroovyShell ( (ClassLoader) binding.classLoader , binding )
+  }
+  /**
    *  Filter the stacktrace of the exception so as to print the line number of the line in the script being
    *  executed that caused the exception.
    */
