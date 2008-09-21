@@ -101,7 +101,7 @@ public class Gant_Test extends TestCase {
       final Process p = pb.start ( ) ;  //  Could throw an IOException hence the try block.
       final BufferedReader br = new BufferedReader ( new InputStreamReader ( p.getInputStream ( ) ) ) ;
       final Thread readThread = new Thread ( new Runnable ( ) {
-          @Override public void run ( ) {
+          public void run ( ) {
             try {
               while ( true ) {
                 final String line = br.readLine ( ) ;  //  Could throw an IOException hence the try block.
