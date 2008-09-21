@@ -12,6 +12,8 @@ Added nested <gantTarget> tags to the Gant Ant task so as to allow multiple targ
 Correct the Gant Ant task file lookup to use basedir rather than the start directory as the base from which
 to search for the file.
 
+Provide a new constructor to allow Gant to be used in a Groovy Ant Task script.  cf. GANT-50.
+
 
 1.4.0 ( r9604 )
 ---------------
