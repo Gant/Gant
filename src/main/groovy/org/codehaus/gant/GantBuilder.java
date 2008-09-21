@@ -60,9 +60,7 @@ public class GantBuilder extends AntBuilder {
    *  @param arguments The parameters to the method call.
    *  @return The value returned by the method call or null if no value is returned.
    */
-  @Override
-  @SuppressWarnings ( "unchecked" )
-  public Object invokeMethod ( final String name , final Object arguments ) {
+  @Override @SuppressWarnings ( "unchecked" ) public Object invokeMethod ( final String name , final Object arguments ) {
     if ( GantState.dryRun ) {
       if ( GantState.verbosity > GantState.SILENT ) {
         int padding = 9 - name.length ( ) ;
@@ -70,7 +68,8 @@ public class GantBuilder extends AntBuilder {
         System.out.print ( "         ".substring ( 0 , padding ) + '[' + name + "] ") ;
         final Object[] args = (Object[]) arguments ;
         if ( args[0] instanceof Map ) {
-          // NB: Using the cast (Map<?,?>) here causes a type check error.
+          // NB IntelliJ IDEA complains that (Map) is not a proper cast but using the cast (Map<?,?>) here
+          // causes a type check error.
           final Iterator<Map.Entry<?,?>> i = ( (Map) args[0] ).entrySet ( ).iterator ( ) ;
           while ( i.hasNext ( ) ) {
             final Map.Entry<?,?> e = i.next ( ) ;
