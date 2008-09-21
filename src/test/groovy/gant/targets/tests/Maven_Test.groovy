@@ -132,10 +132,6 @@ target ( sayHello : '' ) { println ( 'Hello.' ) }
 includeTargets << gant.targets.Maven
 target ( sayHello , '' ) { println ( 'Hello.' ) }
 '''
-    //
-    //  TODO: Find out which target gets executed in the above script?  The error message here is
-    //  wrong!!!!!!
-    //
     assertEquals ( -2 , processTargets ( 'sayHello' ) )
     assertEquals ( 'Standard input, line 3 -- Error evaluating Gantfile: No such property: sayHello for class: standard_input\n' , output )
   }
