@@ -34,7 +34,7 @@ import junit.framework.TestCase ;
  */
 public class Gant_Test extends TestCase {
   private final String path = "src/test/groovy/org/codehaus/gant/ant/tests" ;
-  private final File antFile = new File ( path + "/gantTest.xml" ) ;
+  private final File antFile = new File ( path + System.getProperty ( "file.separator" ) + "gantTest.xml" ) ;
   private Project project ;
 
   //  This variable is assigned in the Gant script hence the public static.
@@ -157,7 +157,7 @@ public class Gant_Test extends TestCase {
    *  Chris Miles.  cf.  GANT-50.  This assumes that the tests are run from a directory other than this one.
    */
   public void testBasedirInSubdir ( ) {
-    final String pathToDirectory = System.getProperty ( "user.dir" )  + "/" + path ;
+    final String pathToDirectory = System.getProperty ( "user.dir" )  + System.getProperty ( "file.separator" ) + path ;
     final StringBuilder sb = new StringBuilder ( ) ;
     sb.append ( "Buildfile: src/test/groovy/org/codehaus/gant/ant/tests/basedir.xml\n     [echo] basedir::ant basedir=" ) ;
     sb.append ( pathToDirectory ) ;
@@ -176,7 +176,7 @@ public class Gant_Test extends TestCase {
     //sb.append ( "\n     [gant] basedir::gant basedir=" ) ;
     //sb.append ( pathToDirectory ) ;
     sb.append ( "\n\nBUILD SUCCESSFUL\n\n" ) ;
-    assertEquals ( sb.toString ( ) , runAnt ( path + "/basedir.xml" , 0 ).replaceFirst ( "Total time: [0-9]*.*" , "" ) ) ;
+    assertEquals ( sb.toString ( ) , runAnt ( path + System.getProperty ( "file.separator" ) + "basedir.xml" , 0 ).replaceFirst ( "Total time: [0-9]*.*" , "" ) ) ;
   }
   public void testGantWithParametersAsNestedTags ( ) {
     project.executeTarget ( "gantWithParametersAsNestedTags" ) ;
