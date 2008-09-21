@@ -122,42 +122,65 @@ final class Gant {
    /**
     *  Constructor that uses build.gant as the build script, the passed <code>GantBinding</code> for the
     *  script binding, and the default class loader.
+    *
+    *  @param b the <code>GantBinding</code> to use.
     */
   public Gant ( GantBinding b ) { this (  'build.gant' , b , null ) }
    /**
     *  Constructor that uses build.gant as the build script, the passed <code>GantBinding</code> for the
     *  script binding, and the passed <code>ClassLoader</code> as the class loader.
+    *
+    *  @param b the <code>GantBinding</code> to use.
+    *  @param cl the <code>ClassLoader</code> to use.
     */
   public Gant ( GantBinding b , ClassLoader cl ) { this (  'build.gant' , b , cl ) }
    /**
     *  Constructor that uses the file passed as a parameter as the build script, creates a new instance of
     *  <code>GantBinding</code> for the script binding, and uses the default class loader.
+    *
+    *  @param f the <code>File</code> of the Gant script to use.
     */
   public Gant ( File f ) { this ( f.path , null , null ) }
    /**
     *  Constructor that uses the file passed as a parameter as the build script, the passed
     *  <code>GantBinding</code> for the script binding, and the default class loader.
+    *
+    *  @param f the <code>File</code> of the Gant script to use.
+    *  @param b the <code>GantBinding</code> to use.
     */
   public Gant ( File f , GantBinding b ) { this ( f.path , b , null ) }
    /**
     *  Constructor that uses the file passed as a parameter as the build script, the passed
     *  <code>GantBinding</code> for the script binding, the passed <code>ClassLoader</code> as the class
     *  loader.
+    *
+    *  @param f the <code>File</code> of the Gant script to use.
+    *  @param b the <code>GantBinding</code> to use.
+    *  @param cl the <code>ClassLoader</code> to use.
     */
   public Gant ( File f , GantBinding b , ClassLoader cl ) { this ( f.path , b , cl ) }
    /**
     *  Constructor that uses the filename passed as a parameter as the build script, creates a new instance
     *  of <code>GantBinding</code> for the script binding and uses the default class loader.
+    *
+    *  @param s the <code>String</code> comprising the Gant script to use.
     */
   public Gant ( String s ) { this ( s , null , null ) }
    /**
     *  Constructor that uses the filename passed as a parameter as the build script, the passed
     *  <code>GantBinding</code> for the script binding, and uses the default class loader.
+    *
+    *  @param s the <code>String</code> comprising the Gant script to use.
+    *  @param b the <code>GantBinding</code> to use.
     */
   public Gant ( String s , GantBinding b ) { this ( s , b , null ) }
    /**
     *  Constructor that uses the filename passed as a parameter as the build script, the passed
     *  <code>GantBinding</code> for the script binding, the passed <code>ClassLoader</code> as the class loader.
+    *
+    *  @param s the <code>String</code> comprising the Gant script to use.
+    *  @param b the <code>GantBinding</code> to use.
+    *  @param cl the <code>ClassLoader</code> to use.
     */
   public Gant ( String s , GantBinding b , ClassLoader cl ) {
     buildFileName = s
