@@ -66,10 +66,12 @@ public class GantBinding extends Binding implements Cloneable {
     System.out = new PrintStream ( new ByteArrayOutputStream ( ) )
     ant.property ( environment : 'environment' )
     System.out = outSave
-    setVariable ( 'Ant' , [ invokeMethod : { String s , Object o ->
-                  System.err.println ( 'Ant is deprecated, please amend your Gant files to use ant instead of Ant.' )
-                  ant.invokeMethod ( s , o )
-                  } ] as GantBuilder )
+    setVariable ( 'Ant' , [
+      invokeMethod : { String s , Object o ->
+        System.err.println ( 'Ant is deprecated, please amend your Gant files to use ant instead of Ant.' )
+        ant.invokeMethod ( s , o )
+      }
+    ] as GantBuilder )
     setVariable ( 'includeTargets' , new IncludeTargets ( this ) )
     setVariable ( 'includeTool' , new IncludeTool ( this ) )
     setVariable ( 'target' , { Map<String, String> map , Closure closure ->
