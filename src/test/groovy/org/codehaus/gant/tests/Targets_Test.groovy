@@ -65,12 +65,12 @@ target = 10
   void testStringParameter ( ) {
     script = "target ( 'string' ) { print ( '${result}' ) }"
     assertEquals ( -2 , processTargets ( 'string' ) )
-    assertTrue ( output.startsWith ( 'Standard input, line 1 -- Error evaluating Gantfile: No signature of method: org.codehaus.gant.GantBinding$_initializeGantBinding_closure1.doCall() is applicable for argument types:' ) ) 
+    assertTrue ( output.startsWith ( 'Standard input, line 1 -- Error evaluating Gantfile: No signature of method: org.codehaus.gant.GantBinding$_initializeGantBinding_closure' ) ) 
   }
   void testStringSequenceParameter ( ) {
     script = "target ( 'key' , 'description' ) { print ( '${result}' ) }"
     assertEquals ( -2 , processTargets ( 'key' ) )
-    assertTrue ( output.startsWith ( 'Standard input, line 1 -- Error evaluating Gantfile: No signature of method: org.codehaus.gant.GantBinding$_initializeGantBinding_closure1.doCall() is applicable for argument types:' ) ) 
+    assertTrue ( output.startsWith ( 'Standard input, line 1 -- Error evaluating Gantfile: No signature of method: org.codehaus.gant.GantBinding$_initializeGantBinding_closure' ) ) 
   }
   void testMissingTargetInScriptExplicitTarget ( ) {
     script = 'setDefaultTarget ( blah )'
