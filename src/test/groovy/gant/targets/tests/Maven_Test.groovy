@@ -25,12 +25,20 @@ final class Maven_Test extends GantTestCase {
   void testLoadingTargets ( ) {
     script = """
 includeTargets << gant.targets.Maven
-""" 
+"""
     assertEquals ( 0 , processTargets ( 'initialize' ) )
-    assertEquals ( '' , output ) 
+    assertEquals ( '' , output )
   }
   void testCompileTargetInDirectoryOtherThanTheCurrentBuildDirectory ( ) {
+    final antBuilder = new AntBuilder ( )
     final compileDirectory = 'target_forMavenTest'
+    //  Ensure the directory does not exist to protect against a failed test run leaving a version
+    //  in place -- which causes the test to fail inappropriately.
+    final file = new File ( compileDirectory )
+    if ( file.exists ( ) ) {
+      if ( file.isDirectory ( ) ) { antBuilder.delete ( dir : compileDirectory ) }
+      else { antBuilder.delete ( file : compileDirectory ) }
+    }
     script = """
 includeTargets ** gant.targets.Maven * [
     targetPath : '${compileDirectory}'
@@ -39,9 +47,8 @@ includeTargets ** gant.targets.Maven * [
     assertEquals ( 0 , processTargets ( 'compile' ) )
     assertTrue ( output.startsWith( '    [mkdir] Created dir:' ) )
     assertTrue ( output.contains( ' [groovyc] Compiling' ) )
-    final file = new File ( compileDirectory )
     assertTrue ( file.isDirectory ( ) )
-    ( new AntBuilder ( ) ).delete ( dir : compileDirectory )
+    antBuilder.delete ( dir : compileDirectory )
     assertFalse ( file.exists ( ) )
   }
   void testPackageNoGroupIdLeftShift ( ) {
@@ -50,7 +57,7 @@ includeTargets << gant.targets.Maven
 """
     assertEquals ( -13 , processTargets ( 'package' ) )
     assertEquals ( '''maven.groupId must be set to achieve target package.
-''' , output ) 
+''' , output )
   }
   void testPackageNoGroupIdPower ( ) {
     script = """
@@ -58,7 +65,7 @@ includeTargets ** gant.targets.Maven * [ : ]
 """
     assertEquals ( -13 , processTargets ( 'package' ) )
     assertEquals ( '''maven.groupId must be set to achieve target package.
-''' , output ) 
+''' , output )
   }
   void testPackageNoArtifactIdLeftShift ( ) {
     script = """
@@ -67,7 +74,7 @@ maven.groupId = 'flob'
 """
     assertEquals ( -13 , processTargets ( 'package' ) )
     assertEquals ( '''maven.artifactId must be set to achieve target package.
-''' , output ) 
+''' , output )
   }
   void testPackageNoArtifactIdPower ( ) {
     script = """
@@ -75,7 +82,7 @@ includeTargets ** gant.targets.Maven * [ groupId : 'flob' ]
 """
     assertEquals ( -13 , processTargets ( 'package' ) )
     assertEquals ( '''maven.artifactId must be set to achieve target package.
-''' , output ) 
+''' , output )
   }
   void testPackageVersionLeftShift ( ) {
     script = """
@@ -85,7 +92,7 @@ maven.artifactId = 'adob'
 """
     assertEquals ( -13 , processTargets ( 'package' ) )
     assertEquals ( '''maven.version must be set to achieve target package.
-''' , output ) 
+''' , output )
   }
   void testPackageVersionPower ( ) {
     script = """
@@ -93,7 +100,7 @@ includeTargets ** gant.targets.Maven * [ groupId : 'flob' , artifactId : 'adob' 
 """
     assertEquals ( -13 , processTargets ( 'package' ) )
     assertEquals ( '''maven.version must be set to achieve target package.
-''' , output ) 
+''' , output )
   }
   void testBindingPropertyIsReadOnlyLeftShift ( ) {
     script = """
@@ -102,15 +109,15 @@ maven.binding = new Binding ( )
 """
     assertEquals ( -2 , processTargets ( 'initialize' ) )
     assertEquals ( '''Standard input, line 3 -- Error evaluating Gantfile: Cannot amend the property binding.
-''' , output ) 
+''' , output )
   }
   void testBindingPropertyIsReadOnlyPower ( ) {
     script = """
 includeTargets ** gant.targets.Maven * [ binding : new Binding ( ) ]
-""" 
+"""
     assertEquals ( -2 , processTargets ( 'initialize' ) )
     assertEquals ( '''Standard input, line 2 -- Error evaluating Gantfile: Cannot amend the property binding.
-''' , output ) 
+''' , output )
   }
   void testAdditionalTarget ( ) {
     script = '''
