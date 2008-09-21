@@ -20,18 +20,14 @@ Author : Russel Winder <russel.winder@concertant.com>
 This test results from emails by Chris Miles on the Groovy Developer email list.  cf. GANT-50.
 -->
 
-<project name="Basedir Tests" default="build" xmlns:artifact="urn:maven-artifact-ant" >
+<project name="Basedir_Tests" default="build" xmlns:artifact="urn:maven-artifact-ant" >
 
   <echo>basedir::ant basedir=${basedir}</echo>
 
-  <dirname property="this.basedir" file="${ant.file.Basedir_Subdir}"/>
-
-  <property name="theDirectory" value="src/test/groovy/org/codehaus/gant/ant/tests"/>
+  <dirname property="this.basedir" file="${ant.file.Basedir_Tests}"/>
   <property name ="toplevelDirectory" value="../../../../../../../.."/>
-
   <property file="${toplevelDirectory}/local.build.properties"/>
   <property file="${toplevelDirectory}/build.properties"/>
-
   <property environment="environment"/>
 
   <condition property="groovyHomeIsSet">
@@ -40,7 +36,7 @@ This test results from emails by Chris Miles on the Groovy Developer email list.
 
   <target name="-initializeWithGroovyHome" if="groovyHomeIsSet">
     <path id="classpathId">
-      <pathelement location="${toplevelDirectory}/target/classes"/>
+      <pathelement location="${toplevelDirectory}/target_gant/classes"/>
       <fileset dir="${environment.GROOVY_HOME}/lib" includes="groovy-*.jar"/>
       <fileset dir="${environment.GROOVY_HOME}/lib" includes="commons-cli*.jar"/>
       <fileset dir="${environment.GROOVY_HOME}/lib" includes="asm*.jar"/>
@@ -73,7 +69,7 @@ This test results from emails by Chris Miles on the Groovy Developer email list.
       def gant = new gant.Gant ( script )
       gant.processArgs (  )
     </groovy>
-    <gant file="${this.basedir}/basedir.gant"/>
+    <!--gant file="basedir.gant"/-->
   </target>
   
 </project>
