@@ -66,7 +66,6 @@ public class GantBinding extends Binding implements Cloneable {
     System.out = new PrintStream ( new ByteArrayOutputStream ( ) )
     ant.property ( environment : 'environment' )
     System.out = outSave
-    //  Ensure Ant as well as ant is available to ensure backward compatibility.
     setVariable ( 'Ant' , [ invokeMethod : { String s , Object o ->
                   System.err.println ( 'Ant is deprecated, please amend your Gant files to use ant instead of Ant.' )
                   ant.invokeMethod ( s , o )
@@ -91,7 +90,7 @@ public class GantBinding extends Binding implements Cloneable {
           System.err.println ( 'Warning, target causing name overwriting of name ' + targetName )
           //System.exit ( -101 )
         }
-        catch ( MissingPropertyException mpe ) { }
+        catch ( MissingPropertyException mpe ) { /* Intentionally empty */ }
         def targetDescription = map [ targetName ]
         if ( targetDescription ) { targetDescriptions.put ( targetName , targetDescription ) }
         closure.metaClass = new GantMetaClass ( closure.metaClass , owner )
@@ -122,7 +121,7 @@ public class GantBinding extends Binding implements Cloneable {
              def targetClosure = owner.getVariable ( defaultTarget )
              if ( targetClosure != null ) { owner.target.call ( 'default' : defaultTarget ) { targetClosure ( ) } ; failed = false }
            }
-           catch ( MissingPropertyException mpe ) { }
+           catch ( MissingPropertyException mpe ) { /* Intentionally empty. */ }
            if ( failed ) { throw new RuntimeException ( "Target ${defaultTarget} does not exist so cannot be made the default." ) }
            break
           default :
