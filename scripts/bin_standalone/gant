@@ -43,6 +43,10 @@ GROOVY_HOME="$GANT_HOME"
 if [ -z "$ANT_HOME" ]
 then
     ANT_HOME=`which ant`
+    if [ -h $ANT_HOME ]
+    then
+        ANT_HOME=`readlink -f $ANT_HOME`
+    fi
     ANT_HOME=`dirname "$ANT_HOME"`
     ANT_HOME=`dirname "$ANT_HOME"`
 fi
