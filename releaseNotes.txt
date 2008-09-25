@@ -3,6 +3,8 @@
 
 Remove the erroneous use of --path in the scripts. (Thanks to Paulo Jerônimo for spotting and reporting the problem.)  
 
+Extend processing of symblic links in the gant Posix scripts. (Thanks to Nicolas Lalevée for submitting GANT-57.)
+
 
 1.4.0 ( r9604 )
 ---------------

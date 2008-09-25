@@ -38,6 +38,10 @@ fi
 if [ -z "$GROOVY_HOME" ]
 then
     GROOVY_HOME=`which groovy`
+    if [ -h $GROOVY_HOME ]
+    then
+        GROOVY_HOME=`readlink -f $GROOVY_HOME`
+    fi
     GROOVY_HOME=`dirname "$GROOVY_HOME"`
     GROOVY_HOME=`dirname "$GROOVY_HOME"`
 fi
@@ -48,6 +52,10 @@ fi
 if [ -z "$ANT_HOME" ]
 then
     ANT_HOME=`which ant`
+    if [ -h $ANT_HOME ]
+    then
+        ANT_HOME=`readlink -f $ANT_HOME`
+    fi
     ANT_HOME=`dirname "$ANT_HOME"`
     ANT_HOME=`dirname "$ANT_HOME"`
 fi
