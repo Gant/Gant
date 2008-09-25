@@ -1,3 +1,9 @@
+1.4.1 ( rXXXX )
+---------------
+
+Remove the erroneous use of --path in the scripts.
+
+
 1.4.0 ( r9604 )
 ---------------
 
