@@ -1,7 +1,7 @@
 1.4.1 ( rXXXX )
 ---------------
 
-Remove the erroneous use of --path in the scripts.
+Remove the erroneous use of --path in the scripts. (Thanks to Paulo Jerônimo for spotting and reporting the problem.)  
 
 
 1.4.0 ( r9604 )
