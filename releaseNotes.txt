@@ -14,6 +14,8 @@ to search for the file.
 
 Provide a new constructor to allow Gant to be used in a Groovy Ant Task script.  cf. GANT-50.
 
+Correct some of the cygpath option lists.
+
 
 1.4.0 ( r9604 )
 ---------------
