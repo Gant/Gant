@@ -16,7 +16,10 @@ Provide a new constructor to allow Gant to be used in a Groovy Ant Task script. 
 
 Correct some of the cygpath option lists. (Thanks to Paulo Jerônimo for spotting and reporting the problem.) 
 
-Extend processing of symblic links in the gant Posix scripts. (Thanks to Nicolas Lalevée for submitting GANT-57.)
+Extend processing of symblic links in the gant Posix scripts. (Thanks to Nicolas Lalevée for submitting
+GANT-57.)
+
+Update to use Ivy 2.0.0-rc1.
 
 
 1.4.0 ( r9604 )
