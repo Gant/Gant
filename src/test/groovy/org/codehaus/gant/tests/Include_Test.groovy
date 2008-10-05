@@ -420,7 +420,12 @@ includeTargets * gant.targets.Clean
 target ( test : '' ) { }
 '''
     assertEquals ( -2 , processTargets ( 'test' ) )
-    assertEquals ( 'Standard input, line 2 -- Error evaluating Gantfile: No signature of method: org.codehaus.gant.IncludeTargets.multiply() is applicable for argument types: (java.lang.Class) values: {class gant.targets.Clean}\n' , output )
+    //
+    //  It seems that there is a Groovy 1.5 -> 1.6 change here in that the line number reported for the error changes.
+    //
+    System.err.println ( 'testErrorNoPower:  Has an error been introduced in the 1.5 -> 1.6 change?' )
+    def lineNumber = groovyMinorVersion > 5 ? 3 : 2 
+    assertEquals ( "Standard input, line ${lineNumber} -- Error evaluating Gantfile: No signature of method: org.codehaus.gant.IncludeTargets.multiply() is applicable for argument types: (java.lang.Class) values: {class gant.targets.Clean}\n" , output )
   }
   void testErrorNullPower ( ) {
     script = '''
