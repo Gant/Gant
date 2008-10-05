@@ -64,13 +64,19 @@ System.gc ( )
 Thread.sleep ( 500 ) //  Give time for the reference queue monitor to report in.
 '''
   private File buildScriptFile
+  private fileNamePrefix =  'gant_'
+private fileNameSuffix = '_GANT_33_Test'
   void setUp ( ) {
     super.setUp ( ) 
-    buildScriptFile = File.createTempFile ( 'gant_' , '_GANT_33_Test' )
+    buildScriptFile = File.createTempFile ( fileNamePrefix , fileNameSuffix )
     buildScriptFile.write ( buildScript )
   }
   void tearDown ( ) {
     buildScriptFile.delete ( )
+    //  Need to ensure that this cache directory actually is the real cache directory as listed in gant.Gant.
+    ( new AntBuilder ( ) ).delete {
+      fileset ( dir : [ System.properties.'user.home' , '.gant' , 'cache' ].join ( System.properties.'file.separator' ) , includes : fileNamePrefix + '*' + fileNameSuffix + '*' )
+    }
   }
   //////////////////////////////////////////////////////////////////////////////////////////////
   //  On Windows the string returned by createTempFile must have \ reprocessed before being used for other
