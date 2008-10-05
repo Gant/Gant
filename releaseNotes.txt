@@ -21,6 +21,8 @@ GANT-57.)
 
 Update to use Ivy 2.0.0-rc1.
 
+Fix GANT-30 by removing .groovy and .gant extensions from file names before constructing class names.
+
 
 1.4.0 ( r9604 )
 ---------------

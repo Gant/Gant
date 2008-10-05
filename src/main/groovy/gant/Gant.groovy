@@ -184,7 +184,7 @@ final class Gant {
     */
   public Gant ( String s , GantBinding b , ClassLoader cl ) {
     buildFileName = s
-    buildClassName = buildFileName.replaceAll ( '\\.' , '_' )
+    buildClassName = classNameFromFileName ( buildFileName )
     binding = b ?: new GantBinding ( )
     binding.classLoader = cl ?: getClass ( ).classLoader
     binding.groovyShell = new GroovyShell ( (ClassLoader) binding.classLoader , binding )
@@ -218,10 +218,25 @@ final class Gant {
     */
   public Gant ( String s , org.apache.tools.ant.Project p ) {
     buildFileName = s
-    buildClassName = buildFileName.replaceAll ( '\\.' , '_' )
+    buildClassName = classNameFromFileName ( buildFileName )
     binding = new GantBinding ( p )
     binding.classLoader = getClass ( ).classLoader
     binding.groovyShell = new GroovyShell ( (ClassLoader) binding.classLoader , binding )
+  }
+  /**
+   *  Create a class name from a file name.
+   *
+   *  <p>File names may have an extension, e.g. .groovy or .gant, which should be removed to create a class
+   *  name.  Also some characters that are valid in file names are not valid in class names and so must be
+   *  transformed.</p>
+   *
+   *  <p>Up to Gant 1.5.0 the algorithm was to simply transform '\\.' to '_'.  However this means that
+   *  build.groovy got transformed to build_groovy and this caused problems in Eclipse, cf. GANT-30.<p>
+   */
+  private String classNameFromFileName ( fileName ) {
+    def index = fileName.lastIndexOf ( '.' )
+    if ( fileName[index..-1] in [ '.groovy' , '.gant' ] ) { fileName = fileName[0..<index] }
+    return fileName.replaceAll ( '\\.' , '_' )
   }
   /**
    *  Filter the stacktrace of the exception so as to print the line number of the line in the script being
@@ -334,7 +349,7 @@ final class Gant {
     binding.cacheEnabled = options.c ? true : false
     if ( options.f ) {
       buildFileName = options.f
-      buildClassName = buildFileName.replaceAll ( '\\.' , '_' )
+      buildClassName = classNameFromFileName ( buildFileName )
     }
     if ( options.h ) { cli.usage ( ) ; return 0 }
     if ( options.l ) { binding.gantLib << options.l.split ( System.properties.'path.separator' ) }
@@ -405,8 +420,7 @@ final class Gant {
     else if ( buildFileName != null ) {
       buildFile = new File ( buildFileName )
       if ( ! buildFile.isFile ( ) ) { println ( 'Cannot open file ' + buildFileName ) ; return -3 }
-      //  Apparently this transformation break debugging in Eclipse cf. GANT-30.
-      buildClassName = buildFile.name.replaceAll ( /\./ , '_' )
+      buildClassName = classNameFromFileName ( buildFile.name )
       buildFileModified = buildFile.lastModified ( )
     }
     // else: the caller has already provided the script instance.

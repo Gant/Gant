@@ -137,7 +137,7 @@ public class Gant_Test extends TestCase {
     //
     //  whereas if it succeeds the message is more like:
     //
-    //    [gant] Error evaluating Gantfile: startup failed, build_gant: 15: unable to resolve class org.codehaus.gant.ant.tests.Gant_Test
+    //    [gant] Error evaluating Gantfile: startup failed, build: 15: unable to resolve class org.codehaus.gant.ant.tests.Gant_Test
     //    [gant]  @ line 15, column 1.
     //    [gant] 1 error
     //    [gant]
@@ -149,7 +149,7 @@ public class Gant_Test extends TestCase {
     final StringBuilder sb = new StringBuilder ( ) ;
     sb.append ( "Buildfile: " ) ;
     sb.append ( path ) ;
-    sb.append ( "/gantTest.xml\n\n-initializeWithGroovyHome:\n\n-initializeNoGroovyHome:\n\ngantTestDefaultFileDefaultTarget:\n     [gant] Error evaluating Gantfile: startup failed, build_gant: 15: unable to resolve class org.codehaus.gant.ant.tests.Gant_Test\n     [gant]  @ line 15, column 1.\n     [gant] 1 error\n     [gant] \n" ) ;
+    sb.append ( "/gantTest.xml\n\n-initializeWithGroovyHome:\n\n-initializeNoGroovyHome:\n\ngantTestDefaultFileDefaultTarget:\n     [gant] Error evaluating Gantfile: startup failed, build: 15: unable to resolve class org.codehaus.gant.ant.tests.Gant_Test\n     [gant]  @ line 15, column 1.\n     [gant] 1 error\n     [gant] \n" ) ;
     assertEquals ( sb.toString ( ) , runAnt ( path + "/gantTest.xml" , 1 ) ) ;
   }
   /*
