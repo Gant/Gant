@@ -11,16 +11,16 @@
       <sourceFolder url="file://$MODULE_DIR$/groovy" isTestSource="false" />
     </content>
     <orderEntry type="sourceFolder" forTests="false" />
-    <orderEntry type="library" name="GROOVY" level="application" />
     <orderEntry type="module-library">
       <library>
         <CLASSES>
-          <root url="jar://$MODULE_DIR$/../../../../../../../.m2/repository/commons-cli/commons-cli/1.0/commons-cli-1.0.jar!/" />
+          <root url="jar://$MODULE_DIR$/../../../../../../lib/Java/groovy/lib/commons-cli-1.2-SNAPSHOT.jar!/" />
         </CLASSES>
         <JAVADOC />
         <SOURCES />
       </library>
     </orderEntry>
+    <orderEntry type="library" name="GROOVY" level="application" />
     <orderEntry type="inheritedJdk" />
     <orderEntryProperties />
   </component>
