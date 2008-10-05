@@ -109,8 +109,24 @@ setDefaultTarget ( ${theTarget} )
     assertEquals ( -11 , processTargets ( theTarget ) )
     assertEquals ( expectedOutput , output )
   }
-  
+
+  //  Test relating to GStrings as target names
+
+  void testGStringWorkingAsATargetName ( ) {
+    def targetName = 'fred'
+    script = '''
+def name = "''' + targetName + '''"
+target ( "${name}" : '' ) {
+  println ( "${name}" )
+}
+'''
+    assertEquals ( 0 , processTargets ( targetName ) )
+    assertEquals ( targetName + '\n' , output )
+  }
+
   //  Tests resulting from GANT-55 -- GString as aparameter to depends call causes problems.
+  //
+  //  GANT-61 turns out to be a replica of GANT-55.
 
   void test_GANT_55_originalFailure ( ) {
     def targetName = 'test'
@@ -147,17 +163,5 @@ target ( "${tag}.compile" : "Compile for $tag" ) {
     assertEquals ( """Profile for ${targetName}
 Compile for ${targetName}
 """ , output )
-  }
-
-  void testGStringWorkingAsATargetName ( ) {
-    def targetName = 'fred'
-    script = '''
-def name = "''' + targetName + '''"
-target ( "${name}" : '' ) {
-  println ( "${name}" )
-}
-'''
-    assertEquals ( 0 , processTargets ( targetName ) )
-    assertEquals ( targetName + '\n' , output )
   }
 }
