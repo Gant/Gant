@@ -22,10 +22,11 @@ version = ant.antProject.properties.gantVersion
 
 usePlugin ( 'groovy' )
 dependencies {
-  addMavenRepo ( 'file:///home/users/russel/.m2/repository' )
+  addMavenRepo ( "file://${ System.properties.'user.home' }/.m2/repository" )
   groovy ( 'org.codehaus.groovy:groovy-all:1.6-beta-2-SNAPSHOT' )
-  compile ( 'commons-cli:commons-cli:1.2-SNAPSHOT' )
-  testCompile ( 'junit:junit:3.8.2' )
+  //groovy ( 'org.codehaus.groovy:groovy-all:' + ant.antProject.properties.groovyVersion )
+  compile ( 'commons-cli:commons-cli:' + ant.antProject.properties.commonsCliVersion )
+  testCompile ( 'junit:junit:' + ant.antProject.properties.junitVersion )
 }
 sourceCompatibility = 1.5
 targetCompatibility = 1.5
