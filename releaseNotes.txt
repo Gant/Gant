@@ -23,6 +23,8 @@ Update to use Ivy 2.0.0-rc1.
 
 Fix GANT-30 by removing .groovy and .gant extensions from file names before constructing class names.
 
+GStrings no longer cause problem in depends call -- fixed GANT-55.
+
 
 1.4.0 ( r9604 )
 ---------------

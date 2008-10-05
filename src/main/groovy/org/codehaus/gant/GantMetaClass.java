@@ -20,6 +20,7 @@ import java.util.Set ;
 
 import groovy.lang.Closure ;
 import groovy.lang.DelegatingMetaClass ;
+import groovy.lang.GString ;
 import groovy.lang.MetaClass ;
 import groovy.lang.MissingMethodException ;
 import groovy.lang.MissingPropertyException ;
@@ -86,14 +87,18 @@ public class GantMetaClass extends DelegatingMetaClass {
    */
   private Object processArgument ( final Object argument ) {
     Object returnObject ;
-    final String errorReport = "depends called with an argument (" + argument + ") that is not a known target or list of targets." ;
     if ( argument instanceof Closure ) { returnObject = processClosure ( (Closure) argument ) ; }
-    else if ( argument instanceof String ) {
-      final Object entry = binding.getVariable ( (String) argument ) ;
-      if ( ( entry != null ) && ( entry instanceof Closure ) ) { returnObject = processClosure ( (Closure) entry ) ; }
+    else {
+      final String errorReport = "depends called with an argument (" + argument + ") that is not a known target or list of targets." ;
+      Object theArgument = argument ;
+      if ( theArgument instanceof GString ) { theArgument = theArgument.toString ( ) ; }
+      if ( theArgument instanceof String ) {
+        final Object entry = binding.getVariable ( (String) theArgument ) ;
+        if ( ( entry != null ) && ( entry instanceof Closure ) ) { returnObject = processClosure ( (Closure) entry ) ; }
+        else { throw new RuntimeException ( errorReport ) ; }
+      }
       else { throw new RuntimeException ( errorReport ) ; }
     }
-    else { throw new RuntimeException ( errorReport ) ; }
     return returnObject ;
   }
   /**

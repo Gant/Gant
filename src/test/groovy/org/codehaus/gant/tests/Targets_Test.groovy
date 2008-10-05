@@ -110,4 +110,54 @@ setDefaultTarget ( ${theTarget} )
     assertEquals ( expectedOutput , output )
   }
   
+  //  Tests resulting from GANT-55 -- GString as aparameter to depends call causes problems.
+
+  void test_GANT_55_originalFailure ( ) {
+    def targetName = 'test'
+    script = '''
+def tag = "''' + targetName + '''"
+target ( "${tag}.profile" : "Profile for $tag" ) { println "Profile for $tag" }
+target ( "${tag}.compile" : "Compile for $tag" ) {
+  depends ( "${tag}.profile" )
+  println "Compile for $tag"
+}'''
+    /*
+     *  The original behaviour:
+     *
+    assertEquals ( -13 , processTargets ( 'test.compile' ) )
+    assertEquals ( 'depends called with an argument (test.profile) that is not a known target or list of targets.\n' , output )
+    *
+    *  Is now fixed:
+    */
+    assertEquals ( 0 , processTargets ( 'test.compile' ) )
+    assertEquals ( """Profile for ${targetName}
+Compile for ${targetName}
+""" , output )
+  }
+  void test_GANT_55_originalFixed ( ) {
+    def targetName = 'test'
+    script = '''
+def tag = "''' + targetName + '''"
+target ( "${tag}.profile" : "Profile for $tag" ) { println "Profile for $tag" }
+target ( "${tag}.compile" : "Compile for $tag" ) {
+  depends ( '' + "${tag}.profile" )
+  println "Compile for $tag"
+}'''
+    assertEquals ( 0 , processTargets ( 'test.compile' ) )
+    assertEquals ( """Profile for ${targetName}
+Compile for ${targetName}
+""" , output )
+  }
+
+  void testGStringWorkingAsATargetName ( ) {
+    def targetName = 'fred'
+    script = '''
+def name = "''' + targetName + '''"
+target ( "${name}" : '' ) {
+  println ( "${name}" )
+}
+'''
+    assertEquals ( 0 , processTargets ( targetName ) )
+    assertEquals ( targetName + '\n' , output )
+  }
 }
