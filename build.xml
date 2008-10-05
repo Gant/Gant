@@ -99,7 +99,7 @@ Author : Russel Winder <russel.winder@concertant.com>
   </target>
 
   <target name="-initializeWithGroovyHome" if="groovyHomeIsSet">
-    <echo message="Building with the Groovy installation at $GROOVY_HOME."/>
+    <echo message="Building with the Groovy installation at $GROOVY_HOME (${environment.GROOVY_HOME})."/>
     <path id="groovyJarPathId">
       <fileset dir="${environment.GROOVY_HOME}/lib" includes="groovy-1.*.jar"/>
     </path>
@@ -107,7 +107,7 @@ Author : Russel Winder <russel.winder@concertant.com>
       <path refid="groovyJarPathId"/>
       <fileset dir="${environment.GROOVY_HOME}/lib" includes="commons-cli*.jar"/>
       <fileset dir="${environment.GROOVY_HOME}/lib" includes="asm*.jar"/>
-      <fileset dir="${environment.GROOVY_HOME}/lib" includes="antlr*.jar"/>
+      <fileset dir="${environment.GROOVY_HOME}/lib" includes="ant*.jar"/> <!-- Intentionally includes Ant and Antlr jars. -->
     </path>
     <path id="testJarSetPathId">
       <fileset dir="${environment.GROOVY_HOME}/lib" includes="junit*.jar"/>
