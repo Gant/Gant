@@ -32,7 +32,10 @@ dependencies {
   groovy ( 'org.codehaus.groovy:groovy-all:1.6-beta-2-SNAPSHOT' )
   //groovy ( 'org.codehaus.groovy:groovy-all:' + ant.antProject.properties.groovyVersion )
   compile ( 'commons-cli:commons-cli:' + ant.antProject.properties.commonsCliVersion )
-  testCompile ( 'junit:junit:' + ant.antProject.properties.junitVersion )
+  testRuntime ( [
+                 'junit:junit:' + ant.antProject.properties.junitVersion ,
+                 'org.apache.ivy:ivy:' + ant.antProject.properties.ivyVersion
+                 ] )
 }
 
 //  As at 2008-10-06, Gradle assumes all files in the test tree contain tests and there is an assertion
