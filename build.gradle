@@ -21,6 +21,12 @@ group = 'org.codehaus.gant'
 version = ant.antProject.properties.gantVersion
 
 usePlugin ( 'groovy' )
+
+ //  As at 2008-10-06, the following must follow the above not precede it.
+
+sourceCompatibility = 1.5
+targetCompatibility = 1.5
+
 dependencies {
   addMavenRepo ( "file://${ System.properties.'user.home' }/.m2/repository" )
   groovy ( 'org.codehaus.groovy:groovy-all:1.6-beta-2-SNAPSHOT' )
@@ -28,5 +34,12 @@ dependencies {
   compile ( 'commons-cli:commons-cli:' + ant.antProject.properties.commonsCliVersion )
   testCompile ( 'junit:junit:' + ant.antProject.properties.junitVersion )
 }
-sourceCompatibility = 1.5
-targetCompatibility = 1.5
+
+//  As at 2008-10-06, Gradle assumes all files in the test tree contain tests and there is an assertion
+//  failure if this is not the case.  Get round this by specifying an include set.  This also solves the
+//  probl;em of Gradle trying to treat generated classes for anonymous classes and closures as test cases --
+//  which is the wrong thing to do.
+
+test {
+  include ( '**/*Test.class' )
+}
