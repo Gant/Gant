@@ -43,6 +43,12 @@ catch ( MissingPropertyException mpe ) { forkCompiles = false }
 //  be set.  If it is set use the installed Groovy, otherwise use the Groovy specified in the properties
 //  file.  This only matters for non-distribution builds.
 
+//  A bijou bugette: when the Gant Ant task tests are started using Maven, this file rather than the
+//  build.gant in the Gant Ant tasks test directory gets used and groovyHome has the value null where
+//  groovyHomeEnvironment has whatever value it has.
+//
+//  TODO:  Fix this for Maven.
+
 groovyHome = System.properties.'groovy.home'
 groovyHomeEnvironment = System.getenv ( ).GROOVY_HOME
  if ( groovyHomeEnvironment ) { assert groovyHome == groovyHomeEnvironment }
