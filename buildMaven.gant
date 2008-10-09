@@ -16,9 +16,6 @@
   
 ant.property ( file : 'build.properties' )
 
-try { gantVersion }
-catch ( MissingPropertyException mpe ) { gantVersion = ant.project.properties.gantVersion }
-
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////
 //  It is imperative that the same compilation dependencies are used here as are specified in the POM.  Why?
 //  This file is not just an example of Gant's Maven target set, it is also used to create and upload Gant
@@ -33,11 +30,11 @@ includeTargets ** gant.targets.Maven * [
                                         version : gantVersion ,
                                         remoteRepositories : [ 'http://snapshots.repository.codehaus.org' ,  'http://repository.codehaus.org' , 'http://repo1.maven.org/maven2' ] ,
                                         compileDependencies : [
-                                                               [ groupId : 'org.codehaus.groovy' , artifactId : 'groovy' , version : ant.project.properties.groovyVersion ] ,
-                                                               [ groupId : 'commons-cli' , artifactId : 'commons-cli' , version : ant.project.properties.commonsCliVersion ]
+                                                               [ groupId : 'org.codehaus.groovy' , artifactId : 'groovy' , version : groovyVersion ] ,
+                                                               [ groupId : 'commons-cli' , artifactId : 'commons-cli' , version : commonsCliVersion ]
                                                                ] ,
                                         testDependencies : [
-                                                            [ groupId : 'org.apache.ivy' , artifactId : 'ivy' , version : ant.project.properties.ivyVersion ]
+                                                            [ groupId : 'org.apache.ivy' , artifactId : 'ivy' , version : ivyVersion ]
                                                             ] ,
                                         javaCompileProperties : [ source : '1.5' , target : '1.5' , debug : 'true' ] ,
                                         deployURL : 'https://dav.codehaus.org/repository/gant' ,
