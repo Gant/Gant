@@ -110,8 +110,7 @@ final distributionDirectories = [ 'documentation' , 'examples' , '.settings' , s
 
 final distributionVersions = [
                               ( 'groovy-' + groovyVersion ) : [ groupId : 'org.codehaus.groovy' , artifactId : 'groovy' , version : groovyVersion ] ,
-                              'groovy-1.6-beta-1' : [ groupId : 'org.codehaus.groovy' , artifactId : 'groovy' , version : '1.6-beta-1' ] ,
-                              'groovy-1.6-beta-2-SNAPSHOT' : [ groupId : 'org.codehaus.groovy' , artifactId : 'groovy' , version : '1.6-beta-2-SNAPSHOT' ] ,
+                              'groovy-1.6-beta-2' : [ groupId : 'org.codehaus.groovy' , artifactId : 'groovy' , version : '1.6-beta-2' ] ,
                               standalone : [ groupId : 'org.codehaus.groovy' , artifactId : 'groovy-all' , version : groovyVersion ]
                               ]
 
