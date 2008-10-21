@@ -31,17 +31,17 @@ target ( 'default' : 'The default target.' ) {
 '''
   void testDefaultTarget ( ) {
     script = theScript
-    assertEquals ( 0 , processTargets ( ) )
+    assertEquals ( 0 , processCmdLineTargets ( ) )
     assertEquals ( 'Default Target\n' , output )
   }
   void testTarget1 ( ) {
     script = theScript
-    assertEquals ( 0 , processTargets ( 'target1' ) )
+    assertEquals ( 0 , processCmdLineTargets ( 'target1' ) )
     assertEquals ( 'Target One\n' , output )
   }
   void testTarget2 ( ) {
     script = theScript
-    assertEquals ( -11 , processTargets ( 'target2' ) )
+    assertEquals ( -11 , processCmdLineTargets ( 'target2' ) )
     assertEquals ( '''Target Two
 Standard input, line 7 -- Error evaluating Gantfile: No such property: p1 for class: standard_input
 ''' , output )

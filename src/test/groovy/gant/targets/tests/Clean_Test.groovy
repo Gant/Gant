@@ -28,7 +28,7 @@ includeTargets << gant.targets.Clean
 cleanDirectory << 'target'
 target ( testClean : '' ) { println ( cleanDirectory ) }
 """
-    assertEquals ( 0 , processTargets ( 'testClean' ) )
+    assertEquals ( 0 , processCmdLineTargets ( 'testClean' ) )
     assertEquals (  ( groovyMinorVersion > 5 ) ? '''[target]
 ''' : '''["target"]
 ''' , output ) 
@@ -39,7 +39,7 @@ includeTargets << gant.targets.Clean
 cleanDirectory << [ 'target_a' , 'target_b' ]
 target ( testClean : '' ) { println ( cleanDirectory ) }
 """ 
-    assertEquals ( 0 , processTargets ( 'testClean' ) ) 
+    assertEquals ( 0 , processCmdLineTargets ( 'testClean' ) ) 
     assertEquals ( ( groovyMinorVersion > 5 ) ? '''[[target_a, target_b]]
 ''' :  '''[["target_a", "target_b"]]
 ''' , output ) 
@@ -50,7 +50,7 @@ includeTargets << gant.targets.Clean
 cleanPattern << '**/*~'
 target ( testClean : '' ) {println ( cleanPattern ) }
 """
-    assertEquals ( 0 , processTargets ( 'testClean' ) )
+    assertEquals ( 0 , processCmdLineTargets ( 'testClean' ) )
     assertEquals ( ( groovyMinorVersion > 5 ) ? '''[**/*~]
 ''' : '''["**/*~"]
 ''' , output ) 
@@ -61,7 +61,7 @@ includeTargets << gant.targets.Clean
 cleanPattern << [ '**/*~' , '**/*.bak' ]
 target ( testClean : '' ) { println ( cleanPattern ) }
 """
-    assertEquals ( 0 , processTargets ( 'testClean' ) )
+    assertEquals ( 0 , processCmdLineTargets ( 'testClean' ) )
     assertEquals ( ( groovyMinorVersion > 5 ) ? '''[[**/*~, **/*.bak]]
 ''' : '''[["**/*~", "**/*.bak"]]
 ''' , output ) 
@@ -72,7 +72,7 @@ includeTargets << gant.targets.Clean
 clobberDirectory << 'target'
 target ( testClobber : '' ) { println ( clobberDirectory ) }
 """
-    assertEquals ( 0 , processTargets ( 'testClobber' ) )
+    assertEquals ( 0 , processCmdLineTargets ( 'testClobber' ) )
     assertEquals ( ( groovyMinorVersion > 5 ) ? '''[target]
 ''' : '''["target"]
 ''' , output ) 
@@ -83,7 +83,7 @@ includeTargets << gant.targets.Clean
 clobberDirectory << [ 'target_a' , 'target_b' ]
 target ( testClobber : '' ) { println ( clobberDirectory ) }
 """
-    assertEquals ( 0 , processTargets ( 'testClobber' ) )
+    assertEquals ( 0 , processCmdLineTargets ( 'testClobber' ) )
     assertEquals ( ( groovyMinorVersion > 5 ) ? '''[[target_a, target_b]]
 ''' : '''[["target_a", "target_b"]]
 ''' , output ) 
@@ -96,7 +96,7 @@ target ( testClobber : '' ) {
   println ( clobberPattern )
 }
 """
-    assertEquals ( 0 , processTargets ( 'testClobber' ) )
+    assertEquals ( 0 , processCmdLineTargets ( 'testClobber' ) )
     assertEquals ( ( groovyMinorVersion > 5 ) ? '''[**/*~]
 ''' : '''["**/*~"]
 ''' , output ) 
@@ -107,7 +107,7 @@ includeTargets << gant.targets.Clean
 clobberPattern << [ '**/*~' , '**/*.bak' ]
 target ( testClobber : '' ) { println ( clobberPattern ) }
 """
-    assertEquals ( 0 , processTargets ( 'testClobber' ) )
+    assertEquals ( 0 , processCmdLineTargets ( 'testClobber' ) )
     assertEquals ( ( groovyMinorVersion > 5 ) ? '''[[**/*~, **/*.bak]]
 ''' : '''[["**/*~", "**/*.bak"]]
 ''' , output ) 
@@ -117,7 +117,7 @@ target ( testClobber : '' ) { println ( clobberPattern ) }
 includeTargets ** gant.targets.Clean * [ cleanDirectory : 'target' ]
 target ( testClean : '' ) { println ( cleanDirectory ) }
 """
-    assertEquals ( 0 , processTargets ( 'testClean' ) )
+    assertEquals ( 0 , processCmdLineTargets ( 'testClean' ) )
     assertEquals (  ( groovyMinorVersion > 5 ) ? '''[target]
 ''' : '''["target"]
 ''' , output ) 

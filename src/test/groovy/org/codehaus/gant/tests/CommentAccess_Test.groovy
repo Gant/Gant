@@ -25,7 +25,7 @@ final class CommentAccess_Test extends GantTestCase {
 theComment = 'Some comment.'
 target ( commentAccess : theComment ) { assert commentAccess_description == theComment ; println ( 'Success.' ) }
 """
-    assertEquals ( 0 , processTargets ( 'commentAccess' ) )
+    assertEquals ( 0 , processCmdLineTargets ( 'commentAccess' ) )
     assertEquals ( 'Success.\n' , output )
   }
 }

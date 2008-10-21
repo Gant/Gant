@@ -27,7 +27,7 @@ final class Execute_Test extends GantTestCase {
     script = """includeTool << gant.tools.Execute
 target ( testing : '' ) { execute.executable ( '${command}' ) }
 """
-    assertEquals ( 0 , processTargets ( 'testing' ) )
+    assertEquals ( 0 , processCmdLineTargets ( 'testing' ) )
     assertEquals ( """  [execute] ${command}
 1
 """ , output )
@@ -39,7 +39,7 @@ target ( testing : '' ) { execute.executable ( '${command}' ) }
     script = """includeTool << gant.tools.Execute
 target ( testing : '' ) { execute.executable ( ${command} ) }
 """
-    assertEquals ( 0 , processTargets ( 'testing' ) )
+    assertEquals ( 0 , processCmdLineTargets ( 'testing' ) )
     assertEquals ( """  [execute] ${expected}
 1
 """ , output ) 
@@ -48,7 +48,7 @@ target ( testing : '' ) { execute.executable ( ${command} ) }
     script = '''includeTool << gant.tools.Execute
 target ( testing : '' ) { execute.shell ( 'echo 1' ) }
 ''' 
-    assertEquals ( 0 , processTargets ( 'testing' ) )
+    assertEquals ( 0 , processCmdLineTargets ( 'testing' ) )
     assertEquals ( '''    [shell] echo 1
 1
 ''' , output ) 
@@ -58,7 +58,7 @@ target ( testing : '' ) { execute.shell ( 'echo 1' ) }
      script = """includeTool << gant.tools.Execute
 target ( testing : '' ) { assert execute.executable ( '${command}' ) == 0 }
 """
-    assertEquals ( 0 , processTargets ( 'testing' ) )
+    assertEquals ( 0 , processCmdLineTargets ( 'testing' ) )
     assertEquals ( """  [execute] ${command}
 1
 """ , output )
@@ -69,7 +69,7 @@ target ( testing : '' ) { assert execute.executable ( '${command}' ) == 0 }
       script = '''includeTool << gant.tools.Execute
 target ( testing : '' ) { assert execute.executable ( 'false' ) == 1 }
 '''
-      assertEquals ( 0 , processTargets ( 'testing' ) )
+      assertEquals ( 0 , processCmdLineTargets ( 'testing' ) )
       assertEquals ( '''  [execute] false
 ''' , output )
     }
@@ -78,7 +78,7 @@ target ( testing : '' ) { assert execute.executable ( 'false' ) == 1 }
     script = '''includeTool ** gant.tools.Execute * [ command : 'echo 1' ]
 target ( testing : '' ) { execute.shell ( 'echo 1' ) }
 ''' 
-    assertEquals ( 0 , processTargets ( 'testing' ) )
+    assertEquals ( 0 , processCmdLineTargets ( 'testing' ) )
     assertEquals ( '''    [shell] echo 1
 1
 ''' , output ) 

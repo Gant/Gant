@@ -51,7 +51,7 @@ target ( hello : '' ) { println ( 'Hello 1' ) }
 target ( hello : '' ) { println ( 'Hello 2' ) }
 '''
     System.err.println ( 'testOverwriting: This test is wrong -- it shows that target overwriting is supported.' )
-    assertEquals ( 0 , processTargets ( 'hello' ) )
+    assertEquals ( 0 , processCmdLineTargets ( 'hello' ) )
     assertEquals ( 'Hello 2\n' , output )
   }
   void testForbidRedefinitionOfTarget ( ) {
@@ -101,12 +101,12 @@ setDefaultTarget ( ${theTarget} )
   final expectedOutput = ( ( groovyMinorVersion < 6 ) ? '' : 'Standard input, line 2 -- ' ) + 'Error evaluating Gantfile: No such property: home for class: standard_input\n'
   void test_GANT_45_MessageBugDefaultTarget ( ) {
     script = testScript
-    assertEquals ( -12 , processTargets ( ) )
+    assertEquals ( -12 , processCmdLineTargets ( ) )
     assertEquals ( expectedOutput , output )
   }
   void test_GANT_45_MessageBugExplicitTarget ( ) {
     script = testScript
-    assertEquals ( -11 , processTargets ( theTarget ) )
+    assertEquals ( -11 , processCmdLineTargets ( theTarget ) )
     assertEquals ( expectedOutput , output )
   }
 
@@ -120,7 +120,7 @@ target ( "${name}" : '' ) {
   println ( "${name}" )
 }
 '''
-    assertEquals ( 0 , processTargets ( targetName ) )
+    assertEquals ( 0 , processCmdLineTargets ( targetName ) )
     assertEquals ( targetName + '\n' , output )
   }
 
@@ -140,12 +140,12 @@ target ( "${tag}.compile" : "Compile for $tag" ) {
     /*
      *  The original behaviour:
      *
-    assertEquals ( -13 , processTargets ( 'test.compile' ) )
+    assertEquals ( -13 , processCmdLineTargets ( 'test.compile' ) )
     assertEquals ( 'depends called with an argument (test.profile) that is not a known target or list of targets.\n' , output )
     *
     *  Is now fixed:
     */
-    assertEquals ( 0 , processTargets ( 'test.compile' ) )
+    assertEquals ( 0 , processCmdLineTargets ( 'test.compile' ) )
     assertEquals ( """Profile for ${targetName}
 Compile for ${targetName}
 """ , output )
@@ -159,7 +159,7 @@ target ( "${tag}.compile" : "Compile for $tag" ) {
   depends ( '' + "${tag}.profile" )
   println "Compile for $tag"
 }'''
-    assertEquals ( 0 , processTargets ( 'test.compile' ) )
+    assertEquals ( 0 , processCmdLineTargets ( 'test.compile' ) )
     assertEquals ( """Profile for ${targetName}
 Compile for ${targetName}
 """ , output )

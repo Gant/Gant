@@ -45,7 +45,7 @@ target ( testAntDeprecation : '' ) {
   Ant.echo ( message : 'hello.' )
 }
 '''
-    assertEquals ( 0 , processTargets ( 'testAntDeprecation' ) )
+    assertEquals ( 0 , processCmdLineTargets ( 'testAntDeprecation' ) )
     assertEquals ( '     [echo] hello.\n' , output )
   }
   void testGantBindingIsActuallyUsedOutsideTarget ( ) {
@@ -54,7 +54,7 @@ assert binding instanceof org.codehaus.gant.GantBinding
 target ( testBindingObject : '' ) {
 }
 '''
-    assertEquals ( 0 , processTargets ( 'testBindingObject' ) )
+    assertEquals ( 0 , processCmdLineTargets ( 'testBindingObject' ) )
     assertEquals ( '' , output )
   }
   void testGantBindingIsActuallyUsedInsideTarget ( ) {
@@ -63,7 +63,7 @@ target ( testBindingObject : '' ) {
   assert binding instanceof org.codehaus.gant.GantBinding
 }
 '''
-    assertEquals ( 0 , processTargets ( 'testBindingObject' ) )
+    assertEquals ( 0 , processCmdLineTargets ( 'testBindingObject' ) )
     assertEquals ( '' , output )
   }
   void testAntPropertyAccessAsAntPropertyOutsideTarget ( ) {
@@ -72,7 +72,7 @@ assert ant.project.properties.'java.vm.specification.version' == '1.0'
 target ( antProperty : '' ) {
 }
 '''
-    assertEquals ( 0 , processTargets ( 'antProperty' ) )
+    assertEquals ( 0 , processCmdLineTargets ( 'antProperty' ) )
     assertEquals ( '' , output )
   }
   void testAntPropertyAccessAsAntPropertyInsideTarget ( ) {
@@ -81,7 +81,7 @@ target ( antProperty : '' ) {
   assert ant.project.properties.'java.vm.specification.version' == '1.0'
 }
 '''
-    assertEquals ( 0 , processTargets ( 'antProperty' ) )
+    assertEquals ( 0 , processCmdLineTargets ( 'antProperty' ) )
     assertEquals ( '' , output )
   }
   void testAntPropertyAccessAsBindingVariableOutsideTarget ( ) {
@@ -90,7 +90,7 @@ assert binding.'java.vm.specification.version' == '1.0'
 target ( antProperty : '' ) {
 }
 '''
-    assertEquals ( 0 , processTargets ( 'antProperty' ) )
+    assertEquals ( 0 , processCmdLineTargets ( 'antProperty' ) )
     assertEquals ( '' , output )
   }
   void testAntPropertyAccessAsBindingVariableInsideTarget ( ) {
@@ -99,7 +99,7 @@ target ( antProperty : '' ) {
   assert binding.'java.vm.specification.version' == '1.0'
 }
 '''
-    assertEquals ( 0 , processTargets ( 'antProperty' ) )
+    assertEquals ( 0 , processCmdLineTargets ( 'antProperty' ) )
     assertEquals ( '' , output )
   }
   void testAntPropertyAccessViaObjectSpecifierOutsideTarget ( ) {
@@ -108,7 +108,7 @@ assert this.'java.vm.specification.version' == '1.0'
 target ( antProperty : '' ) {
 }
 '''
-    assertEquals ( 0 , processTargets ( 'antProperty' ) )
+    assertEquals ( 0 , processCmdLineTargets ( 'antProperty' ) )
     assertEquals ( '' , output )
   }
   void testAntPropertyAccessViaObjectSpecifierInsideTarget ( ) {
@@ -119,7 +119,7 @@ target ( antProperty : '' ) {
   assert delegate.'java.vm.specification.version' == '1.0'
 }
 '''
-    assertEquals ( 0 , processTargets ( 'antProperty' ) )
+    assertEquals ( 0 , processCmdLineTargets ( 'antProperty' ) )
     assertEquals ( '' , output )
   }
 
@@ -139,7 +139,7 @@ assert value == this."${name}"
 target ( antProperty : '' ) {
 }
 '''
-    assertEquals ( 0 , processTargets ( 'antProperty' ) )
+    assertEquals ( 0 , processCmdLineTargets ( 'antProperty' ) )
     assertEquals ( '' , output )
   }
   void testPropertySettingWorksAsExpectedInTarget ( ) {
@@ -156,7 +156,7 @@ target ( antProperty : '' ) {
   assert value == delegate."${name}"
 }
 '''
-    assertEquals ( 0 , processTargets ( 'antProperty' ) )
+    assertEquals ( 0 , processCmdLineTargets ( 'antProperty' ) )
     assertEquals ( '' , output )
   }
 }

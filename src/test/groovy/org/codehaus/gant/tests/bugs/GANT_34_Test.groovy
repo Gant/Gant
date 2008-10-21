@@ -28,6 +28,6 @@ target ( 'default' : 'default' ) {
                   inline : true )
 }
 '''
-    assertEquals ( 0 , processTargets ( ) )
+    assertEquals ( 0 , processCmdLineTargets ( ) )
   }
 }

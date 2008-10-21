@@ -29,7 +29,7 @@ target ( noneDoB : '' ) { noneDoit ( ) }
 target ( noneDoC : '' ) { noneDoit ( ) }
 target ( noneDoAll : '' ) { noneDoA ( ) ; noneDoB ( ) ; noneDoC ( ) }
 '''
-    assertEquals ( 0 , processTargets ( 'noneDoAll' ) )
+    assertEquals ( 0 , processCmdLineTargets ( 'noneDoAll' ) )
     assertEquals ( '''done.
 done.
 done.
@@ -43,7 +43,7 @@ target ( mixedDoB : '' ) { mixedDoit ( ) }
 target ( mixedDoC : '' ) { depends ( mixedDoit ) }
 target ( mixedDoAll : '' ) { mixedDoA ( ) ; mixedDoB ( ) ; mixedDoC ( ) }
 '''
-    assertEquals ( 0 , processTargets ( 'mixedDoAll' ) )
+    assertEquals ( 0 , processCmdLineTargets ( 'mixedDoAll' ) )
     assertEquals ( '''done.
 done.
 ''' , output ) 
@@ -56,7 +56,7 @@ target ( allDoB : '' ) { depends ( allDoit ) }
 target ( allDoC : '' ) { depends ( allDoit ) }
 target ( allDoAll : '' ) { allDoA ( ) ; allDoB ( ) ; allDoC ( ) }
 '''
-    assertEquals ( 0 , processTargets ( 'allDoAll' ) )
+    assertEquals ( 0 , processCmdLineTargets ( 'allDoAll' ) )
     assertEquals ( 'done.\n' , output ) 
   }
   void testMultiple ( ) {
@@ -67,7 +67,7 @@ target ( multipleDoB : '' ) { depends ( multipleDoit ) }
 target ( multipleDoC : '' ) { depends ( multipleDoit ) }
 target ( multipleDoAll : '' ) { depends ( multipleDoA , multipleDoB , multipleDoC ) }
 '''
-    assertEquals ( 0 , processTargets ( 'multipleDoAll' ) )
+    assertEquals ( 0 , processCmdLineTargets ( 'multipleDoAll' ) )
     assertEquals ( 'done.\n' , output ) 
   }
   void testList ( ) {
@@ -78,7 +78,7 @@ target ( listDoB : '' ) { depends ( listDoit ) }
 target ( listDoC : '' ) { depends ( listDoit ) }
 target ( listDoAll : '' ) { depends ( [ listDoA , listDoB , listDoC ] ) }
 '''
-    assertEquals ( 0 , processTargets ( 'listDoAll' ) )
+    assertEquals ( 0 , processCmdLineTargets ( 'listDoAll' ) )
     assertEquals ( 'done.\n' , output ) 
   }
   void testNotClosure ( ) {
@@ -86,7 +86,7 @@ target ( listDoAll : '' ) { depends ( [ listDoA , listDoB , listDoC ] ) }
 datum = 1
 target ( notClosure : '' ) { depends ( datum ) }
 '''
-    assertEquals ( -13 , processTargets ( 'notClosure' ) )
+    assertEquals ( -13 , processCmdLineTargets ( 'notClosure' ) )
     assertEquals ( 'depends called with an argument (1) that is not a known target or list of targets.\n' , output )
   }
   void testNotListClosure ( ) {
@@ -94,7 +94,7 @@ target ( notClosure : '' ) { depends ( datum ) }
 datum = 1
 target ( notListClosure : '' ) { depends ( [ datum ] ) }
 '''
-    assertEquals ( -13 , processTargets ( 'notListClosure' ) )
+    assertEquals ( -13 , processCmdLineTargets ( 'notListClosure' ) )
     assertEquals ( 'depends called with an argument (1) that is not a known target or list of targets.\n' , output )
   }
   void testOutOfOrder ( ) {
@@ -105,7 +105,7 @@ target ( outOfOrderDoB : '' ) { depends ( outOfOrderDoit ) }
 target ( outOfOrderDoA : '' ) { depends ( outOfOrderDoit ) }
 target ( outOfOrderDoit : '' ) { println ( 'done.' ) }
 '''
-    assertEquals ( 0 , processTargets ( 'outOfOrderDoAll' ) )
+    assertEquals ( 0 , processCmdLineTargets ( 'outOfOrderDoAll' ) )
     assertEquals ( 'done.\n' , output )
   }
   void testOutOfOrderList ( ) {
@@ -116,7 +116,7 @@ target ( outOfOrderListDoB : '' ) { depends ( outOfOrderListDoit ) }
 target ( outOfOrderListDoA : '' ) { depends ( outOfOrderListDoit ) }
 target ( outOfOrderListDoit : '' ) { println ( 'done.' ) }
 '''
-    assertEquals ( 0 , processTargets ( 'outOfOrderListDoAll' ) )
+    assertEquals ( 0 , processCmdLineTargets ( 'outOfOrderListDoAll' ) )
     assertEquals ( 'done.\n' , output )
   }
   void testSameTargetAndFileName ( ) {
@@ -135,7 +135,7 @@ target ( startingPoint , '' ) { depends ( standard_input ) }
 target ( anotherTarget : '' ) { println ( 'done.' ) }
 target ( stringParameter : '' ) { depends ( 'anotherTarget' ) }
 '''
-    assertEquals ( 0 , processTargets ( 'stringParameter' ) )
+    assertEquals ( 0 , processCmdLineTargets ( 'stringParameter' ) )
     assertEquals ( 'done.\n' , output )
   }
   void testStringListParameter ( ) {
@@ -144,7 +144,7 @@ target ( aTarget : '' ) { println ( 'done.' ) }
 target ( anotherTarget : '' ) { println ( 'done.' ) }
 target ( stringListParameter : '' ) { depends ( [ 'aTarget' , 'anotherTarget' ] ) }
 '''
-    assertEquals ( 0 , processTargets ( 'stringListParameter' ) )
+    assertEquals ( 0 , processCmdLineTargets ( 'stringListParameter' ) )
     assertEquals ( 'done.\ndone.\n' , output )
   }
   void testMixedListParameter ( ) {
@@ -153,7 +153,7 @@ target ( aTarget : '' ) { println ( 'done.' ) }
 target ( anotherTarget : '' ) { println ( 'done.' ) }
 target ( mixedListParameter : '' ) { depends ( [ aTarget , 'anotherTarget' ] ) }
 '''
-    assertEquals ( 0 , processTargets ( 'mixedListParameter' ) )
+    assertEquals ( 0 , processCmdLineTargets ( 'mixedListParameter' ) )
     assertEquals ( 'done.\ndone.\n' , output )
   }
   void testCircularDependency ( ) {
@@ -163,7 +163,7 @@ target ( A : '' ) { depends ( B ) ; println ( 'A' ) }
 target ( B : '' ) { depends ( C )  ; println ( 'B' ) }
 target ( C : '' ) { depends ( A )  ; println ( 'C' ) }
 '''
-    assertEquals ( 0 , processTargets ( 'A' ) )    
+    assertEquals ( 0 , processCmdLineTargets ( 'A' ) )
     assertEquals ( '''A
 C
 B
@@ -175,7 +175,7 @@ A
 target ( one : 'One Target' ) { println 'Running one...' }
 target ( two : 'Two Target' ) { println 'Running two...' }
 '''
-    assertEquals ( 0 , processTargets ( [ 'one' , 'two' ] ) )
+    assertEquals ( 0 , processCmdLineTargets ( [ 'one' , 'two' ] ) )
     assertEquals ( '''Running one...
 Running two...
 ''' , output )
@@ -185,7 +185,7 @@ Running two...
 target ( targetA : '' ) { println ( 'done.' ) }
 target ( targetB : '' ) { (0..3).each { depends ( targetA ) } }
 '''
-    assertEquals ( 0 , processTargets ( 'targetB' ) )
+    assertEquals ( 0 , processCmdLineTargets ( 'targetB' ) )
     assertEquals ( 'done.\n' , output )
   }
   //  cf. GANT-26
@@ -197,7 +197,7 @@ target ( one : 'One Target' ) {
 }
 target ( two : 'Two Target' ) { println 'Running two...' }
 '''
-    assertEquals ( 0 , processTargets ( [ 'one' , 'two' ] ) )
+    assertEquals ( 0 , processCmdLineTargets ( [ 'one' , 'two' ] ) )
     assertEquals ( '''Running two...
 Running one...
 Running two...

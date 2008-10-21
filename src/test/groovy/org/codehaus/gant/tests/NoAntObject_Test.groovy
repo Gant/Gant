@@ -22,18 +22,18 @@ package org.codehaus.gant.tests
 final class NoAntObject_Test extends GantTestCase {
   void testEchoAttribute ( ) {
     script = 'target ( test : "" ) { echo ( message : "Hello." ) } '
-    assertEquals ( 0 , processTargets ( 'test' ) )
+    assertEquals ( 0 , processCmdLineTargets ( 'test' ) )
     assertEquals ( '''     [echo] Hello.
 ''' , output ) 
   }
   void testEchoText ( ) {
     script = 'target ( test : "" ) { echo { "Hello." } } '
-    assertEquals ( 0 , processTargets ( 'test' ) )
+    assertEquals ( 0 , processCmdLineTargets ( 'test' ) )
     assertEquals ( '' , output ) 
   }
   void testEchoMixed ( ) {
     script = 'target ( test : "" ) { echo ( message : "Hello" ) { " World." } } '
-    assertEquals ( 0 , processTargets ( 'test' ) )
+    assertEquals ( 0 , processCmdLineTargets ( 'test' ) )
     assertEquals ( '''     [echo] Hello
 ''' , output ) 
   }
@@ -43,7 +43,7 @@ final class NoAntObject_Test extends GantTestCase {
 ant.echo ( message : "Hello" )
 target ( test : '' ) { ant.echo ( message : "World" ) }
 '''
-    assertEquals ( 0 , processTargets ( 'test' ) )
+    assertEquals ( 0 , processCmdLineTargets ( 'test' ) )
     assertEquals ( '''     [echo] Hello
      [echo] World
 ''' , output ) 
@@ -54,7 +54,7 @@ target ( test : '' ) { ant.echo ( message : "World" ) }
 echo ( message : "Hello" )
 target ( test : '' ) { echo ( message : "World" ) }
 '''
-    assertEquals ( 0 , processTargets ( 'test' ) )
+    assertEquals ( 0 , processCmdLineTargets ( 'test' ) )
     assertEquals ( '''     [echo] Hello
      [echo] World
 ''' , output ) 
@@ -66,7 +66,7 @@ target ( test : '' ) {
   ( 0..3 ).each { ant.echo ( message : "Hello World!" ) }
 }
 '''
-    assertEquals ( 0 , processTargets ( 'test' ) )
+    assertEquals ( 0 , processCmdLineTargets ( 'test' ) )
     assertEquals ( '''     [echo] Hello World!
      [echo] Hello World!
      [echo] Hello World!
@@ -75,7 +75,7 @@ target ( test : '' ) {
   }
   void testWithoutAntReferenceInClosure ( ) {
     script = '''target ( test : '' ) { ( 0..3 ).each { echo ( message : "Hello World!" ) } }'''
-    assertEquals ( 0 , processTargets ( 'test' ) )
+    assertEquals ( 0 , processCmdLineTargets ( 'test' ) )
     assertEquals ( '''     [echo] Hello World!
      [echo] Hello World!
      [echo] Hello World!
@@ -84,7 +84,7 @@ target ( test : '' ) {
   }
   void testWithoutAntReferenceInMapClosure ( ) {
     script = '''target ( test : '' ) { [ a : 'A' , b : 'B' ].each { key , value -> echo ( message : "${key}:${value}" ) } }'''
-    assertEquals ( 0 , processTargets ( 'test' ) )
+    assertEquals ( 0 , processCmdLineTargets ( 'test' ) )
     assertEquals ( '''     [echo] a:A
      [echo] b:B
 ''' , output ) 
@@ -94,7 +94,7 @@ target ( test : '' ) {
 closure = { ant.echo ( message : "Hello World!" ) }
 target ( test : '' ) { ( 0..3 ).each closure }
 '''
-    assertEquals ( 0 , processTargets ( 'test' ) )
+    assertEquals ( 0 , processCmdLineTargets ( 'test' ) )
     assertEquals ( '''     [echo] Hello World!
      [echo] Hello World!
      [echo] Hello World!
@@ -107,7 +107,7 @@ closure = { echo ( message : "Hello World!" ) }
 closure.metaClass = new org.codehaus.gant.GantMetaClass ( closure.metaClass , binding )
 target ( test : '' ) { ( 0..3 ).each closure }
 '''
-    assertEquals ( 0 , processTargets ( 'test' ) )
+    assertEquals ( 0 , processCmdLineTargets ( 'test' ) )
     assertEquals ( '''     [echo] Hello World!
      [echo] Hello World!
      [echo] Hello World!
@@ -120,7 +120,7 @@ target ( test : '' ) { ( 0..3 ).each closure }
 closure = { echo ( message : "Hello World!" ) }
 target ( test : '' ) { ( 0..3 ).each closure }
 '''
-    assertEquals ( 0 , processTargets ( 'test' ) )
+    assertEquals ( 0 , processCmdLineTargets ( 'test' ) )
     assertEquals ( '''     [echo] Hello World!
      [echo] Hello World!
      [echo] Hello World!

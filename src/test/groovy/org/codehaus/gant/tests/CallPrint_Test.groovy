@@ -24,7 +24,7 @@ final class CallPrint_Test extends GantTestCase {
     script = '''
 target ( systemOutPrintln : "Do something." ) { System.out.println ( "Hello World" ) }
 '''
-    assertEquals ( 0 , processTargets ( 'systemOutPrintln' ) )
+    assertEquals ( 0 , processCmdLineTargets ( 'systemOutPrintln' ) )
     assertEquals ( '''Hello World
 ''' , output ) 
   }
@@ -32,7 +32,7 @@ target ( systemOutPrintln : "Do something." ) { System.out.println ( "Hello Worl
     script = '''
 target ( testPrintln : "Do something." ) { println ( "Hello World" ) }
 '''
-    assertEquals ( 0 , processTargets ( 'testPrintln' ) )
+    assertEquals ( 0 , processCmdLineTargets ( 'testPrintln' ) )
     assertEquals ( '''Hello World
 ''' , output ) 
   }
@@ -40,7 +40,7 @@ target ( testPrintln : "Do something." ) { println ( "Hello World" ) }
     script = '''
 target ( testMessage : "Do something." ) { message ( 'message' , 'A message.' ) }
 '''
-    assertEquals ( 0 , processTargets ( 'testMessage' ) )
+    assertEquals ( 0 , processCmdLineTargets ( 'testMessage' ) )
     assertEquals ( '  [message] A message.\n' , output ) 
   }
 }

@@ -51,7 +51,7 @@ final class AntFile_Test extends GantTestCase {
   }
 
   private void performExecutableTest ( ) {
-    assertEquals ( 0 , processTargets ( ) )
+    assertEquals ( 0 , processCmdLineTargets ( ) )
     assertEquals ( '''     [echo] Hello world.
 ''' , output )
   }

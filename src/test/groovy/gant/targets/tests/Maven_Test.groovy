@@ -26,7 +26,7 @@ final class Maven_Test extends GantTestCase {
     script = """
 includeTargets << gant.targets.Maven
 """
-    assertEquals ( 0 , processTargets ( 'initialize' ) )
+    assertEquals ( 0 , processCmdLineTargets ( 'initialize' ) )
     assertEquals ( '' , output )
   }
   void testCompileTargetInDirectoryOtherThanTheCurrentBuildDirectory ( ) {
@@ -44,7 +44,7 @@ includeTargets ** gant.targets.Maven * [
     targetPath : '${compileDirectory}'
 ]
 """
-    assertEquals ( 0 , processTargets ( 'compile' ) )
+    assertEquals ( 0 , processCmdLineTargets ( 'compile' ) )
     assertTrue ( output.startsWith( '    [mkdir] Created dir:' ) )
     assertTrue ( output.contains( ' [groovyc] Compiling' ) )
     assertTrue ( file.isDirectory ( ) )
@@ -55,7 +55,7 @@ includeTargets ** gant.targets.Maven * [
     script = """
 includeTargets << gant.targets.Maven
 """
-    assertEquals ( -13 , processTargets ( 'package' ) )
+    assertEquals ( -13 , processCmdLineTargets ( 'package' ) )
     assertEquals ( '''maven.groupId must be set to achieve target package.
 ''' , output )
   }
@@ -63,7 +63,7 @@ includeTargets << gant.targets.Maven
     script = """
 includeTargets ** gant.targets.Maven * [ : ]
 """
-    assertEquals ( -13 , processTargets ( 'package' ) )
+    assertEquals ( -13 , processCmdLineTargets ( 'package' ) )
     assertEquals ( '''maven.groupId must be set to achieve target package.
 ''' , output )
   }
@@ -72,7 +72,7 @@ includeTargets ** gant.targets.Maven * [ : ]
 includeTargets << gant.targets.Maven
 maven.groupId = 'flob'
 """
-    assertEquals ( -13 , processTargets ( 'package' ) )
+    assertEquals ( -13 , processCmdLineTargets ( 'package' ) )
     assertEquals ( '''maven.artifactId must be set to achieve target package.
 ''' , output )
   }
@@ -80,7 +80,7 @@ maven.groupId = 'flob'
     script = """
 includeTargets ** gant.targets.Maven * [ groupId : 'flob' ]
 """
-    assertEquals ( -13 , processTargets ( 'package' ) )
+    assertEquals ( -13 , processCmdLineTargets ( 'package' ) )
     assertEquals ( '''maven.artifactId must be set to achieve target package.
 ''' , output )
   }
@@ -90,7 +90,7 @@ includeTargets << gant.targets.Maven
 maven.groupId = 'flob'
 maven.artifactId = 'adob'
 """
-    assertEquals ( -13 , processTargets ( 'package' ) )
+    assertEquals ( -13 , processCmdLineTargets ( 'package' ) )
     assertEquals ( '''maven.version must be set to achieve target package.
 ''' , output )
   }
@@ -98,7 +98,7 @@ maven.artifactId = 'adob'
     script = """
 includeTargets ** gant.targets.Maven * [ groupId : 'flob' , artifactId : 'adob' ]
 """
-    assertEquals ( -13 , processTargets ( 'package' ) )
+    assertEquals ( -13 , processCmdLineTargets ( 'package' ) )
     assertEquals ( '''maven.version must be set to achieve target package.
 ''' , output )
   }
@@ -124,7 +124,7 @@ includeTargets ** gant.targets.Maven * [ binding : new Binding ( ) ]
 includeTargets << gant.targets.Maven
 target ( sayHello : '' ) { println ( 'Hello.' ) }
 '''
-    assertEquals ( 0 , processTargets ( 'sayHello' ) )
+    assertEquals ( 0 , processCmdLineTargets ( 'sayHello' ) )
     assertEquals ( 'Hello.\n' , output )
   }
   void testAdditionalTargetError ( ) {

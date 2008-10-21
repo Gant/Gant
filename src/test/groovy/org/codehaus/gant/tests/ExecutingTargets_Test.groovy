@@ -31,7 +31,7 @@ target ( somethingElse : "Do something else." ) { }
   }
   void testSomethingTargets ( ) {
     script = coreScript
-    assertEquals ( 0 , processTargets ( 'something' ) )
+    assertEquals ( 0 , processCmdLineTargets ( 'something' ) )
     assertEquals ( '' , output ) 
   }
   void testCleanAndSomethingArgs ( ) {
@@ -41,7 +41,7 @@ target ( somethingElse : "Do something else." ) { }
   }
   void testCleanAndSomethingTargets ( ) {
     script = 'includeTargets << gant.targets.Clean\n' + coreScript
-    assertEquals ( 0 , processTargets ( [ 'clean' , 'something' ] ) )
+    assertEquals ( 0 , processCmdLineTargets ( [ 'clean' , 'something' ] ) )
     assertEquals ( '' , output ) 
   }
 }

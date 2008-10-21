@@ -71,14 +71,14 @@ target ( doSubGant : '' ) {
   def newBinding = binding.clone ( )
   newBinding.flobadob = 'weed'
   newthing = new gant.Gant ( 'build.gant' , newBinding )
-  newthing.processTargets ( 'doOutput' )
+  newthing.processCmdLineTargets ( 'doOutput' )
 }
 '''
     buildFile.write ( buildScript )
     script = buildScript
-    assertEquals ( 0 , processTargets ( 'doSubGant' ) )
+    assertEquals ( 0 , processCmdLineTargets ( 'doSubGant' ) )
     assertEquals ( 'flobadoc = weed\n' , output )
-    assertEquals ( -2 , processTargets ( 'doOutput' ) )
+    assertEquals ( -2 , processCmdLineTargets ( 'doOutput' ) )
   }
   */
 }

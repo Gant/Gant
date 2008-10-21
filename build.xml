@@ -180,7 +180,7 @@ Author : Russel Winder <russel.winder@concertant.com>
       </classpath>
     </junit>
     <junit printsummary="yes" fork="true" forkmode="once" failureproperty="testsFailed">
-      <!--<jvmarg line="-Xdebug -Xrunjdwp:transport=dt_socket,server=y,suspend=y,address=5005"/>-->
+      <jvmarg line="-Xdebug -Xrunjdwp:transport=dt_socket,server=y,suspend=y,address=5005"/>
       <formatter type="plain"/>
       <formatter type="xml"/> <!-- Must have XML output for the continuous integration builds. -->
       <batchtest todir="${buildTestReportsDirectory}">

@@ -30,15 +30,15 @@ target ( 'default' : 'something' ) { something ( ) }
 """
   }
   void testDefault ( ) {
-    assertEquals ( 0 , processTargets ( ) )
+    assertEquals ( 0 , processCmdLineTargets ( ) )
     assertEquals ( 'yes\n' , output ) 
   }
   void testBlah ( ) {
-    assertEquals ( -11 , processTargets ( 'blah' ) )
+    assertEquals ( -11 , processCmdLineTargets ( 'blah' ) )
     assertEquals ( 'Target blah does not exist.\n' , output ) 
   }
   void testSomething ( ) {
-    assertEquals ( 0 , processTargets ( 'something' ) )
+    assertEquals ( 0 , processCmdLineTargets ( 'something' ) )
     assertEquals ( 'yes\n' , output ) 
   }
 }

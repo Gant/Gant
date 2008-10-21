@@ -44,7 +44,7 @@ target ( hello : '' ) {
   groovyc ( srcdir : '.' , destdir : '${path}' )
 }
 """
-    assertEquals ( -13 , processTargets ( 'hello' ) )
+    assertEquals ( -13 , processCmdLineTargets ( 'hello' ) )
     assertTrue ( output.startsWith ( 'No signature of method: standard_input.groovyc() is applicable for argument types: (java.util.LinkedHashMap) values: ' ) )
   }
 }

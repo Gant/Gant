@@ -35,7 +35,7 @@ target ( "default" : "Should resolve this class" ) {
     gant = new gant.Gant ( null , gcl )
   }
   void testDefault ( ) {
-    assertEquals ( 0 , processTargets ( ) )
+    assertEquals ( 0 , processCmdLineTargets ( ) )
     assertEquals ( '''Starting
 goodbye
 Finished

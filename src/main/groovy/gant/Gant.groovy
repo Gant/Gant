@@ -15,16 +15,14 @@
 package gant
 
 import java.lang.reflect.InvocationTargetException
-
-import org.codehaus.groovy.control.CompilerConfiguration
-import org.codehaus.groovy.control.CompilationUnit
-
+import org.apache.commons.cli.GnuParser
 import org.codehaus.gant.GantBinding
 import org.codehaus.gant.GantState
-
-import org.apache.commons.cli.GnuParser
-
+import org.codehaus.groovy.control.CompilationUnit
+import org.codehaus.groovy.control.CompilerConfiguration
+import org.codehaus.groovy.control.MultipleCompilationErrorsException
 import org.codehaus.groovy.runtime.InvokerInvocationException
+
 
 /**
  *  This class provides infrastructure and an executable command for using Groovy + AntBuilder as a build
@@ -270,6 +268,7 @@ final class Gant {
    *  executed that caused the exception.
    */
   private void printMessageFrom ( exception ) {
+    if ( exception instanceof GantException ) { exception = exception.cause }
     for ( stackEntry in exception.stackTrace ) {
       if ( ( stackEntry.fileName == buildClassName ) && ( stackEntry.lineNumber  != -1 ) ) {
         def sourceName = ( buildClassName == standardInputClassName ) ? 'Standard input' : buildClassName
@@ -307,26 +306,21 @@ final class Gant {
    */
   private Integer dispatch ( targets ) {
     Integer returnCode = 0
-    final processDispatch = { target , errorReturnCode ->
+    final processDispatch = { target ->
       try {
         def returnValue = owner.binding.getVariable ( target ).call ( )
         returnCode = ( returnValue instanceof Number ) ? returnValue.intValue ( ) : 0
       }
       catch ( MissingPropertyException mme ) {
-        if ( target == mme.property ) { println ( "Target ${target} does not exist." ) }
-        else { printMessageFrom ( mme ) }
-        returnCode = errorReturnCode
+        if ( target == mme.property ) { throw new MissingTargetException ( "Target ${target} does not exist." , mme ) }
+        else throw new TargetMissingPropertyException ( mme.message , mme )
+      }
+      catch ( Exception e ) {
+        throw new TargetExecutionException ( e.message , e )
       }
     }
-    try {
-      if ( targets.size ( ) > 0 ) { targets.each { target -> processDispatch ( target , -11 ) } }
-      else { processDispatch ( 'default' , -12 ) }
-    }
-    catch ( Exception e ) {
-      println ( e.message )
-      e.printStackTrace()
-      returnCode = -13
-    }
+    if ( targets.size ( ) > 0 ) { targets.each { target -> processDispatch ( target ) } }
+    else { processDispatch ( 'default' ) }
     returnCode
   }
   /**
@@ -434,8 +428,12 @@ final class Gant {
     try { loadScript ( buildSource ) }
     catch ( FileNotFoundException fnfe ) { println ( 'Cannot open file ' + buildSource.name ) ; return -3 }
     catch ( Exception e ) { printMessageFrom ( e ) ; return -2 }
-    
+
+    def defaultReturnCode = targets?.size ( ) > 0 ? -11 : -12
     try { return processTargets ( function , targets ) }
+    catch ( TargetExecutionException tee ) { println tee.message ; return -13 }
+    catch ( MissingTargetException mte ) { println mte.message ; return defaultReturnCode }
+    catch ( TargetMissingPropertyException tmpe ) { printMessageFrom ( tmpe ) ; return defaultReturnCode }
     catch ( Exception e ) { printMessageFrom ( e ) ; return -2 }
   }
   public Integer processTargets ( ) { processTargets ( 'dispatch' , [ ] ) }
@@ -456,7 +454,7 @@ final class Gant {
     script.binding = binding
     script.run ( )
     
-    invokeMethod ( function , targets )
+    return invokeMethod ( function , targets )
   }
   /**
    *  Compile a script in the context of dealing with cached compiled build scripts.

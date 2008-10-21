@@ -24,39 +24,39 @@ final class ReturnValue_Test extends GantTestCase {
     script = '''
 target ( 'default' : '' ) { blah ( ) }
 '''
-    assertEquals ( -13 , processTargets ( ) )
+    assertEquals ( -13 , processCmdLineTargets ( ) )
   }
   void testMissingMethodInNonDefaultTarget ( ) {
     script = '''
 target ( doit : '' ) { blah ( ) }
 '''
-    assertEquals ( -13 , processTargets ( 'doit' ) )
+    assertEquals ( -13 , processCmdLineTargets ( 'doit' ) )
   }
   void testMissingPropertyInDefaultTarget ( ) {
     script = '''
 target ( 'default' : '' ) { x = blah }
 '''
-    assertEquals ( -12 , processTargets ( ) )
+    assertEquals ( -12 , processCmdLineTargets ( ) )
   }
   void testMissingPropertyInNonDefaultTarget ( ) {
     script = '''
 target ( doit : '' ) { x = blah }
 '''
-    assertEquals ( -11 , processTargets ( 'doit' ) )
+    assertEquals ( -11 , processCmdLineTargets ( 'doit' ) )
   }
   void testExplicitReturnCodeInDefaultTarget ( ) {
     def code = 27
     script = """
 target ( 'default' : '' ) { ${code} }
 """
-    assertEquals ( code , processTargets ( ) )
+    assertEquals ( code , processCmdLineTargets ( ) )
   }
   void testExplicitReturnCodeInNonDefaultTarget ( ) {
     def code = 28
     script = """
 target ( doit : '' ) { ${code} }
 """
-    assertEquals ( code , processTargets ( 'doit' ) )
+    assertEquals ( code , processCmdLineTargets ( 'doit' ) )
   }
   void testScriptCompilationError ( ) {
     script = '''
