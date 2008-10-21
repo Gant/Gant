@@ -159,4 +159,15 @@ target ( antProperty : '' ) {
     assertEquals ( 0 , processCmdLineTargets ( 'antProperty' ) )
     assertEquals ( '' , output )
   }
+  void testPropertyAccessInsideCategory ( ) {
+    script = '''
+target ( domTarget : 'Uses DOMCategory' ) {
+  use ( groovy.xml.dom.DOMCategory ) {
+    println "Target Three"
+  }
+}
+'''
+    assertEquals ( 0 , processTargets ( 'domTarget' ) )
+    assertEquals ( 'Target Three\n' , output )
+  }
 }

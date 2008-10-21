@@ -20,7 +20,6 @@ import org.codehaus.gant.GantBinding
 import org.codehaus.gant.GantState
 import org.codehaus.groovy.control.CompilationUnit
 import org.codehaus.groovy.control.CompilerConfiguration
-import org.codehaus.groovy.control.MultipleCompilationErrorsException
 import org.codehaus.groovy.runtime.InvokerInvocationException
 
 
