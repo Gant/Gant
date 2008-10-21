@@ -144,7 +144,7 @@ public class GantBinding extends Binding implements Cloneable {
     def returnValue
     try { returnValue = super.getVariable ( name ) }
     catch ( final MissingPropertyException mpe ) {
-      returnValue = super.getProperty ( 'ant' ).project.getProperty ( name )
+      returnValue = super.getVariable ( 'ant' )?.project.getProperty ( name )
       if ( returnValue == null ) { throw mpe }
     }
     returnValue
