@@ -24,7 +24,25 @@
     <orderEntry type="module-library">
       <library>
         <CLASSES>
-          <root url="jar://$MODULE_DIR$/../../../../../../.m2/repository/org/apache/ivy/ivy/2.0.0-rc1/ivy-2.0.0-rc1.jar!/" />
+          <root url="jar://$MODULE_DIR$/../../../../../../../lib/Java/groovy/lib/ivy-2.0.0-rc1.jar!/" />
+        </CLASSES>
+        <JAVADOC />
+        <SOURCES />
+      </library>
+    </orderEntry>
+    <orderEntry type="module-library">
+      <library>
+        <CLASSES>
+          <root url="jar://$MODULE_DIR$/../../../../../../../lib/Java/groovy/lib/ant-1.7.1.jar!/" />
+        </CLASSES>
+        <JAVADOC />
+        <SOURCES />
+      </library>
+    </orderEntry>
+    <orderEntry type="module-library">
+      <library>
+        <CLASSES>
+          <root url="jar://$MODULE_DIR$/../../../../../../../lib/Java/groovy/lib/junit-3.8.2.jar!/" />
         </CLASSES>
         <JAVADOC />
         <SOURCES />
@@ -42,6 +60,7 @@
       </library>
     </orderEntry>
     <orderEntry type="library" name="GROOVY" level="application" />
+    <orderEntry type="library" name="groovy-1.7-beta-1-SNAPSHOT" level="application" />
     <orderEntry type="inheritedJdk" />
     <orderEntryProperties />
   </component>
