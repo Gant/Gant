@@ -139,20 +139,20 @@ final class Gant {
    */
   private final GantBinding binding
    /**
-    *  Constructor that uses build.gant as the build script, creates a new instance of
-    *  <code>GantBinding</code> for the script binding, and the default class loader.
+    *  Default constructor -  creates a new instance of <code>GantBinding</code> for the script binding,
+    *  and the default class loader.
     */
   public Gant ( ) { this ( (GantBinding) null ) }
    /**
-    *  Constructor that uses build.gant as the build script, the passed <code>GantBinding</code> for the
-    *  script binding, and the default class loader.
+    *  Constructor that uses the passed <code>GantBinding</code> for the script binding, and the default
+    *  class loader.
     *
     *  @param b the <code>GantBinding</code> to use.
     */
   public Gant ( GantBinding b ) { this ( b , null ) }
    /**
-    *  Constructor that uses build.gant as the build script, the passed <code>GantBinding</code> for the
-    *  script binding, and the passed <code>ClassLoader</code> as the class loader.
+    *  Constructor that uses the passed <code>GantBinding</code> for the script binding, and the passed
+    *  <code>ClassLoader</code> as the class loader.
     *
     *  @param b the <code>GantBinding</code> to use.
     *  @param cl the <code>ClassLoader</code> to use.
@@ -169,17 +169,44 @@ final class Gant {
    *  @param p the <code>org.apache.tools.ant.Project</code> to use.
    */
   public Gant ( org.apache.tools.ant.Project p ) { this ( new GantBinding ( p ) ) }
-
+  /**
+   *  Treats the given text as a Gant script and loads it.
+   *
+   *  @params text The text of the Gant script to load.
+   */
+  public Gant loadScript( String text ) {
+    if ( ! buildClassName ) { buildClassName = "text_script" }
+    script = binding.groovyShell.parse ( text , buildClassName )
+    return this
+  }
+  /**
+   *  Loads a Gant script from the given input stream, using the default Groovy encoding to convert the
+   *  bytes to characters.
+   *
+   *  @params scriptSource The stream containing the Gant script source, i.e. the Groovy code, not the
+   *  compiled class.
+   */
   public Gant loadScript ( InputStream scriptSource ) {
     if ( ! buildClassName ) { buildClassName = "stream_script" }
     script = binding.groovyShell.parse ( scriptSource , buildClassName )
     return this
   }
-
+  /**
+   *  Loads a Gant script from the given file, using the default Groovy encoding to convert the bytes
+   *  to characters.
+   *
+   *  @params scriptFilee The file containing the Gant script source, i.e. the Groovy code, not the
+   *  compiled class.
+   */
   public Gant loadScript ( File scriptFile ) {
     return loadScript ( scriptFile.toURI().toURL() )
   }
-
+  /**
+   *  Loads a Gant script from the given URL, using the default Groovy encoding to convert the bytes
+   *  to characters.
+   *
+   *  @params scriptUrl The URL where the the Gant script source is located.
+   */
   public Gant loadScript ( URL scriptUrl ) {
     if ( ! buildClassName ) {
       def filename = scriptUrl.path.substring(scriptUrl.path.lastIndexOf("/") + 1)
@@ -198,14 +225,13 @@ final class Gant {
     }
     return this
   }
-
+  /**
+   *  Loads a pre-compiled Gant script using the configured class loader.
+   *
+   *  @params className The fully qualified name of the class to load.
+   */
   public Gant loadScriptClass ( String className ) {
     script = binding.classLoader.loadClass ( className ).newInstance ( )
-    return this
-  }
-  public Gant loadScript( String text ) {
-    if ( ! buildClassName ) { buildClassName = "text_script" }
-    script = binding.groovyShell.parse ( text , buildClassName )
     return this
   }
   /**
