@@ -56,7 +56,8 @@ public abstract class GantTestCase extends GroovyTestCase {
     savedOut = System.out ;
     output = new ByteArrayOutputStream ( ) ;
     System.setOut ( new PrintStream ( output ) ) ;
-    gant = new Gant ( "-" ) ;
+    gant = new Gant ( ) ;
+    gant.setBuildClassName ( "standard_input" ) ;
     script = "" ;
     //
     //  If the JUnit is run with fork mode 'perTest' then we do not have to worry about the static state.
@@ -71,8 +72,10 @@ public abstract class GantTestCase extends GroovyTestCase {
     super.tearDown ( ) ;
   }
   protected void setScript ( final String script ) { System.setIn ( new ByteArrayInputStream ( script.getBytes ( ) ) ) ; }
-  protected Integer processTargets ( ) { return (Integer) gant.processTargets ( ) ; } // IntelliJ IDEA thinks processTargets returns an Object.
-  protected Integer processTargets ( final String s ) { return (Integer) gant.processTargets ( s ) ; } // IntelliJ IDEA thinks processTargets returns an Object.
-  protected Integer processTargets ( final List<String> l ) { return (Integer) gant.processTargets ( l ) ; } // IntelliJ IDEA thinks processTargets returns an Object.
+  protected Integer processTargets ( ) { gant.loadScript( System.in ) ; return (Integer) gant.processTargets ( ) ; } // IntelliJ IDEA thinks processTargets returns an Object.
+  protected Integer processTargets ( final String s ) { gant.loadScript( System.in ) ; return (Integer) gant.processTargets ( s ) ; } // IntelliJ IDEA thinks processTargets returns an Object.
+  protected Integer processTargets ( final List<String> l ) { gant.loadScript( System.in ) ; return (Integer) gant.processTargets ( l ) ; } // IntelliJ IDEA thinks processTargets returns an Object.
+  protected Integer processCmdLineTargets ( ) { return gant.processArgs( new String[] { "-f" , "-" } ) ; } // IntelliJ IDEA thinks processTargets returns an Object.
+  protected Integer processCmdLineTargets ( final String s ) { return gant.processArgs( new String[] { "-f" , "-" , s } ) ; } // IntelliJ IDEA thinks processTargets returns an Object.
   protected String getOutput ( ) { return output.toString ( ).replace ( "\r" , "" ) ; }
 }

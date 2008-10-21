@@ -23,22 +23,22 @@ final class Targets_Test extends GantTestCase {
   final result = 'OK.'
   void testNoDescription ( ) {
     script = "target ( noDescription : '' ) { print ( '${result}' ) }"
-    assertEquals ( 0 , processTargets ( 'noDescription' ) )
+    assertEquals ( 0 , processCmdLineTargets ( 'noDescription' ) )
     assertEquals ( result , output ) 
   }
   void testWithDescription ( ) {
     script = "target ( withDescription : 'Blah blah' ) { print ( '${result}' ) }"
-    assertEquals ( 0 , processTargets ( 'withDescription' ) )
+    assertEquals ( 0 , processCmdLineTargets ( 'withDescription' ) )
     assertEquals ( result , output ) 
   }
   void testEmptyMap ( ) {
     script = "target ( [ : ] ) { print ( '${result}' ) }"
-    assertEquals ( -2 , processTargets ( 'withDescription' ) )
+    assertEquals ( -2 , processCmdLineTargets ( 'withDescription' ) )
     assertEquals ( 'Standard input, line 1 -- Error evaluating Gantfile: Target specified without a name.\n' , output ) 
   }
   void testMultipleEntries ( ) {
     script = "target ( fred : '' , debbie : '' ) { print ( '${result}' ) }"
-    assertEquals ( -2 , processTargets ( 'withDescription' ) )
+    assertEquals ( -2 , processCmdLineTargets ( 'withDescription' ) )
     assertEquals ( 'Standard input, line 1 -- Error evaluating Gantfile: Target specified with multiple names.\n' , output ) 
   }
   void testOverwriting ( ) {
@@ -59,32 +59,32 @@ target ( hello : '' ) { println ( 'Hello 2' ) }
 target ( test : '' ) { }
 target = 10
 '''
-    assertEquals ( -2 , processTargets ( 'test' ) )
+    assertEquals ( -2 , processCmdLineTargets ( 'test' ) )
     assertEquals ( 'Standard input, line 3 -- Error evaluating Gantfile: Cannot redefine symbol target\n' , output )
   }
   void testStringParameter ( ) {
     script = "target ( 'string' ) { print ( '${result}' ) }"
-    assertEquals ( -2 , processTargets ( 'string' ) )
+    assertEquals ( -2 , processCmdLineTargets ( 'string' ) )
     assertTrue ( output.startsWith ( 'Standard input, line 1 -- Error evaluating Gantfile: No signature of method: org.codehaus.gant.GantBinding$_initializeGantBinding_closure' ) ) 
   }
   void testStringSequenceParameter ( ) {
     script = "target ( 'key' , 'description' ) { print ( '${result}' ) }"
-    assertEquals ( -2 , processTargets ( 'key' ) )
+    assertEquals ( -2 , processCmdLineTargets ( 'key' ) )
     assertTrue ( output.startsWith ( 'Standard input, line 1 -- Error evaluating Gantfile: No signature of method: org.codehaus.gant.GantBinding$_initializeGantBinding_closure' ) ) 
   }
   void testMissingTargetInScriptExplicitTarget ( ) {
     script = 'setDefaultTarget ( blah )'
-    assertEquals ( -2 , processTargets ( 'blah' ) )
+    assertEquals ( -2 , processCmdLineTargets ( 'blah' ) )
     assertEquals ( 'Standard input, line 1 -- Error evaluating Gantfile: No such property: blah for class: standard_input\n' , output )
   }
   void testMissingTargetInScriptDefaultTarget ( ) {
     script = 'setDefaultTarget ( blah )'
-    assertEquals ( -2 , processTargets ( ) )
+    assertEquals ( -2 , processCmdLineTargets ( ) )
     assertEquals ( 'Standard input, line 1 -- Error evaluating Gantfile: No such property: blah for class: standard_input\n' , output )
   }
   void testFaultyScript ( ) {
     script = 'XXXXX : YYYYY ->'
-    assertEquals ( -2 , processTargets ( ) )
+    assertEquals ( -2 , processCmdLineTargets ( ) )
     assertEquals ( '''Error evaluating Gantfile: startup failed, standard_input: 1: unexpected token: -> @ line 1, column 15.
 1 error
 

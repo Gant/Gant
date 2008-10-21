@@ -34,7 +34,7 @@ import junit.framework.TestCase ;
  */
 public class Gant_Test extends TestCase {
   private final String path = "src/test/groovy/org/codehaus/gant/ant/tests" ;
-  private final File antFile = new File ( path + System.getProperty ( "file.separator" ) + "gantTest.xml" ) ;
+  private final File antFile = new File ( path , "gantTest.xml" ) ;
   private Project project ;
 
   //  This variable is assigned in the Gant script hence the public static.
@@ -150,7 +150,9 @@ public class Gant_Test extends TestCase {
     sb.append ( "Buildfile: " ) ;
     sb.append ( path ) ;
     sb.append ( "/gantTest.xml\n\n-initializeWithGroovyHome:\n\n-initializeNoGroovyHome:\n\ngantTestDefaultFileDefaultTarget:\n     [gant] Error evaluating Gantfile: startup failed, build: 15: unable to resolve class org.codehaus.gant.ant.tests.Gant_Test\n     [gant]  @ line 15, column 1.\n     [gant] 1 error\n     [gant] \n" ) ;
-    assertEquals ( sb.toString ( ) , runAnt ( path + "/gantTest.xml" , 1 ) ) ;
+    String output = runAnt( path + "/gantTest.xml" , 1 ) ;
+    System.out.println ( ">>> Ant output: " + output ) ;
+    assertEquals ( sb.toString ( ) , output ) ;
   }
   /*
    *  The following test is based on the code presented in email exchanges on the Groovy developer list by

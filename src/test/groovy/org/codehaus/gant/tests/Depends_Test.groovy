@@ -127,7 +127,7 @@ target ( outOfOrderListDoit : '' ) { println ( 'done.' ) }
 target ( standard_input , '' ) { println ( 'done.' ) }
 target ( startingPoint , '' ) { depends ( standard_input ) }
 '''
-    assertEquals ( -2 , processTargets ( 'startingPoint' ) )
+    assertEquals ( -2 , processCmdLineTargets ( 'startingPoint' ) )
     assertTrue ( output.startsWith ( 'Standard input, line 2 -- Error evaluating Gantfile: No signature of method: ' ) )
   }
   void testStringParameter ( ) {

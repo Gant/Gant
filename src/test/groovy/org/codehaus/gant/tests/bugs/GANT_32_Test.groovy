@@ -22,7 +22,7 @@ class GANT_32_Test extends GantTestCase {
 target ( test : '' ) { foo }
 def foo { badvariable }
 '''
-    assertEquals ( -2 , processTargets ( 'test' ) )
+    assertEquals ( -2 , processCmdLineTargets( 'test' ) )
     assertEquals ( '''Error evaluating Gantfile: startup failed, standard_input: 3: unexpected token: foo @ line 3, column 5.
 1 error
 
@@ -34,7 +34,7 @@ def foo { badvariable }
 def foo { badvariable }
 ''' )
     script = "includeTargets << new File ( '${file.path}' )"
-    try { assertEquals ( -2 , processTargets ( 'test' ) ) }
+    try { assertEquals ( -2 , processCmdLineTargets ( 'test' ) ) }
     finally { file.delete ( ) }
     assertTrue ( output.startsWith ( 'Standard input, line 1 -- Error evaluating Gantfile: startup failed, ' ) )
     assertTrue ( output.endsWith ( ''': 2: unexpected token: foo @ line 2, column 5.

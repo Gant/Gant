@@ -15,33 +15,6 @@
     <orderEntry type="module-library">
       <library>
         <CLASSES>
-          <root url="jar://$MODULE_DIR$/../../../../../../lib/Java/groovy/lib/commons-cli-1.2-SNAPSHOT.jar!/" />
-        </CLASSES>
-        <JAVADOC />
-        <SOURCES />
-      </library>
-    </orderEntry>
-    <orderEntry type="module-library">
-      <library>
-        <CLASSES>
-          <root url="jar://$MODULE_DIR$/../../../../../../lib/Java/groovy/lib/ant-1.7.1.jar!/" />
-        </CLASSES>
-        <JAVADOC />
-        <SOURCES />
-      </library>
-    </orderEntry>
-    <orderEntry type="module-library">
-      <library>
-        <CLASSES>
-          <root url="jar://$MODULE_DIR$/../../../../../../lib/Java/groovy/lib/ant-launcher-1.7.1.jar!/" />
-        </CLASSES>
-        <JAVADOC />
-        <SOURCES />
-      </library>
-    </orderEntry>
-    <orderEntry type="module-library">
-      <library>
-        <CLASSES>
           <root url="jar://$MODULE_DIR$/../../jarfiles/maven-ant-tasks-2.0.9.jar!/" />
         </CLASSES>
         <JAVADOC />
@@ -58,9 +31,11 @@
       </library>
     </orderEntry>
     <orderEntry type="module-library">
-      <library>
+      <library name="Test libs">
         <CLASSES>
-          <root url="jar://$MODULE_DIR$/../../../../../../lib/Java/groovy/lib/junit-3.8.2.jar!/" />
+          <root url="jar://$MODULE_DIR$/../../../../../../.m2/repository/org/apache/ant/ant/1.7.1/ant-1.7.1.jar!/" />
+          <root url="jar://$MODULE_DIR$/../../../../../../.m2/repository/junit/junit/3.8.2/junit-3.8.2.jar!/" />
+          <root url="jar://$MODULE_DIR$/../../../../../../.m2/repository/org/apache/ant/ant-launcher/1.7.1/ant-launcher-1.7.1.jar!/" />
         </CLASSES>
         <JAVADOC />
         <SOURCES />

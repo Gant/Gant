@@ -53,12 +53,14 @@ def gant = __CREATE_GANT__
 def refA = new PhantomReference ( gant , refQueue )
 phantomRefs << refA
 output << refA.toString ( )
+__LOAD_SCRIPT__
 __PROCESS_TARGET__
 System.gc ( )
 gant = __CREATE_GANT__
 def refB = new PhantomReference ( gant , refQueue )
 phantomRefs << refB
 output << refB.toString ( )
+__LOAD_SCRIPT__
 __PROCESS_TARGET__
 System.gc ( )
 Thread.sleep ( 500 ) //  Give time for the reference queue monitor to report in.
@@ -91,7 +93,8 @@ private fileNameSuffix = '_GANT_33_Test'
     groovyShell.evaluate (
                           scriptTemplate
                           .replace ( '__BUILDSCRIPT_PATH__' , ( isWindows ? buildScriptFile.path.replace ( '\\' , '\\\\' ) : buildScriptFile.path ) )
-                          .replace ( '__CREATE_GANT__' , 'new Gant ( buildScript )' )
+                          .replace ( '__CREATE_GANT__' , 'new Gant ( )' )
+                          .replace ( '__LOAD_SCRIPT__' , 'gant.loadScript ( new File ( buildScript ) )' )
                           .replace ( '__PROCESS_TARGET__' , 'gant.processTargets ( target )' )
                           )
     assertEquals ( 3 , binding.output.size ( ) )
@@ -106,6 +109,7 @@ private fileNameSuffix = '_GANT_33_Test'
                           scriptTemplate
                           .replace ( '__BUILDSCRIPT_PATH__' , ( isWindows ? buildScriptFile.path.replace ( '\\' , '\\\\' ) : buildScriptFile.path ) )
                           .replace ( '__CREATE_GANT__' , 'new Gant ( )' )
+                          .replace ( '__LOAD_SCRIPT__' , '' )
                           .replace ( '__PROCESS_TARGET__' , 'gant.processArgs ( [ "-f" , new File ( buildScript ).absolutePath , "-c" , target ] as String[] )' )
                           )
     assertEquals ( 2 , binding.output.size ( ) )

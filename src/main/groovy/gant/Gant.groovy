@@ -93,22 +93,46 @@ final class Gant {
    *  The class name to use for a script provided as standard input.
    */
   private final standardInputClassName = 'standard_input'
+
+  private final loadClassFromCache = { className , lastModified , url  ->
+    try {
+      def classUrl = binding.classLoader.getResource ( "${className}.class" )
+      if ( classUrl ) {
+        if ( lastModified > classUrl.openConnection ( ).lastModified ) {
+          compileScript ( cacheDirectory , url.text , className )
+        }
+      }
+      return binding.classLoader.loadClass ( className ).newInstance ( )
+    }
+    catch ( Exception e) {
+      def fileText = url.text
+      compileScript ( cacheDirectory , fileText , className )
+      return binding.groovyShell.parse ( fileText , buildClassName )
+    }
+  }
   /**
    *  The name of the file used as input, - means standard input.
    */
-  private String buildFileName
+//  private String buildFileName = 'build.gant'
   /**
    *  The <code>File</code> object for the script.
    */
-  private File buildFile
+//  private File buildFile
   /**
    *  The name of the class actually used for compiling the script.
    */
-  private String buildClassName
+  String buildClassName
+
+  boolean dryRun = false
+  int verbosity = GantState.NORMAL
+  boolean useCache = false
+  File cacheDirectory = new File ( "${System.properties.'user.home'}/.gant/cache" )
+  List gantLib = []
+  def script
   /**
    *  The <code>Script</code> object used for the script if a <code>Script</code> object gets used.
    */
-  private Script buildScript
+//  private Script buildScript
   /**
    *  The binding object used for this run of Gant.  This binding object replaces the standard one to ensure
    *  that all the Gant specific things appear in the binding the script executes with.
@@ -118,14 +142,14 @@ final class Gant {
     *  Constructor that uses build.gant as the build script, creates a new instance of
     *  <code>GantBinding</code> for the script binding, and the default class loader.
     */
-  public Gant ( ) { this ( 'build.gant' , null , null ) }
+  public Gant ( ) { this ( (GantBinding) null ) }
    /**
     *  Constructor that uses build.gant as the build script, the passed <code>GantBinding</code> for the
     *  script binding, and the default class loader.
     *
     *  @param b the <code>GantBinding</code> to use.
     */
-  public Gant ( GantBinding b ) { this (  'build.gant' , b , null ) }
+  public Gant ( GantBinding b ) { this ( b , null ) }
    /**
     *  Constructor that uses build.gant as the build script, the passed <code>GantBinding</code> for the
     *  script binding, and the passed <code>ClassLoader</code> as the class loader.
@@ -133,95 +157,67 @@ final class Gant {
     *  @param b the <code>GantBinding</code> to use.
     *  @param cl the <code>ClassLoader</code> to use.
     */
-  public Gant ( GantBinding b , ClassLoader cl ) { this (  'build.gant' , b , cl ) }
-   /**
-    *  Constructor that uses the file passed as a parameter as the build script, creates a new instance of
-    *  <code>GantBinding</code> for the script binding, and uses the default class loader.
-    *
-    *  @param f the <code>File</code> of the Gant script to use.
-    */
-  public Gant ( File f ) { this ( f.path , null , null ) }
-   /**
-    *  Constructor that uses the file passed as a parameter as the build script, the passed
-    *  <code>GantBinding</code> for the script binding, and the default class loader.
-    *
-    *  @param f the <code>File</code> of the Gant script to use.
-    *  @param b the <code>GantBinding</code> to use.
-    */
-  public Gant ( File f , GantBinding b ) { this ( f.path , b , null ) }
-   /**
-    *  Constructor that uses the file passed as a parameter as the build script, the passed
-    *  <code>GantBinding</code> for the script binding, the passed <code>ClassLoader</code> as the class
-    *  loader.
-    *
-    *  @param f the <code>File</code> of the Gant script to use.
-    *  @param b the <code>GantBinding</code> to use.
-    *  @param cl the <code>ClassLoader</code> to use.
-    */
-  public Gant ( File f , GantBinding b , ClassLoader cl ) { this ( f.path , b , cl ) }
-   /**
-    *  Constructor that uses the filename passed as a parameter as the build script, creates a new instance
-    *  of <code>GantBinding</code> for the script binding and uses the default class loader.
-    *
-    *  @param s the <code>String</code> comprising the Gant script to use.
-    */
-  public Gant ( String s ) { this ( s , null , null ) }
-   /**
-    *  Constructor that uses the filename passed as a parameter as the build script, the passed
-    *  <code>GantBinding</code> for the script binding, and uses the default class loader.
-    *
-    *  @param s the <code>String</code> comprising the Gant script to use.
-    *  @param b the <code>GantBinding</code> to use.
-    */
-  public Gant ( String s , GantBinding b ) { this ( s , b , null ) }
-   /**
-    *  Constructor that uses the filename passed as a parameter as the build script, the passed
-    *  <code>GantBinding</code> for the script binding, the passed <code>ClassLoader</code> as the class loader.
-    *
-    *  @param s the <code>String</code> comprising the Gant script to use.
-    *  @param b the <code>GantBinding</code> to use.
-    *  @param cl the <code>ClassLoader</code> to use.
-    */
-  public Gant ( String s , GantBinding b , ClassLoader cl ) {
-    buildFileName = s
-    buildClassName = classNameFromFileName ( buildFileName )
+  public Gant ( GantBinding b , ClassLoader cl ) {
     binding = b ?: new GantBinding ( )
     binding.classLoader = cl ?: getClass ( ).classLoader
     binding.groovyShell = new GroovyShell ( (ClassLoader) binding.classLoader , binding )
   }
-   /**
-    *  Constructor that uses the passed script as the build script, creates a new instance of
-    *  <code>GantBinding</code> for the script binding and uses the default class loader.
-    */
-  public Gant ( Script s ) { this ( s , null , null ) }
-   /**
-    *  Constructor that uses the passed script as the build script, the passed <code>GantBinding</code> for
-    *  the script binding, and uses the default class loader.
-    */
-  public Gant ( Script s , GantBinding b ) { this ( s , b , null ) }
   /**
-   *  Constructor that uses the <code>InputStream</code> passed as a parameter as the source of the build
-   *  script, the passed <code>GantBinding</code> for the script binding, and the passed
-   *  <code>ClassLoader</code> as the class loader.
+   *  Constructor intended for use in code to be called from the Groovy Ant Task.
+   *
+   *  @param s the <code>String</code> comprising the Gant script to use.
+   *  @param p the <code>org.apache.tools.ant.Project</code> to use.
    */
-  public Gant ( Script script , GantBinding b , ClassLoader cl ) {
-    buildScript = script
-    binding = b ?: new GantBinding ( )
-    binding.classLoader = cl ?: getClass ( ).classLoader
-    binding.groovyShell = new GroovyShell ( (ClassLoader) binding.classLoader , binding )
+  public Gant ( org.apache.tools.ant.Project p ) { this ( new GantBinding ( p ) ) }
+
+  public Gant loadScript ( InputStream scriptSource ) {
+    //  TODO:  Sort out whether this attempt to change the metaclass is ever going to work.
+    //
+    //binding.groovyShell.evaluate ( buildFileText , buildClassName )
+//    script = binding.groovyShell.parse ( scriptSource , buildClassName )
+    // Scripts have ExpandoMetaClass as their metaclass.
+    //System.err.println ( 'Gant: ' + script.class.metaClass )
+    //script.metaClass = new GantMetaClass ( script.metaClass , binding )
+    return loadScript( scriptSource.text )
   }
-  /**
-    *  Constructor intended for use in code to be called from the Groovy Ant Task.
-    *
-    *  @param s the <code>String</code> comprising the Gant script to use.
-    *  @param p the <code>org.apache.tools.ant.Project</code> to use.
-    */
-  public Gant ( String s , org.apache.tools.ant.Project p ) {
-    buildFileName = s
-    buildClassName = classNameFromFileName ( buildFileName )
-    binding = new GantBinding ( p )
-    binding.classLoader = getClass ( ).classLoader
-    binding.groovyShell = new GroovyShell ( (ClassLoader) binding.classLoader , binding )
+
+  public Gant loadScript ( File scriptFile ) {
+    return loadScript ( scriptFile.toURI().toURL() )
+  }
+
+  public Gant loadScript ( URL scriptUrl ) {
+    if ( ! buildClassName ) {
+      def filename = scriptUrl.path.substring(scriptUrl.path.lastIndexOf("/") + 1)
+      buildClassName = classNameFromFileName ( filename )
+    }
+
+    if ( useCache ) {
+      if ( binding.classLoader instanceof URLClassLoader ) { binding.classLoader.addURL ( cacheDirectory.toURI ( ).toURL ( ) ) }
+      else { binding.classLoader.rootLoader?.addURL ( cacheDirectory.toURI ( ).toURL ( ) ) }
+
+      binding.loadClassFromCache =  loadClassFromCache
+      script = loadClassFromCache ( buildClassName , scriptUrl.openConnection ( ).lastModified , scriptUrl )
+    }
+    else {
+      loadScript ( scriptUrl.openStream ( ) )
+    }
+    return this
+  }
+
+  public Gant loadScriptClass ( String className ) {
+    script = binding.classLoader.loadClass ( className ).newInstance ( )
+    return this
+  }
+  public Gant loadScript( String text ) {
+    if ( ! buildClassName ) { buildClassName = "text_script" }
+    //  TODO:  Sort out whether this attempt to change the metaclass is ever going to work.
+    //
+    //binding.groovyShell.evaluate ( buildFileText , buildClassName )
+    script = binding.groovyShell.parse ( text , buildClassName )
+    // Scripts have ExpandoMetaClass as their metaclass.
+    //System.err.println ( 'Gant: ' + script.class.metaClass )
+    //script.metaClass = new GantMetaClass ( script.metaClass , binding )
+    return this
   }
   /**
    *  Create a class name from a file name.
@@ -243,9 +239,10 @@ final class Gant {
    *  executed that caused the exception.
    */
   private void printMessageFrom ( exception ) {
+    exception.printStackTrace ( System.err )
     for ( stackEntry in exception.stackTrace ) {
       if ( ( stackEntry.fileName == buildClassName ) && ( stackEntry.lineNumber  != -1 ) ) {
-        def sourceName = ( buildClassName == standardInputClassName ) ? 'Standard input' : buildFile.name
+        def sourceName = ( buildClassName == standardInputClassName ) ? 'Standard input' : buildClassName
         print ( sourceName + ', line ' + stackEntry.lineNumber + ' -- ' )
       }
     }
@@ -297,6 +294,7 @@ final class Gant {
     }
     catch ( Exception e ) {
       println ( e.message )
+      e.printStackTrace()
       returnCode = -13
     }
     returnCode
@@ -306,6 +304,7 @@ final class Gant {
    */
   public Integer processArgs ( String[] args ) {
     final rootLoader = binding.classLoader.rootLoader
+    def buildSource = new File ( "build.gant" )
     //
     //  Commons CLI 1.0 and 1.1 are broken.  1.0 has one set of ideas about multiple args and is broken.
     //  1.1 has a different set of ideas about multiple args and is broken. 1.2 appears to be actually
@@ -346,20 +345,20 @@ final class Gant {
     cli.V ( longOpt : 'version' , 'Print the version number and exit.' )
     def options = cli.parse ( args )
     if ( options == null ) { println ( 'Error in processing command line options.' ) ; return -1 }
-    binding.cacheEnabled = options.c ? true : false
+    useCache = options.c ? true : false
     if ( options.f ) {
-      buildFileName = options.f
-      buildClassName = classNameFromFileName ( buildFileName )
+      if ( options.f == '-' ) { buildSource = System.in ; buildClassName = standardInputClassName }
+      else { buildSource = new File ( options.f ) }
     }
     if ( options.h ) { cli.usage ( ) ; return 0 }
-    if ( options.l ) { binding.gantLib << options.l.split ( System.properties.'path.separator' ) }
-    if ( options.n ) { GantState.dryRun = true }
+    if ( options.l ) { gantLib.addAll ( options.l.split ( System.properties.'path.separator' ) as List ) }
+    if ( options.n ) { dryRun = true }
     def function =  ( options.p || options.T ) ? 'targetList' : 'dispatch'
-    if ( options.d ) { GantState.verbosity = GantState.DEBUG ; binding.ant.setMessageOutputLevel ( ) }
-    if ( options.q ) { GantState.verbosity = GantState.QUIET ; binding.ant.setMessageOutputLevel ( ) }
-    if ( options.s ) { GantState.verbosity = GantState.SILENT  ; binding.ant.setMessageOutputLevel ( ) }
-    if ( options.v ) { GantState.verbosity = GantState.VERBOSE  ; binding.ant.setMessageOutputLevel ( ) }
-    binding.cacheDirectory = binding.cacheEnabled && options.C ? new File ( (String) options.C ) : new File ( "${System.properties.'user.home'}/.gant/cache" )
+    if ( options.d ) { verbosity = GantState.DEBUG }
+    if ( options.q ) { verbosity = GantState.QUIET }
+    if ( options.s ) { verbosity = GantState.SILENT }
+    if ( options.v ) { verbosity = GantState.VERBOSE }
+    if ( useCache && options.C ) { cacheDirectory = new File ( (String) options.C ) }
     if ( options.D ) {
       options.Ds.each { definition ->
         def pair = definition.split ( '=' ) as List
@@ -401,7 +400,13 @@ final class Gant {
       }
     }
     if ( gotUnknownOptions ) { cli.usage ( ) ; return -1 ; }
-    processTargets ( function , targets )
+
+    try { loadScript ( buildSource ) }
+    catch ( FileNotFoundException fnfe ) { println ( 'Cannot open file ' + buildSource.name ) ; return -3 }
+    catch ( Exception e ) { printMessageFrom ( e ) ; return -2 }
+    
+    try { processTargets ( function , targets ) }
+    catch ( Exception e ) { printMessageFrom ( e ) ; return -2 }
   }
   public Integer processTargets ( ) { processTargets ( 'dispatch' , [ ] ) }
   public Integer processTargets ( String s ) { processTargets ( 'dispatch' , [ s ] ) }
@@ -411,67 +416,16 @@ final class Gant {
    *  of the file or standard input, or using the cached compiled file.
    */
   protected Integer processTargets ( String function , List targets ) {
-    String buildFileText = ''
-    Integer buildFileModified = -1
-    if ( buildFileName == '-' ) {
-      buildFileText = System.in.text
-      buildClassName = standardInputClassName
-    }
-    else if ( buildFileName != null ) {
-      buildFile = new File ( buildFileName )
-      if ( ! buildFile.isFile ( ) ) { println ( 'Cannot open file ' + buildFileName ) ; return -3 }
-      buildClassName = classNameFromFileName ( buildFile.name )
-      buildFileModified = buildFile.lastModified ( )
-    }
-    // else: the caller has already provided the script instance.
-    if ( binding.cacheEnabled ) {
-      if ( buildFile == null ) { println 'Caching can only be used in combination with the -f option.' ; return -1 }
-      def cacheDirectory = binding.cacheDirectory
-      if ( binding.classLoader instanceof URLClassLoader ) { binding.classLoader.addURL ( cacheDirectory.toURL ( ) ) }
-      else { rootLoader?.addURL ( cacheDirectory.toURL ( ) ) }
-      def loadClassFromCache = { className , fileLastModified , file  ->
-        try {
-          def url = binding.classLoader.getResource ( "${className}.class" )
-          if ( url ) {
-            if ( fileLastModified > url.openConnection ( ).lastModified ) {
-              compileScript ( cacheDirectory , file.text , className )
-            }
-          }
-          def script = binding.classLoader.loadClass ( className ).newInstance ( )
-          script.binding = binding
-          script.run ( )
-        }
-        catch ( Exception e) {
-          def fileText = file.text
-          compileScript ( cacheDirectory , fileText , className )
-          binding.groovyShell.evaluate ( fileText , className )
-        }
-      }
-      binding.loadClassFromCache =  loadClassFromCache
-      loadClassFromCache ( buildClassName , buildFileModified , buildFile )
-    }
-    else if ( buildScript != null ) {
-        buildScript.binding = binding
-        buildScript.run ( )
-    }
-    else {
-      if ( buildFile )  { buildFileText = buildFile.text }
-      try {
-        //  TODO:  Sort out whether this attempt to change the metaclass is ever going to work.
-        //
-        //binding.groovyShell.evaluate ( buildFileText , buildClassName )
-        def script = binding.groovyShell.parse ( buildFileText , buildClassName )
-        script.binding = binding
-        // Scripts have ExpandoMetaClass as their metaclass.
-        //System.err.println ( 'Gant: ' + script.class.metaClass )
-        //script.metaClass = new GantMetaClass ( script.metaClass , binding )
-        script.run ( )
-      }
-      catch ( Exception e ) {
-        printMessageFrom ( e )
-        return -2
-      }
-    }
+    // Configure the build based on this instance's settings.
+    if ( dryRun ) { GantState.dryRun = true }
+    if ( verbosity != GantState.NORMAL ) { GantState.verbosity = verbosity ; binding.ant.setMessageOutputLevel ( ) }
+    binding.cacheEnabled = useCache
+    binding.gantLib = gantLib
+
+    if ( script == null ) { throw new RuntimeException ( "No script has been loaded!" ) }
+    script.binding = binding
+    script.run ( )
+    
     invokeMethod ( function , targets )
   }
   /**
@@ -488,5 +442,5 @@ final class Gant {
   /**
    *  The entry point for command line invocation.
    */
-  public static void main ( String[] args ) { System.exit ( (Integer) ( ( new Gant ( ) ).processArgs ( args ) ) ) }  // IntelliJ IDEA thinks processTargets returns an Object.
+  public static void main ( String[] args ) { System.exit ( ( ( new Gant ( ) ).processArgs ( args ) ) ) }  // IntelliJ IDEA thinks processTargets returns an Object.
 }

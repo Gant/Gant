@@ -36,13 +36,14 @@ final class SubGant_Test extends GantTestCase {
 def internalTarget = 'doTarget'
 target ( ( internalTarget ) : '' ) { println ( '${resultMessage}' ) }
 target ( '${targetName}' : '' ) {
-  newthing = new gant.Gant ( '${isWindows ? buildFile.path.replace ( '\\' , '\\\\' ) : buildFile.path}' )
+  newthing = new gant.Gant ( )
+  newthing.loadScript ( new File ( '${isWindows ? buildFile.path.replace ( '\\' , '\\\\' ) : buildFile.path}' ) )
   newthing.processTargets ( internalTarget )
 }
 """
     buildFile.write ( buildScript )
     script = buildScript
-    assertEquals ( 0 , processTargets ( targetName ) )
+    assertEquals ( 0 , processCmdLineTargets ( targetName ) )
     assertEquals ( resultMessage + '\n' , output )
   }
   public void testWithBinding ( ) {
@@ -50,13 +51,14 @@ target ( '${targetName}' : '' ) {
 def internalTarget = 'doTarget'
 target ( ( internalTarget ) : '' ) { println ( '${resultMessage}' ) }
 target ( '${targetName}' : '' ) {
-  newthing = new gant.Gant ( '${isWindows ? buildFile.path.replace ( '\\' , '\\\\' ) : buildFile.path}' , binding.clone ( ) )
+  newthing = new gant.Gant ( binding.clone ( ) )
+  newthing.loadScript ( new File ( '${isWindows ? buildFile.path.replace ( '\\' , '\\\\' ) : buildFile.path}' ) )
   newthing.processTargets ( internalTarget )
 }
 """
     buildFile.write ( buildScript )
     script = buildScript
-    assertEquals ( 0 , processTargets ( targetName ) )
+    assertEquals ( 0 , processCmdLineTargets ( targetName ) )
     assertEquals ( resultMessage + '\n' , output )
   }
   /*

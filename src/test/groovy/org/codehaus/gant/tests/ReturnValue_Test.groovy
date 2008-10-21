@@ -62,9 +62,9 @@ target ( doit : '' ) { ${code} }
     script = '''
 this is definitely not a legal script.
 '''
-    assertEquals ( -2 , processTargets ( ) )
+    assertEquals ( -2 , processCmdLineTargets ( ) )
   }
   void testCannotFindScript ( ) {
-    assertEquals ( -3 , ( new gant.Gant ( 'blah_blah_blah_blah' ) ).processTargets ( ) )
+    assertEquals ( -3 , ( new gant.Gant ( ) ).processArgs ( [ '-f' , 'blah_blah_blah_blah' ] as String[] ) )
   }
 }

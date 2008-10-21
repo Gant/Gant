@@ -182,7 +182,7 @@ target ( 'default' : '' ) { something ( ) }
     def errorMessage = 'Standard input, line 1 -- Error evaluating Gantfile: java.io.FileNotFoundException: '
     if ( isWindows ) { errorMessage += nonExistentFilePath.replaceAll ( '/' , '\\\\' ) + ' (The system cannot find the path specified)\n' }
     else { errorMessage += nonExistentFilePath + ' (No such file or directory)\n' }
-    assertEquals ( -2 , processTargets ( 'flob' ) )
+    assertEquals ( -2 , processCmdLineTargets ( 'flob' ) )
     assertEquals ( errorMessage , output )
   }
   void testTargetsDefaultClassClass ( ) {
@@ -192,12 +192,12 @@ target ( 'default' : '' ) { something ( ) }
   }
   void testTargetsDefaultClassFile ( ) {
     script = targetsBuildClassFile
-    assertEquals ( -2 , processTargets ( ) )
+    assertEquals ( -2 , processCmdLineTargets ( ) )
     assertEquals ( resultErrorEvaluatingLineOne , output ) 
   }
   void testTargetsDefaultClassString ( ) {
     script = targetsBuildClassString
-    assertEquals ( -2 , processTargets ( ) )
+    assertEquals ( -2 , processCmdLineTargets ( ) )
     assertEquals ( resultErrorEvaluatingLineOne , output ) 
   }
   void testTargetsFlobClassClass ( ) {
@@ -207,28 +207,28 @@ target ( 'default' : '' ) { something ( ) }
   }
   void testTargetsFlobClassFile ( ) {
     script = targetsBuildClassFile
-    assertEquals ( -2 , processTargets ( 'flob' ) )
+    assertEquals ( -2 , processCmdLineTargets ( 'flob' ) )
     assertEquals ( resultErrorEvaluatingLineOne , output ) 
   }
   void testTargetsFlobClassString ( ) {
     script = targetsBuildClassString
-    assertEquals ( -2 , processTargets ( 'flob' ) )
+    assertEquals ( -2 , processCmdLineTargets ( 'flob' ) )
     assertEquals ( resultErrorEvaluatingLineOne , output ) 
   }
   void testTargetsBurbleClassClass ( ) {
     def target = 'burble'
     script = targetsBuildClassClass
-    assertEquals ( -11 , processTargets ( target ) )
+    assertEquals ( -11 , processCmdLineTargets ( target ) )
     assertEquals ( resultTargetDoesNotExist ( target ) , output ) 
   }
   void testTargetsBurbleClassFile ( ) {
     script = targetsBuildClassFile
-    assertEquals ( -2 , processTargets ( 'burble' ) )
+    assertEquals ( -2 , processCmdLineTargets ( 'burble' ) )
     assertEquals ( resultErrorEvaluatingLineOne , output ) 
   }
   void testTargetsBurbleClassString ( ) {
     script = targetsBuildClassString
-    assertEquals ( -2 , processTargets ( 'burble') )
+    assertEquals ( -2 , processCmdLineTargets ( 'burble') )
     assertEquals ( resultErrorEvaluatingLineOne , output ) 
   }
   void testTargetsSomethingClassClass ( ) {
@@ -238,23 +238,23 @@ target ( 'default' : '' ) { something ( ) }
   }
   void testTargetsSomethingClassFile ( ) {
     script = targetsBuildClassFile
-    assertEquals ( -2 , processTargets ( 'something' ) )
+    assertEquals ( -2 , processCmdLineTargets ( 'something' ) )
     assertEquals ( resultErrorEvaluatingLineOne, output ) 
   }
   void testTargetsSomethingClassString ( ) {
     script = targetsBuildClassString
-    assertEquals ( -2 , processTargets ( 'something' ) )
+    assertEquals ( -2 , processCmdLineTargets ( 'something' ) )
     assertEquals ( resultErrorEvaluatingLineOne, output ) 
   }
   void testTargetsClassNoFile ( ) {
     script = targetsBuildClassFile.replace ( targetsClassFilePath , nonExistentFilePath )
-    assertEquals ( -2 , processTargets ( 'flob' ) )
+    assertEquals ( -2 , processCmdLineTargets ( 'flob' ) )
     //  The returned string is platform dependent and dependent on whether NFS is used to mount stores, or
     //  even RAID.  We therefore choose not to check the output to avoid having large numbers of cases.
   }
   void testTargetsDefaultScriptClass ( ) {
     script = targetsBuildScriptClass
-    assertEquals ( -2 , processTargets ( ) )
+    assertEquals ( -2 , processCmdLineTargets ( ) )
     assertEquals ( resultErrorEvaluatingLineSix , output ) 
   }
   void testTargetsDefaultScriptFile ( ) {
@@ -269,7 +269,7 @@ target ( 'default' : '' ) { something ( ) }
   }
   void testTargetsFlobScriptClass ( ) {
     script = targetsBuildScriptClass
-    assertEquals ( -2 , processTargets ( 'flob' ) )
+    assertEquals ( -2 , processCmdLineTargets ( 'flob' ) )
     assertEquals ( resultErrorEvaluatingLineSix , output ) 
   }
   void testTargetsFlobScriptFile ( ) {
@@ -284,13 +284,13 @@ target ( 'default' : '' ) { something ( ) }
   }
   void testTargetsBurbleScriptClass ( ) {
     script = targetsBuildScriptClass
-    assertEquals ( -2 , processTargets ( 'burble' ) )
+    assertEquals ( -2 , processCmdLineTargets ( 'burble' ) )
     assertEquals ( resultErrorEvaluatingLineSix , output ) 
   }
   void testTargetsBurbleScriptFile ( ) {
     def target = 'burble'
     script = targetsBuildScriptFile
-    assertEquals ( -11 , processTargets ( target ) )
+    assertEquals ( -11 , processCmdLineTargets ( target ) )
     assertEquals ( resultTargetDoesNotExist ( target ) , output ) 
   }
   void testTargetsBurbleScriptString ( ) {
@@ -301,7 +301,7 @@ target ( 'default' : '' ) { something ( ) }
   }
   void testTargetsSomethingScriptClass ( ) {
     script = targetsBuildScriptClass
-    assertEquals ( -2 , processTargets ( 'something' ) )
+    assertEquals ( -2 , processCmdLineTargets ( 'something' ) )
     assertEquals ( resultErrorEvaluatingLineSix , output ) 
   }
   void testTargetsSomethingScriptFile ( ) {
@@ -316,7 +316,7 @@ target ( 'default' : '' ) { something ( ) }
   }
   void testTargetsScriptNoFile ( ) {
     script = targetsBuildScriptFile.replace ( targetsScriptFilePath , nonExistentFilePath )
-    assertEquals ( -2 , processTargets ( 'flob' ) )
+    assertEquals ( -2 , processCmdLineTargets ( 'flob' ) )
     //  The returned string is platform dependent and dependent on whether NFS is used to mount stores, or
     //  even RAID.  We therefore choose not to check the output to avoid having large numbers of cases.
   }
@@ -419,7 +419,7 @@ target ( test : '' ) { }
 includeTargets * gant.targets.Clean
 target ( test : '' ) { }
 '''
-    assertEquals ( -2 , processTargets ( 'test' ) )
+    assertEquals ( -2 , processCmdLineTargets ( 'test' ) )
     //
     //  It seems that there is a Groovy 1.5 -> 1.6 change here in that the line number reported for the error changes.
     //
@@ -432,7 +432,7 @@ target ( test : '' ) { }
 includeTargets ** null * [ ]
 target ( test : '' ) { }
 '''
-    assertEquals ( -2 , processTargets ( 'test' ) )
+    assertEquals ( -2 , processCmdLineTargets ( 'test' ) )
     assertEquals ( 'Standard input, line 2 -- Error evaluating Gantfile: wrong number of arguments\n' , output )
   }
 

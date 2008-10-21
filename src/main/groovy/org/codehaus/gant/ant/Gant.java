@@ -161,7 +161,8 @@ public class Gant extends Task {
       ant.invokeMethod ( "property" , new Object[] { definitionParameter } ) ;
     }
     System.setOut ( outSave ) ;
-    final gant.Gant gant = new gant.Gant ( newProject.getBaseDir ( ) + System.getProperty ( "file.separator" ) + file , binding ) ;
+    final gant.Gant gant = new gant.Gant ( binding ) ;
+    gant.loadScript ( new File ( newProject.getBaseDir ( ) , file ) ) ;
     final Integer returnCode ;
     if ( targets.isEmpty ( ) ) { returnCode = (Integer) gant.processTargets ( ) ; } // IntelliJ IDEA thinks processTargets returns an Object.
     else {
