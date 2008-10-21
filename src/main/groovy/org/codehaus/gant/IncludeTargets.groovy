@@ -54,7 +54,9 @@ class IncludeTargets extends AbstractInclude {
       if ( binding.cacheEnabled ) {
         //  Class name will likely have packages, but this is not acceptable for a single name in the
         //  binding, so convert any dots to underscores.
-        binding.loadClassFromCache.call ( className.replaceAll ( /\./ , '_' ) , file.lastModified ( ) , file )
+        def script = binding.loadClassFromCache.call ( className.replaceAll ( /\./ , '_' ) , file.lastModified ( ) , file )
+        script.binding = binding
+        script.run()
       }
       else { readFile ( file ) }
       loadedClasses << className
