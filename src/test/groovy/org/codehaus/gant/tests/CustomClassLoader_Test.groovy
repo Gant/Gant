@@ -32,7 +32,7 @@ target ( "default" : "Should resolve this class" ) {
 	println "Finished"
 }
 '''
-    gant = new gant.Gant ( '-' , null , gcl )
+    gant = new gant.Gant ( null , gcl )
   }
   void testDefault ( ) {
     assertEquals ( 0 , processTargets ( ) )

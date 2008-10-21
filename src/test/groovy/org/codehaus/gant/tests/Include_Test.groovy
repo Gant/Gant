@@ -218,7 +218,7 @@ target ( 'default' : '' ) { something ( ) }
   void testTargetsBurbleClassClass ( ) {
     def target = 'burble'
     script = targetsBuildClassClass
-    assertEquals ( -11 , processCmdLineTargets ( target ) )
+    assertEquals ( -11 , processTargets ( target ) )
     assertEquals ( resultTargetDoesNotExist ( target ) , output ) 
   }
   void testTargetsBurbleClassFile ( ) {
@@ -290,7 +290,7 @@ target ( 'default' : '' ) { something ( ) }
   void testTargetsBurbleScriptFile ( ) {
     def target = 'burble'
     script = targetsBuildScriptFile
-    assertEquals ( -11 , processCmdLineTargets ( target ) )
+    assertEquals ( -11 , processTargets ( target ) )
     assertEquals ( resultTargetDoesNotExist ( target ) , output ) 
   }
   void testTargetsBurbleScriptString ( ) {

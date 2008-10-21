@@ -405,7 +405,7 @@ final class Gant {
     catch ( FileNotFoundException fnfe ) { println ( 'Cannot open file ' + buildSource.name ) ; return -3 }
     catch ( Exception e ) { printMessageFrom ( e ) ; return -2 }
     
-    try { processTargets ( function , targets ) }
+    try { return processTargets ( function , targets ) }
     catch ( Exception e ) { printMessageFrom ( e ) ; return -2 }
   }
   public Integer processTargets ( ) { processTargets ( 'dispatch' , [ ] ) }
