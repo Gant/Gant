@@ -93,6 +93,14 @@ final class Gant {
    *  The class name to use for a script provided as standard input.
    */
   private final standardInputClassName = 'standard_input'
+  /**
+   *  The class name to use for a script provided as an input stream.
+   */
+  private final streamInputClassName = 'stream_input'
+  /**
+   *  The class name to use for a script provided as plain text.
+   */
+  private final textInputClassName = 'text_input'
 
   private final loadClassFromCache = { className , lastModified , url  ->
     try {
@@ -111,28 +119,36 @@ final class Gant {
     }
   }
   /**
-   *  The name of the file used as input, - means standard input.
-   */
-//  private String buildFileName = 'build.gant'
-  /**
-   *  The <code>File</code> object for the script.
-   */
-//  private File buildFile
-  /**
    *  The name of the class actually used for compiling the script.
    */
   String buildClassName
-
-  boolean dryRun = false
-  int verbosity = GantState.NORMAL
-  boolean useCache = false
-  File cacheDirectory = new File ( "${System.properties.'user.home'}/.gant/cache" )
-  List gantLib = []
-  def script
   /**
-   *  The <code>Script</code> object used for the script if a <code>Script</code> object gets used.
+   *  Determines whether Gant performs a dry-run or does it for real.
    */
-//  private Script buildScript
+  boolean dryRun = false
+  /**
+   *  The verbosity of Gant's output. Defaults to { @link GantState#NORMAL }.
+   */
+  int verbosity = GantState.NORMAL
+  /**
+   *  Determines whether the scripts are cached or not. Defaults to <code>false</code>.
+   */
+  boolean useCache = false
+  /**
+   *  The location where the compiled scripts are cached. Defaults to "$USER_HOME/.gant/cache".
+   */
+  File cacheDirectory = new File ( "${System.properties.'user.home'}/.gant/cache" )
+  /**
+   *  A list of strings containing the locations of Gant modules.
+   */
+  List gantLib = []
+  /**
+   *  The script that will be run when { @link #processTargets ( ) } is called. It is initialised
+   *  when a script is loaded. Note that it has a dynamic type because the script may be loaded
+   *  from a different class loader than the one used to load the Gant class. If we declared it as
+   *  Script, there would likely be ClassCastExceptions.
+   */
+  def script
   /**
    *  The binding object used for this run of Gant.  This binding object replaces the standard one to ensure
    *  that all the Gant specific things appear in the binding the script executes with.
@@ -175,7 +191,7 @@ final class Gant {
    *  @params text The text of the Gant script to load.
    */
   public Gant loadScript( String text ) {
-    if ( ! buildClassName ) { buildClassName = "text_script" }
+    if ( ! buildClassName ) { buildClassName = textInputClassName }
     script = binding.groovyShell.parse ( text , buildClassName )
     return this
   }
@@ -187,7 +203,7 @@ final class Gant {
    *  compiled class.
    */
   public Gant loadScript ( InputStream scriptSource ) {
-    if ( ! buildClassName ) { buildClassName = "stream_script" }
+    if ( ! buildClassName ) { buildClassName = streamInputClassName }
     script = binding.groovyShell.parse ( scriptSource , buildClassName )
     return this
   }
