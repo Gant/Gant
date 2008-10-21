@@ -25,6 +25,11 @@ Fix GANT-30 by removing .groovy and .gant extensions from file names before cons
 
 GStrings no longer cause problem in depends call -- fixed GANT-55.  GANT-61 is a duplicate of GANT-55.
 
+Serious refactoring of the constructor structure of Gant.  Thanks to Peter Ledbrook.  cf. GANT-48.  NB  This
+is a significant breaking change for any code that creates Gant objects.  The script is no longer loaded as
+part of construction but has been separated out using the loadScript method.  This allows for introduction
+of the loadScriptClass method.  
+
 
 1.4.0 ( r9604 )
 ---------------

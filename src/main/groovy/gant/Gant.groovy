@@ -151,25 +151,25 @@ final class Gant {
    *  that all the Gant specific things appear in the binding the script executes with.
    */
   private final GantBinding binding
-   /**
-    *  Default constructor -  creates a new instance of <code>GantBinding</code> for the script binding,
-    *  and the default class loader.
-    */
+  /**
+   *  Default constructor -- creates a new instance of <code>GantBinding</code> for the script binding,
+   *  and the default class loader.
+   */
   public Gant ( ) { this ( (GantBinding) null ) }
-   /**
-    *  Constructor that uses the passed <code>GantBinding</code> for the script binding, and the default
-    *  class loader.
-    *
-    *  @param b the <code>GantBinding</code> to use.
-    */
+  /**
+   *  Constructor that uses the passed <code>GantBinding</code> for the script binding, and the default
+   *  class loader.
+   *
+   *  @param b the <code>GantBinding</code> to use.
+   */
   public Gant ( GantBinding b ) { this ( b , null ) }
-   /**
-    *  Constructor that uses the passed <code>GantBinding</code> for the script binding, and the passed
-    *  <code>ClassLoader</code> as the class loader.
-    *
-    *  @param b the <code>GantBinding</code> to use.
-    *  @param cl the <code>ClassLoader</code> to use.
-    */
+  /**
+   *  Constructor that uses the passed <code>GantBinding</code> for the script binding, and the passed
+   *  <code>ClassLoader</code> as the class loader.
+   *
+   *  @param b the <code>GantBinding</code> to use.
+   *  @param cl the <code>ClassLoader</code> to use.
+   */
   public Gant ( GantBinding b , ClassLoader cl ) {
     binding = b ?: new GantBinding ( )
     binding.classLoader = cl ?: getClass ( ).classLoader
@@ -178,7 +178,6 @@ final class Gant {
   /**
    *  Constructor intended for use in code to be called from the Groovy Ant Task.
    *
-   *  @param s the <code>String</code> comprising the Gant script to use.
    *  @param p the <code>org.apache.tools.ant.Project</code> to use.
    */
   public Gant ( org.apache.tools.ant.Project p ) { this ( new GantBinding ( p ) ) }
@@ -208,11 +207,11 @@ final class Gant {
    *  Loads a Gant script from the given file, using the default Groovy encoding to convert the bytes
    *  to characters.
    *
-   *  @params scriptFilee The file containing the Gant script source, i.e. the Groovy code, not the
+   *  @params scriptFile The file containing the Gant script source, i.e. the Groovy code, not the
    *  compiled class.
    */
   public Gant loadScript ( File scriptFile ) {
-    return loadScript ( scriptFile.toURI().toURL() )
+    return loadScript ( scriptFile.toURI ( ).toURL ( ) )
   }
   /**
    *  Loads a Gant script from the given URL, using the default Groovy encoding to convert the bytes
@@ -222,14 +221,12 @@ final class Gant {
    */
   public Gant loadScript ( URL scriptUrl ) {
     if ( ! buildClassName ) {
-      def filename = scriptUrl.path.substring(scriptUrl.path.lastIndexOf("/") + 1)
+      def filename = scriptUrl.path.substring ( scriptUrl.path.lastIndexOf ( "/" ) + 1 )
       buildClassName = classNameFromFileName ( filename )
     }
-
     if ( useCache ) {
       if ( binding.classLoader instanceof URLClassLoader ) { binding.classLoader.addURL ( cacheDirectory.toURI ( ).toURL ( ) ) }
       else { binding.classLoader.rootLoader?.addURL ( cacheDirectory.toURI ( ).toURL ( ) ) }
-
       binding.loadClassFromCache =  loadClassFromCache
       script = loadClassFromCache ( buildClassName , scriptUrl.openConnection ( ).lastModified , scriptUrl )
     }
