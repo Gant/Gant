@@ -107,7 +107,7 @@ includeTargets ** gant.targets.Maven * [ groupId : 'flob' , artifactId : 'adob' 
 includeTargets << gant.targets.Maven
 maven.binding = new Binding ( )
 """
-    assertEquals ( -2 , processTargets ( 'initialize' ) )
+    assertEquals ( -2 , processCmdLineTargets ( 'initialize' ) )
     assertEquals ( '''Standard input, line 3 -- Error evaluating Gantfile: Cannot amend the property binding.
 ''' , output )
   }
@@ -115,7 +115,7 @@ maven.binding = new Binding ( )
     script = """
 includeTargets ** gant.targets.Maven * [ binding : new Binding ( ) ]
 """
-    assertEquals ( -2 , processTargets ( 'initialize' ) )
+    assertEquals ( -2 , processCmdLineTargets ( 'initialize' ) )
     assertEquals ( '''Standard input, line 2 -- Error evaluating Gantfile: Cannot amend the property binding.
 ''' , output )
   }
@@ -132,7 +132,7 @@ target ( sayHello : '' ) { println ( 'Hello.' ) }
 includeTargets << gant.targets.Maven
 target ( sayHello , '' ) { println ( 'Hello.' ) }
 '''
-    assertEquals ( -2 , processTargets ( 'sayHello' ) )
+    assertEquals ( -2 , processCmdLineTargets ( 'sayHello' ) )
     assertEquals ( 'Standard input, line 3 -- Error evaluating Gantfile: No such property: sayHello for class: standard_input\n' , output )
   }
 }

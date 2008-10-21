@@ -171,14 +171,9 @@ final class Gant {
   public Gant ( org.apache.tools.ant.Project p ) { this ( new GantBinding ( p ) ) }
 
   public Gant loadScript ( InputStream scriptSource ) {
-    //  TODO:  Sort out whether this attempt to change the metaclass is ever going to work.
-    //
-    //binding.groovyShell.evaluate ( buildFileText , buildClassName )
-//    script = binding.groovyShell.parse ( scriptSource , buildClassName )
-    // Scripts have ExpandoMetaClass as their metaclass.
-    //System.err.println ( 'Gant: ' + script.class.metaClass )
-    //script.metaClass = new GantMetaClass ( script.metaClass , binding )
-    return loadScript( scriptSource.text )
+    if ( ! buildClassName ) { buildClassName = "stream_script" }
+    script = binding.groovyShell.parse ( scriptSource , buildClassName )
+    return this
   }
 
   public Gant loadScript ( File scriptFile ) {
@@ -210,13 +205,7 @@ final class Gant {
   }
   public Gant loadScript( String text ) {
     if ( ! buildClassName ) { buildClassName = "text_script" }
-    //  TODO:  Sort out whether this attempt to change the metaclass is ever going to work.
-    //
-    //binding.groovyShell.evaluate ( buildFileText , buildClassName )
     script = binding.groovyShell.parse ( text , buildClassName )
-    // Scripts have ExpandoMetaClass as their metaclass.
-    //System.err.println ( 'Gant: ' + script.class.metaClass )
-    //script.metaClass = new GantMetaClass ( script.metaClass , binding )
     return this
   }
   /**
@@ -239,7 +228,6 @@ final class Gant {
    *  executed that caused the exception.
    */
   private void printMessageFrom ( exception ) {
-    exception.printStackTrace ( System.err )
     for ( stackEntry in exception.stackTrace ) {
       if ( ( stackEntry.fileName == buildClassName ) && ( stackEntry.lineNumber  != -1 ) ) {
         def sourceName = ( buildClassName == standardInputClassName ) ? 'Standard input' : buildClassName

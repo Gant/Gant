@@ -18,10 +18,7 @@ import java.io.ByteArrayOutputStream ;
 import java.io.File ;
 import java.io.PrintStream ;
 
-import java.util.ArrayList ;
-import java.util.HashMap ;
-import java.util.List ;
-import java.util.Map ;
+import java.util.* ;
 
 import org.apache.tools.ant.BuildException ;
 import org.apache.tools.ant.Project ;
@@ -162,13 +159,15 @@ public class Gant extends Task {
     }
     System.setOut ( outSave ) ;
     final gant.Gant gant = new gant.Gant ( binding ) ;
-    gant.loadScript ( new File ( newProject.getBaseDir ( ) , file ) ) ;
     final Integer returnCode ;
-    if ( targets.isEmpty ( ) ) { returnCode = (Integer) gant.processTargets ( ) ; } // IntelliJ IDEA thinks processTargets returns an Object.
+    final File scriptFile = new File ( newProject.getBaseDir ( ) , file ) ;
+    String[] baseArgs = { "-f" , scriptFile.getPath ( ) } ;
+    if ( targets.isEmpty ( ) ) { returnCode = (Integer) gant.processArgs ( baseArgs ) ; } // IntelliJ IDEA thinks processTargets returns an Object.
     else {
       final List<String> targetStrings = new ArrayList<String> ( ) ;
+      targetStrings.addAll ( Arrays.asList ( baseArgs ) ) ;
       for ( GantTarget g : targets ) { targetStrings.add ( g.getValue ( ) ) ; }
-      returnCode = (Integer) gant.processTargets ( targetStrings ) ; // IntelliJ IDEA thinks processTargets returns an Object.
+      returnCode = (Integer) gant.processArgs ( targetStrings.toArray ( new String[ 0 ] ) ) ; // IntelliJ IDEA thinks processTargets returns an Object.
     }
     if ( returnCode != 0 ) { throw new BuildException ( "Gant execution failed with return code " + returnCode + '.' , getLocation ( ) ) ; }
   }
