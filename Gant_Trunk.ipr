@@ -86,6 +86,68 @@
   <component name="EntryPointsManager">
     <entry_points version="2.0" />
   </component>
+  <component name="FacetAutodetectingManager">
+    <autodetection-disabled>
+      <facet-type id="Groovy">
+        <modules>
+          <module name="Main">
+            <files>
+              <file url="file://$PROJECT_DIR$/src/main/groovy/gant/Gant.groovy" />
+              <file url="file://$PROJECT_DIR$/src/main/groovy/gant/GantException.groovy" />
+              <file url="file://$PROJECT_DIR$/src/main/groovy/gant/MissingTargetException.groovy" />
+              <file url="file://$PROJECT_DIR$/src/main/groovy/gant/TargetExecutionException.groovy" />
+              <file url="file://$PROJECT_DIR$/src/main/groovy/gant/TargetMissingPropertyException.groovy" />
+              <file url="file://$PROJECT_DIR$/src/main/groovy/gant/targets/Clean.groovy" />
+              <file url="file://$PROJECT_DIR$/src/main/groovy/gant/targets/Maven.groovy" />
+              <file url="file://$PROJECT_DIR$/src/main/groovy/gant/tools/AntFile.groovy" />
+              <file url="file://$PROJECT_DIR$/src/main/groovy/gant/tools/Execute.groovy" />
+              <file url="file://$PROJECT_DIR$/src/main/groovy/gant/tools/Ivy.groovy" />
+              <file url="file://$PROJECT_DIR$/src/main/groovy/gant/tools/LaTeX.groovy" />
+              <file url="file://$PROJECT_DIR$/src/main/groovy/gant/tools/Subdirectories.groovy" />
+              <file url="file://$PROJECT_DIR$/src/main/groovy/org/codehaus/gant/AbstractInclude.groovy" />
+              <file url="file://$PROJECT_DIR$/src/main/groovy/org/codehaus/gant/GantBinding.groovy" />
+              <file url="file://$PROJECT_DIR$/src/main/groovy/org/codehaus/gant/IncludeTargets.groovy" />
+              <file url="file://$PROJECT_DIR$/src/main/groovy/org/codehaus/gant/IncludeTool.groovy" />
+            </files>
+          </module>
+          <module name="Test">
+            <files>
+              <file url="file://$PROJECT_DIR$/src/test/groovy/gant/targets/tests/Clean_Test.groovy" />
+              <file url="file://$PROJECT_DIR$/src/test/groovy/gant/targets/tests/Maven_Test.groovy" />
+              <file url="file://$PROJECT_DIR$/src/test/groovy/gant/tools/tests/AntFile_Test.groovy" />
+              <file url="file://$PROJECT_DIR$/src/test/groovy/gant/tools/tests/Execute_Test.groovy" />
+              <file url="file://$PROJECT_DIR$/src/test/groovy/gant/tools/tests/LaTeX_Test.groovy" />
+              <file url="file://$PROJECT_DIR$/src/test/groovy/org/codehaus/gant/ant/tests/basedir.gant" />
+              <file url="file://$PROJECT_DIR$/src/test/groovy/org/codehaus/gant/ant/tests/build.gant" />
+              <file url="file://$PROJECT_DIR$/src/test/groovy/org/codehaus/gant/tests/CallPrint_Test.groovy" />
+              <file url="file://$PROJECT_DIR$/src/test/groovy/org/codehaus/gant/tests/CommentAccess_Test.groovy" />
+              <file url="file://$PROJECT_DIR$/src/test/groovy/org/codehaus/gant/tests/CustomClassLoader_Test.groovy" />
+              <file url="file://$PROJECT_DIR$/src/test/groovy/org/codehaus/gant/tests/Depends_Test.groovy" />
+              <file url="file://$PROJECT_DIR$/src/test/groovy/org/codehaus/gant/tests/DryRun_Test.groovy" />
+              <file url="file://$PROJECT_DIR$/src/test/groovy/org/codehaus/gant/tests/ExecutingTargets_Test.groovy" />
+              <file url="file://$PROJECT_DIR$/src/test/groovy/org/codehaus/gant/tests/GantBinding_Test.groovy" />
+              <file url="file://$PROJECT_DIR$/src/test/groovy/org/codehaus/gant/tests/GantBuilder_Test.groovy" />
+              <file url="file://$PROJECT_DIR$/src/test/groovy/org/codehaus/gant/tests/Include_Test.groovy" />
+              <file url="file://$PROJECT_DIR$/src/test/groovy/org/codehaus/gant/tests/ListingTargets_Test.groovy" />
+              <file url="file://$PROJECT_DIR$/src/test/groovy/org/codehaus/gant/tests/NoAntObject_Test.groovy" />
+              <file url="file://$PROJECT_DIR$/src/test/groovy/org/codehaus/gant/tests/Options_Test.groovy" />
+              <file url="file://$PROJECT_DIR$/src/test/groovy/org/codehaus/gant/tests/ReturnValue_Test.groovy" />
+              <file url="file://$PROJECT_DIR$/src/test/groovy/org/codehaus/gant/tests/SubGant_Test.groovy" />
+              <file url="file://$PROJECT_DIR$/src/test/groovy/org/codehaus/gant/tests/TargetMetaClassLookup_Test.groovy" />
+              <file url="file://$PROJECT_DIR$/src/test/groovy/org/codehaus/gant/tests/Targets_Test.groovy" />
+              <file url="file://$PROJECT_DIR$/src/test/groovy/org/codehaus/gant/tests/ToolMetaClassLookup_Test.groovy" />
+              <file url="file://$PROJECT_DIR$/src/test/groovy/org/codehaus/gant/tests/bugs/GANT_32_Test.groovy" />
+              <file url="file://$PROJECT_DIR$/src/test/groovy/org/codehaus/gant/tests/bugs/GANT_33_Test.groovy" />
+              <file url="file://$PROJECT_DIR$/src/test/groovy/org/codehaus/gant/tests/bugs/GANT_34_Test.groovy" />
+              <file url="file://$PROJECT_DIR$/src/test/groovy/org/codehaus/gant/tests/bugs/GANT_46_Test.groovy" />
+              <file url="file://$PROJECT_DIR$/src/test/groovy/org/codehaus/gant/tests/bugs/GANT_49_Test.groovy" />
+              <file url="file://$PROJECT_DIR$/src/test/groovy/org/codehaus/gant/tests/bugs/GANT_4_Test.groovy" />
+            </files>
+          </module>
+        </modules>
+      </facet-type>
+    </autodetection-disabled>
+  </component>
   <component name="IdProvider" IDEtalkID="BCCC399EAA78AF820A0E1ED8BBCA7133" />
   <component name="InspectionProjectProfileManager">
     <option name="PROJECT_PROFILE" value="Project Default" />
@@ -148,14 +210,6 @@
         <inspection_tool class="AssignmentUsedAsCondition" level="WARNING" enabled="true" />
         <inspection_tool class="NestedAssignment" level="WARNING" enabled="true" />
         <inspection_tool class="IncrementDecrementUsedAsExpression" level="WARNING" enabled="true" />
-        <inspection_tool class="GroovyAssignmentCanBeOperatorAssignment" level="WARNING" enabled="true">
-          <option name="ignoreLazyOperators" value="true" />
-          <option name="ignoreObscureOperators" value="false" />
-        </inspection_tool>
-        <inspection_tool class="GroovyAssignmentToForLoopParameter" level="WARNING" enabled="true" />
-        <inspection_tool class="GroovyAssignmentToMethodParameter" level="WARNING" enabled="true" />
-        <inspection_tool class="GroovyNestedAssignment" level="WARNING" enabled="true" />
-        <inspection_tool class="GroovyResultOfAssignmentUsed" level="WARNING" enabled="true" />
         <inspection_tool class="AnonymousClassMethodCount" level="WARNING" enabled="true">
           <option name="m_limit" value="1" />
         </inspection_tool>
@@ -289,18 +343,6 @@
           <option name="m_ignoreStaticAccessFromStaticContext" value="false" />
         </inspection_tool>
         <inspection_tool class="MultipleTypedDeclaration" level="WARNING" enabled="true" />
-        <inspection_tool class="GroovyBreak" level="WARNING" enabled="true" />
-        <inspection_tool class="GroovyConditionalCanBeConditionalCall" level="WARNING" enabled="true" />
-        <inspection_tool class="GroovyConditionalCanBeElvis" level="WARNING" enabled="true" />
-        <inspection_tool class="GroovyConditionalWithIdenticalBranches" level="WARNING" enabled="true" />
-        <inspection_tool class="GroovyContinue" level="WARNING" enabled="true" />
-        <inspection_tool class="GroovyIfStatementWithIdenticalBranches" level="WARNING" enabled="true" />
-        <inspection_tool class="GroovyIfStatementWithTooManyBranches" level="WARNING" enabled="true">
-          <option name="m_limit" value="3" />
-        </inspection_tool>
-        <inspection_tool class="GroovyLoopStatementThatDoesntLoop" level="WARNING" enabled="true" />
-        <inspection_tool class="GroovyReturnFromClosureCanBeImplicit" level="WARNING" enabled="true" />
-        <inspection_tool class="GroovySwitchStatementWithNoDefault" level="WARNING" enabled="true" />
         <inspection_tool class="BreakStatement" level="WARNING" enabled="true" />
         <inspection_tool class="BreakStatementWithLabel" level="WARNING" enabled="true" />
         <inspection_tool class="ConditionalExpression" level="WARNING" enabled="true" />
@@ -431,24 +473,11 @@
           <option name="m_ignoreTestCases" value="false" />
           <option name="m_ignoreIgnoreParameter" value="true" />
         </inspection_tool>
-        <inspection_tool class="GroovyContinueOrBreakFromFinallyBlock" level="WARNING" enabled="true" />
-        <inspection_tool class="GroovyEmptyCatchBlock" level="WARNING" enabled="true" />
-        <inspection_tool class="GroovyEmptyFinallyBlock" level="WARNING" enabled="true" />
-        <inspection_tool class="GroovyEmptyTryBlock" level="WARNING" enabled="true" />
-        <inspection_tool class="GroovyReturnFromFinallyBlock" level="WARNING" enabled="true" />
-        <inspection_tool class="GroovyThrowFromFinallyBlock" level="WARNING" enabled="true" />
-        <inspection_tool class="GroovyUnusedCatchParameter" level="WARNING" enabled="true" />
         <inspection_tool class="Finalize" level="WARNING" enabled="true" />
         <inspection_tool class="FinalizeNotProtected" level="WARNING" enabled="true" />
         <inspection_tool class="EqualsAndHashcode" level="WARNING" enabled="true" />
         <inspection_tool class="SSBasedInspection" level="WARNING" enabled="true" />
         <inspection_tool class="TestOnlyProblems" level="WARNING" enabled="true" />
-        <inspection_tool class="GroovyListGetCanBeKeyedAccess" level="WARNING" enabled="true" />
-        <inspection_tool class="GroovyListSetCanBeKeyedAccess" level="WARNING" enabled="true" />
-        <inspection_tool class="GroovyMapGetCanBeKeyedAccess" level="WARNING" enabled="true" />
-        <inspection_tool class="GroovyMapPutCanBeKeyedAccess" level="WARNING" enabled="true" />
-        <inspection_tool class="GroovyGetterCallCanBePropertyAccess" level="WARNING" enabled="true" />
-        <inspection_tool class="GroovySetterCallCanBePropertyAccess" level="WARNING" enabled="true" />
         <inspection_tool class="QuirksModeInspectionTool" level="WARNING" enabled="true">
           <option name="IE50" value="false" />
           <option name="IE55" value="false" />
@@ -674,22 +703,6 @@
         <inspection_tool class="NestingDepth" level="WARNING" enabled="true">
           <option name="m_limit" value="5" />
         </inspection_tool>
-        <inspection_tool class="GroovyMethodWithMoreThanThreeNegations" level="WARNING" enabled="true" />
-        <inspection_tool class="GroovyMultipleReturnPointsPerMethod" level="WARNING" enabled="true">
-          <option name="m_limit" value="1" />
-        </inspection_tool>
-        <inspection_tool class="GroovyMethodParameterCount" level="WARNING" enabled="true">
-          <option name="m_limit" value="5" />
-        </inspection_tool>
-        <inspection_tool class="GroovyOverlyComplexMethod" level="WARNING" enabled="true">
-          <option name="m_limit" value="10" />
-        </inspection_tool>
-        <inspection_tool class="GroovyOverlyLongMethod" level="WARNING" enabled="true">
-          <option name="m_limit" value="30" />
-        </inspection_tool>
-        <inspection_tool class="GroovyOverlyNestedMethod" level="WARNING" enabled="true">
-          <option name="m_limit" value="5" />
-        </inspection_tool>
         <inspection_tool class="ModuleWithTooFewClasses" level="WARNING" enabled="true">
           <option name="limit" value="10" />
         </inspection_tool>
@@ -789,61 +802,6 @@
           <option name="m_maxLength" value="1" />
         </inspection_tool>
         <inspection_tool class="DollarSignInName" level="WARNING" enabled="true" />
-        <inspection_tool class="GroovyAnnotationNamingConvention" level="WARNING" enabled="true">
-          <option name="m_regex" value="[A-Z][A-Za-z\d]*" />
-          <option name="m_minLength" value="8" />
-          <option name="m_maxLength" value="64" />
-        </inspection_tool>
-        <inspection_tool class="GroovyClassNamingConvention" level="WARNING" enabled="true">
-          <option name="m_regex" value="[A-Z][A-Za-z\d]*" />
-          <option name="m_minLength" value="8" />
-          <option name="m_maxLength" value="64" />
-        </inspection_tool>
-        <inspection_tool class="GroovyConstantNamingConvention" level="WARNING" enabled="true">
-          <option name="m_regex" value="[A-Z\d]*" />
-          <option name="m_minLength" value="4" />
-          <option name="m_maxLength" value="32" />
-        </inspection_tool>
-        <inspection_tool class="GroovyEnumerationNamingConvention" level="WARNING" enabled="true">
-          <option name="m_regex" value="[A-Z][A-Za-z\d]*" />
-          <option name="m_minLength" value="8" />
-          <option name="m_maxLength" value="64" />
-        </inspection_tool>
-        <inspection_tool class="GroovyInstanceVariableNamingConvention" level="WARNING" enabled="true">
-          <option name="m_regex" value="m_[a-z][A-Za-z\d]*" />
-          <option name="m_minLength" value="1" />
-          <option name="m_maxLength" value="32" />
-        </inspection_tool>
-        <inspection_tool class="GroovyInstanceMethodNamingConvention" level="WARNING" enabled="true">
-          <option name="m_regex" value="[a-z][A-Za-z\d]*" />
-          <option name="m_minLength" value="4" />
-          <option name="m_maxLength" value="32" />
-        </inspection_tool>
-        <inspection_tool class="GroovyInterfaceNamingConvention" level="WARNING" enabled="true">
-          <option name="m_regex" value="[A-Z][A-Za-z\d]*" />
-          <option name="m_minLength" value="8" />
-          <option name="m_maxLength" value="64" />
-        </inspection_tool>
-        <inspection_tool class="GroovyLocalVariableNamingConvention" level="WARNING" enabled="true">
-          <option name="m_regex" value="[a-z][A-Za-z\d]*" />
-          <option name="m_minLength" value="4" />
-          <option name="m_maxLength" value="32" />
-        </inspection_tool>
-        <inspection_tool class="GroovyParameterNamingConvention" level="WARNING" enabled="true">
-          <option name="m_regex" value="[a-z][A-Za-z\d]*" />
-          <option name="m_minLength" value="4" />
-          <option name="m_maxLength" value="32" />
-        </inspection_tool>
-        <inspection_tool class="GroovyStaticMethodNamingConvention" level="WARNING" enabled="true">
-          <option name="m_regex" value="[a-z][A-Za-z\d]*" />
-          <option name="m_minLength" value="4" />
-          <option name="m_maxLength" value="32" />
-        </inspection_tool>
-        <inspection_tool class="GroovyStaticVariableNamingConvention" level="WARNING" enabled="true">
-          <option name="m_regex" value="s_[a-z][A-Za-z\d]*" />
-          <option name="m_minLength" value="4" />
-          <option name="m_maxLength" value="32" />
-        </inspection_tool>
         <inspection_tool class="ComparisonOfShortAndChar" level="WARNING" enabled="true" />
         <inspection_tool class="ComparisonToNaN" level="WARNING" enabled="true" />
         <inspection_tool class="ConfusingFloatingPointLiteral" level="WARNING" enabled="true" />
@@ -927,19 +885,6 @@
         <inspection_tool class="UseOfJDBCDriverClass" level="WARNING" enabled="true" />
         <inspection_tool class="UseOfProcessBuilder" level="WARNING" enabled="true" />
         <inspection_tool class="UseOfSunClasses" level="WARNING" enabled="true" />
-        <inspection_tool class="GroovyConditional" level="WARNING" enabled="true" />
-        <inspection_tool class="GroovyNegatedConditional" level="WARNING" enabled="true" />
-        <inspection_tool class="GroovyNegatedIf" level="WARNING" enabled="true" />
-        <inspection_tool class="GroovyNestedConditional" level="WARNING" enabled="true" />
-        <inspection_tool class="GroovyNestedSwitch" level="WARNING" enabled="true" />
-        <inspection_tool class="GroovyOctalInteger" level="WARNING" enabled="true" />
-        <inspection_tool class="GroovyOverlyComplexArithmeticExpression" level="WARNING" enabled="true">
-          <option name="m_limit" value="3" />
-        </inspection_tool>
-        <inspection_tool class="GroovyOverlyComplexBooleanExpression" level="WARNING" enabled="true">
-          <option name="m_limit" value="3" />
-        </inspection_tool>
-        <inspection_tool class="GroovyResultOfIncrementOrDecrementUsed" level="WARNING" enabled="true" />
         <inspection_tool class="ObjectToString" level="WARNING" enabled="true" />
         <inspection_tool class="ReplaceAllDot" level="WARNING" enabled="true" />
         <inspection_tool class="CastConflictsWithInstanceof" level="WARNING" enabled="true" />
@@ -981,7 +926,6 @@
         <inspection_tool class="ArchaicSystemPropertyAccess" level="WARNING" enabled="true" />
         <inspection_tool class="ResultSetIndexZero" level="WARNING" enabled="true" />
         <inspection_tool class="UseOfPropertiesAsHashtable" level="WARNING" enabled="true" />
-        <inspection_tool class="GroovyNonShortCircuitBoolean" level="WARNING" enabled="true" />
         <inspection_tool class="UnusedProperty" level="WARNING" enabled="true" />
         <inspection_tool class="ChannelResource" level="WARNING" enabled="true" />
         <inspection_tool class="HibernateResource" level="WARNING" enabled="true" />
@@ -1097,29 +1041,6 @@
         <inspection_tool class="WhileLoopSpinsOnField" level="WARNING" enabled="true">
           <option name="ignoreNonEmtpyLoops" value="false" />
         </inspection_tool>
-        <inspection_tool class="GroovyAccessToStaticFieldLockedOnInstance" level="WARNING" enabled="true" />
-        <inspection_tool class="GroovyBusyWait" level="WARNING" enabled="true" />
-        <inspection_tool class="GroovySystemRunFinalizersOnExit" level="WARNING" enabled="true" />
-        <inspection_tool class="GroovyThreadStopSuspendResume" level="WARNING" enabled="true" />
-        <inspection_tool class="GroovyDoubleCheckedLocking" level="WARNING" enabled="true">
-          <option name="ignoreOnVolatileVariables" value="false" />
-        </inspection_tool>
-        <inspection_tool class="GroovyEmptySyncBlock" level="WARNING" enabled="true" />
-        <inspection_tool class="GroovyNestedSynchronizedStatement" level="WARNING" enabled="true" />
-        <inspection_tool class="GroovyPublicFieldAccessedInSynchronizedContext" level="WARNING" enabled="true" />
-        <inspection_tool class="GroovyNotifyWhileNotSynchronized" level="WARNING" enabled="true" />
-        <inspection_tool class="GroovySynchronizationOnThis" level="WARNING" enabled="true" />
-        <inspection_tool class="GroovySynchronizationOnNonFinalField" level="WARNING" enabled="true" />
-        <inspection_tool class="GroovySynchronizationOnVariableInitializedWithLiteral" level="WARNING" enabled="true" />
-        <inspection_tool class="GroovySynchronizedMethod" level="WARNING" enabled="true" />
-        <inspection_tool class="GroovyUnconditionalWait" level="WARNING" enabled="true" />
-        <inspection_tool class="GroovyUnsynchronizedMethodOverridesSynchronizedMethod" level="WARNING" enabled="true" />
-        <inspection_tool class="GroovyWaitCallNotInLoop" level="WARNING" enabled="true" />
-        <inspection_tool class="GroovyWaitWhileNotSynchronized" level="WARNING" enabled="true" />
-        <inspection_tool class="GroovyWhileLoopSpinsOnField" level="WARNING" enabled="true">
-          <option name="ignoreNonEmtpyLoops" value="false" />
-        </inspection_tool>
-        <inspection_tool class="GroovyDuplicateSwitchBranch" level="WARNING" enabled="true" />
         <inspection_tool class="AnonymousClassVariableHidesContainingMethodVariable" level="WARNING" enabled="true" />
         <inspection_tool class="ClassEscapesItsScope" level="WARNING" enabled="true" />
         <inspection_tool class="FieldHidesSuperclassField" level="WARNING" enabled="true">
