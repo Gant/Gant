@@ -84,6 +84,7 @@ import org.codehaus.groovy.runtime.InvokerInvocationException
  *
  *  @author Russel Winder <russel.winder@concertant.com>
  *  @author Graeme Rocher <graeme.rocher@gmail.com>
+ *  @author Peter Ledbrook 
  */
 final class Gant {
   /**
@@ -109,7 +110,7 @@ final class Gant {
       }
       return binding.classLoader.loadClass ( className ).newInstance ( )
     }
-    catch ( Exception e) {
+    catch ( Exception e ) {
       def fileText = url.text
       compileScript ( cacheDirectory , fileText , className )
       return binding.groovyShell.parse ( fileText , buildClassName )
@@ -140,10 +141,10 @@ final class Gant {
    */
   List gantLib = []
   /**
-   *  The script that will be run when { @link #processTargets ( ) } is called. It is initialised
-   *  when a script is loaded. Note that it has a dynamic type because the script may be loaded
-   *  from a different class loader than the one used to load the Gant class. If we declared it as
-   *  Script, there would likely be ClassCastExceptions.
+   *  The script that will be run when { @link #processTargets ( ) } is called. It is initialised when a
+   *  script is loaded. Note that it has a dynamic type because the script may be loaded from a different
+   *  class loader than the one used to load the Gant class. If we declared it as Script, there would likely
+   *  be ClassCastExceptions.
    */
   def script
   /**
@@ -186,7 +187,7 @@ final class Gant {
    *
    *  @params text The text of the Gant script to load.
    */
-  public Gant loadScript( String text ) {
+  public Gant loadScript ( String text ) {
     if ( ! buildClassName ) { buildClassName = textInputClassName }
     script = binding.groovyShell.parse ( text , buildClassName )
     return this
@@ -230,9 +231,7 @@ final class Gant {
       binding.loadClassFromCache =  loadClassFromCache
       script = loadClassFromCache ( buildClassName , scriptUrl.openConnection ( ).lastModified , scriptUrl )
     }
-    else {
-      loadScript ( scriptUrl.openStream ( ) )
-    }
+    else { loadScript ( scriptUrl.openStream ( ) ) }
     return this
   }
   /**
@@ -252,7 +251,7 @@ final class Gant {
    *  transformed.</p>
    *
    *  <p>Up to Gant 1.5.0 the algorithm was to simply transform '\\.' to '_'.  However this means that
-   *  build.groovy got transformed to build_groovy and this caused problems in Eclipse, cf. GANT-30.<p>
+   *  build.groovy got transformed to build_groovy and this caused problems in Eclipse, cf. GANT-30.</p>
    */
   private String classNameFromFileName ( fileName ) {
     def index = fileName.lastIndexOf ( '.' )
@@ -311,9 +310,7 @@ final class Gant {
         if ( target == mme.property ) { throw new MissingTargetException ( "Target ${target} does not exist." , mme ) }
         else throw new TargetMissingPropertyException ( mme.message , mme )
       }
-      catch ( Exception e ) {
-        throw new TargetExecutionException ( e.message , e )
-      }
+      catch ( Exception e ) { throw new TargetExecutionException ( e.message , e ) }
     }
     if ( targets.size ( ) > 0 ) { targets.each { target -> processDispatch ( target ) } }
     else { processDispatch ( 'default' ) }
@@ -411,7 +408,7 @@ final class Gant {
     //  with Commons CLI 1.0 it is the case.  So we must partition.  NB the split method delivers an array
     //  of Strings so we cast to a List.
     def targets = options.arguments ( )
-    if ( ( targets != null ) && ( targets.size ( ) == 1 ) ) { targets = targets[ 0 ].split ( ' ' ) as List }
+    if ( ( targets != null ) && ( targets.size ( ) == 1 ) ) { targets = targets[0].split ( ' ' ) as List }
     def gotUnknownOptions = false ;
     targets.each { target ->
       if ( target[0] == '-' ) {
@@ -420,15 +417,13 @@ final class Gant {
       }
     }
     if ( gotUnknownOptions ) { cli.usage ( ) ; return -1 ; }
-
     try { loadScript ( buildSource ) }
     catch ( FileNotFoundException fnfe ) { println ( 'Cannot open file ' + buildSource.name ) ; return -3 }
     catch ( Exception e ) { printMessageFrom ( e ) ; return -2 }
-
     def defaultReturnCode = targets?.size ( ) > 0 ? -11 : -12
     try { return processTargets ( function , targets ) }
-    catch ( TargetExecutionException tee ) { println tee.message ; return -13 }
-    catch ( MissingTargetException mte ) { println mte.message ; return defaultReturnCode }
+    catch ( TargetExecutionException tee ) { println ( tee.message ) ; return -13 }
+    catch ( MissingTargetException mte ) { println ( mte.message ) ; return defaultReturnCode }
     catch ( TargetMissingPropertyException tmpe ) { printMessageFrom ( tmpe ) ; return defaultReturnCode }
     catch ( Exception e ) { printMessageFrom ( e ) ; return -2 }
   }
@@ -445,11 +440,9 @@ final class Gant {
     if ( verbosity != GantState.NORMAL ) { GantState.verbosity = verbosity ; binding.ant.setMessageOutputLevel ( ) }
     binding.cacheEnabled = useCache
     binding.gantLib = gantLib
-
     if ( script == null ) { throw new RuntimeException ( "No script has been loaded!" ) }
     script.binding = binding
     script.run ( )
-    
     return invokeMethod ( function , targets )
   }
   /**
