@@ -29,7 +29,8 @@ targetCompatibility = 1.5
 
 dependencies {
   addMavenRepo ( "file://${ System.properties.'user.home' }/.m2/repository" )
-  groovy ( 'org.codehaus.groovy:groovy-all:1.6-beta-2' )
+  groovy ( 'org.codehaus.groovy:groovy-all:1.7-beta-1-SNAPSHOT' )
+  //groovy ( 'org.codehaus.groovy:groovy-all:1.6-beta-2' )
   //groovy ( 'org.codehaus.groovy:groovy-all:' + ant.antProject.properties.groovyVersion )
   compile ( 'commons-cli:commons-cli:' + ant.antProject.properties.commonsCliVersion )
   testRuntime ( [
