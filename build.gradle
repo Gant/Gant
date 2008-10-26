@@ -17,6 +17,8 @@
 ant.property ( file : 'local.build.properties' )
 ant.property ( file : 'build.properties' )
 
+archivesBaseName = 'gant'
+
 type = 'jar'
 group = 'org.codehaus.gant'
 version = ant.antProject.properties.gantVersion
