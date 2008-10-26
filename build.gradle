@@ -14,6 +14,7 @@
 //
 //  Author : Russel Winder <russel.winder@concertant.com>
 
+ant.property ( file : 'local.build.properties' )
 ant.property ( file : 'build.properties' )
 
 type = 'jar'
@@ -29,12 +30,15 @@ targetCompatibility = 1.5
 
 dependencies {
   addMavenRepo ( "file://${ System.properties.'user.home' }/.m2/repository" )
-  groovy ( 'org.codehaus.groovy:groovy-all:1.7-beta-1-SNAPSHOT' )
-  //groovy ( 'org.codehaus.groovy:groovy-all:1.6-beta-2' )
-  //groovy ( 'org.codehaus.groovy:groovy-all:' + ant.antProject.properties.groovyVersion )
-  compile ( 'commons-cli:commons-cli:' + ant.antProject.properties.commonsCliVersion )
+  groovy ( 'org.codehaus.groovy:groovy-all:' + ant.antProject.properties.groovyVersion )
+  compile ( [
+             'commons-cli:commons-cli:' + ant.antProject.properties.commonsCliVersion ,
+             'org.apache.ant:ant:' + ant.antProject.properties.antVersion
+             ] )
+  testCompile ( [
+                 'junit:junit:' + ant.antProject.properties.junitVersion
+                 ] )
   testRuntime ( [
-                 'junit:junit:' + ant.antProject.properties.junitVersion ,
                  'org.apache.ivy:ivy:' + ant.antProject.properties.ivyVersion
                  ] )
 }
