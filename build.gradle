@@ -53,3 +53,8 @@ dependencies {
 test {
   include ( '**/*Test.class' )
 }
+
+javadoc {
+    title = "Gant API ${version}"
+    bottom = 'Copyright &#169; 2006&#8211;2008 Russel Winder.  All rights reserved.'
+}
