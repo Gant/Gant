@@ -130,21 +130,12 @@ public class Gant_Test extends TestCase {
    */
   public void testRunningAntFromShell ( ) {
     //
-    //  This Ant task actually fails always and so the return code is 1.  If the Groovyc class cannot be
-    //  loaded then the result is a message:
-    //
-    //    : taskdef class org.codehaus.groovy.ant.Groovyc cannot be found
-    //
-    //  whereas if it succeeds the message is more like:
+    //  This Ant task actually fails always and so the return code is 1.  The output should be something like::
     //
     //    [gant] Error evaluating Gantfile: startup failed, build: 15: unable to resolve class org.codehaus.gant.ant.tests.Gant_Test
     //    [gant]  @ line 15, column 1.
     //    [gant] 1 error
     //    [gant]
-    //
-    //  If Gant is compiled against Groovy 1.6-beta-1 then there is an infinite recursion in the metaclass
-    //  system emanating from InvokerHelper as the Gant Ant task is started leading to a StackOverflowError,
-    //  and so the correct output is not received.
     //
     //  Evidence indicates that there are problems with Groovy 1.5.x on Canoo CruiseControl and Codehaus
     //  Bamboo that are not exhibited with Groovy 1.6.x and later.
@@ -152,15 +143,16 @@ public class Gant_Test extends TestCase {
     final StringBuilder sb = new StringBuilder ( ) ;
     sb.append ( "Buildfile: " ) ;
     sb.append ( path ) ;
-    //sb.append ( "/gantTest.xml\n\n-initializeWithGroovyHome:\n\n-initializeNoGroovyHome:\n\ngantTestDefaultFileDefaultTarget:\n     [gant] Error evaluating Gantfile: startup failed, build: 15: unable to resolve class org.codehaus.gant.ant.tests.Gant_Test\n     [gant]  @ line 15, column 1.\n     [gant] 1 error\n     [gant] \n" ) ;
-    sb.append ( "/gantTest.xml\n\n-initializeWithGroovyHome:\n\n-initializeNoGroovyHome:\n\ngantTestDefaultFileDefaultTarget:\n" ) ;
-    if ( false /* groovyMinorVersion > 6 */ ) {
-      sb.append ( "[gant] Error evaluating Gantfile: startup failed, build: 15: unable to resolve class org.codehaus.gant.ant.tests.Gant_Test\n     [gant]  @ line 15, column 1.\n     [gant] 1 error\n     [gant] \n" ) ;
+    final boolean fullTest = false ;
+    if ( fullTest ) {
+    	sb.append ( "/gantTest.xml\n\n-initializeWithGroovyHome:\n\n-initializeNoGroovyHome:\n\ngantTestDefaultFileDefaultTarget:\n     [gant] Error evaluating Gantfile: startup failed, build: 15: unable to resolve class org.codehaus.gant.ant.tests.Gant_Test\n     [gant]  @ line 15, column 1.\n     [gant] 1 error\n     [gant] \n" ) ;
+    }
+    else {
+    	sb.append ( "/gantTest.xml\n\n-initializeWithGroovyHome:\n\n-initializeNoGroovyHome:\n\ngantTestDefaultFileDefaultTarget:\n" ) ;
     }
     String output = runAnt ( path + "/gantTest.xml" , 1 ) ;
-    //System.out.println ( ">>> Ant output: " + output ) ;
-    if ( false /* groovyMinorVersion > 6 */ ) {
-      assertEquals ( sb.toString ( ) , output ) ;
+    if ( fullTest ) {
+    	assertEquals ( sb.toString ( ) , output ) ;
     }
     else {
       assertTrue ( output.startsWith ( sb.toString ( ) ) ) ;
