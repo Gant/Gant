@@ -40,6 +40,24 @@
           <option name="LABEL_INDENT_SIZE" value="0" />
           <option name="LABEL_INDENT_ABSOLUTE" value="false" />
         </ADDITIONAL_INDENT_OPTIONS>
+        <ADDITIONAL_INDENT_OPTIONS fileType="java">
+          <option name="INDENT_SIZE" value="2" />
+          <option name="CONTINUATION_INDENT_SIZE" value="8" />
+          <option name="TAB_SIZE" value="8" />
+          <option name="USE_TAB_CHARACTER" value="false" />
+          <option name="SMART_TABS" value="false" />
+          <option name="LABEL_INDENT_SIZE" value="0" />
+          <option name="LABEL_INDENT_ABSOLUTE" value="false" />
+        </ADDITIONAL_INDENT_OPTIONS>
+        <ADDITIONAL_INDENT_OPTIONS fileType="xml">
+          <option name="INDENT_SIZE" value="4" />
+          <option name="CONTINUATION_INDENT_SIZE" value="8" />
+          <option name="TAB_SIZE" value="4" />
+          <option name="USE_TAB_CHARACTER" value="false" />
+          <option name="SMART_TABS" value="false" />
+          <option name="LABEL_INDENT_SIZE" value="0" />
+          <option name="LABEL_INDENT_ABSOLUTE" value="false" />
+        </ADDITIONAL_INDENT_OPTIONS>
       </value>
     </option>
     <option name="USE_PER_PROJECT_SETTINGS" value="true" />
@@ -83,6 +101,7 @@
     <option name="ADDITIONAL_OPTIONS_STRING" value="" />
     <option name="MAXIMUM_HEAP_SIZE" value="128" />
   </component>
+  <component name="Encoding" useUTFGuessing="true" native2AsciiForPropertiesFiles="false" />
   <component name="EntryPointsManager">
     <entry_points version="2.0" />
   </component>
@@ -187,6 +206,7 @@
         <inspection_tool class="StaticVariableOfConcreteClass" level="WARNING" enabled="true" />
         <inspection_tool class="TypeMayBeWeakened" level="WARNING" enabled="true">
           <option name="useRighthandTypeAsWeakestTypeInAssignments" value="true" />
+          <option name="useParameterizedTypeForCollectionMethods" value="true" />
         </inspection_tool>
         <inspection_tool class="ReplaceAssignmentWithOperatorAssignment" level="WARNING" enabled="true">
           <option name="ignoreLazyOperators" value="true" />
@@ -258,9 +278,7 @@
         <inspection_tool class="MarkerInterface" level="WARNING" enabled="true" />
         <inspection_tool class="MethodReturnAlwaysConstant" level="WARNING" enabled="true" />
         <inspection_tool class="MissingDeprecatedAnnotation" level="WARNING" enabled="true" />
-        <inspection_tool class="MissingOverrideAnnotation" level="WARNING" enabled="true">
-          <option name="useJdk6Rules" value="false" />
-        </inspection_tool>
+        <inspection_tool class="MissingOverrideAnnotation" level="WARNING" enabled="true" />
         <inspection_tool class="MultipleTopLevelClassesInFile" level="WARNING" enabled="true" />
         <inspection_tool class="NoopMethodInAbstractClass" level="WARNING" enabled="true" />
         <inspection_tool class="ClassInitializer" level="WARNING" enabled="true" />
@@ -334,7 +352,10 @@
           <option name="m_ignoreJavadoc" value="false" />
         </inspection_tool>
         <inspection_tool class="UnnecessaryInterfaceModifier" level="WARNING" enabled="true" />
-        <inspection_tool class="UnnecessaryParentheses" level="WARNING" enabled="true" />
+        <inspection_tool class="UnnecessaryParentheses" level="WARNING" enabled="true">
+          <option name="ignoreClarifyingParentheses" value="false" />
+          <option name="ignoreParenthesesOnConditionals" value="false" />
+        </inspection_tool>
         <inspection_tool class="UnnecessaryQualifierForThis" level="WARNING" enabled="true" />
         <inspection_tool class="UnqualifiedFieldAccess" level="WARNING" enabled="true" />
         <inspection_tool class="UnqualifiedStaticUsage" level="WARNING" enabled="true">
@@ -345,7 +366,9 @@
         <inspection_tool class="MultipleTypedDeclaration" level="WARNING" enabled="true" />
         <inspection_tool class="BreakStatement" level="WARNING" enabled="true" />
         <inspection_tool class="BreakStatementWithLabel" level="WARNING" enabled="true" />
-        <inspection_tool class="ConditionalExpression" level="WARNING" enabled="true" />
+        <inspection_tool class="ConditionalExpression" level="WARNING" enabled="true">
+          <option name="ignoreSimpleAssignmentsAndReturns" value="false" />
+        </inspection_tool>
         <inspection_tool class="ConditionalExpressionWithIdenticalBranches" level="WARNING" enabled="true" />
         <inspection_tool class="NegatedConditional" level="WARNING" enabled="true">
           <option name="m_ignoreNegatedNullComparison" value="true" />
@@ -450,7 +473,9 @@
         <inspection_tool class="ThreadDeathRethrown" level="WARNING" enabled="true" />
         <inspection_tool class="NestedTryStatement" level="WARNING" enabled="true" />
         <inspection_tool class="NonFinalFieldOfException" level="WARNING" enabled="true" />
-        <inspection_tool class="TooBroadCatch" level="WARNING" enabled="true" />
+        <inspection_tool class="TooBroadCatch" level="WARNING" enabled="true">
+          <option name="onlyWarnOnRootExceptions" value="false" />
+        </inspection_tool>
         <inspection_tool class="BadExceptionCaught" level="WARNING" enabled="true">
           <option name="exceptionsString" value="java.lang.NullPointerException,java.lang.IllegalMonitorStateException,java.lang.ArrayIndexOutOfBoundsException" />
         </inspection_tool>
@@ -471,7 +496,6 @@
         <inspection_tool class="UnusedCatchParameter" level="WARNING" enabled="true">
           <option name="m_ignoreCatchBlocksWithComments" value="false" />
           <option name="m_ignoreTestCases" value="false" />
-          <option name="m_ignoreIgnoreParameter" value="true" />
         </inspection_tool>
         <inspection_tool class="Finalize" level="WARNING" enabled="true" />
         <inspection_tool class="FinalizeNotProtected" level="WARNING" enabled="true" />
@@ -810,14 +834,17 @@
         <inspection_tool class="BigDecimalEquals" level="WARNING" enabled="true" />
         <inspection_tool class="FloatingPointEquality" level="WARNING" enabled="true" />
         <inspection_tool class="ImplicitNumericConversion" level="WARNING" enabled="true">
-          <option name="m_ignoreWideningConversions" value="false" />
+          <option name="ignoreWideningConversions" value="false" />
+          <option name="ignoreCharConversions" value="false" />
         </inspection_tool>
         <inspection_tool class="IntegerDivisionInFloatingPointContext" level="WARNING" enabled="true" />
         <inspection_tool class="IntegerMultiplicationImplicitCastToLong" level="WARNING" enabled="true" />
         <inspection_tool class="LongLiteralsEndingWithLowercaseL" level="WARNING" enabled="true" />
         <inspection_tool class="NonReproducibleMathCall" level="WARNING" enabled="true" />
         <inspection_tool class="CachedNumberConstructorCall" level="WARNING" enabled="true" />
-        <inspection_tool class="CastThatLosesPrecision" level="WARNING" enabled="true" />
+        <inspection_tool class="CastThatLosesPrecision" level="WARNING" enabled="true">
+          <option name="ignoreIntegerCharCasts" value="false" />
+        </inspection_tool>
         <inspection_tool class="OctalAndDecimalIntegersMixed" level="WARNING" enabled="true" />
         <inspection_tool class="OverlyComplexArithmeticExpression" level="WARNING" enabled="true">
           <option name="m_limit" value="6" />
@@ -854,7 +881,9 @@
           <option name="m_onlyPrivateOrFinal" value="false" />
           <option name="m_ignoreEmptyMethods" value="true" />
         </inspection_tool>
-        <inspection_tool class="StringReplaceableByStringBuffer" level="WARNING" enabled="true" />
+        <inspection_tool class="StringReplaceableByStringBuffer" level="WARNING" enabled="true">
+          <option name="onlyWarnOnLoop" value="true" />
+        </inspection_tool>
         <inspection_tool class="ObjectAllocationInLoop" level="WARNING" enabled="true" />
         <inspection_tool class="SubstringZero" level="WARNING" enabled="true" />
         <inspection_tool class="SetReplaceableByEnumSet" level="WARNING" enabled="true" />
@@ -1229,6 +1258,9 @@
       </item>
     </group>
   </component>
+  <component name="ProjectDetails">
+    <option name="projectName" value="Gant_Trunk" />
+  </component>
   <component name="ProjectFileVersion" converted="true" />
   <component name="ProjectModuleManager">
     <modules>
@@ -1236,7 +1268,7 @@
       <module fileurl="file://$PROJECT_DIR$/src/test/Test.iml" filepath="$PROJECT_DIR$/src/test/Test.iml" />
     </modules>
   </component>
-  <component name="ProjectRootManager" version="2" assert-keyword="true" jdk-15="true" project-jdk-name="Sun 1.6" project-jdk-type="JavaSDK">
+  <component name="ProjectRootManager" version="2" languageLevel="JDK_1_5" assert-keyword="true" jdk-15="true" project-jdk-name="Sun 1.6" project-jdk-type="JavaSDK">
     <output url="file://$PROJECT_DIR$/out" />
   </component>
   <component name="ResourceManagerContainer">
@@ -1261,5 +1293,64 @@
     <mapping directory="$PROJECT_DIR$" vcs="Bazaar" />
   </component>
   <component name="WebServicesPlugin" addRequiredLibraries="true" />
+  <component name="libraryTable">
+    <library name="groovy-1.7-beta-1-SNAPSHOT">
+      <CLASSES>
+        <root url="jar:///home/users/russel/lib/Java/groovy/lib/servlet-api-2.4.jar!/" />
+        <root url="jar:///home/users/russel/lib/Java/groovy/lib/commons-logging-1.1.jar!/" />
+        <root url="jar:///home/users/russel/lib/Java/groovy/lib/asm-analysis-2.2.3.jar!/" />
+        <root url="jar:///home/users/russel/lib/Java/groovy/lib/ant-junit-1.7.1.jar!/" />
+        <root url="jar:///home/users/russel/lib/Java/groovy/lib/testngroove-1.0.1.jar!/" />
+        <root url="jar:///home/users/russel/lib/Java/groovy/lib/antlr-2.7.7.jar!/" />
+        <root url="jar:///home/users/russel/lib/Java/groovy/lib/commons-cli-1.2-SNAPSHOT.jar!/" />
+        <root url="jar:///home/users/russel/lib/Java/groovy/lib/asm-tree-2.2.3.jar!/" />
+        <root url="jar:///home/users/russel/lib/Java/groovy/lib/groovy-xmlrpc-0.5.0-SNAPSHOT.jar!/" />
+        <root url="jar:///home/users/russel/lib/Java/groovy/lib/ant-1.7.1.jar!/" />
+        <root url="jar:///home/users/russel/lib/Java/groovy/lib/ivy-2.0.0-rc1.jar!/" />
+        <root url="jar:///home/users/russel/lib/Java/groovy/lib/bsf-2.4.0.jar!/" />
+        <root url="jar:///home/users/russel/lib/Java/groovy/lib/smack-3.0.1.jar!/" />
+        <root url="jar:///home/users/russel/lib/Java/groovy/lib/ant-launcher-1.7.1.jar!/" />
+        <root url="jar:///home/users/russel/lib/Java/groovy/lib/xstream-1.3.jar!/" />
+        <root url="jar:///home/users/russel/lib/Java/groovy/lib/jline-0.9.94.jar!/" />
+        <root url="jar:///home/users/russel/lib/Java/groovy/lib/asm-2.2.3.jar!/" />
+        <root url="jar:///home/users/russel/lib/Java/groovy/lib/jsp-api-2.0.jar!/" />
+        <root url="jar:///home/users/russel/lib/Java/groovy/lib/asm-util-2.2.3.jar!/" />
+        <root url="jar:///home/users/russel/lib/Java/groovy/lib/junit-3.8.2.jar!/" />
+        <root url="jar:///home/users/russel/lib/Java/groovy/lib/groovy-1.7-beta-1-SNAPSHOT.jar!/" />
+        <root url="jar:///home/users/russel/lib/Java/groovy/lib/servlet-api-2.4.jar!/" />
+        <root url="jar:///home/users/russel/lib/Java/groovy/lib/commons-logging-1.1.jar!/" />
+        <root url="jar:///home/users/russel/lib/Java/groovy/lib/asm-analysis-2.2.3.jar!/" />
+        <root url="jar:///home/users/russel/lib/Java/groovy/lib/ant-junit-1.7.1.jar!/" />
+        <root url="jar:///home/users/russel/lib/Java/groovy/lib/testngroove-1.0.1.jar!/" />
+        <root url="jar:///home/users/russel/lib/Java/groovy/lib/antlr-2.7.7.jar!/" />
+        <root url="jar:///home/users/russel/lib/Java/groovy/lib/commons-cli-1.2-SNAPSHOT.jar!/" />
+        <root url="jar:///home/users/russel/lib/Java/groovy/lib/asm-tree-2.2.3.jar!/" />
+        <root url="jar:///home/users/russel/lib/Java/groovy/lib/groovy-xmlrpc-0.5.0-SNAPSHOT.jar!/" />
+        <root url="jar:///home/users/russel/lib/Java/groovy/lib/ant-1.7.1.jar!/" />
+        <root url="jar:///home/users/russel/lib/Java/groovy/lib/ivy-2.0.0-rc1.jar!/" />
+        <root url="jar:///home/users/russel/lib/Java/groovy/lib/bsf-2.4.0.jar!/" />
+        <root url="jar:///home/users/russel/lib/Java/groovy/lib/smack-3.0.1.jar!/" />
+        <root url="jar:///home/users/russel/lib/Java/groovy/lib/ant-launcher-1.7.1.jar!/" />
+        <root url="jar:///home/users/russel/lib/Java/groovy/lib/xstream-1.3.jar!/" />
+        <root url="jar:///home/users/russel/lib/Java/groovy/lib/jline-0.9.94.jar!/" />
+        <root url="jar:///home/users/russel/lib/Java/groovy/lib/asm-2.2.3.jar!/" />
+        <root url="jar:///home/users/russel/lib/Java/groovy/lib/jsp-api-2.0.jar!/" />
+        <root url="jar:///home/users/russel/lib/Java/groovy/lib/asm-util-2.2.3.jar!/" />
+        <root url="jar:///home/users/russel/lib/Java/groovy/lib/junit-3.8.2.jar!/" />
+        <root url="jar:///home/users/russel/lib/Java/groovy/lib/groovy-1.7-beta-1-SNAPSHOT.jar!/" />
+      </CLASSES>
+      <JAVADOC />
+      <SOURCES />
+    </library>
+    <library name="gant-1.5.0-SNAPSHOT">
+      <CLASSES>
+        <root url="jar:///home/users/russel/lib/Java/gant/lib/maven-ant-tasks-2.0.9.jar!/" />
+        <root url="jar:///home/users/russel/lib/Java/gant/lib/gant-1.5.0-SNAPSHOT.jar!/" />
+        <root url="jar:///home/users/russel/lib/Java/gant/lib/ivy-2.0.0-rc1.jar!/" />
+      </CLASSES>
+      <JAVADOC />
+      <SOURCES />
+    </library>
+  </component>
 </project>
 

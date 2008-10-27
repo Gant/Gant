@@ -11,9 +11,9 @@
       <sourceFolder url="file://$MODULE_DIR$/groovy" isTestSource="false" />
     </content>
     <orderEntry type="sourceFolder" forTests="false" />
-    <orderEntry type="library" name="groovy-1.7-beta-1-SNAPSHOT" level="application" />
+    <orderEntry type="library" name="groovy-1.7-beta-1-SNAPSHOT" level="project" />
+    <orderEntry type="library" name="GROOVY" level="application" />
     <orderEntry type="inheritedJdk" />
-    <orderEntryProperties />
   </component>
 </module>
 
