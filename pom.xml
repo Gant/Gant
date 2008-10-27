@@ -266,9 +266,14 @@
         <configuration>
           <filesets>
             <fileset>
+              <directory>target_forMavenTest</directory>
+            </fileset>
+            <fileset>
               <directory>.</directory>
               <includes>
                 <include>**/*~</include>
+                <include>cobertura.ser</include>
+                <include>texput.log</include>
               </includes>
               <followSymlinks>false</followSymlinks>
             </fileset>
