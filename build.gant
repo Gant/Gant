@@ -334,7 +334,7 @@ else {
 
 includeTargets << gant.targets.Clean
 cleanPattern <<  [ '**/*~' , 'cobertura.ser' , 'texput.log' ] 
-cleanDirectory << buildDirectory
+cleanDirectory << [ buildDirectory , 'target_forMavenTest' ]
 
 includeTool << gant.tools.Execute
 
