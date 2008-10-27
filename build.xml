@@ -279,6 +279,7 @@ Author : Russel Winder <russel.winder@concertant.com>
   
   <target name="clean" description="Clean everything up.">
     <delete dir="${buildDirectory}"/>
+    <delete dir="target_forMavenTest"/>
     <delete>
       <fileset dir="." defaultexcludes="false">
         <include name="**/*~"/>
