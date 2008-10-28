@@ -25,7 +25,6 @@
       </library>
     </orderEntry>
     <orderEntry type="library" name="GROOVY" level="application" />
-    <orderEntry type="library" name="gant-1.5.0-SNAPSHOT" level="project" />
     <orderEntry type="inheritedJdk" />
   </component>
 </module>

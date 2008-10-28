@@ -7,6 +7,7 @@
       <antReference projectDefault="true" />
       <customJdkName value="" />
       <maximumHeapSize value="128" />
+      <maximumStackSize value="32" />
       <properties />
     </buildFile>
   </component>
@@ -31,6 +32,20 @@
             <option name="LABEL_INDENT_ABSOLUTE" value="false" />
           </value>
         </option>
+        <option name="ELSE_ON_NEW_LINE" value="true" />
+        <option name="CATCH_ON_NEW_LINE" value="true" />
+        <option name="FINALLY_ON_NEW_LINE" value="true" />
+        <option name="ALIGN_MULTILINE_PARAMETERS" value="false" />
+        <option name="ALIGN_MULTILINE_FOR" value="false" />
+        <option name="KEEP_SIMPLE_BLOCKS_IN_ONE_LINE" value="true" />
+        <option name="KEEP_SIMPLE_METHODS_IN_ONE_LINE" value="true" />
+        <option name="LABELED_STATEMENT_WRAP" value="0" />
+        <option name="IF_BRACE_FORCE" value="3" />
+        <option name="WHILE_BRACE_FORCE" value="3" />
+        <option name="FOR_BRACE_FORCE" value="3" />
+        <option name="METHOD_ANNOTATION_WRAP" value="0" />
+        <option name="CLASS_ANNOTATION_WRAP" value="0" />
+        <option name="FIELD_ANNOTATION_WRAP" value="0" />
         <ADDITIONAL_INDENT_OPTIONS fileType="">
           <option name="INDENT_SIZE" value="4" />
           <option name="CONTINUATION_INDENT_SIZE" value="8" />
@@ -1289,8 +1304,7 @@
     <option name="myVersion" value="123" />
   </component>
   <component name="VcsDirectoryMappings">
-    <mapping directory="" vcs="" />
-    <mapping directory="$PROJECT_DIR$" vcs="Bazaar" />
+    <mapping directory="" vcs="Git" />
   </component>
   <component name="WebServicesPlugin" addRequiredLibraries="true" />
   <component name="libraryTable">
@@ -1317,36 +1331,6 @@
         <root url="jar:///home/users/russel/lib/Java/groovy/lib/asm-util-2.2.3.jar!/" />
         <root url="jar:///home/users/russel/lib/Java/groovy/lib/junit-3.8.2.jar!/" />
         <root url="jar:///home/users/russel/lib/Java/groovy/lib/groovy-1.7-beta-1-SNAPSHOT.jar!/" />
-        <root url="jar:///home/users/russel/lib/Java/groovy/lib/servlet-api-2.4.jar!/" />
-        <root url="jar:///home/users/russel/lib/Java/groovy/lib/commons-logging-1.1.jar!/" />
-        <root url="jar:///home/users/russel/lib/Java/groovy/lib/asm-analysis-2.2.3.jar!/" />
-        <root url="jar:///home/users/russel/lib/Java/groovy/lib/ant-junit-1.7.1.jar!/" />
-        <root url="jar:///home/users/russel/lib/Java/groovy/lib/testngroove-1.0.1.jar!/" />
-        <root url="jar:///home/users/russel/lib/Java/groovy/lib/antlr-2.7.7.jar!/" />
-        <root url="jar:///home/users/russel/lib/Java/groovy/lib/commons-cli-1.2-SNAPSHOT.jar!/" />
-        <root url="jar:///home/users/russel/lib/Java/groovy/lib/asm-tree-2.2.3.jar!/" />
-        <root url="jar:///home/users/russel/lib/Java/groovy/lib/groovy-xmlrpc-0.5.0-SNAPSHOT.jar!/" />
-        <root url="jar:///home/users/russel/lib/Java/groovy/lib/ant-1.7.1.jar!/" />
-        <root url="jar:///home/users/russel/lib/Java/groovy/lib/ivy-2.0.0-rc1.jar!/" />
-        <root url="jar:///home/users/russel/lib/Java/groovy/lib/bsf-2.4.0.jar!/" />
-        <root url="jar:///home/users/russel/lib/Java/groovy/lib/smack-3.0.1.jar!/" />
-        <root url="jar:///home/users/russel/lib/Java/groovy/lib/ant-launcher-1.7.1.jar!/" />
-        <root url="jar:///home/users/russel/lib/Java/groovy/lib/xstream-1.3.jar!/" />
-        <root url="jar:///home/users/russel/lib/Java/groovy/lib/jline-0.9.94.jar!/" />
-        <root url="jar:///home/users/russel/lib/Java/groovy/lib/asm-2.2.3.jar!/" />
-        <root url="jar:///home/users/russel/lib/Java/groovy/lib/jsp-api-2.0.jar!/" />
-        <root url="jar:///home/users/russel/lib/Java/groovy/lib/asm-util-2.2.3.jar!/" />
-        <root url="jar:///home/users/russel/lib/Java/groovy/lib/junit-3.8.2.jar!/" />
-        <root url="jar:///home/users/russel/lib/Java/groovy/lib/groovy-1.7-beta-1-SNAPSHOT.jar!/" />
-      </CLASSES>
-      <JAVADOC />
-      <SOURCES />
-    </library>
-    <library name="gant-1.5.0-SNAPSHOT">
-      <CLASSES>
-        <root url="jar:///home/users/russel/lib/Java/gant/lib/maven-ant-tasks-2.0.9.jar!/" />
-        <root url="jar:///home/users/russel/lib/Java/gant/lib/gant-1.5.0-SNAPSHOT.jar!/" />
-        <root url="jar:///home/users/russel/lib/Java/gant/lib/ivy-2.0.0-rc1.jar!/" />
       </CLASSES>
       <JAVADOC />
       <SOURCES />
