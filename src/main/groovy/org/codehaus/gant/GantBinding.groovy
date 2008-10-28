@@ -66,12 +66,7 @@ public class GantBinding extends Binding implements Cloneable {
     System.out = new PrintStream ( new ByteArrayOutputStream ( ) )
     ant.property ( environment : 'environment' )
     System.out = outSave
-    setVariable ( 'Ant' , [
-      invokeMethod : { String s , Object o ->
-        System.err.println ( 'Ant is deprecated, please amend your Gant files to use ant instead of Ant.' )
-        ant.invokeMethod ( s , o )
-      }
-    ] as GantBuilder )
+    setVariable ( 'Ant' , new DeprecatedAntBuilder ( ant ) )
     setVariable ( 'includeTargets' , new IncludeTargets ( this ) )
     setVariable ( 'includeTool' , new IncludeTool ( this ) )
     setVariable ( 'target' , { Map<String, String> map , Closure closure ->
@@ -159,5 +154,22 @@ public class GantBinding extends Binding implements Cloneable {
   void setVariable ( final String name , final Object value ) {
     if ( ! initializing && [ 'target' , 'message' ].contains ( name ) ) { throw new RuntimeException ( 'Cannot redefine symbol ' + name ) }
     super.setVariable ( name , value )
+  }
+}
+
+/**
+ *  Class to instantiate for processing references to the Ant symbol in the binding.
+ *
+ *  @author Peter Ledbrook.
+ */
+class DeprecatedAntBuilder extends GantBuilder {
+  DeprecatedAntBuilder ( GantBuilder b ) { super ( b.project ) }
+  def invokeMethod ( String name , args ) {
+    System.err.println ( 'Ant is deprecated, please amend your Gant files to use ant instead of Ant.' )
+    super.invokeMethod ( name , args )
+  }
+  def getProperty ( String name ) {
+    System.err.println ( 'Ant is deprecated, please amend your Gant files to use ant instead of Ant.' )
+    super.getProperty ( name )
   }
 }
