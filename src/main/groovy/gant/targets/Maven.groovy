@@ -293,7 +293,7 @@ final class Maven {
        case 'junit' :
        default :
        owner.binding.ant.mkdir ( dir : owner.testReportPath )
-       owner.binding.ant.junit ( printsummary : 'yes' , failureproperty : 'testsFailed' , fork : 'true' ) {
+       owner.binding.ant.junit ( printsummary : 'yes' , failureproperty : 'testsFailed' , fork : 'true' , forkmode : 'once' ) {
          classpath {
            pathelement ( location : owner.mainCompilePath )
            pathelement ( location : owner.testCompilePath )
@@ -303,6 +303,7 @@ final class Maven {
            if ( owner.testDependencies ) { path ( refid : owner.testDependenciesClasspathId ) }
          }
          formatter ( type : 'plain' )
+         formatter ( type : 'xml' )
          sysproperty ( key : 'groovy.home' , value : System.properties.'groovy.home' )
          batchtest ( todir : owner.testReportPath ) { fileset ( dir : owner.testCompilePath , includes : '**/*Test.class' ) }
        }
