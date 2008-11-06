@@ -15,7 +15,7 @@
 package gant
 
 /**
- *  Throw when an undefined target is invoked.
+ *  Thrown when an undefined target is invoked.
  *
  *  @author Peter Ledbrook 
  */
