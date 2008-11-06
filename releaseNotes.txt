@@ -19,7 +19,7 @@ Correct some of the cygpath option lists. (Thanks to Paulo Jerônimo for spottin
 Extend processing of symblic links in the gant Posix scripts. (Thanks to Nicolas Lalevée for submitting
 GANT-57.)
 
-Update to use Ivy 2.0.0-rc1.
+Update to expect to use Ivy 2.0.0-rc2 at run time.
 
 Fix GANT-30 by removing .groovy and .gant extensions from file names before constructing class names.
 
@@ -29,6 +29,8 @@ Serious refactoring of the constructor structure of Gant.  Thanks to Peter Ledbr
 is a significant breaking change for any code that creates Gant objects.  The script is no longer loaded as
 part of construction but has been separated out using the loadScript method.  This allows for introduction
 of the loadScriptClass method.  
+
+Alter the start up jar load to include only jars with names starting "ant" fromt he $ANT_HOME/lib directory.
 
 
 1.4.0 ( r9604 )
