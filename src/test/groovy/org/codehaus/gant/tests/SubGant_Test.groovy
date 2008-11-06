@@ -29,7 +29,7 @@ final class SubGant_Test extends GantTestCase {
   }
   public void tearDown ( ) {
     super.tearDown ( )
-    //buildFile.delete ( )
+    buildFile.delete ( )
   }
   public void testSimple ( ) {
     def buildScript = """
