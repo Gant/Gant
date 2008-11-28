@@ -72,8 +72,11 @@ target ( 'default' : '' ) { something ( ) }
   private final String nonExistentFilePath
   private final resultFlobbed = 'flobbed.\n'
   private final resultErrorEvaluatingLineOne = "Standard input, line 1 -- Error evaluating Gantfile: java.lang.InstantiationException: ${targetsClassName}\n"
-   //  There is a weirdness in 1.5.x which reports line 1 here where 1.6.x reports line 6.
-   private final resultErrorEvaluatingLineSix = 'Standard input, line ' + ( ( groovyMinorVersion > 5 ) ? '6' : '1' ) + " -- Error evaluating Gantfile: No such property: ${targetsClassName} for class: standard_input\n"
+   //
+   //  TODO: There is a weirdness here 1.5.x and 1.7.x report line 1 here whereas 1.6.x reports line 6.  6
+   //  is actually correct so this is a reversion of note.
+   //
+   private final resultErrorEvaluatingLineSix = 'Standard input, line ' + ( ( groovyMinorVersion == 6 ) ? '6' : '1' ) + " -- Error evaluating Gantfile: No such property: ${targetsClassName} for class: standard_input\n"
   private final String resultErrorEvaluatingWeirdLineOne
   Include_Test ( ) {
     //////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -421,10 +424,11 @@ target ( test : '' ) { }
 '''
     assertEquals ( -2 , processCmdLineTargets ( 'test' ) )
     //
-    //  It seems that there is a Groovy 1.5 -> 1.6 change here in that the line number reported for the error changes.
+    //  TODO: There is weirdness here: It seems that there is a Groovy 1.5 -> 1.6 -> 1.7 change here in that
+    //  the line number reported for the error changes.
     //
-    System.err.println ( 'testErrorNoPower:  Has an error been introduced in the 1.5 -> 1.6 change?' )
-    def lineNumber = groovyMinorVersion > 5 ? 3 : 2 
+    System.err.println ( 'testErrorNoPower:  Has an error been introduced in the 1.5 -> 1.6 -> 1.7 changes?' )
+    def lineNumber = groovyMinorVersion == 6 ? 3 : 2 
     assertEquals ( "Standard input, line ${lineNumber} -- Error evaluating Gantfile: No signature of method: org.codehaus.gant.IncludeTargets.multiply() is applicable for argument types: (java.lang.Class) values: {class gant.targets.Clean}\n" , output )
   }
   void testErrorNullPower ( ) {
