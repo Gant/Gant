@@ -26,7 +26,7 @@ final class Include_Test extends GantTestCase {
   ////  name of the temporary file must be initialized in the constructor.  Remember, variables in GStrings
   ////  are bound at definition time even though expression execution only occurs at use time.  This means
   ////  any GString depending on the name of the temporary directory must also be initialized in the
-  ////  constructor to avoid having variable bound to null.
+  ////  constructor to avoid having the variable bound to null.
   ////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
   private final File temporaryDirectory
@@ -67,17 +67,20 @@ target ( 'default' : '' ) { something ( ) }
   private final String targetsBuildScriptFile
   private final targetsBuildScriptString =  "includeTargets <<  '''${targetsScriptText}'''\n" + targetsBuildScriptBase
   private final targetsBuildClassClass =  "includeTargets <<  groovyShell.evaluate ( '''${targetsClassText} ; return ${targetsClassName}''' )\n" + targetsBuildScriptBase
+  //  Source containing just a class and not a complete script must be turned into a script that
+  //  instantiates the class.  Test both correct and errorful behaviour
   private final String targetsBuildClassFile
-  private final targetsBuildClassString =  "includeTargets <<  '''${targetsClassText}'''\n" + targetsBuildScriptBase
+  private final targetsBuildClassString =  "includeTargets <<  '''${targetsClassText} ; binding.classInstanceVariable = new ${targetsClassName} ( binding )'''\n" + targetsBuildScriptBase
+  private final String targetsErrorBuildClassFile
+  private final targetsErrorBuildClassString =  "includeTargets <<  '''${targetsClassText}'''\n" + targetsBuildScriptBase
+  private final resultErrorEvaluatingClass = "Standard input, line 1 -- Error evaluating Gantfile: java.lang.InstantiationException: ${targetsClassName}\n"
   private final String nonExistentFilePath
   private final resultFlobbed = 'flobbed.\n'
-  private final resultErrorEvaluatingLineOne = "Standard input, line 1 -- Error evaluating Gantfile: java.lang.InstantiationException: ${targetsClassName}\n"
    //
    //  TODO: There is a weirdness here 1.5.x and 1.7.x report line 1 here whereas 1.6.x reports line 6.  6
    //  is actually correct so this is a reversion of note.
    //
-   private final resultErrorEvaluatingLineSix = 'Standard input, line ' + ( ( groovyMinorVersion == 6 ) ? '6' : '1' ) + " -- Error evaluating Gantfile: No such property: ${targetsClassName} for class: standard_input\n"
-  private final String resultErrorEvaluatingWeirdLineOne
+  private final resultErrorEvaluatingLineSix = 'Standard input, line ' + ( ( groovyMinorVersion == 6 ) ? '6' : '1' ) + " -- Error evaluating Gantfile: No such property: ${targetsClassName} for class: standard_input\n"
   Include_Test ( ) {
     //////////////////////////////////////////////////////////////////////////////////////////////////////////
     ////  createTempFile delivers a File object that delivers a string for the path that is platform
@@ -93,10 +96,10 @@ target ( 'default' : '' ) { something ( ) }
     targetsScriptFilePath = temporaryDirectoryPath +'/targets.gant'
     targetsClassFilePath = temporaryDirectoryPath + '/' + targetsClassName + '.groovy'
     targetsBuildScriptFile =  "includeTargets <<  new File ( '${targetsScriptFilePath}' )\n" + targetsBuildScriptBase
-    targetsBuildClassFile =  "includeTargets <<  new File ( '${targetsClassFilePath}' )\n" + targetsBuildScriptBase
+    //  Files containing source code that is a class rahter than a script must be treated as a tool.
+    targetsBuildClassFile =  "includeTool <<  new File ( '${targetsClassFilePath}' )\n" + targetsBuildScriptBase
+    targetsErrorBuildClassFile =  "includeTargets <<  new File ( '${targetsClassFilePath}' )\n" + targetsBuildScriptBase
     nonExistentFilePath = temporaryDirectoryPath + '/tmp' * 3
-    if ( isWindows ) { resultErrorEvaluatingWeirdLineOne = 'Standard input, line 1 -- Error evaluating Gantfile: ' }
-    else { resultErrorEvaluatingWeirdLineOne = 'Standard input, line 1 -- Error evaluating Gantfile: ' + nonExistentFilePath + ' (' + nonExistentFilePath + ')\n' }
   }
   private resultTargetDoesNotExist ( String target ) { 'Target ' + target + ' does not exist.\n' }
   void setUp ( ) {
@@ -195,13 +198,23 @@ target ( 'default' : '' ) { something ( ) }
   }
   void testTargetsDefaultClassFile ( ) {
     script = targetsBuildClassFile
+    assertEquals ( 0 , processCmdLineTargets ( ) )
+    assertEquals ( resultFlobbed , output ) 
+  }
+  void testErrorTargetsDefaultClassFile ( ) {
+    script = targetsErrorBuildClassFile
     assertEquals ( -2 , processCmdLineTargets ( ) )
-    assertEquals ( resultErrorEvaluatingLineOne , output ) 
+    assertEquals ( resultErrorEvaluatingClass , output ) 
   }
   void testTargetsDefaultClassString ( ) {
     script = targetsBuildClassString
+    assertEquals ( 0 , processCmdLineTargets ( ) )
+    assertEquals ( resultFlobbed , output ) 
+  }
+  void testErrorTargetsDefaultClassString ( ) {
+    script = targetsErrorBuildClassString
     assertEquals ( -2 , processCmdLineTargets ( ) )
-    assertEquals ( resultErrorEvaluatingLineOne , output ) 
+    assertEquals ( resultErrorEvaluatingClass , output ) 
   }
   void testTargetsFlobClassClass ( ) {
     script = targetsBuildClassClass
@@ -210,13 +223,23 @@ target ( 'default' : '' ) { something ( ) }
   }
   void testTargetsFlobClassFile ( ) {
     script = targetsBuildClassFile
+    assertEquals ( 0 , processCmdLineTargets ( 'flob' ) )
+    assertEquals ( resultFlobbed , output ) 
+  }
+  void testErrorTargetsFlobClassFile ( ) {
+    script = targetsErrorBuildClassFile
     assertEquals ( -2 , processCmdLineTargets ( 'flob' ) )
-    assertEquals ( resultErrorEvaluatingLineOne , output ) 
+    assertEquals ( resultErrorEvaluatingClass , output ) 
   }
   void testTargetsFlobClassString ( ) {
     script = targetsBuildClassString
+    assertEquals ( 0 , processCmdLineTargets ( 'flob' ) )
+    assertEquals ( resultFlobbed , output ) 
+  }
+  void testErrorTargetsFlobClassString ( ) {
+    script = targetsErrorBuildClassString
     assertEquals ( -2 , processCmdLineTargets ( 'flob' ) )
-    assertEquals ( resultErrorEvaluatingLineOne , output ) 
+    assertEquals ( resultErrorEvaluatingClass , output ) 
   }
   void testTargetsBurbleClassClass ( ) {
     def target = 'burble'
@@ -225,14 +248,26 @@ target ( 'default' : '' ) { something ( ) }
     assertEquals ( resultTargetDoesNotExist ( target ) , output ) 
   }
   void testTargetsBurbleClassFile ( ) {
+    def target = 'burble'
     script = targetsBuildClassFile
+    assertEquals ( -11 , processCmdLineTargets ( target ) )
+    assertEquals ( resultTargetDoesNotExist ( target ) , output ) 
+  }
+  void testErrorTargetsBurbleClassFile ( ) {
+    script = targetsErrorBuildClassFile
     assertEquals ( -2 , processCmdLineTargets ( 'burble' ) )
-    assertEquals ( resultErrorEvaluatingLineOne , output ) 
+    assertEquals ( resultErrorEvaluatingClass , output ) 
   }
   void testTargetsBurbleClassString ( ) {
+    def target = 'burble'
     script = targetsBuildClassString
+    assertEquals ( -11 , processCmdLineTargets ( target ) )
+    assertEquals ( resultTargetDoesNotExist ( target ) , output ) 
+  }
+  void testErrorTargetsBurbleClassString ( ) {
+    script = targetsErrorBuildClassString
     assertEquals ( -2 , processCmdLineTargets ( 'burble') )
-    assertEquals ( resultErrorEvaluatingLineOne , output ) 
+    assertEquals ( resultErrorEvaluatingClass , output ) 
   }
   void testTargetsSomethingClassClass ( ) {
     script = targetsBuildClassClass
@@ -241,13 +276,23 @@ target ( 'default' : '' ) { something ( ) }
   }
   void testTargetsSomethingClassFile ( ) {
     script = targetsBuildClassFile
+    assertEquals ( 0 , processCmdLineTargets ( 'something') )
+    assertEquals ( resultFlobbed , output )
+  }
+  void testErrorTargetsSomethingClassFile ( ) {
+    script = targetsErrorBuildClassFile
     assertEquals ( -2 , processCmdLineTargets ( 'something' ) )
-    assertEquals ( resultErrorEvaluatingLineOne, output ) 
+    assertEquals ( resultErrorEvaluatingClass , output ) 
   }
   void testTargetsSomethingClassString ( ) {
     script = targetsBuildClassString
+    assertEquals ( 0 , processCmdLineTargets ( 'something' ) )
+    assertEquals ( resultFlobbed , output ) 
+  }
+  void testErrorTargetsSomethingClassString ( ) {
+    script = targetsErrorBuildClassString
     assertEquals ( -2 , processCmdLineTargets ( 'something' ) )
-    assertEquals ( resultErrorEvaluatingLineOne, output ) 
+    assertEquals ( resultErrorEvaluatingClass , output ) 
   }
   void testTargetsClassNoFile ( ) {
     script = targetsBuildClassFile.replace ( targetsClassFilePath , nonExistentFilePath )
