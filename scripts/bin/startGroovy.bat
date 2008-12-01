@@ -226,3 +226,5 @@ if "%OS%"=="Windows_NT" endlocal
 
 @rem Optional pause the batch file
 if "%GROOVY_BATCH_PAUSE%" == "on" pause
+
+exit /B %ERRORLEVEL%

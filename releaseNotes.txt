@@ -30,7 +30,9 @@ is a significant breaking change for any code that creates Gant objects.  The sc
 part of construction but has been separated out using the loadScript method.  This allows for introduction
 of the loadScriptClass method.  
 
-Alter the start up jar load to include only jars with names starting "ant" fromt he $ANT_HOME/lib directory.
+Alter the start up jar load to include only jars with names starting "ant" from the $ANT_HOME/lib directory.
+
+Fix the Windows batch scripts.  cf. GANT-66.  (Thanks to Daniel Skiles and Bob Swift.)
 
 
 1.4.0 ( r9604 )

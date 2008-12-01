@@ -38,7 +38,7 @@ set GROOVY_HOME=%GANT_HOME%
 @rem  asscoiated with the Ant installation.
 
 if not "%ANT_HOME%" == "" goto endSetAntHome
-   for %%P in ( %PATH% ) do if exist %%P\ant.exe set ANT_HOME=%%P\..
+   for %%P in ( %PATH% ) do if exist %%P\ant.bat set ANT_HOME=%%P\..
    if not "%ANT_HOME%" == "" goto endSetAntHome
       call :environmentVariableError ANT_HOME
       goto :EOF
@@ -54,7 +54,7 @@ set JAVA_OPTS=%JAVA_OPTS% -Dgant.home="%GANT_HOME%" -Dant.home="%ANT_HOME%"
 @rem End local scope for the variables with windows NT shell
 if "%OS%" == "Windows_NT" endlocal
 
-exit
+exit /B %ERRORLEVEL%
 
 :environmentVariableError
  echo.
