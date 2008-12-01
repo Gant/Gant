@@ -63,7 +63,11 @@ class ${targetsClassName} {
 target ( something : '' ) { flob ( ) }
 target ( 'default' : '' ) { something ( ) }
 """
-  private final targetsBuildScriptClass =  "includeTargets <<  groovyShell.evaluate ( '''${targetsScriptText} ; return ${targetsClassName}''' , ${targetsClassName} )\n" + targetsBuildScriptBase
+  //  Source containing just a class and not a complete script must be turned into a script that
+  //  instantiates the class.  Test both correct and errorful behaviour
+  private final targetsBuildScriptClass =  "includeTargets <<  groovyShell.evaluate ( '''${targetsScriptText} ; return ${targetsClassName}''' , '${targetsClassName}' )\n" + targetsBuildScriptBase
+  private final targetsErrorBuildScriptClass =  "includeTargets <<  groovyShell.evaluate ( '''${targetsScriptText}''' , '${targetsClassName}' )\n" + targetsBuildScriptBase
+  private final resultErrorEvaluatingScript = 'Standard input, line 1 -- Error evaluating Gantfile: ' + ( ( groovyMinorVersion < 7 ) ? 'null' : "Cannot get property 'class' on null object" ) + '\n'
   private final String targetsBuildScriptFile
   private final targetsBuildScriptString =  "includeTargets <<  '''${targetsScriptText}'''\n" + targetsBuildScriptBase
   private final targetsBuildClassClass =  "includeTargets <<  groovyShell.evaluate ( '''${targetsClassText} ; return ${targetsClassName}''' )\n" + targetsBuildScriptBase
@@ -76,11 +80,6 @@ target ( 'default' : '' ) { something ( ) }
   private final resultErrorEvaluatingClass = "Standard input, line 1 -- Error evaluating Gantfile: java.lang.InstantiationException: ${targetsClassName}\n"
   private final String nonExistentFilePath
   private final resultFlobbed = 'flobbed.\n'
-   //
-   //  TODO: There is a weirdness here 1.5.x and 1.7.x report line 1 here whereas 1.6.x reports line 6.  6
-   //  is actually correct so this is a reversion of note.
-   //
-  private final resultErrorEvaluatingLineSix = 'Standard input, line ' + ( ( groovyMinorVersion == 6 ) ? '6' : '1' ) + " -- Error evaluating Gantfile: No such property: ${targetsClassName} for class: standard_input\n"
   Include_Test ( ) {
     //////////////////////////////////////////////////////////////////////////////////////////////////////////
     ////  createTempFile delivers a File object that delivers a string for the path that is platform
@@ -302,8 +301,13 @@ target ( 'default' : '' ) { something ( ) }
   }
   void testTargetsDefaultScriptClass ( ) {
     script = targetsBuildScriptClass
+    assertEquals ( 0 , processCmdLineTargets ( ) )
+    assertEquals ( resultFlobbed , output ) 
+  }
+  void testErrorTargetsDefaultScriptClass ( ) {
+    script = targetsErrorBuildScriptClass
     assertEquals ( -2 , processCmdLineTargets ( ) )
-    assertEquals ( resultErrorEvaluatingLineSix , output ) 
+    assertEquals ( resultErrorEvaluatingScript , output ) 
   }
   void testTargetsDefaultScriptFile ( ) {
     script = targetsBuildScriptFile
@@ -317,8 +321,13 @@ target ( 'default' : '' ) { something ( ) }
   }
   void testTargetsFlobScriptClass ( ) {
     script = targetsBuildScriptClass
+    assertEquals ( 0 , processCmdLineTargets ( 'flob' ) )
+    assertEquals ( resultFlobbed , output ) 
+  }
+  void testErrorTargetsFlobScriptClass ( ) {
+    script = targetsErrorBuildScriptClass
     assertEquals ( -2 , processCmdLineTargets ( 'flob' ) )
-    assertEquals ( resultErrorEvaluatingLineSix , output ) 
+    assertEquals ( resultErrorEvaluatingScript , output ) 
   }
   void testTargetsFlobScriptFile ( ) {
     script = targetsBuildScriptFile
@@ -331,9 +340,15 @@ target ( 'default' : '' ) { something ( ) }
     assertEquals ( resultFlobbed , output ) 
   }
   void testTargetsBurbleScriptClass ( ) {
-    script = targetsBuildScriptClass
+     def target = 'burble'
+   script = targetsBuildScriptClass
+    assertEquals ( -11 , processCmdLineTargets ( target ) )
+    assertEquals ( resultTargetDoesNotExist ( target ) , output ) 
+  }
+  void testErrorTargetsBurbleScriptClass ( ) {
+    script = targetsErrorBuildScriptClass
     assertEquals ( -2 , processCmdLineTargets ( 'burble' ) )
-    assertEquals ( resultErrorEvaluatingLineSix , output ) 
+    assertEquals ( resultErrorEvaluatingScript , output ) 
   }
   void testTargetsBurbleScriptFile ( ) {
     def target = 'burble'
@@ -349,8 +364,13 @@ target ( 'default' : '' ) { something ( ) }
   }
   void testTargetsSomethingScriptClass ( ) {
     script = targetsBuildScriptClass
+    assertEquals ( 0 , processCmdLineTargets ( 'something' ) )
+    assertEquals ( resultFlobbed , output ) 
+  }
+  void testErrorTargetsSomethingScriptClass ( ) {
+    script = targetsErrorBuildScriptClass
     assertEquals ( -2 , processCmdLineTargets ( 'something' ) )
-    assertEquals ( resultErrorEvaluatingLineSix , output ) 
+    assertEquals ( resultErrorEvaluatingScript , output ) 
   }
   void testTargetsSomethingScriptFile ( ) {
     script = targetsBuildScriptFile
