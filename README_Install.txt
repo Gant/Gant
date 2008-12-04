@@ -1,4 +1,4 @@
-Gant -- A Groovy build framework based on scripting Ant tasks.
+Gant -- A Groovy way of scripting Ant tasks.
 
 This is Gant, a Groovy way of working with Ant tasks -- no more XML :-)
 
@@ -19,7 +19,7 @@ There are three distinct distributions:
 
           1.  Requires a separate Groovy installation.  There are two builds:
                 a.  Compiled against Groovy 1.5.6.
-                b.  Compiled against Groovy 1.6-beta-1.
+                b.  Compiled against Groovy 1.6-beta-2.
 
             2.  Self-contained, includes all dependent jars.
 
