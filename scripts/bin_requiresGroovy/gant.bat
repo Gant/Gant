@@ -1,6 +1,6 @@
 @if "%DEBUG%" == "" @echo off
 
-@rem  Gant -- A Groovy build framework based on scripting Ant tasks.
+@rem  Gant -- A Groovy way of scripting Ant tasks.
 @rem
 @rem  Copyright © 2008 Russel Winder
 @rem

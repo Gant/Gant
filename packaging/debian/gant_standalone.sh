@@ -1,6 +1,6 @@
 #!/bin/sh
 
-#  Gant -- A Groovy build framework based on scripting Ant tasks.
+#  Gant -- A Groovy way of scripting Ant tasks.
 #
 #  Copyright © 2008 Russel Winder
 #
