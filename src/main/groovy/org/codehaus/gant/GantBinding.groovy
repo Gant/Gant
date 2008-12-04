@@ -70,12 +70,29 @@ public class GantBinding extends Binding implements Cloneable {
     setVariable ( 'includeTargets' , new IncludeTargets ( this ) )
     setVariable ( 'includeTool' , new IncludeTool ( this ) )
     setVariable ( 'target' , { Map<String, String> map , Closure closure ->
-        switch ( map.size ( ) ) {
-         case 0 : throw new RuntimeException ( 'Target specified without a name.' )
-         case 1 : break
-         default : throw new RuntimeException ( 'Target specified with multiple names.' )
+        def targetName
+        def targetDescription
+        def nameKey = 'name'
+        def descriptionKey = 'description'
+        Map targetMap = [:]
+        if  ( ! map || map.size ( ) == 0 ) { throw new RuntimeException ( 'Target specified without a name.' ) }
+        if ( map.size ( ) == 1  &&  ! ( ( targetName = map[nameKey] ) ) ) {
+            // Implicit (original) style of specifying a target.
+            targetName = map.keySet ( ).iterator ( ).next ( )
+            // Handle ambiguous case by forbidding implicitly named targets to be named 'name'.
+            targetDescription = map[ targetName ]
+            // Create fake name/desc entries in the map so that targets closures can still take advantage of
+            // it.name and it.desc
+            targetMap[nameKey]  = targetName
+            targetMap[descriptionKey]  = targetDescription
         }
-        def targetName = map.keySet ( ).iterator ( ).next ( )
+        else {
+            // Explicit (new) way of specifying target name/description
+            targetName = map[nameKey]
+            targetDescription = map[descriptionKey]
+            targetMap.putAll ( map )
+        }
+        if ( ! targetName ) { throw new RuntimeException ( 'Target specified without a name.' ) }
         try {
           owner.getVariable ( targetName )
           //
@@ -88,11 +105,11 @@ public class GantBinding extends Binding implements Cloneable {
           //System.exit ( -101 )
         }
         catch ( MissingPropertyException mpe ) { /* Intentionally empty */ }
-        def targetDescription = map [ targetName ]
         if ( targetDescription ) { targetDescriptions.put ( targetName , targetDescription ) }
         closure.metaClass = new GantMetaClass ( closure.metaClass , owner )
-        owner.setVariable ( targetName , closure )
-        owner.setVariable ( targetName + '_description' , targetDescription )
+        def targetClosure =  { closure ( targetMap ) }
+        owner.setVariable ( targetName , targetClosure )
+        owner.setVariable ( targetName + '_description' , targetDescription )  //  For backward compatibility.
       } )
     setVariable ( 'task' , { Map<String, String> map , Closure closure ->
         System.err.println ( "task has now been removed from Gant, please update your Gant files to use target instead of task." )

@@ -39,7 +39,7 @@ final class Targets_Test extends GantTestCase {
   void testMultipleEntries ( ) {
     script = "target ( fred : '' , debbie : '' ) { print ( '${result}' ) }"
     assertEquals ( -2 , processCmdLineTargets ( 'withDescription' ) )
-    assertEquals ( 'Standard input, line 1 -- Error evaluating Gantfile: Target specified with multiple names.\n' , output ) 
+    assertEquals ( 'Standard input, line 1 -- Error evaluating Gantfile: Target specified without a name.\n' , output ) 
   }
   void testOverwriting ( ) {
     //
@@ -164,4 +164,21 @@ target ( "${tag}.compile" : "Compile for $tag" ) {
 Compile for ${targetName}
 """ , output )
   }
+
+  //  Tests to ensure the patch of GANT-56 doesn't do nasty things.  A couple of tests from earlier change
+  //  their purpose.
+
+  void test_GANT_56 ( ) {
+    script = '''
+targetName = 'bar'
+targetDescription = 'Some description or other'
+target ( name : targetName , description : targetDescription ) {
+  assert it.name == targetName
+  assert it.description == targetDescription
+}
+setDefaultTarget ( targetName )
+'''
+    assertEquals ( 0 , processCmdLineTargets ( ) )
+  }
+
 }

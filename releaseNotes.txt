@@ -34,6 +34,14 @@ Alter the start up jar load to include only jars with names starting "ant" from 
 
 Fix the Windows batch scripts.  cf. GANT-66.  (Thanks to Daniel Skiles and Bob Swift.)
 
+Add the ability to have arbitrary entries in the map that is the parameter to the target.  So as well as:
+    target ( flobadob : 'Description of target flobadob' ) { . . . }
+can now have:
+    target ( name : 'flobadob' , description : 'Description of target flobadob' ) { . . . }
+the map can contain any entry but must have a jey called name.  this means that the name of the
+target can be accessed as it.name and the description as it.description in the closure of the target.
+cf. GANT-56.
+
 
 1.4.0 ( r9604 )
 ---------------
