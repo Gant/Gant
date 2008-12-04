@@ -42,6 +42,11 @@ the map can contain any entry but must have a jey called name.  this means that 
 target can be accessed as it.name and the description as it.description in the closure of the target.
 cf. GANT-56.
 
+Introduce Peter Ledbrook's changes to the naming of the Maven repository artefact and the consequent changes
+to the build system.  The compilation of Gant depends on the version of Groovy used and this has to be
+reflected in the artefacts uploaded to the Maven repository.  It is not possible to use classifiers since
+this requires using the same POM and teh POM has to be different for each build.
+ 
 
 1.4.0 ( r9604 )
 ---------------

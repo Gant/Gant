@@ -43,12 +43,6 @@ catch ( MissingPropertyException mpe ) { forkCompiles = false }
 //  be set.  If it is set use the installed Groovy, otherwise use the Groovy specified in the properties
 //  file.  This only matters for non-distribution builds.
 
-//  A bijou bugette: when the Gant Ant task tests are started using Maven, this file rather than the
-//  build.gant in the Gant Ant tasks test directory gets used and groovyHome has the value null where
-//  groovyHomeEnvironment has whatever value it has.
-//
-//  TODO:  Fix this for Maven.
-
 groovyHome = System.properties.'groovy.home'
 groovyHomeEnvironment = System.getenv ( ).GROOVY_HOME
  if ( groovyHomeEnvironment ) { assert groovyHome == groovyHomeEnvironment }
@@ -81,6 +75,11 @@ final buildMetadataDirectory = buildClassesDirectory + '/META-INF'
 
 final antlibXMLns = 'antlib:org.apache.maven.artifact.ant'
 final mavenPOMId = 'maven.pom'
+final remoteRepositories = [
+                            'http://snapshots.repository.codehaus.org' ,
+                            'http://repository.codehaus.org' ,
+                            'http://repo1.maven.org/maven2'
+                            ]
 
 //  List of files from the top-level directory to put into the distribution files.
 
@@ -139,9 +138,9 @@ final getDependency = { root , dependencies ->
   ant."${antlibXMLns}:dependencies" ( pathId : pathId , filesetId : filesetId ) {
     if ( dependencies instanceof List ) { for ( item in dependencies ) { dependency ( item ) } }
     else { dependency ( dependencies ) }
-    remoteRepository ( url : 'http://snapshots.repository.codehaus.org' )
-    remoteRepository ( url : 'http://repository.codehaus.org' )
-    remoteRepository ( url : 'http://repo1.maven.org' )
+    remoteRepositories.each { String reposUrl ->
+        remoteRepository ( url : reposUrl )
+    }
   }
 }
 
@@ -241,6 +240,11 @@ final makeManifest = { ->
   }
 }
 
+final performPackage =  { jarPath ->
+  makeManifest ( )
+  ant.jar ( destfile : jarPath , basedir : buildClassesDirectory , manifest : buildMetadataDirectory + '/MANIFEST.MF' )
+}
+
 final setInstallationDirectory = { path ->
   if ( path == null ) {
     println ( 'Property installationDirectory is not set, cannot undertake (un)install actions.' )
@@ -265,7 +269,7 @@ final prepareInstallDirectory = { path , gantJarName , pathIdRoots , isStandalon
     fileset ( dir : scriptsDirectory + '/bin' )
     filterset { filter ( token : 'GANT_VERSION' , value : gantVersion ) }
     filterset { filter ( token : 'GROOVYJAR' , value : groovyJarName ) }
-   }
+  }
   ant.chmod ( perm : 'a+x' ) { fileset ( dir : installationBinDirectory , includes : 'gant*' ) }
   ant.copy ( todir : installationDirectory ) { fileset ( dir : scriptsDirectory , includes : 'conf/gant-starter.conf' ) }
   getDependency ( 'ivyJar' , [ groupId : 'org.apache.ivy' , artifactId : 'ivy' , version : ivyVersion ] )
@@ -288,6 +292,51 @@ final prepareZipFromTarAndRegisterForUpload = { String root , Closure closure ->
   ant.gzip ( src : path + tarExtension , destfile : path + tgzExtension )
   serverUploadProducts [ path + tgzExtension ] = serverDistributionsDirectory + '/' +  root + tgzExtension
   serverUploadProducts [ path + zipExtension ] = serverDistributionsDirectory + '/' +  root + zipExtension
+}
+
+// Return an edited version of the POM template , replacing the versions and other tokens with the values for this JAR.
+
+final preparePom = { String version ->
+  def classifier = 'groovy' + version.split ( "[\\.-]" ) [ 0..1 ].join ( '.' )
+  def targetPOM = classifier + '.pom'
+  ant.copy ( tofile : targetPOM , file : 'pom.xml.in' ) {
+    filterset {
+      filter ( token : 'artifactId' , value : 'gant_' + classifier )
+      filter ( token : 'gantVersion' , value : gantVersion )
+      filter ( token : 'groovyVersion' , value : groovyVersion )
+      filter ( token : 'commonsCliVersion' , value : commonsCliVersion )
+      filter ( token : 'antVersion' , value : antVersion )
+    }
+  }
+  ant."${antlibXMLns}:pom" ( file : targetPOM , id : targetPOM )
+  return targetPOM
+}
+
+final doWithAllGroovyVersions = { Closure c ->
+  def prefix = 'gant-' + gantVersion
+  distributionVersions.each { label , item ->
+    def pathIdRoot = 'classpath' + item.version
+    def pathId = pathIdRoot + 'PathId'
+    getDependency ( pathIdRoot , [
+                                      [ groupId : item.groupId , artifactId : item.artifactId , version : item.version ] ,
+                                      [ groupId : 'org.apache.ant' , artifactId : 'ant' , version : antVersion  ] ,
+                                      [ groupId : 'org.apache.ant' , artifactId : 'ant-junit' , version : antVersion ] ,
+                                      [ groupId : 'commons-cli' , artifactId : 'commons-cli' , version : commonsCliVersion ] ,
+                                      [ groupId : 'junit' , artifactId : 'junit' , version : junitVersion ]
+                                      ]
+                    )
+    //  Remove the compilation products of the last compilation so as not to affect this one!
+    ant.delete ( dir : buildClassesDirectory )
+    ant.delete ( dir : buildTestClassesDirectory )
+    ant.delete ( dir : buildFilteredScriptsDirectory )
+    ant.delete ( dir : buildInstallDirectory )
+    performCompile ( pathId , true )
+    performCompileTests ( pathId , true )
+    if ( ! skipTests && ! performTests ( pathId ) ) { someTestsFailed = true }
+    def jarPath = buildDirectory + '/' + prefix + '.jar'
+    performPackage ( jarPath )
+    c.call ( label , item , jarPath , pathIdRoot )
+  }
 }
   
 //  Create the classpaths for the boostrap builds.  These are only used for the bootstrap builds they are
@@ -369,8 +418,7 @@ target ( coberturaTest : 'Test a Groovy installation dependent build of Gant usi
 
 target ( 'package' : 'Create the jar file for a Groovy installation dependent build of Gant.' ) {
   depends ( test )
-  makeManifest ( )
-  jar ( destfile : buildDirectory + "/gant-${gantVersion}.jar" , basedir : buildClassesDirectory , manifest : buildMetadataDirectory + '/MANIFEST.MF' )
+  performPackage ( buildDirectory + "/gant-${gantVersion}.jar" )
 }
 
 target ( documentation : 'Create the API documentation of Gant.' ) {
@@ -422,37 +470,38 @@ target ( uninstall : "Uninstall Gant." ) {
   delete ( dir : installationDirectory )
 }
 
+target ( mavenInstall : "Install Gant artifacts into local Maven cache." ) {
+  doWithAllGroovyVersions { label , item , jarPath , pathIdRoot ->
+    // Skip the standalone artifact since Maven artefacts always depend on the artifacts rather than packaging them.
+    if ( label != 'standalone' ) {
+      def targetPOM = preparePom ( item.version )
+      "${antlibXMLns}:install" ( file : jarPath ) { pom ( refid : targetPOM ) }
+      ant.delete ( file : targetPOM )
+    }
+  }
+}
+
+target ( mavenDeploy : "Deploys the Gant artifacts to the appropriate Maven repository." ) {
+  "${antlibXMLns}:install-provider" ( artifactId : 'wagon-webdav' , version : '1.0-beta-2' )
+  doWithAllGroovyVersions { label , item , jarPath , pathIdRoot ->
+    // Skip the standalone artifact since Maven artefacts always depend on the artifacts rather than packaging them.
+    if ( label != 'standalone' ) {
+      def targetPOM = preparePom ( item.version )
+      ant."${antlibXMLns}:deploy" ( file : jarPath ) { pom ( refid : targetPOM ) }
+      ant.delete ( file : targetPOM )
+    }
+  }
+}
+
 target ( distribution : 'Create the distributions of Gant.' ) {
   def prefix = 'gant-' + gantVersion
   def distributionClasspathId = 'classpath'
   clean ( )
   someTestsFailed = false
-  distributionVersions.each { label , item ->
+  doWithAllGroovyVersions { label , item , jarPath , pathIdRoot ->
     def isStandalone = label == 'standalone'
-    def pathIdRoot = distributionClasspathId + item.version
-    def pathId = pathIdRoot + 'PathId'
-    getDependency ( pathIdRoot , [
-                                      [ groupId : item.groupId , artifactId : item.artifactId , version : item.version ] ,
-                                      [ groupId : 'org.apache.ant' , artifactId : 'ant' , version : antVersion  ] ,
-                                      [ groupId : 'org.apache.ant' , artifactId : 'ant-junit' , version : antVersion ] ,
-                                      [ groupId : 'commons-cli' , artifactId : 'commons-cli' , version : commonsCliVersion ] ,
-                                      [ groupId : 'junit' , artifactId : 'junit' , version : junitVersion ]
-                                      ]
-                    )
-    //  Remove the compilation products of the last compilation so as not to affect this one!
-    delete ( dir : buildClassesDirectory )
-    delete ( dir : buildTestClassesDirectory )
-    delete ( dir : buildFilteredScriptsDirectory )
-    delete ( dir : buildInstallDirectory )
-    performCompile ( pathId , true )
-    performCompileTests ( pathId , true )
-    if ( ! skipTests && ! performTests ( pathId ) ) { someTestsFailed = true }
-    makeManifest ( )
-    def discriminator = prefix + '_groovy-' + item.version
-    if ( isStandalone ) { discriminator = prefix }                          
-    def jarName = discriminator + '.jar'                    
-    def jarPath = buildDirectory + System.properties.'file.separator' + jarName
-    jar ( destfile : jarPath , basedir : buildClassesDirectory , manifest : buildMetadataDirectory + '/MANIFEST.MF' )
+    def discriminator = isStandalone ? prefix : prefix + '_groovy-' + item.version
+    def jarName = new File ( jarPath ).name
     serverUploadProducts [ jarPath ] = serverJarsDirectory + '/' + jarName
     prepareInstallDirectory ( buildInstallDirectory , jarName , pathIdRoot , isStandalone , item )
     prepareZipFromTarAndRegisterForUpload ( discriminator ) {
