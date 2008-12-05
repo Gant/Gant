@@ -16,20 +16,22 @@ package org.codehaus.gant.tests.bugs
 
 import org.codehaus.gant.tests.GantTestCase
 
-class GANT_34_Test extends GantTestCase {
-  void testOriginalIvycachePathProblemFixed ( ) {
-    script = '''
-includeTool << gant.tools.Ivy
-target ( 'default' : '' ) {
-  ivy.cachepath ( organisation : 'commons-lang' ,
-                  module : 'commons-lang' ,
-                  revision : '2.3' ,
-                  pathid : 'clpath' ,
-                  inline : true )
-}
-'''
-    assertEquals ( 0 , processCmdLineTargets ( ) )
-    //  The output is not tested since it is extensive and it is not clear that it is guaranteed to be the
-    //  same on all platforms: it contains the Ivy jar version number and some timings.
+class GANT_58_Test extends GantTestCase {
+  void testSingleFileFailsCorrectly ( ) {
+    def file = File.createTempFile ( 'gant_' , '_GANT_58_Test.groovy' )
+    file.write ( '''
+def a = 1
+def b = 0
+def c = a / b
+''' )
+    script = """
+includeTargets << new File ( '${file.path}' )
+target ( 'default' , '' ) { }
+"""
+    try {
+      assertEquals ( -2 , processCmdLineTargets ( ) )
+      assertEquals ( "Standard input, line 2 -- Error evaluating Gantfile: ${file.path}, line 4 -- java.lang.ArithmeticException: / by zero\n" , output )
+    }
+    finally { file.delete ( ) }
   }
 }

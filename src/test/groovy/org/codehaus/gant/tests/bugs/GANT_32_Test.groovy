@@ -36,8 +36,11 @@ def foo { badvariable }
     script = "includeTargets << new File ( '${file.path}' )"
     try { assertEquals ( -2 , processCmdLineTargets ( 'test' ) ) }
     finally { file.delete ( ) }
-    assertTrue ( output.startsWith ( 'Standard input, line 1 -- Error evaluating Gantfile: startup failed, ' ) )
-    assertTrue ( output.endsWith ( ''': 2: unexpected token: foo @ line 2, column 5.
+
+    System.err.println ( output )
+
+    assertTrue ( output.startsWith ( 'Standard input, line 1 -- Error evaluating Gantfile: org.codehaus.groovy.control.MultipleCompilationErrorsException: startup failed, ' ) )
+    assertTrue ( output.endsWith ( '''GANT_32.groovy: 2: unexpected token: foo @ line 2, column 5.
    def foo { badvariable }
        ^
 

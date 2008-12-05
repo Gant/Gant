@@ -129,12 +129,25 @@ abstract class AbstractInclude {
    *  Make an attempt to evaluate a file, possible as a class.
    *
    *  @param file The <code>File</code> to read.
-   *  @param asClass Spcify whether the file is to be treated as a class.
+   *  @param asClass Specify whether the file is to be treated as a class.
    *  @return The class read or null if the file is not to be treated as a class.
    */
   private attemptEvaluate ( File file , boolean asClass ) {
     if ( asClass ) { return binding.groovyShell.evaluate ( file.text + " ; return ${file.name.replace('.groovy', '' )}" ) }
-    binding.groovyShell.evaluate ( file )
+    //
+    //  GANT-58 raised the issue of reporting errors correctly.  This means catching and processing
+    //  exceptions so as to capture the original location of the error.
+    //
+    try { binding.groovyShell.evaluate ( file ) }
+    catch ( Exception e ) {
+      def errorSource = ''
+      for ( stackEntry in e.stackTrace ) {
+        if ( ( stackEntry.fileName == file.name ) && ( stackEntry.lineNumber  != -1 ) ) {
+          errorSource += file.absolutePath + ', line ' + stackEntry.lineNumber + ' -- ' 
+        }
+      }
+      throw new RuntimeException( errorSource + e.toString ( ) , e)
+    }
     null
   }
   /**
