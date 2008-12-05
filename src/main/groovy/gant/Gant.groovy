@@ -422,10 +422,26 @@ final class Gant {
     catch ( Exception e ) { printMessageFrom ( e ) ; return -2 }
     def defaultReturnCode = targets?.size ( ) > 0 ? -11 : -12
     try { return processTargets ( function , targets ) }
-    catch ( TargetExecutionException tee ) { println ( tee.message ) ; return -13 }
-    catch ( MissingTargetException mte ) { println ( mte.message ) ; return defaultReturnCode }
-    catch ( TargetMissingPropertyException tmpe ) { printMessageFrom ( tmpe ) ; return defaultReturnCode }
-    catch ( Exception e ) { printMessageFrom ( e ) ; return -2 }
+    catch ( TargetExecutionException tee ) {
+      if ( verbosity > GantState.NORMAL ) { tee.printStackTrace ( ) }
+      else { println ( tee.message ) }
+      return -13
+    }
+    catch ( MissingTargetException mte ) {
+      if ( verbosity > GantState.NORMAL ) { mte.printStackTrace ( ) }
+      else { println ( mte.message ) }
+      return defaultReturnCode
+    }
+    catch ( TargetMissingPropertyException tmpe ) {
+      if ( verbosity > GantState.NORMAL ) { tmpe.printStackTrace ( ) }
+      else { printMessageFrom ( tmpe ) }      
+      return defaultReturnCode
+    }
+    catch ( Exception e ) {
+      if ( verbosity > GantState.NORMAL ) { e.printStackTrace ( ) }
+      else { printMessageFrom ( e ) }
+      return -2
+    }
   }
   public Integer processTargets ( ) { processTargets ( 'dispatch' , [ ] ) }
   public Integer processTargets ( String s ) { processTargets ( 'dispatch' , [ s ] ) }
