@@ -87,7 +87,7 @@ datum = 1
 target ( notClosure : '' ) { depends ( datum ) }
 '''
     assertEquals ( -13 , processCmdLineTargets ( 'notClosure' ) )
-    assertEquals ( 'depends called with an argument (1) that is not a known target or list of targets.\n' , output )
+    assertEquals ( 'java.lang.RuntimeException: depends called with an argument (1) that is not a known target or list of targets.\n' , output )
   }
   void testNotListClosure ( ) {
     script = '''
@@ -95,7 +95,7 @@ datum = 1
 target ( notListClosure : '' ) { depends ( [ datum ] ) }
 '''
     assertEquals ( -13 , processCmdLineTargets ( 'notListClosure' ) )
-    assertEquals ( 'depends called with an argument (1) that is not a known target or list of targets.\n' , output )
+    assertEquals ( 'java.lang.RuntimeException: depends called with an argument (1) that is not a known target or list of targets.\n' , output )
   }
   void testOutOfOrder ( ) {
     script = '''

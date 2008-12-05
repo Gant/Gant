@@ -56,7 +56,7 @@ includeTargets ** gant.targets.Maven * [
 includeTargets << gant.targets.Maven
 """
     assertEquals ( -13 , processCmdLineTargets ( 'package' ) )
-    assertEquals ( '''maven.groupId must be set to achieve target package.
+    assertEquals ( '''java.lang.RuntimeException: maven.groupId must be set to achieve target package.
 ''' , output )
   }
   void testPackageNoGroupIdPower ( ) {
@@ -64,7 +64,7 @@ includeTargets << gant.targets.Maven
 includeTargets ** gant.targets.Maven * [ : ]
 """
     assertEquals ( -13 , processCmdLineTargets ( 'package' ) )
-    assertEquals ( '''maven.groupId must be set to achieve target package.
+    assertEquals ( '''java.lang.RuntimeException: maven.groupId must be set to achieve target package.
 ''' , output )
   }
   void testPackageNoArtifactIdLeftShift ( ) {
@@ -73,7 +73,7 @@ includeTargets << gant.targets.Maven
 maven.groupId = 'flob'
 """
     assertEquals ( -13 , processCmdLineTargets ( 'package' ) )
-    assertEquals ( '''maven.artifactId must be set to achieve target package.
+    assertEquals ( '''java.lang.RuntimeException: maven.artifactId must be set to achieve target package.
 ''' , output )
   }
   void testPackageNoArtifactIdPower ( ) {
@@ -81,7 +81,7 @@ maven.groupId = 'flob'
 includeTargets ** gant.targets.Maven * [ groupId : 'flob' ]
 """
     assertEquals ( -13 , processCmdLineTargets ( 'package' ) )
-    assertEquals ( '''maven.artifactId must be set to achieve target package.
+    assertEquals ( '''java.lang.RuntimeException: maven.artifactId must be set to achieve target package.
 ''' , output )
   }
   void testPackageVersionLeftShift ( ) {
@@ -91,7 +91,7 @@ maven.groupId = 'flob'
 maven.artifactId = 'adob'
 """
     assertEquals ( -13 , processCmdLineTargets ( 'package' ) )
-    assertEquals ( '''maven.version must be set to achieve target package.
+    assertEquals ( '''java.lang.RuntimeException: maven.version must be set to achieve target package.
 ''' , output )
   }
   void testPackageVersionPower ( ) {
@@ -99,7 +99,7 @@ maven.artifactId = 'adob'
 includeTargets ** gant.targets.Maven * [ groupId : 'flob' , artifactId : 'adob' ]
 """
     assertEquals ( -13 , processCmdLineTargets ( 'package' ) )
-    assertEquals ( '''maven.version must be set to achieve target package.
+    assertEquals ( '''java.lang.RuntimeException: maven.version must be set to achieve target package.
 ''' , output )
   }
   void testBindingPropertyIsReadOnlyLeftShift ( ) {

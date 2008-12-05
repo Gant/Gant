@@ -45,7 +45,9 @@ cf. GANT-56.
 Introduce Peter Ledbrook's changes to the naming of the Maven repository artefact and the consequent changes
 to the build system.  The compilation of Gant depends on the version of Groovy used and this has to be
 reflected in the artefacts uploaded to the Maven repository.  It is not possible to use classifiers since
-this requires using the same POM and teh POM has to be different for each build.
+this requires using the same POM and the POM has to be different for each build.
+
+Partly addressed GANT-63 about losing information about exceptions being thrown.
  
 
 1.4.0 ( r9604 )

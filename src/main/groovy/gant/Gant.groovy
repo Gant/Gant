@@ -310,7 +310,7 @@ final class Gant {
         if ( target == mme.property ) { throw new MissingTargetException ( "Target ${target} does not exist." , mme ) }
         else throw new TargetMissingPropertyException ( mme.message , mme )
       }
-      catch ( Exception e ) { throw new TargetExecutionException ( e.message , e ) }
+      catch ( Exception e ) { throw new TargetExecutionException ( e.toString ( ) , e ) }
     }
     if ( targets.size ( ) > 0 ) { targets.each { target -> processDispatch ( target ) } }
     else { processDispatch ( 'default' ) }
