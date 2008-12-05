@@ -118,7 +118,7 @@ final distributionVersions = [
 
 final distributionURL = 'https://dav.codehaus.org/dist/gant/'
 
- //  The hierarchy on the Codehaus server for the distributions is fixed and known.
+//  The hierarchy on the Codehaus server for the distributions is fixed and known.
 
 final serverDistributionsDirectory = 'distributions'
 final serverJarsDirectory = 'jars'
@@ -294,7 +294,8 @@ final prepareZipFromTarAndRegisterForUpload = { String root , Closure closure ->
   serverUploadProducts [ path + zipExtension ] = serverDistributionsDirectory + '/' +  root + zipExtension
 }
 
-// Return an edited version of the POM template , replacing the versions and other tokens with the values for this JAR.
+// Return the reference to an edited copy of the POM template , replacing the version numbers and other
+// tokens with the values for this JAR.
 
 final preparePom = { String version ->
   def classifier = 'groovy' + version.split ( "[\\.-]" ) [ 0..1 ].join ( '.' )
