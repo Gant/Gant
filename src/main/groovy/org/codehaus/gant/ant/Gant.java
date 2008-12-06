@@ -154,7 +154,7 @@ public class Gant extends Task {
     ant.invokeMethod ( "property" , new Object[] { environmentParameter } ) ;
     final GantBinding binding = new GantBinding ( ) ;
     binding.setVariable ( "ant" , ant ) ;
-    binding.setVariable ( "Ant" , ant ) ;
+    binding.setVariable ( "Ant" , ant ) ; // TODO: deprecate and remove this.
     for ( Definition definition : definitions ) {
       final Map<String,String> definitionParameter = new HashMap<String,String> ( ) ;
       definitionParameter.put ( "name" , definition.getName ( ) ) ;
@@ -163,16 +163,10 @@ public class Gant extends Task {
     }
     System.setOut ( outSave ) ;
     final gant.Gant gant = new gant.Gant ( binding ) ;
-    final Integer returnCode ;
-    final File scriptFile = new File ( newProject.getBaseDir ( ) , file ) ;
-    String[] baseArgs = { "-f" , scriptFile.getPath ( ) } ;
-    if ( targets.isEmpty ( ) ) { returnCode = (Integer) gant.processArgs ( baseArgs ) ; } // IntelliJ IDEA thinks processTargets returns an Object.
-    else {
-      final List<String> targetStrings = new ArrayList<String> ( ) ;
-      targetStrings.addAll ( Arrays.asList ( baseArgs ) ) ;
-      for ( GantTarget g : targets ) { targetStrings.add ( g.getValue ( ) ) ; }
-      returnCode = (Integer) gant.processArgs ( targetStrings.toArray ( new String[ 0 ] ) ) ; // IntelliJ IDEA thinks processTargets returns an Object.
-    }
+    gant.loadScript ( new File ( newProject.getBaseDir ( ) , file ) ) ;
+    final List<String> targetsAsStrings = new ArrayList<String> ( ) ;
+    for ( GantTarget g : targets ) { targetsAsStrings.add ( g.getValue ( ) ) ; }
+    final int returnCode =  gant.processTargets ( targetsAsStrings ) ;
     if ( returnCode != 0 ) { throw new BuildException ( "Gant execution failed with return code " + returnCode + '.' , getLocation ( ) ) ; }
   }
 }
