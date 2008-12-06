@@ -192,7 +192,7 @@ public class Gant_Test extends TestCase {
   //
   //  Codehaus Bamboo seems to not have any access to the detailed logs.
   // 
-  public void XXX_testBasedirInSubdir ( ) {
+  public void testBasedirInSubdir ( ) {
     final String pathToDirectory = System.getProperty ( "user.dir" )  + System.getProperty ( "file.separator" ) + path ;
     final StringBuilder sb = new StringBuilder ( ) ;
     sb.append ( "Buildfile: src/test/groovy/org/codehaus/gant/ant/tests/basedir.xml\n     [echo] basedir::ant basedir=" ) ;
