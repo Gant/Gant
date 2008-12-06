@@ -4,7 +4,8 @@
   <property name="dir.checkout" value=".."/>
   <property name="svn.user" value="dierk"/>
   
-  <target name="cruise" depends="update, copy-reporting-app, delegate, tagLastBuild"/>
+  <!--target name="cruise" depends="update, copy-reporting-app, delegate, tagLastBuild"/-->
+  <target name="cruise" depends="update, copy-reporting-app, delegate"/>
   
   <!-- label is given by CruiseControl, provides a default value here for the case where the admin starts
   this script manually.  -->
