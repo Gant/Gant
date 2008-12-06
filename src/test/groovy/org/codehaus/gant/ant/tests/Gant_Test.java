@@ -102,6 +102,11 @@ public class Gant_Test extends TestCase {
   /*
    *  Run Ant in a separate process.  Return the string that results.
    *
+   *  <p>This method assumes that the command ant is the the path and is executable.</p>
+   *
+   *  <p>As at 2008-12-06 Canoo CruiseControl runs with GROOVY_HOME set to /usr/local/java/groovy, and
+   *  Codehaus Bamboo runs without GROOVY_HOME being set.</p>
+   *
    *  @param xmlFile the path to the XML file that Ant is to use.
    *  @param expectedReturnCode the return code that the Ant execution should return.
    *  @param withClasspath whether the Ant execution should use the full classpathso as to find all the classes.
@@ -164,9 +169,15 @@ public class Gant_Test extends TestCase {
     assertEquals ( createBaseMessage ( ) , runAnt ( path + "/gantTest.xml" , 1 , false ) ) ;
   }
   //
-  //  TODO:  Find out why this fails on Canoo CruiseControl even though it passes locally and at Codehaus Bamboo.
+  //  TODO: Find out why this fails on Canoo CruiseControl even though it passes locally and on Codehaus
+  //  Bamboo.  Data from builds 139--142 indicate that Ant is failing to executing anything at all.  This
+  //  implies a configuration issue that is not true for the following test which also fails but ant does
+  //  actually start.  This implies it is something to do with the path to the XML file that is a problem on
+  //  Canoo Cruise Control but not on any other system.
   //
   public void testRunningAntFromShellSuccessful ( ) {
+    System.err.println ( "AAAA:" + path + "/gantTest.xml" ) ;
+    System.err.println ( "BBBB: " + ( new File (  path , "gantTest.xml" ) ).exists ( ) ) ;
     assertEquals ( createBaseMessage ( ) + "\nBUILD SUCCESSFUL\n\n", trimTimeFromSuccessfulBuild ( runAnt ( path + "/gantTest.xml" , 1 , true ) ) ) ;
   }
   /*
@@ -176,6 +187,12 @@ public class Gant_Test extends TestCase {
   //
   //  TODO: Find out why this test fails on Codehaus Bamboo and Canoo CruiseControl even though it passes
   //  locally.
+  //
+  //  On Canoo Creuise Control, ant starts but then fails in the build target.  It looks like an immediate
+  //  fail so nothing in the build target is happening.  Could be a classpath problem for the Groovy ant
+  //  task?
+  //
+  //  Codehaus Bamboo seems to not have any access to the detailed logs.
   // 
   public void testBasedirInSubdir ( ) {
     final String pathToDirectory = System.getProperty ( "user.dir" )  + System.getProperty ( "file.separator" ) + path ;
