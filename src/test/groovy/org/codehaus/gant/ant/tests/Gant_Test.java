@@ -19,11 +19,14 @@ import java.io.File ;
 import java.io.IOException ;
 import java.io.InputStreamReader ;
 
+import java.util.ArrayList ;
+import java.util.List ;
+
+import junit.framework.TestCase ;
+
 import org.apache.tools.ant.BuildException ;
 import org.apache.tools.ant.Project ;
 import org.apache.tools.ant.ProjectHelper ;
-
-import junit.framework.TestCase ;
 
 /**
  *  Unit tests for the Gant Ant task.  In order to test things appropriately this test must be initiated
@@ -64,17 +67,14 @@ public class Gant_Test extends TestCase {
     project.executeTarget ( "gantTestNamedFileNamedTarget" ) ;
     assertEquals ( "Another target in the default file." , returnValue ) ;
   }
-  public void testMissingGantfile ( ) {
-    try { project.executeTarget ( "missingGantfile" ) ; }
-    catch ( final BuildException be ) {
-      assertEquals ( "Gantfile does not exist." , be.getMessage ( ) ) ;
-      return ;
-    }
-    fail ( "Should have got a BuildException." ) ;
+  public void testGantWithParametersAsNestedTags ( ) {
+    project.executeTarget ( "gantWithParametersAsNestedTags" ) ;
+    assertEquals ( "gant -Dflob=adob -Dburble gantParameters" , returnValue ) ;
   }
-  /**
-   *  Test the behaviour of a missing target in the Ant XML file.
-   */
+  public void testMultipleGantTargets ( ) {
+    project.executeTarget ( "gantWithMultipleTargets" ) ;
+    assertEquals ( "A test target in the default file.Another target in the default file." , returnValue ) ;
+  }
   public void testUnknownTarget ( ) {
     try { project.executeTarget ( "blahBlahBlahBlah" ) ; }
     catch ( final BuildException be ) {
@@ -83,19 +83,41 @@ public class Gant_Test extends TestCase {
     }
     fail ( "Should have got a BuildException." ) ;
   }
-  /**
+  public void testMissingGantfile ( ) {
+    try { project.executeTarget ( "missingGantfile" ) ; }
+    catch ( final BuildException be ) {
+      assertEquals ( "Gantfile does not exist." , be.getMessage ( ) ) ;
+      return ;
+    }
+    fail ( "Should have got a BuildException." ) ;
+  }
+  /*
    *  Test for the taskdef-related verify error problem.  Whatever it was supposed to do it passes now,
    *  2008-04-14.
    */
-  public void testTaskdef ( ) {
+  public void testTaskdefVerifyError ( ) {
     project.executeTarget ( "gantTaskdef" ) ;
     assertEquals ( "OK." , returnValue ) ;
   }
   /*
-   *  Run ant explicitly in a separate process.  Return the string that results.
+   *  Run Ant in a separate process.  Return the string that results.
+   *
+   *  @param xmlFile the path to the XML file that Ant is to use.
+   *  @param expectedReturnCode the return code that the Ant execution should return.
+   *  @param withClasspath whether the Ant execution should use the full classpathso as to find all the classes.
    */
-  private String runAnt ( final String xmlFile , final int expectedReturnCode ) {
-    final ProcessBuilder pb = new ProcessBuilder ( "ant" , "-f" , xmlFile ) ;
+  private String runAnt ( final String xmlFile , final int expectedReturnCode , final boolean withClasspath ) {
+    final List<String> command = new ArrayList<String> ( ) ;
+    command.add ( "ant" ) ;
+    command.add ( "-f" ) ;
+    command.add ( xmlFile ) ;
+    if ( withClasspath ) {
+      for ( String path : System.getProperty ( "java.class.path" ).split ( System.getProperty ( "path.separator" ) ) ) {
+        command.add ( "-lib" ) ;
+        command.add ( path ) ;
+      }
+    }
+    final ProcessBuilder pb = new ProcessBuilder ( command ) ;
     try {
       final StringBuilder sb = new StringBuilder ( ) ;
       final Process p = pb.start ( ) ;  //  Could throw an IOException hence the try block.
@@ -124,50 +146,31 @@ public class Gant_Test extends TestCase {
     //  Keep the compiler happy, it doesn't realize that execution cannot get here.
     return null ;
   }
-  /**
-   *  Test stemming from GANT-19 and relating to ensuring the right classpath when loading the Groovyc Ant
+  /*
+   *  Tests stemming from GANT-19 and relating to ensuring the right classpath when loading the Groovyc Ant
    *  task.
    */
-  public void testRunningAntFromShell ( ) {
-    //
-    //  This Ant task actually fails always and so the return code is 1.  The output should be something like::
-    //
-    //    [gant] Error evaluating Gantfile: startup failed, build: 15: unable to resolve class org.codehaus.gant.ant.tests.Gant_Test
-    //    [gant]  @ line 15, column 1.
-    //    [gant] 1 error
-    //    [gant]
-    //
-    //  Evidence indicates that there are problems with Groovy 1.5.x on Canoo CruiseControl and Codehaus
-    //  Bamboo that are not exhibited with Groovy 1.6.x and later.
-    //
+  private String createBaseMessage ( ) {
     final StringBuilder sb = new StringBuilder ( ) ;
     sb.append ( "Buildfile: " ) ;
     sb.append ( path ) ;
-    final boolean fullTest = false ;
-    if ( fullTest ) {
-    	sb.append ( "/gantTest.xml\n\n-initializeWithGroovyHome:\n\n-initializeNoGroovyHome:\n\ngantTestDefaultFileDefaultTarget:\n     [gant] Error evaluating Gantfile: startup failed, build: 15: unable to resolve class org.codehaus.gant.ant.tests.Gant_Test\n     [gant]  @ line 15, column 1.\n     [gant] 1 error\n     [gant] \n" ) ;
-    }
-    else {
-    	sb.append ( "/gantTest.xml\n\n-initializeWithGroovyHome:\n\n-initializeNoGroovyHome:\n\ngantTestDefaultFileDefaultTarget:\n" ) ;
-    }
-    String output = runAnt ( path + "/gantTest.xml" , 1 ) ;
-    if ( fullTest ) {
-    	assertEquals ( sb.toString ( ) , output ) ;
-    }
-    else {
-      assertTrue ( output.startsWith ( sb.toString ( ) ) ) ;
-    }
+    sb.append ( "/gantTest.xml\n\n-initializeWithGroovyHome:\n\n-initializeNoGroovyHome:\n\ngantTestDefaultFileDefaultTarget:\n" ) ;
+    return sb.toString ( ) ;
+  }
+  private String trimTimeFromSuccessfulBuild ( final String message ) {
+    return message.replaceFirst ( "Total time: [0-9]*.*" , "" ) ;
+  }
+  public void testRunningAntFromShellFailsNoClasspath ( ) {
+    assertEquals ( createBaseMessage ( ) , runAnt ( path + "/gantTest.xml" , 1 , false ) ) ;
+  }
+  public void testRunningAntFromShellSuccessful ( ) {
+    assertEquals ( createBaseMessage ( ) + "\nBUILD SUCCESSFUL\n\n", trimTimeFromSuccessfulBuild ( runAnt ( path + "/gantTest.xml" , 0 , true ) ) ) ;
   }
   /*
    *  The following test is based on the code presented in email exchanges on the Groovy developer list by
    *  Chris Miles.  cf.  GANT-50.  This assumes that the tests are run from a directory other than this one.
    */
-  //
-  //  TODO : take this test out pending resolution of why it passes locally and fails on Bamboo.  It is
-  //  almost certainly to do with the recent change in search paths in Gant which is not reflected in the
-  //  released version used on Bamboo.
-  //
-  public void XXXX_testBasedirInSubdir ( ) {
+  public void testBasedirInSubdir ( ) {
     final String pathToDirectory = System.getProperty ( "user.dir" )  + System.getProperty ( "file.separator" ) + path ;
     final StringBuilder sb = new StringBuilder ( ) ;
     sb.append ( "Buildfile: src/test/groovy/org/codehaus/gant/ant/tests/basedir.xml\n     [echo] basedir::ant basedir=" ) ;
@@ -175,26 +178,27 @@ public class Gant_Test extends TestCase {
     sb.append ( "\n\n-initializeWithGroovyHome:\n\n-initializeNoGroovyHome:\n\nbuild:\n   [groovy] basedir::groovy basedir=" ) ;
     sb.append ( pathToDirectory ) ;
     sb.append ( "\n   [groovy] basedir::gant basedir=" ) ;
+    //
+    //  TODO:  this is wrong, it confirms the presence of the bug.
+    //
+    //sb.append ( pathToDirectory ) ;
     sb.append ( System.getProperty ( "user.dir" ) ) ;
+    //
     sb.append ( "\n   [groovy] basedir::groovy basedir=" ) ;
     sb.append ( pathToDirectory ) ;
+    //
     //  TODO : Why no groovy tag here?
-    sb.append ( "\nbasedir::gant basedir=" ) ; // sb.append ( "\n   [groovy] basedir::gant basedir=" ) ;
+    //
+    // sb.append ( "\n   [groovy] basedir::gant basedir=" ) ;
+    sb.append ( "\nbasedir::gant basedir=" ) ; 
+    //
     sb.append ( pathToDirectory ) ;
     //
-    //  TODO : The <gant/> tag fails at the moment.
+    //  TODO : The <gant file="..."/> tag fails at the moment.
     //
     //sb.append ( "\n     [gant] basedir::gant basedir=" ) ;
     //sb.append ( pathToDirectory ) ;
     sb.append ( "\n\nBUILD SUCCESSFUL\n\n" ) ;
-    assertEquals ( sb.toString ( ) , runAnt ( path + System.getProperty ( "file.separator" ) + "basedir.xml" , 0 ).replaceFirst ( "Total time: [0-9]*.*" , "" ) ) ;
-  }
-  public void testGantWithParametersAsNestedTags ( ) {
-    project.executeTarget ( "gantWithParametersAsNestedTags" ) ;
-    assertEquals ( "gant -Dflob=adob -Dburble gantParameters" , returnValue ) ;
-  }
-  public void testMultipleGantTargets ( ) {
-    project.executeTarget ( "gantWithMultipleTargets" ) ;
-    assertEquals ( "A test target in the default file.Another target in the default file." , returnValue ) ;
+    assertEquals ( sb.toString ( ) , trimTimeFromSuccessfulBuild ( runAnt ( path + System.getProperty ( "file.separator" ) + "basedir.xml" , 0 , false ) ) ) ;
   }
 }

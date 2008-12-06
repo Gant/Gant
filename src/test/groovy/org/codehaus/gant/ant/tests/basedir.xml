@@ -66,16 +66,16 @@ This test results from emails by Chris Miles on the Groovy Developer email list.
     <groovy>
       println ( "basedir::groovy basedir=${ant.project.properties.basedir}" )
       def gant = new gant.Gant ( )
-      gant.loadScript ( ant.project.properties.'this.basedir' + '/basedir.gant' )
-      gant.processArgs (  )
+      gant.loadScript ( new File ( ant.project.properties.'this.basedir' + '/basedir.gant' ) )
+      gant.processTargets (  )
     </groovy>
     <groovy>
       println ( "basedir::groovy basedir=${ant.project.properties.basedir}" )
       def gant = new gant.Gant ( ant.project )
-      gant.loadScript ( ant.project.properties.'this.basedir' + '/basedir.gant' )
-      gant.processArgs (  )
+      gant.loadScript ( new File ( ant.project.properties.'this.basedir' + '/basedir.gant' ) )
+      gant.processTargets (  )
     </groovy>
-    <!--gant file="basedir.gant"/-->
+    <!--gant file="${basedir}/basedir.gant"/-->
   </target>
   
 </project>
