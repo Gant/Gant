@@ -35,6 +35,7 @@ This test results from emails by Chris Miles on the Groovy Developer email list.
   </condition>
 
   <target name="-initializeWithGroovyHome" if="groovyHomeIsSet">
+    <echo message="Running with GROOVY_HOME set to ${environment.GROOVY_HOME}"/>
     <path id="classpathId">
       <pathelement location="${toplevelDirectory}/target_gant/classes"/>
       <fileset dir="${environment.GROOVY_HOME}/lib" includes="groovy-*.jar"/>
@@ -47,6 +48,7 @@ This test results from emails by Chris Miles on the Groovy Developer email list.
   </target>
 
   <target name="-initializeNoGroovyHome" unless="groovyHomeIsSet">
+    <echo message="Running with no GROOVY_HOME set."/>
     <path id="mavenAntTaskJarPathId">
       <fileset dir="${toplevelDirectory}/jarfiles" includes="maven-ant-tasks-*.jar"/>
     </path>
