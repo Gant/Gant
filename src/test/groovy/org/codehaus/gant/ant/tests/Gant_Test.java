@@ -186,7 +186,7 @@ public class Gant_Test extends TestCase {
   //  TODO: Find out why this test fails on Codehaus Bamboo and Canoo CruiseControl even though it passes
   //  locally.
   //
-  //  On Canoo Creuise Control, ant starts but then fails in the build target.  It looks like an immediate
+  //  On Canoo Cruise Control, ant starts but then fails in the build target.  It looks like an immediate
   //  fail so nothing in the build target is happening.  Could be a classpath problem for the Groovy ant
   //  task?
   //
