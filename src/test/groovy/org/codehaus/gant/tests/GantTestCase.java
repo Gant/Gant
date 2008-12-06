@@ -77,10 +77,10 @@ public abstract class GantTestCase extends GroovyTestCase {
   protected Integer processTargets ( ) { gant.loadScript( System.in ) ; return gant.processTargets ( ) ; }
   protected Integer processTargets ( final String s ) { gant.loadScript( System.in ) ; return gant.processTargets ( s ) ; }
   protected Integer processTargets ( final List<String> l ) { gant.loadScript( System.in ) ; return gant.processTargets ( l ) ; }
-  protected Integer processCmdLineTargets ( ) { return gant.processArgs( new String[] { "-f" , "-" } ) ; }
-  protected Integer processCmdLineTargets ( final String s ) { return gant.processArgs( new String[] { "-f" , "-" , s } ) ; }
+  protected Integer processCmdLineTargets ( ) { return gant.processArgs( "-f" , "-" ) ; }
+  protected Integer processCmdLineTargets ( final String s ) { return gant.processArgs( "-f" , "-" , s ) ; }
   protected Integer processCmdLineTargets ( final List<String> l ) {
-    List<String> args = new ArrayList ( Arrays.asList ( "-f" , "-" ) ) ;
+    List<String> args = new ArrayList<String> ( Arrays.asList ( "-f" , "-" ) ) ;
     args.addAll ( l ) ;
     return gant.processArgs( args.toArray ( new String[ 0 ] ) ) ; }
   protected String getOutput ( ) { return output.toString ( ).replace ( "\r" , "" ) ; }
