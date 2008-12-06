@@ -299,7 +299,7 @@ final class Gant {
   /**
    *  The function that handles actioning the targets.
    */
-  private Integer dispatch ( targets ) {
+  private Integer dispatch ( List targets ) {
     Integer returnCode = 0
     final processDispatch = { target ->
       try {
@@ -447,8 +447,7 @@ final class Gant {
   public Integer processTargets ( String s ) { processTargets ( 'dispatch' , [ s ] ) }
   public Integer processTargets ( List l ) { processTargets ( 'dispatch' , l ) }
   /**
-   *  Process the targets, but first deal with getting the build script loaded, either by compiling the text
-   *  of the file or standard input, or using the cached compiled file.
+   *  Process the targets, but first execute the build script so all the targets and other code are available.
    */
   protected Integer processTargets ( String function , List targets ) {
     // Configure the build based on this instance's settings.
