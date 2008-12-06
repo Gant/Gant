@@ -24,7 +24,7 @@ target ( blah : 'Another target in the default file.' ) { Gant_Test.returnValue 
 
 ////  MUST ensure that the same dependecies as in gantTest.xml and ${toplevelDirectory}/build.xml
 
-target ( gantTaskdef : 'Check that a taskdef works.' ) {
+target ( gantTaskdefVerifyError : 'Check that a taskdef works.' ) {
   final groovyHome = System.getenv ( ).'GROOVY_HOME'
   //  Just ensure that the environment variables really have been brought in.
   assert groovyHome == ant.project.properties.'environment.GROOVY_HOME'

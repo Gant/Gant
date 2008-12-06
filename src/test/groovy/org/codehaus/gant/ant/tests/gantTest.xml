@@ -53,7 +53,6 @@ Author : Russel Winder <russel.winder@concertant.com>
       <fileset dir="${environment.GROOVY_HOME}/lib" includes="asm*.jar"/>
       <fileset dir="${environment.GROOVY_HOME}/lib" includes="antlr*.jar"/>
     </path>
-    <!--taskdef name="groovy" classname="org.codehaus.groovy.ant.Groovy" classpathref="groovyJarsId" /-->
     <taskdef name="gant" classname="org.codehaus.gant.ant.Gant">
       <classpath>
         <pathelement location="${toplevelDirectory}/${targetDirectoryName}/classes"/>
@@ -70,7 +69,6 @@ Author : Russel Winder <russel.winder@concertant.com>
     <artifact:dependencies pathId="groovyJarsId">
       <dependency groupId="org.codehaus.groovy" artifactId="groovy-all" version="${groovyVersion}"/>
     </artifact:dependencies>
-    <!--taskdef name="groovy" classname="org.codehaus.groovy.ant.Groovy" classpathref="groovyJarsId" /-->
     <taskdef name="gant" classname="org.codehaus.gant.ant.Gant">
       <classpath>
         <pathelement location="${toplevelDirectory}/${targetDirectoryName}/classes"/>
@@ -101,8 +99,8 @@ Author : Russel Winder <russel.winder@concertant.com>
   </target>
 
   <!--  Ensure there is no target called blahBlahBlahBlah. -->
-  <target name="gantTaskdef" depends="-initializeWithGroovyHome,-initializeNoGroovyHome">
-    <gant file="build.gant" target="gantTaskdef"/>
+  <target name="gantTaskdefVerifyError" depends="-initializeWithGroovyHome,-initializeNoGroovyHome">
+    <gant file="build.gant" target="gantTaskdefVerifyError"/>
   </target>
 
   <target name="gantWithParametersAsNestedTags" depends="-initializeWithGroovyHome,-initializeNoGroovyHome">

@@ -96,7 +96,7 @@ public class Gant_Test extends TestCase {
    *  2008-04-14.
    */
   public void testTaskdefVerifyError ( ) {
-    project.executeTarget ( "gantTaskdef" ) ;
+    project.executeTarget ( "gantTaskdefVerifyError" ) ;
     assertEquals ( "OK." , returnValue ) ;
   }
   /*
@@ -176,8 +176,6 @@ public class Gant_Test extends TestCase {
   //  Canoo Cruise Control but not on any other system.
   //
   public void testRunningAntFromShellSuccessful ( ) {
-    System.err.println ( "AAAA:" + path + "/gantTest.xml" ) ;
-    System.err.println ( "BBBB: " + ( new File (  path , "gantTest.xml" ) ).exists ( ) ) ;
     assertEquals ( createBaseMessage ( ) + "\nBUILD SUCCESSFUL\n\n", trimTimeFromSuccessfulBuild ( runAnt ( path + "/gantTest.xml" , 1 , true ) ) ) ;
   }
   /*
