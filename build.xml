@@ -82,9 +82,9 @@ Author : Russel Winder <russel.winder@concertant.com>
 
   <target name="-checkGroovyHome">
     <!--
-        This is a target so that the test can be completely avoided for the continuous integration runs:
-        only check the test for command line invocations, so that the property is never set for continuous
-        integration runs.
+        This test is contained in a target so that the test can be completely avoided for the continuous
+        integration runs: only check the test for command line invocations, the property is never set for
+        continuous integration runs.
     -->
     <condition property="groovyHomeIsSet">
       <isset property="environment.GROOVY_HOME"/>
@@ -291,6 +291,10 @@ Author : Russel Winder <russel.winder@concertant.com>
 
   <!-- 
        The targets for the Canoo CruiseControl and Codehaus Bamboo continuous integration servers.
+       
+       Codehaus Bamboo executes with no GROOVY_HOME set, so there is no point in trying to check for it.
+       Use the same invocation not using GROOVY_HOME with Canoo.  However, it may be that this is indirectly
+       leading to a problem in one of the Gant Ant task tests.
   -->
 
   <target name="-ciBuild" depends="clean,-initializeNoGroovyHome,-package"/>
