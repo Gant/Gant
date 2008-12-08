@@ -49,6 +49,8 @@ Author : Russel Winder <russel.winder@concertant.com>
   <property file="local.build.properties"/>
   <property file="build.properties"/>
 
+  <property name="groovyVersion" value="${groovy15Version}"/>
+
   <property environment="environment"/>
 
   <property name="sourceDirectory" value="src/main/groovy"/>

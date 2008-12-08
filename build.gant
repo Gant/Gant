@@ -107,12 +107,11 @@ final distributionDirectories = [ 'documentation' , 'examples' , '.settings' , s
  //  correctly.  Gant can still be built and distributed against Groovy 1.5.0 and 1.5.1 but it has to be
  //  done the hard (manual) way.
 
-final distributionVersions = [
-                              ( 'groovy-' + groovyVersion ) : [ groupId : 'org.codehaus.groovy' , artifactId : 'groovy' , version : groovyVersion ] ,
-                              'groovy-1.6-beta-2' : [ groupId : 'org.codehaus.groovy' , artifactId : 'groovy' , version : '1.6-beta-2' ] ,
-                              'groovy-1.7-beta-1-SNAPSHOT' : [ groupId : 'org.codehaus.groovy' , artifactId : 'groovy' , version : '1.7-beta-1-SNAPSHOT' ] ,
-                              standalone : [ groupId : 'org.codehaus.groovy' , artifactId : 'groovy-all' , version : groovyVersion ]
-                              ]
+final distributionVersions = [ : ]
+[ groovy15Version , groovy16Version , groovy17Version ].each { version ->
+                                                               distributionVersions.put ( 'groovy-' + version , [ groupId : 'org.codehaus.groovy' , artifactId : 'groovy-all' , version : version ] )
+}
+distributionVersions.put ( 'standalone' , [ groupId : 'org.codehaus.groovy' , artifactId : 'groovy-all' , version : groovyStandaloneVersion ] )
 
 //  As Jürgen Hermann pointed out the trailing / on the URL is very important.
 
@@ -128,7 +127,17 @@ final serverPomsDirectory = 'poms'
 
 final serverUploadProducts = [ : ]
 
- //  A useful support function to help.
+//  --------------------------------------------------------------------------------------------------------
+//
+//  Various support Closures.
+//
+//  Currently these Closures do not have the GantMetaClass as their metaclass so there is no delegated
+//  lookup on the ant object, it has to be done explicitly.
+//
+//  The various compilation and test actions are parameterized so they can be used with different
+//  classpaths.
+//
+//  --------------------------------------------------------------------------------------------------------
 
 final getDependency = { root , dependencies ->
   final pathId = root + 'PathId'
@@ -143,11 +152,6 @@ final getDependency = { root , dependencies ->
     }
   }
 }
-
-//  The various compilation and test actions are parameterized so they can be used with different classpaths.
-//
-//  Currently these Closures do not have the GantMetaClass as their metaclass so there is no delegated
-//  lookup on the ant object, it has to be done explicitly.
 
 final performCompile = { classpathId , boolean fork ->
   ant.mkdir ( dir : buildClassesDirectory )
@@ -294,17 +298,16 @@ final prepareZipFromTarAndRegisterForUpload = { String root , Closure closure ->
   serverUploadProducts [ path + zipExtension ] = serverDistributionsDirectory + '/' +  root + zipExtension
 }
 
-// Return the reference to an edited copy of the POM template , replacing the version numbers and other
-// tokens with the values for this JAR.
-
 final preparePom = { String version ->
+  // Return the reference to an edited copy of the POM template , replacing the version numbers and other
+  // tokens with the values for this JAR.
   def classifier = 'groovy' + version.split ( "[\\.-]" ) [ 0..1 ].join ( '.' )
   def targetPOM = classifier + '.pom'
   ant.copy ( tofile : targetPOM , file : 'pom.xml.in' ) {
     filterset {
       filter ( token : 'artifactId' , value : 'gant_' + classifier )
       filter ( token : 'gantVersion' , value : gantVersion )
-      filter ( token : 'groovyVersion' , value : groovyVersion )
+      filter ( token : 'groovyVersion' , value : version )
       filter ( token : 'commonsCliVersion' , value : commonsCliVersion )
       filter ( token : 'antVersion' , value : antVersion )
     }
@@ -339,50 +342,51 @@ final doWithAllGroovyVersions = { Closure c ->
     c.call ( label , item , jarPath , pathIdRoot )
   }
 }
-  
-//  Create the classpaths for the boostrap builds.  These are only used for the bootstrap builds they are
-//  ignored by the distribution builds.
 
-//  The ASM and Antlr jars are just transitive dependencies of the Groovy jat, the Ant and Commons CLI jars
-//  are needed directly by the Gant code.
-
-//  If GROOVY_HOME is set then create a build of Gant dependent on that Groovy, otherwise pull down all the
-//  required bits and pieces to make a standalone build.  NB System.properties.'groovy.home' is not a good
-//  discriminator!
-
-compileJarSetPathId = 'compileJarSetPathId'
-testJarSetPathId = 'testJarSetPathId'
-if ( groovyHomeEnvironment ) {
-  println ( "Building with the Groovy installation at GROOVY_HOME=${groovyHomeEnvironment}." )
-  groovyJarPathId = 'groovyJarPathId'
-  ant.path ( id : groovyJarPathId ) { fileset ( dir : groovyHome + '/lib' , includes : 'groovy-*.jar' ) }
-  ant.path ( id : compileJarSetPathId ) {
-    path ( refid : groovyJarPathId )
-    fileset ( dir : groovyHome + '/lib' , includes : 'commons-cli*.jar' )
-    fileset ( dir : groovyHome + '/lib' , includes : 'asm*.jar' )
-    fileset ( dir : groovyHome + '/lib' , includes : 'ant*.jar' )  // Picks up antlr as well as ant. This is intended.
-  } 
-  ant.path ( id : testJarSetPathId ) {
-     path ( refid : compileJarSetPathId )
-     fileset ( dir : groovyHome + '/lib' , includes : 'junit*.jar' )
-  }
-}
-else {
-  println ( 'Building without a Groovy installation.' )
-  getDependency ( 'groovyJar' , [ groupId : 'org.codehaus.groovy' , artifactId : 'groovy-all' , version : groovyVersion ] )
-  getDependency ( 'compileJars' , [
-                                   [ groupId : 'org.codehaus.groovy' , artifactId : 'groovy-all' , version : groovyVersion ] ,
-                                   [ groupId : 'commons-cli' , artifactId : 'commons-cli' , version : commonsCliVersion ]
-                                   ]
-                  )
-  ant.path ( id : compileJarSetPathId ) {
-    path ( refid : groovyJarPathId )
-    path ( refid : compileJarsPathId )
-  }
-  ant.path ( id : testJarSetPathId ) { path ( refid : compileJarSetPathId ) }
+final doDocumentation = { ->
+  ant.taskdef ( name : 'groovydoc' , classname : 'org.codehaus.groovy.ant.Groovydoc' )
+  def javaApiDocumentationDirectory = apiDocumentationDirectory + '/java'
+  def groovyApiDocumentationDirectory = apiDocumentationDirectory + '/groovy'
+  ant.mkdir ( dir : javaApiDocumentationDirectory )
+  ant.mkdir ( dir : groovyApiDocumentationDirectory )
+  ant.javadoc (
+               sourcepath : sourceDirectory ,
+               destdir : javaApiDocumentationDirectory ,
+               packagenames : 'gant.*,org.codehaus.gant.*',
+               overview : 'overview.html' ,
+               'private' : 'true' ,
+               encoding : 'UTF-8' ,
+               use : 'true' ,
+               author : 'true' ,
+               windowtitle : "Gant (${gantVersion})" ,
+               doctitle : "Gant (${gantVersion})" ,
+               header : "Gant (${gantVersion})" ,
+               footer : 'Copyright &copy; 2006&ndash;8 The Codehaus.  All rights reserved.' ,
+               source : 1.5
+               )
+  ant.groovydoc (
+             destdir : groovyApiDocumentationDirectory ,
+             sourcepath : sourceDirectory ,
+             packagenames : 'gant.*,org.codehaus.gant.*' ,
+             //overview : 'overview.html' ,
+             //author : 'true' ,
+             //version : 'true' ,
+             use : 'true' ,
+             'private' : 'false' ,
+             windowtitle : "Gant (${gantVersion})" ,
+             //doctitle : "Gant (${gantVersion})" ,
+             //encoding : 'UTF-8' ,
+             //footer : 'Copyright &copy; 2006&ndash;8 The Codehaus.  All rights reserved.'
+             )
 }
 
 //  --------------------------------------------------------------------------------------------------------
+//
+//  The targets for doing a local build, test, install and uninstall.
+//
+//  install and uninstall require the setting of the property installDirectory -- usually done by creating a
+//  file local.build.properties which is not in version control.
+//
 //  --------------------------------------------------------------------------------------------------------
 
 includeTargets << gant.targets.Clean
@@ -396,7 +400,47 @@ target ( reallyClean : 'Ensure all clean operations for the entire tree get acti
   execute.shell ( "cd packaging/debian && gant clobber" ) 
 }
 
+target ( initializeNonDistribution : '' ) {
+  groovyJarPathId = 'groovyJarPathId'
+  compileJarSetPathId = 'compileJarSetPathId'
+  testJarSetPathId = 'testJarSetPathId'
+  //  If GROOVY_HOME is set then create a build of Gant dependent on that Groovy, otherwise pull down all
+  //  the required bits and pieces to make a standalone build.  NB System.properties.'groovy.home' is not a
+  //  good discriminator!
+  if ( groovyHomeEnvironment ) {
+    println ( "Building with the Groovy installation at GROOVY_HOME=${groovyHomeEnvironment}." )
+    ant.path ( id : groovyJarPathId ) { fileset ( dir : groovyHome + '/lib' , includes : 'groovy-*.jar' ) }
+    ant.path ( id : compileJarSetPathId ) {
+      path ( refid : groovyJarPathId )
+      fileset ( dir : groovyHome + '/lib' , includes : 'commons-cli*.jar' )
+      //  The ASM and Antlr jars are just transitive dependencies of the Groovy jar, the Ant and Commons CLI
+      //  jars are needed directly by the Gant code.
+      fileset ( dir : groovyHome + '/lib' , includes : 'asm*.jar' )
+      fileset ( dir : groovyHome + '/lib' , includes : 'ant*.jar' )  // Picks up antlr as well as ant. This is intended.
+    } 
+    ant.path ( id : testJarSetPathId ) {
+      path ( refid : compileJarSetPathId )
+      fileset ( dir : groovyHome + '/lib' , includes : 'junit*.jar' )
+    }
+  }
+  else {
+    println ( 'Building without a Groovy installation.' )
+    getDependency ( groovyJarPathId , [ groupId : 'org.codehaus.groovy' , artifactId : 'groovy-all' , version : groovyStandaloneVersion ] )
+    def compileJarsNotGroovyPathId = 'compileJarsNotGroovyPathId'
+    getDependency ( compileJarsNotGroovyPathId , [
+                                     [ groupId : 'commons-cli' , artifactId : 'commons-cli' , version : commonsCliVersion ]
+                                     ]
+                    )
+    ant.path ( id : compileJarSetPathId ) {
+      path ( refid : groovyJarPathId )
+      path ( refid : compileJarsNotGroovyPathId )
+    }
+    ant.path ( id : testJarSetPathId ) { path ( refid : compileJarSetPathId ) }
+  }
+}
+  
 target ( compile : 'Compile everything needed for a Groovy installation dependent build of Gant.' ) {
+  depends ( initializeNonDistribution )
   performCompile ( compileJarSetPathId , forkCompiles )
 }
 
@@ -405,7 +449,7 @@ target ( compileTests : 'Compile all the tests for a Groovy installation depende
   performCompileTests ( testJarSetPathId , forkCompiles )
 }
 
-target ( test : 'Test a boostrap build of Gant.' ) {
+target ( test : 'Test a build of Gant.' ) {
   depends ( compileTests )
   def returnCode = performTests ( compileJarSetPathId )
   if ( ! skipTests ) { println ( 'Tests ' + ( returnCode ? 'suceeded' : 'failed' ) + '.' ) }
@@ -423,42 +467,8 @@ target ( 'package' : 'Create the jar file for a Groovy installation dependent bu
 }
 
 target ( documentation : 'Create the API documentation of Gant.' ) {
-  taskdef ( name : 'groovydoc' , classname : 'org.codehaus.groovy.ant.Groovydoc' )
-  def javaApiDocumentationDirectory = apiDocumentationDirectory + '/java'
-  def groovyApiDocumentationDirectory = apiDocumentationDirectory + '/groovy'
-  mkdir ( dir : javaApiDocumentationDirectory )
-  mkdir ( dir : groovyApiDocumentationDirectory )
-  javadoc (
-               sourcepath : sourceDirectory ,
-               destdir : javaApiDocumentationDirectory ,
-               packagenames : 'gant.*,org.codehaus.gant.*',
-               overview : 'overview.html' ,
-               'private' : 'true' ,
-               encoding : 'UTF-8' ,
-               use : 'true' ,
-               author : 'true' ,
-               windowtitle : "Gant (${gantVersion})" ,
-               doctitle : "Gant (${gantVersion})" ,
-               header : "Gant (${gantVersion})" ,
-               footer : 'Copyright &copy; 2006&ndash;8 The Codehaus.  All rights reserved.' ,
-               source : 1.5
-               ) {
-    classpath ( refid : testJarSetPathId )
-  }    
-  groovydoc (
-             destdir : groovyApiDocumentationDirectory ,
-             sourcepath : sourceDirectory ,
-             packagenames : 'gant.*,org.codehaus.gant.*' ,
-             //overview : 'overview.html' ,
-             //author : 'true' ,
-             //version : 'true' ,
-             use : 'true' ,
-             'private' : 'false' ,
-             windowtitle : "Gant (${gantVersion})" ,
-             //doctitle : "Gant (${gantVersion})" ,
-             //encoding : 'UTF-8' ,
-             //footer : 'Copyright &copy; 2006&ndash;8 The Codehaus.  All rights reserved.'
-             )
+  depends ( initializeNonDistribution )
+  doDocumentation ( )
 }
 
 target ( install : "Install a Groovy installation dependent build of Gant." ) {
@@ -470,6 +480,12 @@ target ( uninstall : "Uninstall Gant." ) {
   setInstallationDirectory ( installDirectory )
   delete ( dir : installationDirectory )
 }
+
+//  --------------------------------------------------------------------------------------------------------
+//
+//  The targets for handling the builds for the Maven repository.
+//
+//  --------------------------------------------------------------------------------------------------------
 
 target ( mavenInstall : "Install Gant artifacts into local Maven cache." ) {
   doWithAllGroovyVersions { label , item , jarPath , pathIdRoot ->
@@ -493,6 +509,12 @@ target ( mavenDeploy : "Deploys the Gant artifacts to the appropriate Maven repo
     }
   }
 }
+
+//  --------------------------------------------------------------------------------------------------------
+//
+//  The targets for handling the distribution builds.
+//
+//  --------------------------------------------------------------------------------------------------------
 
 target ( distribution : 'Create the distributions of Gant.' ) {
   def prefix = 'gant-' + gantVersion
@@ -526,7 +548,7 @@ target ( distribution : 'Create the distributions of Gant.' ) {
     }
   }
   // Create the API documentation distribution.
-  documentation ( )
+  doDocumentation ( )
   prepareZipFromTarAndRegisterForUpload (  'gant_doc-' + gantVersion ) {
     //  NB Rely on Closures not being closures:  path is only resolved when the Closure is executed.
     tar ( destfile :  path + tarExtension ) {
@@ -539,7 +561,7 @@ target ( distribution : 'Create the distributions of Gant.' ) {
 }
 
 target ( uploadDistribution : 'Upload a complete distribution.' ) {
-  if (  ! distribution ( ) && ! ignoreTestFailures ) {
+  if (  ( ! distribution ( ) ) && ( ! ignoreTestFailures ) ) {
     println ( 'Not uploading as some tests failed.' )
     return
   }
@@ -571,13 +593,24 @@ target ( uploadDistribution : 'Upload a complete distribution.' ) {
   if ( resource != null ) { resource.close ( ) }
 }
 
-//  This target creates an installation set up suitable for creating a deb file.  See packaging/devian/build.gant.
+//  --------------------------------------------------------------------------------------------------------
+//
+//  A target needed in support of building a deb. See packaging/debian/build.gant.
+//
+//  --------------------------------------------------------------------------------------------------------
 
 target ( debDistribution : '' ) {
   distributionVersions = [
-                          standalone : [ groupId : 'org.codehaus.groovy' , artifactId : 'groovy-all' , version : groovyVersion ]
+                          ( 'groovy-' + groovyDebianVersion ) :  [ groupId : 'org.codehaus.groovy' , artifactId : 'groovy-all' , version : groovyDebianVersion ] ,
+                          standalone : [ groupId : 'org.codehaus.groovy' , artifactId : 'groovy-all' , version : groovyStandaloneVersion ]
                           ]
   distribution ( )
 }
-  
+
+//  --------------------------------------------------------------------------------------------------------
+//
+//  Set the default target.
+//
+//  --------------------------------------------------------------------------------------------------------
+
 setDefaultTarget ( test )

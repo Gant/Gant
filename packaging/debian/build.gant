@@ -19,6 +19,12 @@
 try { ignoreBuildDeb = Boolean.valueOf ( ignoreBuildDeb ) }
 catch ( Exception e ) { ignoreBuildDeb = false }
 
+//  If we are building the debs then we have probably just done a distribution and may want to not bother
+//  with the tests.
+
+try { skipTests = Boolean.valueOf ( skipTests ) }
+catch ( MissingPropertyException mpe ) { skipTests = false }
+
 final targetDirectoryName = 'target_gant'
 
 final rootDirectory = '..' + System.properties.'file.separator' + '..'
@@ -26,9 +32,6 @@ final buildDirectory = rootDirectory + System.properties.'file.separator' + targ
 
 ant.property ( file : rootDirectory + System.properties.'file.separator' + 'local.build.properties' )
 ant.property ( file : rootDirectory + System.properties.'file.separator' + 'build.properties' )
-
-final gantVersion = ant.project.properties.gantVersion
-final groovyVersion = ant.project.properties.groovyVersion
 
 final requiresGroovyPackageName = 'gant'
 final standalonePackageName = 'gant-standalone'
@@ -72,21 +75,21 @@ Homepage: ${homepage}
 """
   
 target ( debFiles : 'Create the deb file of the distribution.' ) {
-  if ( ! ignoreBuildDeb ) { execute.shell ( "cd ${rootDirectory} && gant debDistribution" ) }
+  if ( ! ignoreBuildDeb ) { execute.shell ( "cd ${rootDirectory} && gant -DskipTests=${skipTests} debDistribution" ) }
   mkdir ( dir : scriptsRequiresGroovyDirectory )
   copy ( tofile : scriptsRequiresGroovyDirectory + '/gant' , file : 'gant.sh' ) {
     filterset { filter ( token : 'GANT_VERSION' , value : gantVersion ) }
-    filterset { filter ( token : 'GROOVYJAR' , value : 'groovy-' + groovyVersion + '.jar' ) }
+    filterset { filter ( token : 'GROOVYJAR' , value : 'groovy-' + groovyDebianVersion + '.jar' ) }
   }
   mkdir ( dir : scriptsStandaloneDirectory )
   copy ( tofile : scriptsStandaloneDirectory + '/gant' , file : 'gant_standalone.sh' ) {
     filterset { filter ( token : 'GANT_VERSION' , value : gantVersion ) }
-    filterset { filter ( token : 'GROOVYJAR' , value : 'groovy-all-' + groovyVersion + '.jar' ) }
+    filterset { filter ( token : 'GROOVYJAR' , value : 'groovy-all-' + groovyStandaloneVersion + '.jar' ) }
   }
   mkdir ( dir : debsDirectory )
   // Create a deb that depend on a Groovy deb                                                                                 
   deb ( todir : debsDirectory , 'package' : requiresGroovyPackageName , section : section , priority : priority , architecture : architecture ,
-        depends : "java2-runtime, groovy ( >= ${groovyVersion} ), ant ( >= ${ant.project.properties.antVersion} )",
+        depends : "java2-runtime, groovy ( >= ${groovyDebianVersion} ), ant ( >= ${ant.project.properties.antVersion} )",
         conflicts : standalonePackageName , postinst : 'postinst' , prerm : 'prerm' ) {
     version ( upstream : gantVersion )
     maintainer ( name : 'Russel Winder' , email : 'russel.winder@concertant.com' )
@@ -121,7 +124,6 @@ included in the package.
     tarfileset ( file : scriptsStandaloneDirectory + '/gant' , prefix : installPrefixBase + '/bin' , filemode : '755' )
     tarfileset ( file : [ rootDirectory , targetDirectoryName , 'install' , 'bin' , 'startGroovy' ].join ( System.properties.'file.separator' ) , prefix : installPrefixBase + '/bin' )
     tarfileset ( file : [ rootDirectory , targetDirectoryName , 'install' , 'conf' , 'gant-starter.conf' ].join ( System.properties.'file.separator' ) , prefix : installPrefixBase + '/conf' )
-    tarfileset ( file : buildDirectory + System.properties.'file.separator' + 'gant-' + gantVersion  + '.jar' , prefix : installPrefixBase + '/lib' )
     tarfileset ( dir : [ buildDirectory , 'install' , 'lib'].join (  System.properties.'file.separator' ) , includes : '*.jar' , prefix : installPrefixBase + '/lib' )
   }
 }
