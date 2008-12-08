@@ -67,7 +67,7 @@ Author : Russel Winder <russel.winder@concertant.com>
     </path>
     <typedef resource="org/apache/maven/artifact/ant/antlib.xml" uri="urn:maven-artifact-ant" classpathref="mavenAntTaskJarPathId"/>
     <artifact:dependencies pathId="groovyJarsId">
-      <dependency groupId="org.codehaus.groovy" artifactId="groovy-all" version="${groovyVersion}"/>
+      <dependency groupId="org.codehaus.groovy" artifactId="groovy-all" version="${groovyAntTaskTestVersion}"/>
     </artifact:dependencies>
     <taskdef name="gant" classname="org.codehaus.gant.ant.Gant">
       <classpath>

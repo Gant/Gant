@@ -25,9 +25,12 @@ This test results from emails by Chris Miles on the Groovy Developer email list.
   <echo>basedir::ant basedir=${basedir}</echo>
 
   <dirname property="this.basedir" file="${ant.file.Basedir_Tests}"/>
+
   <property name ="toplevelDirectory" value="../../../../../../../.."/>
+
   <property file="${toplevelDirectory}/local.build.properties"/>
   <property file="${toplevelDirectory}/build.properties"/>
+
   <property environment="environment"/>
 
   <property name="classesDirectory" value="${toplevelDirectory}/target_gant/classes"/>
@@ -54,7 +57,7 @@ This test results from emails by Chris Miles on the Groovy Developer email list.
     </path>
     <typedef resource="org/apache/maven/artifact/ant/antlib.xml" uri="urn:maven-artifact-ant" classpathref="mavenAntTaskJarPathId"/>
     <artifact:dependencies pathId="groovyJarsId">
-      <dependency groupId="org.codehaus.groovy" artifactId="groovy-all" version="${groovyVersion}"/>
+      <dependency groupId="org.codehaus.groovy" artifactId="groovy-all" version="${groovyAntTaskTestVersion}"/>
     </artifact:dependencies>
     <path id="classpathId">
       <pathelement location="${classesDirectory}"/>
