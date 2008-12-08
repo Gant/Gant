@@ -45,15 +45,6 @@ dependencies {
                  ] )
 }
 
-//  As at 2008-10-06, Gradle assumes all files in the test tree contain tests and there is an assertion
-//  failure if this is not the case.  Get round this by specifying an include set.  This also solves the
-//  probl;em of Gradle trying to treat generated classes for anonymous classes and closures as test cases --
-//  which is the wrong thing to do.
-
-test {
-  include ( '**/*Test.class' )
-}
-
 javadoc {
     title = "Gant API ${version}"
     bottom = 'Copyright &#169; 2006&#8211;2008 Russel Winder.  All rights reserved.'
