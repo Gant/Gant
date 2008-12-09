@@ -56,10 +56,17 @@ final class AntFile {
    *  Read the named file assuming it is an Ant XML file.  Load the targets into the current project and
    *  then associate each of the Ant targets with a Gant target.
    *
-   *  @param fileName the path to the Ant XML file.  
+   *  @param fileName the <code>String</code> specifying the path to the Ant XML file.  
    */
-  void includeTargets ( final String fileName ) {
-    ProjectHelper.configureProject ( binding.ant.project , new File ( fileName ) )
+  void includeTargets ( final String fileName ) { includeTargets ( new File ( fileName ) ) }
+  /**
+   *  Read the named file assuming it is an Ant XML file.  Load the targets into the current project and
+   *  then associate each of the Ant targets with a Gant target.
+   *
+   *  @param fileName the <code>File</code> specifying path to the Ant XML file.  
+   */
+  void includeTargets ( final File file ) {
+    ProjectHelper.configureProject ( binding.ant.project , file )
     binding.ant.project.targets.each { key , value ->
       assert key == value.name
       binding.setProperty ( key , { value.execute ( ) } )
