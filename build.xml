@@ -162,6 +162,7 @@ Author : Russel Winder <russel.winder@concertant.com>
 
   <target name="-test" depends="-initializeMavenAntTask,-compileTests" unless="skipTestsIsSet">
     <mkdir dir="${buildTestReportsDirectory}"/>
+    <echo file="groovyAntTaskTestVersion.properties" message="groovyAntTaskTestVersion = ${groovyVersion}"/>
     <artifact:dependencies pathId="ivyJarPathId">
       <dependency groupId="org.apache.ivy" artifactId="ivy" version="${ivyVersion}"/>
     </artifact:dependencies>
@@ -193,6 +194,7 @@ Author : Russel Winder <russel.winder@concertant.com>
         <pathelement location="${buildClassesDirectory}"/>
       </classpath>
     </junit>
+    <delete file="groovyAntTaskTestVersion.properties"/>
   </target>
 
   <target name="-package" depends="-compile,-test" unless="testsFailed">
@@ -261,12 +263,12 @@ Author : Russel Winder <russel.winder@concertant.com>
     <echo message="Property installDirectory is not set, so cannot uninstall.  Set installDirectory in file local.build.properties."/>
   </target>
 
+  <target name="-commandLineDependencies" depends="-checkGroovyHome,-initializeWithGroovyHome,-initializeNoGroovyHome"/>
+  
   <!--
       The targets usable from the command line.
   -->
 
-  <target name="-commandLineDependencies" depends="-checkGroovyHome,-initializeWithGroovyHome,-initializeNoGroovyHome"/>
-  
   <target name="compile" depends="-commandLineDependencies,-compile" description="Compile everything needed for a bootstrap build of Gant."/>
   
   <target name="compileTests" depends="-commandLineDependencies,-compileTests" description="Compile all the tests for a bootstrap build of Gant."/>

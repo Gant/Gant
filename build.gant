@@ -182,6 +182,7 @@ final performCompileTests = { classpathId , boolean fork ->
 final performTests =  { classpathId ->
   if ( ! skipTests ) {                        
     ant.mkdir ( dir : buildTestReportsDirectory )
+    def groovyAntTaskTestVersionPropertyFile = ( new File ( 'groovyAntTaskTestVersion.properties' ) )
     if ( usingCobertura ) {
       ant.mkdir ( dir : buildCoberturaClassesDirectory )
       ant.mkdir ( dir : buildCoberturaReportsDirectory )
@@ -319,6 +320,8 @@ final preparePom = { String version ->
 final doWithAllGroovyVersions = { Closure c ->
   def prefix = 'gant-' + gantVersion
   distributionVersions.each { label , item ->
+    def groovyAntTaskTestVersionPropertyFile = ( new File ( 'groovyAntTaskTestVersion.properties' ) )
+    groovyAntTaskTestVersionPropertyFile.write ( 'groovyAntTaskTestVersion = ' + item.version )
     def pathIdRoot = 'classpath' + item.version
     def pathId = pathIdRoot + 'PathId'
     getDependency ( pathIdRoot , [
@@ -340,6 +343,7 @@ final doWithAllGroovyVersions = { Closure c ->
     def jarPath = buildDirectory + '/' + prefix + '.jar'
     performPackage ( jarPath )
     c.call ( label , item , jarPath , pathIdRoot )
+    groovyAntTaskTestVersionPropertyFile.delete ( )
   }
 }
 
