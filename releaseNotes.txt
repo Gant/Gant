@@ -49,6 +49,8 @@ this requires using the same POM and the POM has to be different for each build.
 
 Partly addressed GANT-63 about losing information about exceptions being thrown.
  
+Part fix for GANT-51.
+
 
 1.4.0 ( r9604 )
 ---------------
