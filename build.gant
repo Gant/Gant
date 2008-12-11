@@ -585,7 +585,7 @@ target ( uploadDistribution : 'Upload a complete distribution.' ) {
   resource = loader.loadClass ( 'org.apache.webdav.lib.WebdavResource' ).getConstructor ( String ,  loader.loadClass ( 'org.apache.commons.httpclient.Credentials' ) , boolean ).newInstance ( distributionURL , credentials , true )
   if ( resource.statusCode != 200 ) { println ( 'Failed to open ' + distributionURL ) }
   else {
-    serverUploadProducts [ 'pom.xml' ] = serverPomsDirectory + '/gant-' + gantVersion + '.pom'
+    //serverUploadProducts [ 'pom.xml' ] = serverPomsDirectory + '/gant-' + gantVersion + '.pom'
     serverUploadProducts.each { source , destination ->
       def serverPath = resource.path + '/' + destination
       print ( 'Uploading ' + source + ' -> ' + destination + ' : ' )
