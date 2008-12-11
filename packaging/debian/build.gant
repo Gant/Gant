@@ -136,7 +136,7 @@ target ( uploadDistribution : 'Upload the deb files to Codehaus.' ) {
   def loader = getClass ( ).getClassLoader ( )
   def path = path ( refid : 'slidePathId' )
   ( path.list ( ) as List ).each { location -> loader.addURL ( new URL ( 'file://' + location ) ) }
-  def settings =  ( new XmlSlurper ( ) ).parse ( System.properties.'user.home' + '/.m2/settings.xml' ).servers.server.find { item -> item.id == 'dav.codehaus.org' }
+  def settings =  ( new XmlSlurper ( ) ).parse ( System.properties.'user.home' + '/.m2/settings.xml' ).servers.server.find { item -> item.id == 'codehaus.org' }
   def credentials =  loader.loadClass ( 'org.apache.commons.httpclient.UsernamePasswordCredentials' ).getConstructor ( String , String ).newInstance ( settings.username.toString ( ) , settings.password.toString ( ) )
   //  Have to put resource in the binding so that the Closures can access it.
   resource = loader.loadClass ( 'org.apache.webdav.lib.WebdavResource' ).getConstructor ( String ,  loader.loadClass ( 'org.apache.commons.httpclient.Credentials' ) , boolean ).newInstance ( distributionURL , credentials , true )
