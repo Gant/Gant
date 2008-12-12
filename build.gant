@@ -340,7 +340,7 @@ final doWithAllGroovyVersions = { Closure c ->
     performCompile ( pathId , true )
     performCompileTests ( pathId , true )
     if ( ! skipTests && ! performTests ( pathId ) ) { someTestsFailed = true }
-    def jarPath = buildDirectory + '/' + prefix + '.jar'
+    def jarPath = buildDirectory + '/' + prefix + '_groovy-' + item.version + '.jar'
     performPackage ( jarPath )
     c.call ( label , item , jarPath , pathIdRoot )
     groovyAntTaskTestVersionPropertyFile.delete ( )
