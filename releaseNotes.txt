@@ -1,6 +1,8 @@
 1.5.1 ( rXXXXX )
 ----------------
 
+Path up the startGroovy script to deal with MSYS issues.
+
 
 1.5.0 ( r10067 )
 ----------------
