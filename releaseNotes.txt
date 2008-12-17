@@ -2,8 +2,14 @@
 ---------------
 
 
-1.5.0 ( rXXXX )
----------------
+1.5.1 ( rXXXXX )
+----------------
+
+Path up the startGroovy script to deal with MSYS issues.
+
+
+1.5.0 ( r10067 )
+----------------
 
 Amend property lookup so that Ant properties appear as entries in the Gant binding, i.e. Ant properties are
 directly accessible as variables -- no need any more for ant.project.properties.skipTests, can just use
