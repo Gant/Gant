@@ -84,4 +84,6 @@ public abstract class GantTestCase extends GroovyTestCase {
     args.addAll ( l ) ;
     return gant.processArgs( args.toArray ( new String[ 0 ] ) ) ; }
   protected String getOutput ( ) { return output.toString ( ).replace ( "\r" , "" ) ; }
+
+  protected String escapeWindowsPath ( final String path ) { return isWindows ? path.replace ( "\\" ,  "\\\\" ) : path ; }
 }

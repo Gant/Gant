@@ -33,7 +33,7 @@ def foo { badvariable }
     file.write ( '''target ( test : '' ) { foo }
 def foo { badvariable }
 ''' )
-    script = "includeTargets << new File ( '${file.path}' )"
+    script = "includeTargets << new File ( '${escapeWindowsPath ( file.path )}' )"
     try { assertEquals ( -2 , processCmdLineTargets ( 'test' ) ) }
     finally { file.delete ( ) }
 

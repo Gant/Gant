@@ -25,7 +25,7 @@ def b = 0
 def c = a / b
 ''' )
     script = """
-includeTargets << new File ( '${file.path}' )
+includeTargets << new File ( '${escapeWindowsPath ( file.path )}' )
 target ( 'default' , '' ) { }
 """
     try {
