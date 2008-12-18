@@ -37,7 +37,7 @@ def internalTarget = 'doTarget'
 target ( ( internalTarget ) : '' ) { println ( '${resultMessage}' ) }
 target ( '${targetName}' : '' ) {
   subGant = new gant.Gant ( )
-  subGant.loadScript ( new File ( '${isWindows ? buildFile.path.replace ( '\\' , '\\\\' ) : buildFile.path}' ) )
+  subGant.loadScript ( new File ( '${escapeWindowsPath ( buildFile.path )}' ) )
   subGant.processTargets ( internalTarget )
 }
 """
@@ -52,7 +52,7 @@ def internalTarget = 'doTarget'
 target ( ( internalTarget ) : '' ) { println ( '${resultMessage}' ) }
 target ( '${targetName}' : '' ) {
   subGant = new gant.Gant ( binding.clone ( ) )
-  subGant.loadScript ( new File ( '${isWindows ? buildFile.path.replace ( '\\' , '\\\\' ) : buildFile.path}' ) )
+  subGant.loadScript ( new File ( '${escapeWindowsPath ( buildFile.path )}' ) )
   subGant.processTargets ( internalTarget )
 }
 """
@@ -70,7 +70,7 @@ target ( '${targetName}' : '' ) {
   def newBinding = binding.clone ( )
   newBinding.flobadob = 'weed'
   subGant = new gant.Gant ( newBinding )
-  subGant.loadScript ( new File ( '${isWindows ? buildFile.path.replace ( '\\' , '\\\\' ) : buildFile.path}' ) )
+  subGant.loadScript ( new File ( '${escapeWindowsPath ( buildFile.path )}' ) )
   subGant.processTargets ( 'doOutput' )
 }
 """

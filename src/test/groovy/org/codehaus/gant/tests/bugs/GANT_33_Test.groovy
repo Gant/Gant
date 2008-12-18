@@ -92,7 +92,7 @@ private fileNameSuffix = '_GANT_33_Test'
     def groovyShell = new GroovyShell ( binding )
     groovyShell.evaluate (
                           scriptTemplate
-                          .replace ( '__BUILDSCRIPT_PATH__' , ( isWindows ? buildScriptFile.path.replace ( '\\' , '\\\\' ) : buildScriptFile.path ) )
+                          .replace ( '__BUILDSCRIPT_PATH__' , escapeWindowsPath ( buildScriptFile.path ) )
                           .replace ( '__CREATE_GANT__' , 'new Gant ( )' )
                           .replace ( '__LOAD_SCRIPT__' , 'gant.loadScript ( new File ( buildScript ) )' )
                           .replace ( '__PROCESS_TARGET__' , 'gant.processTargets ( target )' )
@@ -107,7 +107,7 @@ private fileNameSuffix = '_GANT_33_Test'
     System.err.println ( 'testNoCollection:  This test succeeds incorrectly, it is showing the presence of the bug.' )
     groovyShell.evaluate (
                           scriptTemplate
-                          .replace ( '__BUILDSCRIPT_PATH__' , ( isWindows ? buildScriptFile.path.replace ( '\\' , '\\\\' ) : buildScriptFile.path ) )
+                          .replace ( '__BUILDSCRIPT_PATH__' , escapeWindowsPath ( buildScriptFile.path ) )
                           .replace ( '__CREATE_GANT__' , 'new Gant ( )' )
                           .replace ( '__LOAD_SCRIPT__' , '' )
                           .replace ( '__PROCESS_TARGET__' , 'gant.processArgs ( [ "-f" , new File ( buildScript ).absolutePath , "-c" , target ] as String[] )' )
