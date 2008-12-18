@@ -14,6 +14,10 @@
 
 package org.codehaus.gant
 
+import org.apache.tools.ant.BuildListener
+import org.apache.tools.ant.Target
+import org.apache.tools.ant.BuildEvent
+
 /**
  *  This class is a sub-class of <code>groovy.lang.Binding</code> to provide extra capabilities.  In
  *  particular, all the extra bits needed in the binding for Gant to actually work at all.  Handle this as a
@@ -26,6 +30,12 @@ public class GantBinding extends Binding implements Cloneable {
    *  Determine whether we are initializing an instance and so are able to define the read-only items.
    */
   private boolean initializing = true
+
+  /**
+   * A List of org.apache.tools.ant.BuildListener instances that Gant sends events to
+   */
+  List buildListeners = []
+  
   /**
    *  Default constructor.
    */
@@ -45,6 +55,7 @@ public class GantBinding extends Binding implements Cloneable {
     setVariable ( 'ant' , new GantBuilder ( ) )
     initializeGantBinding ( )
   }
+
   /**
    *  Constructor taking an explicit <code>org.apache.tools.ant.Project</code> as parameter.
    *
@@ -54,6 +65,41 @@ public class GantBinding extends Binding implements Cloneable {
   public GantBinding ( final org.apache.tools.ant.Project p ) {
     setVariable ( 'ant' , new GantBuilder ( p ) )
     initializeGantBinding ( )
+  }
+
+  /**
+   * Adds a BuildListener instance to this Gant instance
+   */
+  public synchronized void addBuildListener(BuildListener buildListener) {
+      if(buildListener) {
+        buildListeners << buildListener
+        ant.antProject.addBuildListener buildListener
+      }
+  }
+  /**
+   * Removes a BuildListener instance from this Gant instance
+   */
+  public synchronized void removeBuildListener(BuildListener buildListener) {
+    buildListeners.remove(buildListener)
+    ant.antProject.removeBuildListener buildListener
+  }
+
+  // calls a target wrapped in BuildListener event handling
+  private withTargetEvent(targetName, targetDescription, Closure callable) {
+      def antTarget = new Target(name:targetName, project: ant.antProject, description: targetDescription)
+      def event = new GantEvent(antTarget, this)
+      def targetResult
+      try {
+        buildListeners.each { BuildListener b -> b.targetStarted event }
+        targetResult = callable.call()
+        buildListeners.each { BuildListener b -> b.targetFinished event }
+      }
+      catch (Exception e) {
+        event.exception = e
+        buildListeners.each { BuildListener b -> b.targetFinished event }
+        throw e
+      }
+      return targetResult
   }
   /**
    *  Method holding all the code common to all construction.
@@ -107,7 +153,7 @@ public class GantBinding extends Binding implements Cloneable {
         catch ( MissingPropertyException mpe ) { /* Intentionally empty */ }
         if ( targetDescription ) { targetDescriptions.put ( targetName , targetDescription ) }
         closure.metaClass = new GantMetaClass ( closure.metaClass , owner )
-        def targetClosure =  { closure ( targetMap ) }
+        def targetClosure =  { withTargetEvent(targetName, targetDescription) { closure ( targetMap ) } }
         owner.setVariable ( targetName , targetClosure )
         owner.setVariable ( targetName + '_description' , targetDescription )  //  For backward compatibility.
       } )
@@ -154,7 +200,9 @@ public class GantBinding extends Binding implements Cloneable {
    */
   Object getVariable ( final String name ) {
     def returnValue
-    try { returnValue = super.getVariable ( name ) }
+    try {
+      returnValue = super.getVariable ( name ) 
+    }
     catch ( final MissingPropertyException mpe ) {
       returnValue = super.getVariable ( 'ant' )?.project.getProperty ( name )
       if ( returnValue == null ) { throw mpe }

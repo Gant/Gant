@@ -16,12 +16,13 @@ package gant
 
 import java.lang.reflect.InvocationTargetException
 import org.apache.commons.cli.GnuParser
+import org.apache.tools.ant.BuildListener
 import org.codehaus.gant.GantBinding
+import org.codehaus.gant.GantEvent
 import org.codehaus.gant.GantState
 import org.codehaus.groovy.control.CompilationUnit
 import org.codehaus.groovy.control.CompilerConfiguration
 import org.codehaus.groovy.runtime.InvokerInvocationException
-
 
 /**
  *  This class provides infrastructure and an executable command for using Groovy + AntBuilder as a build
@@ -182,6 +183,20 @@ final class Gant {
    *  @param p the <code>org.apache.tools.ant.Project</code> to use.
    */
   public Gant ( org.apache.tools.ant.Project p ) { this ( new GantBinding ( p ) ) }
+
+
+  /**
+   * Adds a BuildListener instance to this Gant instance
+   */
+  public void addBuildListener(BuildListener buildListener) {
+    binding.addBuildListener buildListener
+  }
+  /**
+   * Removes a BuildListener instance from this Gant instance 
+   */
+  public void removeBuildListener(BuildListener buildListener) {
+    binding.removeBuildListener buildListener 
+  }
   /**
    *  Treats the given text as a Gant script and loads it.
    *
@@ -303,7 +318,9 @@ final class Gant {
     Integer returnCode = 0
     final processDispatch = { target ->
       try {
-        def returnValue = owner.binding.getVariable ( target ).call ( )
+
+        Object callable = owner.binding.getVariable(target)
+        def returnValue = callable.call ( )
         returnCode = ( returnValue instanceof Number ) ? returnValue.intValue ( ) : 0
       }
       catch ( MissingPropertyException mme ) {
@@ -312,9 +329,27 @@ final class Gant {
       }
       catch ( Exception e ) { throw new TargetExecutionException ( e.toString ( ) , e ) }
     }
-    if ( targets.size ( ) > 0 ) { targets.each { target -> processDispatch ( target ) } }
-    else { processDispatch ( 'default' ) }
+    if ( targets.size ( ) > 0 ) {
+      withBuildListeners { targets.each { target -> processDispatch ( target ) } } 
+    }
+    else {
+      withBuildListeners { processDispatch ('default') }
+    }
     returnCode
+  }
+
+  private withBuildListeners(Closure callable) {
+      def event = new GantEvent(binding.ant.antProject, binding)
+      try {
+        binding.buildListeners.each { BuildListener listener -> listener.buildStarted event }
+        callable.call()
+        binding.buildListeners.each { BuildListener listener -> listener.buildFinished event }
+      }
+      catch (Exception e) {
+        event.exception = e
+        binding.buildListeners.each { BuildListener listener -> listener.buildFinished event }
+        throw e
+      }     
   }
   /**
    *  Process the command line options and then call the function to process the targets.
