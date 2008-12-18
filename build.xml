@@ -176,7 +176,7 @@ Author : Russel Winder <russel.winder@concertant.com>
       <formatter type="plain"/>
       <formatter type="xml"/> <!-- Must have XML output for the continuous integration builds. -->
       <batchtest todir="${buildTestReportsDirectory}">
-        <fileset dir="${buildTestClassesDirectory}" includes="**/ant/tests/*_Test.class"/>
+        <fileset dir="${buildTestClassesDirectory}" includes="**/ant/tests/*_Test.class" excludes="**/ant/tests/BuildListener_Test.class"/>
       </batchtest>
       <classpath>
         <path refid="testClasspathPathId"/>
