@@ -133,7 +133,7 @@ laTeX.intermediateExtensions.each { extension -> cleanPattern << '*' + extension
       assertEquals ( 0 , processCmdLineTargets ( 'clean' ) )
       filename.delete ( )
     }
-    else { System.err.println ( 'testEmptyFile not run since pdflatex executable is not avaialble.' ) }
+    else { System.err.println ( 'testEmptyFile not run since pdflatex executable is not available.' ) }
   }
 
   void testInitialized ( ) {
