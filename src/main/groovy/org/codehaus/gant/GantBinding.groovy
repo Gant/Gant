@@ -14,9 +14,10 @@
 
 package org.codehaus.gant
 
-import org.apache.tools.ant.BuildListener
-import org.apache.tools.ant.Target
 import org.apache.tools.ant.BuildEvent
+import org.apache.tools.ant.BuildListener
+import org.apache.tools.ant.Project
+import org.apache.tools.ant.Target
 
 /**
  *  This class is a sub-class of <code>groovy.lang.Binding</code> to provide extra capabilities.  In
@@ -30,12 +31,10 @@ public class GantBinding extends Binding implements Cloneable {
    *  Determine whether we are initializing an instance and so are able to define the read-only items.
    */
   private boolean initializing = true
-
   /**
-   * A List of org.apache.tools.ant.BuildListener instances that Gant sends events to
+   * A List of BuildListener instances that Gant sends events to.
    */
-  List buildListeners = []
-  
+  private List buildListeners = [ ]
   /**
    *  Default constructor.
    */
@@ -55,51 +54,49 @@ public class GantBinding extends Binding implements Cloneable {
     setVariable ( 'ant' , new GantBuilder ( ) )
     initializeGantBinding ( )
   }
-
   /**
-   *  Constructor taking an explicit <code>org.apache.tools.ant.Project</code> as parameter.
+   *  Constructor taking an explicit <code>Project</code> as parameter.
    *
-   *  @param p The <code>org.apache.tools.ant.Project</code> to use when initializing the
-   *  <code>GantBuilder</code>.
+   *  @param p The <code>Project</code> to use when initializing the <code>GantBuilder</code>.
    */
-  public GantBinding ( final org.apache.tools.ant.Project p ) {
+  public GantBinding ( final Project p ) {
     setVariable ( 'ant' , new GantBuilder ( p ) )
     initializeGantBinding ( )
   }
-
   /**
-   * Adds a BuildListener instance to this Gant instance
+   *  Adds a <code>BuildListener</code> instance to this <code>Gant</code> instance
    */
-  public synchronized void addBuildListener(BuildListener buildListener) {
-      if(buildListener) {
-        buildListeners << buildListener
-        ant.antProject.addBuildListener buildListener
-      }
+  public synchronized void addBuildListener ( final BuildListener buildListener ) {
+    if ( buildListener ) {
+      buildListeners << buildListener
+      ant.antProject.addBuildListener ( buildListener )
+    }
   }
   /**
-   * Removes a BuildListener instance from this Gant instance
+   *  Removes a <code>BuildListener</code> instance from this <code>Gant</code> instance
    */
-  public synchronized void removeBuildListener(BuildListener buildListener) {
-    buildListeners.remove(buildListener)
-    ant.antProject.removeBuildListener buildListener
+  public synchronized void removeBuildListener ( final BuildListener buildListener ) {
+    buildListeners.remove ( buildListener )
+    ant.antProject.removeBuildListener ( buildListener )
   }
-
-  // calls a target wrapped in BuildListener event handling
-  private withTargetEvent(targetName, targetDescription, Closure callable) {
-      def antTarget = new Target(name:targetName, project: ant.antProject, description: targetDescription)
-      def event = new GantEvent(antTarget, this)
-      def targetResult
-      try {
-        buildListeners.each { BuildListener b -> b.targetStarted event }
-        targetResult = callable.call()
-        buildListeners.each { BuildListener b -> b.targetFinished event }
-      }
-      catch (Exception e) {
-        event.exception = e
-        buildListeners.each { BuildListener b -> b.targetFinished event }
-        throw e
-      }
-      return targetResult
+  /**
+   *  Call a target wrapped in <code>BuildListener</code> event handler.
+   */
+  private withTargetEvent ( targetName , targetDescription , Closure callable ) {
+    def antTarget = new Target ( name : targetName , project : ant.antProject , description : targetDescription )
+    def event = new GantEvent ( antTarget , this )
+    def targetResult = null
+    try {
+      buildListeners.each { BuildListener b -> b.targetStarted ( event ) }
+      targetResult = callable.call()
+      buildListeners.each { BuildListener b -> b.targetFinished ( event ) }
+    }
+    catch ( Exception e ) {
+      event.exception = e
+      buildListeners.each { BuildListener b -> b.targetFinished ( event ) }
+      throw e
+    }
+    return targetResult
   }
   /**
    *  Method holding all the code common to all construction.
@@ -127,8 +124,8 @@ public class GantBinding extends Binding implements Cloneable {
             targetName = map.keySet ( ).iterator ( ).next ( )
             // Handle ambiguous case by forbidding implicitly named targets to be named 'name'.
             targetDescription = map[ targetName ]
-            // Create fake name/desc entries in the map so that targets closures can still take advantage of
-            // it.name and it.desc
+            // Create fake name/description entries in the map so that targets closures can still take
+            // advantage of it.name and it.description
             targetMap[nameKey]  = targetName
             targetMap[descriptionKey]  = targetDescription
         }
@@ -158,7 +155,7 @@ public class GantBinding extends Binding implements Cloneable {
         owner.setVariable ( targetName + '_description' , targetDescription )  //  For backward compatibility.
       } )
     setVariable ( 'task' , { Map<String, String> map , Closure closure ->
-        System.err.println ( "task has now been removed from Gant, please update your Gant files to use target instead of task." )
+        System.err.println ( 'task has now been removed from Gant, please update your Gant files to use target instead of task.' )
         System.exit ( -99 ) ;
       } )
     setVariable ( 'targetDescriptions' , new TreeMap ( ) )
@@ -225,16 +222,19 @@ public class GantBinding extends Binding implements Cloneable {
 /**
  *  Class to instantiate for processing references to the Ant symbol in the binding.
  *
- *  @author Peter Ledbrook.
+ *  @author Peter Ledbrook
  */
 class DeprecatedAntBuilder extends GantBuilder {
   DeprecatedAntBuilder ( GantBuilder b ) { super ( b.project ) }
-  def invokeMethod ( String name , args ) {
+  private void printDeprecationMessage ( ) {
     System.err.println ( 'Ant is deprecated, please amend your Gant files to use ant instead of Ant.' )
+  }
+  def invokeMethod ( String name , args ) {
+    printDeprecationMessage ( )
     super.invokeMethod ( name , args )
   }
   def getProperty ( String name ) {
-    System.err.println ( 'Ant is deprecated, please amend your Gant files to use ant instead of Ant.' )
+    printDeprecationMessage ( )
     super.getProperty ( name )
   }
 }

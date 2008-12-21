@@ -140,7 +140,7 @@ final class Gant {
   /**
    *  A list of strings containing the locations of Gant modules.
    */
-  List gantLib = []
+  List gantLib = [ ]
   /**
    *  The script that will be run when { @link #processTargets ( ) } is called. It is initialised when a
    *  script is loaded. Note that it has a dynamic type because the script may be loaded from a different
@@ -183,19 +183,17 @@ final class Gant {
    *  @param p the <code>org.apache.tools.ant.Project</code> to use.
    */
   public Gant ( org.apache.tools.ant.Project p ) { this ( new GantBinding ( p ) ) }
-
-
   /**
-   * Adds a BuildListener instance to this Gant instance
+   *  Add a <code>BuildListener</code> instance to this <code>Gant</code> instance.
    */
-  public void addBuildListener(BuildListener buildListener) {
-    binding.addBuildListener buildListener
+  public void addBuildListener ( final BuildListener buildListener ) {
+    binding.addBuildListener ( buildListener )
   }
   /**
-   * Removes a BuildListener instance from this Gant instance 
+   *  Remove a <code>BuildListener</code> instance from this <code>Gant</code> instance 
    */
-  public void removeBuildListener(BuildListener buildListener) {
-    binding.removeBuildListener buildListener 
+  public void removeBuildListener ( final BuildListener buildListener ) {
+    binding.removeBuildListener ( buildListener ) 
   }
   /**
    *  Treats the given text as a Gant script and loads it.
@@ -318,8 +316,7 @@ final class Gant {
     Integer returnCode = 0
     final processDispatch = { target ->
       try {
-
-        Object callable = owner.binding.getVariable(target)
+        Object callable = owner.binding.getVariable ( target )
         def returnValue = callable.call ( )
         returnCode = ( returnValue instanceof Number ) ? returnValue.intValue ( ) : 0
       }
@@ -329,25 +326,23 @@ final class Gant {
       }
       catch ( Exception e ) { throw new TargetExecutionException ( e.toString ( ) , e ) }
     }
-    if ( targets.size ( ) > 0 ) {
-      withBuildListeners { targets.each { target -> processDispatch ( target ) } } 
-    }
-    else {
-      withBuildListeners { processDispatch ('default') }
-    }
+    if ( targets.size ( ) > 0 ) { withBuildListeners { targets.each { target -> processDispatch ( target ) } } }
+    else { withBuildListeners { processDispatch ( 'default' ) } }
     returnCode
   }
-
+  /**
+   *  Execute a dispatch with allthe <code>BuildListener</code>s informed.
+   */
   private withBuildListeners(Closure callable) {
-      def event = new GantEvent(binding.ant.antProject, binding)
+      def event = new GantEvent ( binding.ant.antProject , binding )
       try {
-        binding.buildListeners.each { BuildListener listener -> listener.buildStarted event }
-        callable.call()
-        binding.buildListeners.each { BuildListener listener -> listener.buildFinished event }
+        binding.buildListeners.each { BuildListener listener -> listener.buildStarted ( event ) }
+        callable.call ( )
+        binding.buildListeners.each { BuildListener listener -> listener.buildFinished ( event ) }
       }
-      catch (Exception e) {
+      catch ( Exception e ) {
         event.exception = e
-        binding.buildListeners.each { BuildListener listener -> listener.buildFinished event }
+        binding.buildListeners.each { BuildListener listener -> listener.buildFinished ( event ) }
         throw e
       }     
   }

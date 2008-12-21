@@ -23,6 +23,7 @@ import java.util.Map ;
 import groovy.lang.Closure ;
 import groovy.util.AntBuilder ;
 
+import org.apache.tools.ant.BuildListener ;
 import org.apache.tools.ant.BuildLogger ;
 import org.apache.tools.ant.Project ;
 
@@ -60,7 +61,8 @@ public class GantBuilder extends AntBuilder {
    *  @param arguments The parameters to the method call.
    *  @return The value returned by the method call or null if no value is returned.
    */
-  @Override @SuppressWarnings ( "unchecked" ) public Object invokeMethod ( final String name , final Object arguments ) {
+  @SuppressWarnings ( "unchecked" ) 
+  @Override public Object invokeMethod ( final String name , final Object arguments ) {
     if ( GantState.dryRun ) {
       if ( GantState.verbosity > GantState.SILENT ) {
         int padding = 9 - name.length ( ) ;
@@ -97,7 +99,7 @@ public class GantBuilder extends AntBuilder {
       final Field field = getClass ( ).getSuperclass ( ).getDeclaredField ( "project" ) ;
       field.setAccessible ( true ) ;
       final Project project = (Project) field.get ( this ) ;
-      final List<?> listeners = project.getBuildListeners ( ) ;
+      final List<? extends BuildListener> listeners = project.getBuildListeners ( ) ;
       assert listeners.size ( ) == 1 ;
       final BuildLogger logger = (BuildLogger) listeners.get ( 0 ) ;
       logger.setMessageOutputLevel ( GantState.verbosity ) ;
