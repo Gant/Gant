@@ -36,6 +36,9 @@ catch ( MissingPropertyException mpe ) { testCase = null }
 try {  forkCompiles = Boolean.valueOf ( forkCompiles ) }
 catch ( MissingPropertyException mpe ) { forkCompiles = false }
 
+try { testSpecialDistributionVersion}
+catch ( MissingPropertyException mpe ) { testSpecialDistributionVersion = false }
+
 //  The groovy.home property is only set if Gant is started from the command line.  When started
 //  programmatically, and in particular via the Gant Ant task, it will have value null.  If the groovy.home
 //  property is set then either it is a copy of the GROOVY_HOME environment variable if that is set or it is
@@ -106,12 +109,19 @@ final distributionDirectories = [ 'documentation' , 'examples' , '.settings' , s
  //  option in the 1.5.0 and 1.5.1 versions of Groovyc and this is essential to get things to work
  //  correctly.  Gant can still be built and distributed against Groovy 1.5.0 and 1.5.1 but it has to be
  //  done the hard (manual) way.
+ //
+ //  Allow a mechanism for testing individual distribution entries as well as producing all of them.
 
 final distributionVersions = [ : ]
-[ groovy15Version , groovy16Version , groovy17Version ].each { version ->
-                                                               distributionVersions.put ( 'groovy-' + version , [ groupId : 'org.codehaus.groovy' , artifactId : 'groovy-all' , version : version ] )
+ if ( testSpecialDistributionVersion ) {
+   distributionVersions.put ( 'groovy-' + groovy16Version , [ groupId : 'org.codehaus.groovy' , artifactId : 'groovy-all' , version : groovy16Version ] )
+ }
+ else {
+   [ groovy15Version , groovy16Version , groovy17Version ].each { version ->
+     distributionVersions.put ( 'groovy-' + version , [ groupId : 'org.codehaus.groovy' , artifactId : 'groovy-all' , version : version ] )
+   }
+   distributionVersions.put ( 'standalone' , [ groupId : 'org.codehaus.groovy' , artifactId : 'groovy-all' , version : groovyStandaloneVersion ] )
 }
-distributionVersions.put ( 'standalone' , [ groupId : 'org.codehaus.groovy' , artifactId : 'groovy-all' , version : groovyStandaloneVersion ] )
 
 //  As Jürgen Hermann pointed out the trailing / on the URL is very important.
 
