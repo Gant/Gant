@@ -67,7 +67,7 @@ target ( 'default' : '' ) { something ( ) }
   //  instantiates the class.  Test both correct and errorful behaviour
   private final targetsBuildScriptClass =  "includeTargets <<  groovyShell.evaluate ( '''${targetsScriptText} ; return ${targetsClassName}''' , '${targetsClassName}' )\n" + targetsBuildScriptBase
   private final targetsErrorBuildScriptClass =  "includeTargets <<  groovyShell.evaluate ( '''${targetsScriptText}''' , '${targetsClassName}' )\n" + targetsBuildScriptBase
-  private final resultErrorEvaluatingScript = 'Standard input, line 1 -- Error evaluating Gantfile: ' + ( ( groovyMinorVersion < 7 ) ? 'null' : "Cannot get property 'class' on null object" ) + '\n'
+  private final resultErrorEvaluatingScript = 'Standard input, line 1 -- Error evaluating Gantfile: ' + ( ( groovyMinorVersion < 6 ) ? 'null' : "Cannot get property 'class' on null object" ) + '\n'
   private final String targetsBuildScriptFile
   private final targetsBuildScriptString =  "includeTargets <<  '''${targetsScriptText}'''\n" + targetsBuildScriptBase
   private final targetsBuildClassClass =  "includeTargets <<  groovyShell.evaluate ( '''${targetsClassText} ; return ${targetsClassName}''' )\n" + targetsBuildScriptBase
@@ -488,13 +488,7 @@ includeTargets * gant.targets.Clean
 target ( test : '' ) { }
 '''
     assertEquals ( -2 , processCmdLineTargets ( 'test' ) )
-    //
-    //  TODO: There is weirdness here: It seems that there is a Groovy 1.5 -> 1.6 -> 1.7 change here in that
-    //  the line number reported for the error changes.
-    //
-    System.err.println ( 'testErrorNoPower:  Has an error been introduced in the 1.5 -> 1.6 -> 1.7 changes?' )
-    def lineNumber = groovyMinorVersion == 6 ? 3 : 2 
-    assertEquals ( "Standard input, line ${lineNumber} -- Error evaluating Gantfile: No signature of method: org.codehaus.gant.IncludeTargets.multiply() is applicable for argument types: (java.lang.Class) values: {class gant.targets.Clean}\n" , output )
+    assertEquals ( "Standard input, line 2 -- Error evaluating Gantfile: No signature of method: org.codehaus.gant.IncludeTargets.multiply() is applicable for argument types: (java.lang.Class) values: {class gant.targets.Clean}\n" , output )
   }
   void testErrorNullPower ( ) {
     script = '''
