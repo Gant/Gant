@@ -17,10 +17,12 @@ package org.codehaus.gant.ant.tests ;
 import java.io.BufferedReader ;
 import java.io.File ;
 import java.io.IOException ;
+import java.io.InputStream ;
 import java.io.InputStreamReader ;
 
 import java.util.ArrayList ;
 import java.util.List ;
+import java.util.Map ;
 
 import junit.framework.TestCase ;
 
@@ -36,7 +38,27 @@ import org.apache.tools.ant.ProjectHelper ;
  *  @author Russel Winder
  */
 public class Gant_Test extends TestCase {
-  private final String path = "src/test/groovy/org/codehaus/gant/ant/tests" ;
+  private final String separator = System.getProperty ( "file.separator" ) ;
+  private final boolean isWindows = System.getProperty ( "os.name" ).startsWith ( "Windows" ) ;
+  private final String path ; {
+    final StringBuilder sb = new StringBuilder ( ) ;
+    sb.append ( "src" ) ;
+    sb.append ( separator ) ;
+    sb.append ( "test" ) ;
+    sb.append ( separator ) ;
+    sb.append ( "groovy" ) ;
+    sb.append ( separator ) ;
+    sb.append ( "org" ) ;
+    sb.append ( separator ) ;
+    sb.append ( "codehaus" ) ;
+    sb.append ( separator ) ;
+    sb.append ( "gant" ) ;
+    sb.append ( separator ) ;
+    sb.append ( "ant" ) ;
+    sb.append ( separator ) ;
+    sb.append ( "tests" ) ;
+    path = sb.toString ( ) ;
+  }
   private final File antFile = new File ( path , "gantTest.xml" ) ;
   private Project project ;
 
@@ -100,9 +122,35 @@ public class Gant_Test extends TestCase {
     assertEquals ( "OK." , returnValue ) ;
   }
   /*
+   *  A stream gobbler for the spawned process used by the <code>runAnt</code> method in the following
+   *  tests.
+   *
+   *  @author Russel Winder
+   */
+  final static class StreamGobbler extends Thread {
+    final InputStream is ;
+    final StringBuilder sb ;
+    public StreamGobbler ( final InputStream is , final StringBuilder sb ) {
+      this.is = is ;
+      this.sb = sb ;
+    }
+    public void run ( ) {
+      try {
+        final BufferedReader br = new BufferedReader ( new InputStreamReader ( is ) ) ;
+        while ( true ) {
+          final String line = br.readLine ( ) ;  //  Could throw an IOException hence the try block.
+          if ( line == null ) { break ; }
+          sb.append ( line ).append ( '\n' ) ;
+        }
+      }
+      catch ( final IOException ioe ) { fail ( "Got an IOException reading a line in the read thread." ) ; }
+    }
+  } ;
+  /*
    *  Run Ant in a separate process.  Return the string that results.
    *
-   *  <p>This method assumes that the command ant is the the path and is executable.</p>
+   *  <p>This method assumes that either the environment variable ANT_HOME is set to a complete Ant
+   *  installation or that the command ant (ant.bat on Windows) is in the path.</p>
    *
    *  <p>As at 2008-12-06 Canoo CruiseControl runs with GROOVY_HOME set to /usr/local/java/groovy, and
    *  Codehaus Bamboo runs without GROOVY_HOME being set.</p>
@@ -113,7 +161,16 @@ public class Gant_Test extends TestCase {
    */
   private String runAnt ( final String xmlFile , final int expectedReturnCode , final boolean withClasspath ) {
     final List<String> command = new ArrayList<String> ( ) ;
-    command.add ( "ant" ) ;
+    final String antHomeString = System.getenv ( "ANT_HOME" ) ;
+    String antCommand ;
+    if ( antHomeString != null ) { antCommand = antHomeString + separator + "bin" + separator  + "ant" ; }
+    else { antCommand = "ant" ; }
+    if ( isWindows ) {
+      command.add ( "cmd.exe" ) ;
+      command.add ( "/c" ) ;
+      antCommand += ".bat" ;
+    }
+    command.add ( antCommand ) ;
     command.add ( "-f" ) ;
     command.add ( xmlFile ) ;
     if ( withClasspath ) {
@@ -123,32 +180,25 @@ public class Gant_Test extends TestCase {
       }
     }
     final ProcessBuilder pb = new ProcessBuilder ( command ) ;
+    final StringBuilder outputStringBuilder = new StringBuilder ( ) ;
+    final StringBuilder errorStringBuilder = new StringBuilder ( ) ;
     try {
-      final StringBuilder sb = new StringBuilder ( ) ;
       final Process p = pb.start ( ) ;  //  Could throw an IOException hence the try block.
-      final BufferedReader br = new BufferedReader ( new InputStreamReader ( p.getInputStream ( ) ) ) ;
-      final Thread readThread = new Thread ( new Runnable ( ) {
-          public void run ( ) {
-            try {
-              while ( true ) {
-                final String line = br.readLine ( ) ;  //  Could throw an IOException hence the try block.
-                if ( line == null ) { break ; }
-                sb.append ( line ) ;
-                sb.append ( System.getProperty ( "line.separator" ) ) ;
-              }
-            }
-            catch ( final IOException ioe ) { fail ( "Got an IOException reading a line in the read thread." ) ; }
-          }
-        } ) ;
-      readThread.start ( ) ;
+      final Thread outputGobbler = new StreamGobbler ( p.getInputStream ( ) , outputStringBuilder ) ;
+      final Thread errorGobbler = new StreamGobbler ( p.getErrorStream ( ) , errorStringBuilder ) ;
+      outputGobbler.start ( ) ;
+      errorGobbler.start ( ) ;
       try { assertEquals ( expectedReturnCode , p.waitFor ( ) ) ; }
       catch ( final InterruptedException ie ) { fail ( "Got an InterruptedException waiting for the Ant process to finish." ) ; }
-      try { readThread.join ( ) ;}
-      catch ( final InterruptedException ie ) { fail ( "Got an InterruptedException waiting for the read thread to terminate." ) ; }
-      return sb.toString ( ) ;
+      try { outputGobbler.join ( ) ;}
+      catch ( final InterruptedException ie ) { fail ( "Got an InterruptedException waiting for the output gobbler to terminate." ) ; }
+      try { errorGobbler.join ( ) ;}
+      catch ( final InterruptedException ie ) { fail ( "Got an InterruptedException waiting for the error gobbler to terminate." ) ; }
+      System.err.println ( errorStringBuilder ) ;
+      return outputStringBuilder.toString ( ) ;
     }
     catch ( final Exception e ) { fail ( "Got a " +  e.getClass ( ).getName ( ) + " from starting the process." ) ; }
-    //  Keep the compiler happy, it doesn't realize that execution cannot get here.
+    //  Keep the compiler happy, it doesn't realize that execution cannot get here -- i.e. that fail is a non-returning function.
     return null ;
   }
   /*
@@ -158,15 +208,17 @@ public class Gant_Test extends TestCase {
   private String createBaseMessage ( ) {
     final StringBuilder sb = new StringBuilder ( ) ;
     sb.append ( "Buildfile: " ) ;
-    sb.append ( path ) ;
-    sb.append ( "/gantTest.xml\n\n-initializeWithGroovyHome:\n\n-initializeNoGroovyHome:\n\ngantTestDefaultFileDefaultTarget:\n" ) ;
+    sb.append ( path ).append ( separator ) ;
+    sb.append ( "gantTest.xml\n\n-initializeWithGroovyHome:\n\n-initializeNoGroovyHome:\n\ngantTestDefaultFileDefaultTarget:\n" ) ;
     return sb.toString ( ) ;
   }
   private String trimTimeFromSuccessfulBuild ( final String message ) {
     return message.replaceFirst ( "Total time: [0-9]*.*" , "" ) ;
   }
   public void testRunningAntFromShellFailsNoClasspath ( ) {
-    assertEquals ( createBaseMessage ( ) , runAnt ( path + "/gantTest.xml" , 1 , false ) ) ;
+    //  On Windows the ant.bat file always returns zero :-(
+    final int returnCode = isWindows ? 0 : 1 ;
+    assertEquals ( createBaseMessage ( ) , runAnt ( path + separator + "gantTest.xml" , returnCode , false ) ) ;
   }
   //
   //  TODO: Find out why this fails on Canoo CruiseControl even though it passes locally and on Codehaus
@@ -176,7 +228,7 @@ public class Gant_Test extends TestCase {
   //  Canoo Cruise Control but not on any other system.
   //
   public void testRunningAntFromShellSuccessful ( ) {
-    assertEquals ( createBaseMessage ( ) + "\nBUILD SUCCESSFUL\n\n", trimTimeFromSuccessfulBuild ( runAnt ( path + "/gantTest.xml" , 0 , true ) ) ) ;
+    assertEquals ( createBaseMessage ( ) + "\nBUILD SUCCESSFUL\n\n", trimTimeFromSuccessfulBuild ( runAnt ( path + separator + "gantTest.xml" , 0 , true ) ) ) ;
   }
   /*
    *  The following test is based on the code presented in email exchanges on the Groovy developer list by
@@ -193,9 +245,11 @@ public class Gant_Test extends TestCase {
   //  Codehaus Bamboo seems to not have any access to the detailed logs.
   // 
   public void testBasedirInSubdir ( ) {
-    final String pathToDirectory = System.getProperty ( "user.dir" )  + System.getProperty ( "file.separator" ) + path ;
+    final String pathToDirectory = System.getProperty ( "user.dir" )  + separator + path ;
     final StringBuilder sb = new StringBuilder ( ) ;
-    sb.append ( "Buildfile: src/test/groovy/org/codehaus/gant/ant/tests/basedir.xml\n     [echo] basedir::ant basedir=" ) ;
+    sb.append ( "Buildfile: " ) ;
+    sb.append ( path ).append ( separator ) ;
+    sb.append ( "basedir.xml\n     [echo] basedir::ant basedir=" ) ;
     sb.append ( pathToDirectory ) ;
     sb.append ( "\n\n-initializeWithGroovyHome:\n\n-initializeNoGroovyHome:\n\nbuild:\n   [groovy] basedir::groovy basedir=" ) ;
     sb.append ( pathToDirectory ) ;
@@ -221,6 +275,6 @@ public class Gant_Test extends TestCase {
     //sb.append ( "\n     [gant] basedir::gant basedir=" ) ;
     //sb.append ( pathToDirectory ) ;
     sb.append ( "\n\nBUILD SUCCESSFUL\n\n" ) ;
-    assertEquals ( sb.toString ( ) , trimTimeFromSuccessfulBuild ( runAnt ( path + System.getProperty ( "file.separator" ) + "basedir.xml" , 0 , false ) ) ) ;
+    assertEquals ( sb.toString ( ) , trimTimeFromSuccessfulBuild ( runAnt ( path + separator + "basedir.xml" , 0 , false ) ) ) ;
   }
 }
