@@ -153,7 +153,7 @@ public class Gant extends Task {
     ant.invokeMethod ( "property" , new Object[] { environmentParameter } ) ;
     final GantBinding binding = new GantBinding ( ) ;
     binding.setVariable ( "ant" , ant ) ;
-    binding.setVariable ( "Ant" , ant ) ; // TODO: deprecate and remove this.
+    binding.setVariable ( "Ant" , ant ) ; // TODO : deprecate and remove this.
     for ( final Definition definition : definitions ) {
       final Map<String,String> definitionParameter = new HashMap<String,String> ( ) ;
       definitionParameter.put ( "name" , definition.getName ( ) ) ;
