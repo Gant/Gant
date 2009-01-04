@@ -15,14 +15,14 @@
 package org.codehaus.gant.tests
 
 /**
- *  A test to ensure that creating a new Gant object and using works. 
+ *  A test to ensure that creating a new Gant object and using works.
  *
  *  @author Russel Winder <russel.winder@concertant.com>
  */
 final class SubGant_Test extends GantTestCase {
   final targetName = 'targetName'
   final resultMessage = 'Do thing.'
-  File buildFile 
+  File buildFile
   public void setUp ( ) {
     super.setUp ( )
     buildFile = File.createTempFile ( 'gant_' , '_SubGant_Test' ) // Must ensure name is a valid Java class name.
@@ -80,7 +80,7 @@ target ( '${targetName}' : '' ) {
     assertEquals ( 'flobadob = weed\n' , output )
     assertEquals ( 0 , processCmdLineTargets ( 'doOutput' ) )
     //
-    //  TODO:  Correct this erroneous result.
+    //  TODO :  Correct this erroneous result.
     //
     assertEquals ( 'flobadob = weed\nflobadob = weed\n' , output )
   }

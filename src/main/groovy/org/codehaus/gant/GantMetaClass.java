@@ -46,7 +46,7 @@ public class GantMetaClass extends DelegatingMetaClass {
    *  The set of all targets that have been called.  This is a global variable shared by all instances of
    *  <code>GantMetaClass</code>.
    *
-   *  <p>TODO: This code is a long way from thread safe, and so it needs fixing.  Should this variable be
+   *  <p>TODO : This code is a long way from thread safe, and so it needs fixing.  Should this variable be
    *  moved to the GantState class, which is the class that holds other bits of the internal shared state?
    *  Should a different data structure be used, one that is a bit more thread safe?  Arguably it is
    *  reasonable for this to be a synchronized object.</p>

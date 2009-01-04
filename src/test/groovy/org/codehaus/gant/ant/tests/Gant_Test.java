@@ -218,13 +218,6 @@ public class Gant_Test extends TestCase {
     //  On Windows the ant.bat file always returns zero :-(
     assertEquals ( createBaseMessage ( ) , runAnt ( path + separator + "gantTest.xml" , ( isWindows ? 0 : 1 ) , false ) ) ;
   }
-  //
-  //  TODO: Find out why this fails on Canoo CruiseControl even though it passes locally and on Codehaus
-  //  Bamboo.  Data from builds 139--143 indicate that Ant is failing to executing anything at all.  This
-  //  implies a configuration issue that is not true for the following test which also fails but ant does
-  //  actually start.  This implies it is something to do with the path to the XML file that is a problem on
-  //  Canoo Cruise Control but not on any other system.
-  //
   public void testRunningAntFromShellSuccessful ( ) {
     assertEquals ( createBaseMessage ( ) + "\nBUILD SUCCESSFUL\n\n", trimTimeFromSuccessfulBuild ( runAnt ( path + separator + "gantTest.xml" , 0 , true ) ) ) ;
   }
@@ -232,16 +225,6 @@ public class Gant_Test extends TestCase {
    *  The following test is based on the code presented in email exchanges on the Groovy developer list by
    *  Chris Miles.  cf.  GANT-50.  This assumes that the tests are run from a directory other than this one.
    */
-  //
-  //  TODO: Find out why this test fails on Codehaus Bamboo and Canoo CruiseControl even though it passes
-  //  locally.
-  //
-  //  On Canoo Cruise Control, ant starts but then fails in the build target.  It looks like an immediate
-  //  fail so nothing in the build target is happening.  Could be a classpath problem for the Groovy ant
-  //  task?
-  //
-  //  Codehaus Bamboo seems to not have any access to the detailed logs.
-  //
   public void testBasedirInSubdir ( ) {
     final String pathToDirectory = System.getProperty ( "user.dir" )  + separator + path ;
     final StringBuilder sb = new StringBuilder ( ) ;
@@ -253,7 +236,7 @@ public class Gant_Test extends TestCase {
     sb.append ( pathToDirectory ) ;
     sb.append ( "\n   [groovy] basedir::gant basedir=" ) ;
     //
-    //  TODO:  this is wrong, it confirms the presence of the bug.
+    //  TODO :  this is wrong, it confirms the presence of the bug.
     //
     //sb.append ( pathToDirectory ) ;
     sb.append ( System.getProperty ( "user.dir" ) ) ;

@@ -15,7 +15,7 @@
 package org.codehaus.gant.tests
 
 /**
- *  A test to ensure that the target specification works. 
+ *  A test to ensure that the target specification works.
  *
  *  @author Russel Winder <russel.winder@concertant.com>
  */
@@ -24,26 +24,26 @@ final class Targets_Test extends GantTestCase {
   void testNoDescription ( ) {
     script = "target ( noDescription : '' ) { print ( '${result}' ) }"
     assertEquals ( 0 , processCmdLineTargets ( 'noDescription' ) )
-    assertEquals ( result , output ) 
+    assertEquals ( result , output )
   }
   void testWithDescription ( ) {
     script = "target ( withDescription : 'Blah blah' ) { print ( '${result}' ) }"
     assertEquals ( 0 , processCmdLineTargets ( 'withDescription' ) )
-    assertEquals ( result , output ) 
+    assertEquals ( result , output )
   }
   void testEmptyMap ( ) {
     script = "target ( [ : ] ) { print ( '${result}' ) }"
     assertEquals ( -2 , processCmdLineTargets ( 'withDescription' ) )
-    assertEquals ( 'Standard input, line 1 -- Error evaluating Gantfile: Target specified without a name.\n' , output ) 
+    assertEquals ( 'Standard input, line 1 -- Error evaluating Gantfile: Target specified without a name.\n' , output )
   }
   void testMultipleEntries ( ) {
     script = "target ( fred : '' , debbie : '' ) { print ( '${result}' ) }"
     assertEquals ( -2 , processCmdLineTargets ( 'withDescription' ) )
-    assertEquals ( 'Standard input, line 1 -- Error evaluating Gantfile: Target specified without a name.\n' , output ) 
+    assertEquals ( 'Standard input, line 1 -- Error evaluating Gantfile: Target specified without a name.\n' , output )
   }
   void testOverwriting ( ) {
     //
-    //  TODO: Fix the problem of overwriting targets.  Until changed, creating a new symbol in the binding
+    //  TODO : Fix the problem of overwriting targets.  Until changed, creating a new symbol in the binding
     //  using a target overwrites the old symbol.  This is clearly wrong behaviour and needs amending.
     //
     script = '''
@@ -65,12 +65,12 @@ target = 10
   void testStringParameter ( ) {
     script = "target ( 'string' ) { print ( '${result}' ) }"
     assertEquals ( -2 , processCmdLineTargets ( 'string' ) )
-    assertTrue ( output.startsWith ( 'Standard input, line 1 -- Error evaluating Gantfile: No signature of method: org.codehaus.gant.GantBinding$_initializeGantBinding_closure' ) ) 
+    assertTrue ( output.startsWith ( 'Standard input, line 1 -- Error evaluating Gantfile: No signature of method: org.codehaus.gant.GantBinding$_initializeGantBinding_closure' ) )
   }
   void testStringSequenceParameter ( ) {
     script = "target ( 'key' , 'description' ) { print ( '${result}' ) }"
     assertEquals ( -2 , processCmdLineTargets ( 'key' ) )
-    assertTrue ( output.startsWith ( 'Standard input, line 1 -- Error evaluating Gantfile: No signature of method: org.codehaus.gant.GantBinding$_initializeGantBinding_closure' ) ) 
+    assertTrue ( output.startsWith ( 'Standard input, line 1 -- Error evaluating Gantfile: No signature of method: org.codehaus.gant.GantBinding$_initializeGantBinding_closure' ) )
   }
   void testMissingTargetInScriptExplicitTarget ( ) {
     script = 'setDefaultTarget ( blah )'
