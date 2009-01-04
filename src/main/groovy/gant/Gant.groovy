@@ -1,6 +1,6 @@
 //  Gant -- A Groovy way of scripting Ant tasks.
 //
-//  Copyright © 2006-8 Russel Winder
+//  Copyright © 2006-9 Russel Winder
 //
 //  Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in
 //  compliance with the License. You may obtain a copy of the License at
@@ -15,13 +15,15 @@
 package gant
 
 import java.lang.reflect.InvocationTargetException
+
 import org.apache.commons.cli.GnuParser
+
 import org.codehaus.gant.GantBinding
 import org.codehaus.gant.GantState
+
 import org.codehaus.groovy.control.CompilationUnit
 import org.codehaus.groovy.control.CompilerConfiguration
 import org.codehaus.groovy.runtime.InvokerInvocationException
-
 
 /**
  *  This class provides infrastructure and an executable command for using Groovy + AntBuilder as a build
@@ -84,7 +86,7 @@ import org.codehaus.groovy.runtime.InvokerInvocationException
  *
  *  @author Russel Winder <russel.winder@concertant.com>
  *  @author Graeme Rocher <graeme.rocher@gmail.com>
- *  @author Peter Ledbrook 
+ *  @author Peter Ledbrook
  */
 final class Gant {
   /**
@@ -139,7 +141,7 @@ final class Gant {
   /**
    *  A list of strings containing the locations of Gant modules.
    */
-  List gantLib = []
+  List gantLib = [ ]
   /**
    *  The script that will be run when { @link #processTargets ( ) } is called. It is initialised when a
    *  script is loaded. Note that it has a dynamic type because the script may be loaded from a different
@@ -365,7 +367,7 @@ final class Gant {
     useCache = options.c ? true : false
     if ( options.f ) {
       if ( options.f == '-' ) { buildSource = System.in ; buildClassName = standardInputClassName }
-      else { buildSource = new File ( options.f ) }
+      else { buildSource = new File ( (String) options.f ) }
     }
     if ( options.h ) { cli.usage ( ) ; return 0 }
     if ( options.l ) { gantLib.addAll ( options.l.split ( System.properties.'path.separator' ) as List ) }
@@ -434,7 +436,7 @@ final class Gant {
     }
     catch ( TargetMissingPropertyException tmpe ) {
       if ( verbosity > GantState.NORMAL ) { tmpe.printStackTrace ( ) }
-      else { printMessageFrom ( tmpe ) }      
+      else { printMessageFrom ( tmpe ) }
       return defaultReturnCode
     }
     catch ( Exception e ) {
@@ -458,7 +460,7 @@ final class Gant {
     if ( script == null ) { throw new RuntimeException ( "No script has been loaded!" ) }
     script.binding = binding
     script.run ( )
-    return invokeMethod ( function , targets )
+    return (Integer) invokeMethod ( function , targets )
   }
   /**
    *  Compile a script in the context of dealing with cached compiled build scripts.
@@ -474,5 +476,5 @@ final class Gant {
   /**
    *  The entry point for command line invocation.
    */
-  public static void main ( String[] args ) { System.exit ( ( ( new Gant ( ) ).processArgs ( args ) ) ) }  // IntelliJ IDEA thinks processTargets returns an Object.
+  public static void main ( String[] args ) { System.exit ( ( ( new Gant ( ) ).processArgs ( args ) ) ) }
 }

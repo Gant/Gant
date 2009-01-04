@@ -3,6 +3,9 @@
 
 Patch up the startGroovy script to deal with MSYS issues.
 
+Amend the org.codehaus.gant.ant.tests.Gant_Test to ensure things work on Windows as well as Ubuntu, Mac OS X
+and Solaris.
+
 
 1.5.0 ( r10067 )
 ----------------

@@ -1,6 +1,6 @@
 //  Gant -- A Groovy way of scripting Ant tasks.
 //
-//  Copyright © 2006-8 Russel Winder
+//  Copyright © 2006-9 Russel Winder
 //
 //  Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in
 //  compliance with the License. You may obtain a copy of the License at
@@ -73,14 +73,14 @@ public abstract class GantTestCase extends GroovyTestCase {
     System.setOut ( savedOut ) ;
     super.tearDown ( ) ;
   }
-  protected void setScript ( final String script ) { System.setIn ( new ByteArrayInputStream ( script.getBytes ( ) ) ) ; }
+  protected void setScript ( final String s ) { script = s ; System.setIn ( new ByteArrayInputStream ( script.getBytes ( ) ) ) ; }
   protected Integer processTargets ( ) { gant.loadScript( System.in ) ; return gant.processTargets ( ) ; }
   protected Integer processTargets ( final String s ) { gant.loadScript( System.in ) ; return gant.processTargets ( s ) ; }
   protected Integer processTargets ( final List<String> l ) { gant.loadScript( System.in ) ; return gant.processTargets ( l ) ; }
   protected Integer processCmdLineTargets ( ) { return gant.processArgs( new String[] { "-f" , "-" } ) ; }
   protected Integer processCmdLineTargets ( final String s ) { return gant.processArgs( new String[] { "-f" , "-" , s } ) ; }
   protected Integer processCmdLineTargets ( final List<String> l ) {
-    List<String> args = new ArrayList<String> ( Arrays.asList ( "-f" , "-" ) ) ;
+    final List<String> args = new ArrayList<String> ( Arrays.asList ( "-f" , "-" ) ) ;
     args.addAll ( l ) ;
     return gant.processArgs( args.toArray ( new String[ 0 ] ) ) ; }
   protected String getOutput ( ) { return output.toString ( ).replace ( "\r" , "" ) ; }
