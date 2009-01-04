@@ -32,10 +32,7 @@ final class GantBuilder_Test extends GantTestCase {
     gantBuilder.setMessageOutputLevel ( )
     assertEquals ( GantState.VERBOSE , GantState.verbosity )
   }
-  //
-  //  TODO : Get this test into a suitable state to include.
-  //
-  void XXXX_testGroovycTaskFail ( ) {
+  void testGroovycTaskFail ( ) {
     //
     //  This test can only be guaranteed to work if JUnit is operating in perTest fork mode since otherwise
     //  another test may have caused the Groovyc task to be loaded which leads to a 0 return value.
@@ -47,6 +44,6 @@ target ( hello : '' ) {
 }
 """
     assertEquals ( -13 , processCmdLineTargets ( 'hello' ) )
-    assertTrue ( output.startsWith ( 'No signature of method: standard_input.groovyc() is applicable for argument types: (java.util.LinkedHashMap) values: ' ) )
+    assertTrue ( output.startsWith ( 'groovy.lang.MissingMethodException: No signature of method: standard_input.groovyc() is applicable for argument types: (java.util.LinkedHashMap) values: ' ) )
   }
 }
