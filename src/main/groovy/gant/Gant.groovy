@@ -1,6 +1,6 @@
 //  Gant -- A Groovy way of scripting Ant tasks.
 //
-//  Copyright © 2006-8 Russel Winder
+//  Copyright © 2006-9 Russel Winder
 //
 //  Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in
 //  compliance with the License. You may obtain a copy of the License at
@@ -15,11 +15,16 @@
 package gant
 
 import java.lang.reflect.InvocationTargetException
+
 import org.apache.commons.cli.GnuParser
+
 import org.apache.tools.ant.BuildListener
+import org.apache.tools.ant.Project
+
 import org.codehaus.gant.GantBinding
 import org.codehaus.gant.GantEvent
 import org.codehaus.gant.GantState
+
 import org.codehaus.groovy.control.CompilationUnit
 import org.codehaus.groovy.control.CompilerConfiguration
 import org.codehaus.groovy.runtime.InvokerInvocationException
@@ -85,7 +90,7 @@ import org.codehaus.groovy.runtime.InvokerInvocationException
  *
  *  @author Russel Winder <russel.winder@concertant.com>
  *  @author Graeme Rocher <graeme.rocher@gmail.com>
- *  @author Peter Ledbrook 
+ *  @author Peter Ledbrook
  */
 final class Gant {
   /**
@@ -190,10 +195,10 @@ final class Gant {
     binding.addBuildListener ( buildListener )
   }
   /**
-   *  Remove a <code>BuildListener</code> instance from this <code>Gant</code> instance 
+   *  Remove a <code>BuildListener</code> instance from this <code>Gant</code> instance
    */
   public void removeBuildListener ( final BuildListener buildListener ) {
-    binding.removeBuildListener ( buildListener ) 
+    binding.removeBuildListener ( buildListener )
   }
   /**
    *  Treats the given text as a Gant script and loads it.
@@ -316,8 +321,7 @@ final class Gant {
     Integer returnCode = 0
     final processDispatch = { target ->
       try {
-        Object callable = owner.binding.getVariable ( target )
-        def returnValue = callable.call ( )
+        def returnValue = owner.binding.getVariable ( target ).call ( )
         returnCode = ( returnValue instanceof Number ) ? returnValue.intValue ( ) : 0
       }
       catch ( MissingPropertyException mme ) {
@@ -333,8 +337,8 @@ final class Gant {
   /**
    *  Execute a dispatch with allthe <code>BuildListener</code>s informed.
    */
-  private withBuildListeners(Closure callable) {
-      def event = new GantEvent ( binding.ant.antProject , binding )
+  private withBuildListeners ( Closure callable ) {
+      def event = new GantEvent ( (Project) binding.ant.antProject , (GantBinding) binding )
       try {
         binding.buildListeners.each { BuildListener listener -> listener.buildStarted ( event ) }
         callable.call ( )
@@ -344,7 +348,7 @@ final class Gant {
         event.exception = e
         binding.buildListeners.each { BuildListener listener -> listener.buildFinished ( event ) }
         throw e
-      }     
+      }
   }
   /**
    *  Process the command line options and then call the function to process the targets.
@@ -395,7 +399,7 @@ final class Gant {
     useCache = options.c ? true : false
     if ( options.f ) {
       if ( options.f == '-' ) { buildSource = System.in ; buildClassName = standardInputClassName }
-      else { buildSource = new File ( options.f ) }
+      else { buildSource = new File ( (String) options.f ) }
     }
     if ( options.h ) { cli.usage ( ) ; return 0 }
     if ( options.l ) { gantLib.addAll ( options.l.split ( System.properties.'path.separator' ) as List ) }
@@ -464,7 +468,7 @@ final class Gant {
     }
     catch ( TargetMissingPropertyException tmpe ) {
       if ( verbosity > GantState.NORMAL ) { tmpe.printStackTrace ( ) }
-      else { printMessageFrom ( tmpe ) }      
+      else { printMessageFrom ( tmpe ) }
       return defaultReturnCode
     }
     catch ( Exception e ) {
@@ -488,7 +492,7 @@ final class Gant {
     if ( script == null ) { throw new RuntimeException ( "No script has been loaded!" ) }
     script.binding = binding
     script.run ( )
-    return invokeMethod ( function , targets )
+    return (Integer) invokeMethod ( function , targets )
   }
   /**
    *  Compile a script in the context of dealing with cached compiled build scripts.
@@ -504,5 +508,5 @@ final class Gant {
   /**
    *  The entry point for command line invocation.
    */
-  public static void main ( String[] args ) { System.exit ( ( ( new Gant ( ) ).processArgs ( args ) ) ) }  // IntelliJ IDEA thinks processTargets returns an Object.
+  public static void main ( String[] args ) { System.exit ( ( ( new Gant ( ) ).processArgs ( args ) ) ) }
 }

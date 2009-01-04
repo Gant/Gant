@@ -1,6 +1,6 @@
 //  Gant -- A Groovy way of scripting Ant tasks.
 //
-//  Copyright © 2008 Russel Winder
+//  Copyright © 2008-9 Russel Winder
 //
 //  Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in
 //  compliance with the License. You may obtain a copy of the License at
@@ -22,7 +22,6 @@ import java.io.InputStreamReader ;
 
 import java.util.ArrayList ;
 import java.util.List ;
-import java.util.Map ;
 
 import junit.framework.TestCase ;
 
@@ -127,14 +126,14 @@ public class Gant_Test extends TestCase {
    *
    *  @author Russel Winder
    */
-  final static class StreamGobbler extends Thread {
-    final InputStream is ;
-    final StringBuilder sb ;
+  private static final class StreamGobbler extends Thread {
+    private final InputStream is ;
+    private final StringBuilder sb ;
     public StreamGobbler ( final InputStream is , final StringBuilder sb ) {
       this.is = is ;
       this.sb = sb ;
     }
-    public void run ( ) {
+    @Override public void run ( ) {
       try {
         final BufferedReader br = new BufferedReader ( new InputStreamReader ( is ) ) ;
         while ( true ) {
@@ -145,7 +144,7 @@ public class Gant_Test extends TestCase {
       }
       catch ( final IOException ioe ) { fail ( "Got an IOException reading a line in the read thread." ) ; }
     }
-  } ;
+  }
   /*
    *  Run Ant in a separate process.  Return the string that results.
    *
@@ -174,9 +173,9 @@ public class Gant_Test extends TestCase {
     command.add ( "-f" ) ;
     command.add ( xmlFile ) ;
     if ( withClasspath ) {
-      for ( String path : System.getProperty ( "java.class.path" ).split ( System.getProperty ( "path.separator" ) ) ) {
+      for ( final String p : System.getProperty ( "java.class.path" ).split ( System.getProperty ( "path.separator" ) ) ) {
         command.add ( "-lib" ) ;
-        command.add ( path ) ;
+        command.add ( p ) ;
       }
     }
     final ProcessBuilder pb = new ProcessBuilder ( command ) ;
@@ -217,8 +216,7 @@ public class Gant_Test extends TestCase {
   }
   public void testRunningAntFromShellFailsNoClasspath ( ) {
     //  On Windows the ant.bat file always returns zero :-(
-    final int returnCode = isWindows ? 0 : 1 ;
-    assertEquals ( createBaseMessage ( ) , runAnt ( path + separator + "gantTest.xml" , returnCode , false ) ) ;
+    assertEquals ( createBaseMessage ( ) , runAnt ( path + separator + "gantTest.xml" , ( isWindows ? 0 : 1 ) , false ) ) ;
   }
   //
   //  TODO: Find out why this fails on Canoo CruiseControl even though it passes locally and on Codehaus
@@ -243,7 +241,7 @@ public class Gant_Test extends TestCase {
   //  task?
   //
   //  Codehaus Bamboo seems to not have any access to the detailed logs.
-  // 
+  //
   public void testBasedirInSubdir ( ) {
     final String pathToDirectory = System.getProperty ( "user.dir" )  + separator + path ;
     final StringBuilder sb = new StringBuilder ( ) ;
@@ -266,7 +264,7 @@ public class Gant_Test extends TestCase {
     //  TODO : Why no groovy tag here?
     //
     // sb.append ( "\n   [groovy] basedir::gant basedir=" ) ;
-    sb.append ( "\nbasedir::gant basedir=" ) ; 
+    sb.append ( "\nbasedir::gant basedir=" ) ;
     //
     sb.append ( pathToDirectory ) ;
     //

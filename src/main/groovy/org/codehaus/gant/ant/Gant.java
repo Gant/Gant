@@ -1,6 +1,6 @@
 //  Gant -- A Groovy way of scripting Ant tasks.
 //
-//  Copyright © 2008 Russel Winder
+//  Copyright © 2008-9 Russel Winder
 //
 //  Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in
 //  compliance with the License. You may obtain a copy of the License at
@@ -91,9 +91,9 @@ public class Gant extends Task {
    *  Set the name of the build file to use.  This path is relative to the basedir of the Ant project if it
    *  is set, or the directory in which the job was started if the basedir is not set.
    *
-   *  @param file The name of the file to be used to drive the build.
+   *  @param f The name of the file to be used to drive the build.
    */
-  public void setFile ( final String file ) { this.file = file ; }
+  public void setFile ( final String f ) { file = f ; }
   /**
    *  Set the target to be achieved.
    *
@@ -154,7 +154,7 @@ public class Gant extends Task {
     final GantBinding binding = new GantBinding ( ) ;
     binding.setVariable ( "ant" , ant ) ;
     binding.setVariable ( "Ant" , ant ) ; // TODO: deprecate and remove this.
-    for ( Definition definition : definitions ) {
+    for ( final Definition definition : definitions ) {
       final Map<String,String> definitionParameter = new HashMap<String,String> ( ) ;
       definitionParameter.put ( "name" , definition.getName ( ) ) ;
       definitionParameter.put ( "value" , definition.getValue ( ) ) ;
@@ -164,7 +164,7 @@ public class Gant extends Task {
     final gant.Gant gant = new gant.Gant ( binding ) ;
     gant.loadScript ( new File ( newProject.getBaseDir ( ) , file ) ) ;
     final List<String> targetsAsStrings = new ArrayList<String> ( ) ;
-    for ( GantTarget g : targets ) { targetsAsStrings.add ( g.getValue ( ) ) ; }
+    for ( final GantTarget g : targets ) { targetsAsStrings.add ( g.getValue ( ) ) ; }
     final int returnCode =  gant.processTargets ( targetsAsStrings ) ;
     if ( returnCode != 0 ) { throw new BuildException ( "Gant execution failed with return code " + returnCode + '.' , getLocation ( ) ) ; }
   }

@@ -1,6 +1,6 @@
 //  Gant -- A Groovy way of scripting Ant tasks.
 //
-//  Copyright © 2006-8 Russel Winder
+//  Copyright © 2006-9 Russel Winder
 //
 //  Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in
 //  compliance with the License. You may obtain a copy of the License at
@@ -116,9 +116,9 @@ public class GantMetaClass extends DelegatingMetaClass {
   @Override public Object invokeMethod ( final Object object , final String methodName , final Object[] arguments ) {
     Object returnObject = null ;
     if ( methodName.equals ( "depends" ) ) {
-      for ( Object argument : arguments ) {
+      for ( final Object argument : arguments ) {
         if ( argument instanceof List ) {
-          for ( Object item : (List<?>) argument ) { returnObject = processArgument ( item ) ; }
+          for ( final Object item : (List<?>) argument ) { returnObject = processArgument ( item ) ; }
         }
         else { returnObject = processArgument ( argument ) ; }
       }

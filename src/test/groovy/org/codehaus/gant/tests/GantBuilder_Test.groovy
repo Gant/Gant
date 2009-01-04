@@ -1,6 +1,6 @@
 //  Gant -- A Groovy way of scripting Ant tasks.
 //
-//  Copyright © 2008 Russel Winder
+//  Copyright © 2008-9 Russel Winder
 //
 //  Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in
 //  compliance with the License. You may obtain a copy of the License at
@@ -32,7 +32,9 @@ final class GantBuilder_Test extends GantTestCase {
     gantBuilder.setMessageOutputLevel ( )
     assertEquals ( GantState.VERBOSE , GantState.verbosity )
   }
-  
+  //
+  //  TODO : Get this test into a suitable state to include.
+  //
   void XXXX_testGroovycTaskFail ( ) {
     //
     //  This test can only be guaranteed to work if JUnit is operating in perTest fork mode since otherwise
