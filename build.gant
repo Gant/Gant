@@ -36,6 +36,9 @@ catch ( MissingPropertyException mpe ) { testCase = null }
 try {  forkCompiles = Boolean.valueOf ( forkCompiles ) }
 catch ( MissingPropertyException mpe ) { forkCompiles = false }
 
+try { testSpecialDistributionVersion}
+catch ( MissingPropertyException mpe ) { testSpecialDistributionVersion = false }
+
 //  The groovy.home property is only set if Gant is started from the command line.  When started
 //  programmatically, and in particular via the Gant Ant task, it will have value null.  If the groovy.home
 //  property is set then either it is a copy of the GROOVY_HOME environment variable if that is set or it is
@@ -106,12 +109,19 @@ final distributionDirectories = [ 'documentation' , 'examples' , '.settings' , s
  //  option in the 1.5.0 and 1.5.1 versions of Groovyc and this is essential to get things to work
  //  correctly.  Gant can still be built and distributed against Groovy 1.5.0 and 1.5.1 but it has to be
  //  done the hard (manual) way.
+ //
+ //  Allow a mechanism for testing individual distribution entries as well as producing all of them.
 
 final distributionVersions = [ : ]
-[ groovy15Version , groovy16Version , groovy17Version ].each { version ->
-                                                               distributionVersions.put ( 'groovy-' + version , [ groupId : 'org.codehaus.groovy' , artifactId : 'groovy-all' , version : version ] )
+ if ( testSpecialDistributionVersion ) {
+   distributionVersions.put ( 'groovy-' + groovy16Version , [ groupId : 'org.codehaus.groovy' , artifactId : 'groovy-all' , version : groovy16Version ] )
+ }
+ else {
+   [ groovy15Version , groovy16Version , groovy17Version ].each { version ->
+     distributionVersions.put ( 'groovy-' + version , [ groupId : 'org.codehaus.groovy' , artifactId : 'groovy-all' , version : version ] )
+   }
+   distributionVersions.put ( 'standalone' , [ groupId : 'org.codehaus.groovy' , artifactId : 'groovy-all' , version : groovyStandaloneVersion ] )
 }
-distributionVersions.put ( 'standalone' , [ groupId : 'org.codehaus.groovy' , artifactId : 'groovy-all' , version : groovyStandaloneVersion ] )
 
 //  As Jürgen Hermann pointed out the trailing / on the URL is very important.
 
@@ -147,9 +157,7 @@ final getDependency = { root , dependencies ->
   ant."${antlibXMLns}:dependencies" ( pathId : pathId , filesetId : filesetId ) {
     if ( dependencies instanceof List ) { for ( item in dependencies ) { dependency ( item ) } }
     else { dependency ( dependencies ) }
-    remoteRepositories.each { String reposUrl ->
-        remoteRepository ( url : reposUrl )
-    }
+    remoteRepositories.each { String reposUrl -> remoteRepository ( url : reposUrl ) }
   }
 }
 
@@ -351,6 +359,13 @@ final doDocumentation = { ->
   ant.taskdef ( name : 'groovydoc' , classname : 'org.codehaus.groovy.ant.Groovydoc' )
   def javaApiDocumentationDirectory = apiDocumentationDirectory + '/java'
   def groovyApiDocumentationDirectory = apiDocumentationDirectory + '/groovy'
+  def classpathIdRoot = 'javaDoc'
+  def classpathId = classpathIdRoot + 'PathId'
+  getDependency ( classpathIdRoot , [
+                                     [ groupId : 'org.codehaus.groovy' , artifactId : 'groovy-all' , version : groovyStandaloneVersion ] ,
+                                     [ groupId : 'org.apache.ant' , artifactId : 'ant' , version : antVersion  ] ,
+                                     [ groupId : 'commons-cli' , artifactId : 'commons-cli' , version : commonsCliVersion ]
+                                     ] )
   ant.mkdir ( dir : javaApiDocumentationDirectory )
   ant.mkdir ( dir : groovyApiDocumentationDirectory )
   ant.javadoc (
@@ -367,7 +382,12 @@ final doDocumentation = { ->
                header : "Gant (${gantVersion})" ,
                footer : 'Copyright &copy; 2006&ndash;8 The Codehaus.  All rights reserved.' ,
                source : 1.5
-               )
+               ) {
+    classpath {
+      pathelement ( location : buildClassesDirectory )
+      path ( refid : classpathId )
+    }
+  }  
   ant.groovydoc (
              destdir : groovyApiDocumentationDirectory ,
              sourcepath : sourceDirectory ,
@@ -471,7 +491,7 @@ target ( 'package' : 'Create the jar file for a Groovy installation dependent bu
 }
 
 target ( documentation : 'Create the API documentation of Gant.' ) {
-  depends ( initializeNonDistribution )
+  depends ( compile )
   doDocumentation ( )
 }
 
