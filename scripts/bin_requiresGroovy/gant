@@ -2,7 +2,7 @@
 
 #  Gant -- A Groovy way of scripting Ant tasks.
 #
-#  Copyright © 2006-8 Russel Winder
+#  Copyright © 2006-9 Russel Winder
 #
 #  Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in
 #  compliance with the License. You may obtain a copy of the License at
@@ -16,7 +16,41 @@
 #
 #  Author : Russel Winder <russel.winder@concertant.com>
 
-#  Gant initiation script for Linux and UNIX
+#  Gant initiation script for Linux and UNIX -- requires Groovy version.
+
+#  Solaris 10 does not have readlink as standard -- though some people will have the version from
+#  Sunfreeware which is the same as the version on Ubuntu, Cygwin, MSYS, etc.  Mac OS X has a version of
+#  readlink that is very different to that on Ubuntu, Solaris/Sunfreeware, Cygwin, MSYS, etc.
+#
+#  This function attempts to just do the right thing.
+
+doReadLink ( ) {
+    case `uname` in
+        Darwin )
+            gantLocation=`dirname $1`
+            gantPath=`readlink "$1"`
+            if [ "$gantPath" = "" ]
+            then
+                readlinkValue="$1"
+            else
+                readlinkValue="$gantLocation/$gantPath"
+            fi
+            ;;
+        SunOS )
+            readlinkPath=`which readlink`
+            if [ `expr "$readlinkPath" : '\([^ ]*\)'` = "no" ]
+            then
+                echo "No readlink command available, please set $2."
+                exit 1
+            else
+                readlinkValue=`readlink -f $1`
+            fi
+            ;;
+        * )
+            readlinkValue=`readlink -f $1`
+            ;;
+    esac
+}
 
 #  If GANT_HOME is not set, deduce a path.  Assume the executable is in $GANT_HOME/bin.
 
@@ -24,7 +58,8 @@ if [ -z "$GANT_HOME" ]
 then
     if [ -h $0 ]
     then
-        GANT_HOME=`readlink -f $0`
+        doReadLink $0 GANT_HOME
+        GANT_HOME=$readlinkValue
         GANT_HOME=`dirname $GANT_HOME`
     else
         GANT_HOME=`dirname $0`
@@ -40,7 +75,8 @@ then
     GROOVY_HOME=`which groovy`
     if [ -h $GROOVY_HOME ]
     then
-        GROOVY_HOME=`readlink -f $GROOVY_HOME`
+        doReadLink $GROOVY_HOME GROOVY_HOME
+        GROOVY_HOME=$readlinkValue
     fi
     GROOVY_HOME=`dirname "$GROOVY_HOME"`
     GROOVY_HOME=`dirname "$GROOVY_HOME"`
@@ -54,7 +90,8 @@ then
     ANT_HOME=`which ant`
     if [ -h $ANT_HOME ]
     then
-        ANT_HOME=`readlink -f $ANT_HOME`
+        doReadLink $ANT_HOME ANT_HOME
+        ANT_HOME=$readlinkValue
     fi
     ANT_HOME=`dirname "$ANT_HOME"`
     ANT_HOME=`dirname "$ANT_HOME"`
