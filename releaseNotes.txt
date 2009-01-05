@@ -3,6 +3,10 @@
 
 A first cut at adding BuildListeners added by Graeme Rocher.  cf. GANT-70.
 
+Fix the Posix shell scripts to try and deal with the weirdness of the Mac OS X readlink compared to the one
+on Ubuntu, MSYS, Cygwin.  Solaris doesn't have readlink by default, the Sunfreeware version is the same as
+the one on Ubuntu, MSYS, Cygwin.
+
 
 1.5.1 ( r10110 )
 ----------------
