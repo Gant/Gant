@@ -1,6 +1,6 @@
 //  Gant -- A Groovy way of scripting Ant tasks.
 //
-//  Copyright © 2006-8 Russel Winder
+//  Copyright © 2006-9 Russel Winder
 //
 //  Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in
 //  compliance with the License. You may obtain a copy of the License at
@@ -33,12 +33,12 @@ final class Targets_Test extends GantTestCase {
   }
   void testEmptyMap ( ) {
     script = "target ( [ : ] ) { print ( '${result}' ) }"
-    assertEquals ( -2 , processCmdLineTargets ( 'withDescription' ) )
+    assertEquals ( -4 , processCmdLineTargets ( 'withDescription' ) )
     assertEquals ( 'Standard input, line 1 -- Error evaluating Gantfile: Target specified without a name.\n' , output )
   }
   void testMultipleEntries ( ) {
     script = "target ( fred : '' , debbie : '' ) { print ( '${result}' ) }"
-    assertEquals ( -2 , processCmdLineTargets ( 'withDescription' ) )
+    assertEquals ( -4 , processCmdLineTargets ( 'withDescription' ) )
     assertEquals ( 'Standard input, line 1 -- Error evaluating Gantfile: Target specified without a name.\n' , output )
   }
   void testOverwriting ( ) {
@@ -59,27 +59,27 @@ target ( hello : '' ) { println ( 'Hello 2' ) }
 target ( test : '' ) { }
 target = 10
 '''
-    assertEquals ( -2 , processCmdLineTargets ( 'test' ) )
+    assertEquals ( -4 , processCmdLineTargets ( 'test' ) )
     assertEquals ( 'Standard input, line 3 -- Error evaluating Gantfile: Cannot redefine symbol target\n' , output )
   }
   void testStringParameter ( ) {
     script = "target ( 'string' ) { print ( '${result}' ) }"
-    assertEquals ( -2 , processCmdLineTargets ( 'string' ) )
+    assertEquals ( -4 , processCmdLineTargets ( 'string' ) )
     assertTrue ( output.startsWith ( 'Standard input, line 1 -- Error evaluating Gantfile: No signature of method: org.codehaus.gant.GantBinding$_initializeGantBinding_closure' ) )
   }
   void testStringSequenceParameter ( ) {
     script = "target ( 'key' , 'description' ) { print ( '${result}' ) }"
-    assertEquals ( -2 , processCmdLineTargets ( 'key' ) )
+    assertEquals ( -4 , processCmdLineTargets ( 'key' ) )
     assertTrue ( output.startsWith ( 'Standard input, line 1 -- Error evaluating Gantfile: No signature of method: org.codehaus.gant.GantBinding$_initializeGantBinding_closure' ) )
   }
   void testMissingTargetInScriptExplicitTarget ( ) {
     script = 'setDefaultTarget ( blah )'
-    assertEquals ( -2 , processCmdLineTargets ( 'blah' ) )
+    assertEquals ( -4 , processCmdLineTargets ( 'blah' ) )
     assertEquals ( 'Standard input, line 1 -- Error evaluating Gantfile: No such property: blah for class: standard_input\n' , output )
   }
   void testMissingTargetInScriptDefaultTarget ( ) {
     script = 'setDefaultTarget ( blah )'
-    assertEquals ( -2 , processCmdLineTargets ( ) )
+    assertEquals ( -4 , processCmdLineTargets ( ) )
     assertEquals ( 'Standard input, line 1 -- Error evaluating Gantfile: No such property: blah for class: standard_input\n' , output )
   }
   void testFaultyScript ( ) {

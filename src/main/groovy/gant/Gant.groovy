@@ -474,7 +474,7 @@ final class Gant {
     catch ( Exception e ) {
       if ( verbosity > GantState.NORMAL ) { e.printStackTrace ( ) }
       else { printMessageFrom ( e ) }
-      return -2
+      return -4
     }
   }
   public Integer processTargets ( ) { processTargets ( 'dispatch' , [ ] ) }

@@ -1,6 +1,6 @@
 //  Gant -- A Groovy way of scripting Ant tasks.
 //
-//  Copyright © 2008 Russel Winder
+//  Copyright © 2008-9 Russel Winder
 //
 //  Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in
 //  compliance with the License. You may obtain a copy of the License at
@@ -34,11 +34,8 @@ def foo { badvariable }
 def foo { badvariable }
 ''' )
     script = "includeTargets << new File ( '${escapeWindowsPath ( file.path )}' )"
-    try { assertEquals ( -2 , processCmdLineTargets ( 'test' ) ) }
+    try { assertEquals ( -4 , processCmdLineTargets ( 'test' ) ) }
     finally { file.delete ( ) }
-
-    System.err.println ( output )
-
     assertTrue ( output.startsWith ( 'Standard input, line 1 -- Error evaluating Gantfile: org.codehaus.groovy.control.MultipleCompilationErrorsException: startup failed, ' ) )
     assertTrue ( output.endsWith ( '''GANT_32.groovy: 2: unexpected token: foo @ line 2, column 5.
    def foo { badvariable }

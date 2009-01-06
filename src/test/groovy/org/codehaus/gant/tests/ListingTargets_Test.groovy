@@ -1,6 +1,6 @@
 //  Gant -- A Groovy way of scripting Ant tasks.
 //
-//  Copyright © 2006-8 Russel Winder
+//  Copyright © 2006-9 Russel Winder
 //
 //  Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in
 //  compliance with the License. You may obtain a copy of the License at
@@ -108,7 +108,7 @@ target ( something : "Do something." ) { }
 target ( somethingElse : "Do something else." ) { }
 setDefaultTarget ( 'fail' )
 '''
-    assertEquals ( -2 , gant.processArgs ( [ '-p' ,  '-f' ,  '-' ] as String[] ) )
+    assertEquals ( -4 , gant.processArgs ( [ '-p' ,  '-f' ,  '-' ] as String[] ) )
     assertEquals ( '''Standard input, line 4 -- Error evaluating Gantfile: Target fail does not exist so cannot be made the default.
 ''' , output ) 
   }
@@ -199,7 +199,7 @@ target ( something : "Do something." ) { }
 target ( somethingElse : "Do something else." ) { }
 setDefaultTarget ( 'fail' )
 '''
-    assertEquals ( -2 , gant.processArgs ( [ '-T' ,  '-f' ,  '-' ] as String[] ) )
+    assertEquals ( -4 , gant.processArgs ( [ '-T' ,  '-f' ,  '-' ] as String[] ) )
     assertEquals ( '''Standard input, line 4 -- Error evaluating Gantfile: Target fail does not exist so cannot be made the default.
 ''' , output ) 
   }

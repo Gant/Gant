@@ -1,6 +1,6 @@
 //  Gant -- A Groovy way of scripting Ant tasks.
 //
-//  Copyright © 2007-8 Russel Winder
+//  Copyright © 2007-9 Russel Winder
 //
 //  Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in
 //  compliance with the License. You may obtain a copy of the License at
@@ -107,7 +107,7 @@ includeTargets ** gant.targets.Maven * [ groupId : 'flob' , artifactId : 'adob' 
 includeTargets << gant.targets.Maven
 maven.binding = new Binding ( )
 """
-    assertEquals ( -2 , processCmdLineTargets ( 'initialize' ) )
+    assertEquals ( -4 , processCmdLineTargets ( 'initialize' ) )
     assertEquals ( '''Standard input, line 3 -- Error evaluating Gantfile: Cannot amend the property binding.
 ''' , output )
   }
@@ -115,7 +115,7 @@ maven.binding = new Binding ( )
     script = """
 includeTargets ** gant.targets.Maven * [ binding : new Binding ( ) ]
 """
-    assertEquals ( -2 , processCmdLineTargets ( 'initialize' ) )
+    assertEquals ( -4 , processCmdLineTargets ( 'initialize' ) )
     assertEquals ( '''Standard input, line 2 -- Error evaluating Gantfile: Cannot amend the property binding.
 ''' , output )
   }
@@ -132,7 +132,7 @@ target ( sayHello : '' ) { println ( 'Hello.' ) }
 includeTargets << gant.targets.Maven
 target ( sayHello , '' ) { println ( 'Hello.' ) }
 '''
-    assertEquals ( -2 , processCmdLineTargets ( 'sayHello' ) )
+    assertEquals ( -4 , processCmdLineTargets ( 'sayHello' ) )
     assertEquals ( 'Standard input, line 3 -- Error evaluating Gantfile: No such property: sayHello for class: standard_input\n' , output )
   }
 }

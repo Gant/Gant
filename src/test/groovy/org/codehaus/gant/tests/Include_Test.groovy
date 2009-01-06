@@ -187,7 +187,7 @@ target ( 'default' : '' ) { something ( ) }
     def errorMessage = 'Standard input, line 1 -- Error evaluating Gantfile: java.io.FileNotFoundException: '
     if ( isWindows ) { errorMessage += nonExistentFilePath.replaceAll ( '/' , '\\\\' ) + ' (The system cannot find the path specified)\n' }
     else { errorMessage += nonExistentFilePath + ' (No such file or directory)\n' }
-    assertEquals ( -2 , processCmdLineTargets ( 'flob' ) )
+    assertEquals ( -4 , processCmdLineTargets ( 'flob' ) )
     assertEquals ( errorMessage , output )
   }
   void testTargetsDefaultClassClass ( ) {
@@ -202,7 +202,7 @@ target ( 'default' : '' ) { something ( ) }
   }
   void testErrorTargetsDefaultClassFile ( ) {
     script = targetsErrorBuildClassFile
-    assertEquals ( -2 , processCmdLineTargets ( ) )
+    assertEquals ( -4 , processCmdLineTargets ( ) )
     assertEquals ( resultErrorEvaluatingClass , output )
   }
   void testTargetsDefaultClassString ( ) {
@@ -212,7 +212,7 @@ target ( 'default' : '' ) { something ( ) }
   }
   void testErrorTargetsDefaultClassString ( ) {
     script = targetsErrorBuildClassString
-    assertEquals ( -2 , processCmdLineTargets ( ) )
+    assertEquals ( -4 , processCmdLineTargets ( ) )
     assertEquals ( resultErrorEvaluatingClass , output )
   }
   void testTargetsFlobClassClass ( ) {
@@ -227,7 +227,7 @@ target ( 'default' : '' ) { something ( ) }
   }
   void testErrorTargetsFlobClassFile ( ) {
     script = targetsErrorBuildClassFile
-    assertEquals ( -2 , processCmdLineTargets ( 'flob' ) )
+    assertEquals ( -4 , processCmdLineTargets ( 'flob' ) )
     assertEquals ( resultErrorEvaluatingClass , output )
   }
   void testTargetsFlobClassString ( ) {
@@ -237,7 +237,7 @@ target ( 'default' : '' ) { something ( ) }
   }
   void testErrorTargetsFlobClassString ( ) {
     script = targetsErrorBuildClassString
-    assertEquals ( -2 , processCmdLineTargets ( 'flob' ) )
+    assertEquals ( -4 , processCmdLineTargets ( 'flob' ) )
     assertEquals ( resultErrorEvaluatingClass , output )
   }
   void testTargetsBurbleClassClass ( ) {
@@ -254,7 +254,7 @@ target ( 'default' : '' ) { something ( ) }
   }
   void testErrorTargetsBurbleClassFile ( ) {
     script = targetsErrorBuildClassFile
-    assertEquals ( -2 , processCmdLineTargets ( 'burble' ) )
+    assertEquals ( -4 , processCmdLineTargets ( 'burble' ) )
     assertEquals ( resultErrorEvaluatingClass , output )
   }
   void testTargetsBurbleClassString ( ) {
@@ -265,7 +265,7 @@ target ( 'default' : '' ) { something ( ) }
   }
   void testErrorTargetsBurbleClassString ( ) {
     script = targetsErrorBuildClassString
-    assertEquals ( -2 , processCmdLineTargets ( 'burble') )
+    assertEquals ( -4 , processCmdLineTargets ( 'burble') )
     assertEquals ( resultErrorEvaluatingClass , output )
   }
   void testTargetsSomethingClassClass ( ) {
@@ -280,7 +280,7 @@ target ( 'default' : '' ) { something ( ) }
   }
   void testErrorTargetsSomethingClassFile ( ) {
     script = targetsErrorBuildClassFile
-    assertEquals ( -2 , processCmdLineTargets ( 'something' ) )
+    assertEquals ( -4 , processCmdLineTargets ( 'something' ) )
     assertEquals ( resultErrorEvaluatingClass , output )
   }
   void testTargetsSomethingClassString ( ) {
@@ -290,12 +290,12 @@ target ( 'default' : '' ) { something ( ) }
   }
   void testErrorTargetsSomethingClassString ( ) {
     script = targetsErrorBuildClassString
-    assertEquals ( -2 , processCmdLineTargets ( 'something' ) )
+    assertEquals ( -4 , processCmdLineTargets ( 'something' ) )
     assertEquals ( resultErrorEvaluatingClass , output )
   }
   void testTargetsClassNoFile ( ) {
     script = targetsBuildClassFile.replace ( targetsClassFilePath , nonExistentFilePath )
-    assertEquals ( -2 , processCmdLineTargets ( 'flob' ) )
+    assertEquals ( -4 , processCmdLineTargets ( 'flob' ) )
     //  The returned string is platform dependent and dependent on whether NFS is used to mount stores, or
     //  even RAID.  We therefore choose not to check the output to avoid having large numbers of cases.
   }
@@ -306,7 +306,7 @@ target ( 'default' : '' ) { something ( ) }
   }
   void testErrorTargetsDefaultScriptClass ( ) {
     script = targetsErrorBuildScriptClass
-    assertEquals ( -2 , processCmdLineTargets ( ) )
+    assertEquals ( -4 , processCmdLineTargets ( ) )
     assertEquals ( resultErrorEvaluatingScript , output )
   }
   void testTargetsDefaultScriptFile ( ) {
@@ -326,7 +326,7 @@ target ( 'default' : '' ) { something ( ) }
   }
   void testErrorTargetsFlobScriptClass ( ) {
     script = targetsErrorBuildScriptClass
-    assertEquals ( -2 , processCmdLineTargets ( 'flob' ) )
+    assertEquals ( -4 , processCmdLineTargets ( 'flob' ) )
     assertEquals ( resultErrorEvaluatingScript , output )
   }
   void testTargetsFlobScriptFile ( ) {
@@ -347,7 +347,7 @@ target ( 'default' : '' ) { something ( ) }
   }
   void testErrorTargetsBurbleScriptClass ( ) {
     script = targetsErrorBuildScriptClass
-    assertEquals ( -2 , processCmdLineTargets ( 'burble' ) )
+    assertEquals ( -4 , processCmdLineTargets ( 'burble' ) )
     assertEquals ( resultErrorEvaluatingScript , output )
   }
   void testTargetsBurbleScriptFile ( ) {
@@ -369,7 +369,7 @@ target ( 'default' : '' ) { something ( ) }
   }
   void testErrorTargetsSomethingScriptClass ( ) {
     script = targetsErrorBuildScriptClass
-    assertEquals ( -2 , processCmdLineTargets ( 'something' ) )
+    assertEquals ( -4 , processCmdLineTargets ( 'something' ) )
     assertEquals ( resultErrorEvaluatingScript , output )
   }
   void testTargetsSomethingScriptFile ( ) {
@@ -384,7 +384,7 @@ target ( 'default' : '' ) { something ( ) }
   }
   void testTargetsScriptNoFile ( ) {
     script = targetsBuildScriptFile.replace ( targetsScriptFilePath , nonExistentFilePath )
-    assertEquals ( -2 , processCmdLineTargets ( 'flob' ) )
+    assertEquals ( -4 , processCmdLineTargets ( 'flob' ) )
     //  The returned string is platform dependent and dependent on whether NFS is used to mount stores, or
     //  even RAID.  We therefore choose not to check the output to avoid having large numbers of cases.
   }
@@ -487,7 +487,7 @@ target ( test : '' ) { }
 includeTargets * gant.targets.Clean
 target ( test : '' ) { }
 '''
-    assertEquals ( -2 , processCmdLineTargets ( 'test' ) )
+    assertEquals ( -4 , processCmdLineTargets ( 'test' ) )
     assertEquals ( "Standard input, line 2 -- Error evaluating Gantfile: No signature of method: org.codehaus.gant.IncludeTargets.multiply() is applicable for argument types: (java.lang.Class) values: {class gant.targets.Clean}\n" , output )
   }
   void testErrorNullPower ( ) {
@@ -495,7 +495,7 @@ target ( test : '' ) { }
 includeTargets ** null * [ ]
 target ( test : '' ) { }
 '''
-    assertEquals ( -2 , processCmdLineTargets ( 'test' ) )
+    assertEquals ( -4 , processCmdLineTargets ( 'test' ) )
     assertEquals ( 'Standard input, line 2 -- Error evaluating Gantfile: wrong number of arguments\n' , output )
   }
 

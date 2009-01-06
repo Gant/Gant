@@ -1,6 +1,6 @@
 //  Gant -- A Groovy way of scripting Ant tasks.
 //
-//  Copyright © 2006-8 Russel Winder
+//  Copyright © 2006-9 Russel Winder
 //
 //  Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in
 //  compliance with the License. You may obtain a copy of the License at
@@ -127,7 +127,7 @@ target ( outOfOrderListDoit : '' ) { println ( 'done.' ) }
 target ( standard_input , '' ) { println ( 'done.' ) }
 target ( startingPoint , '' ) { depends ( standard_input ) }
 '''
-    assertEquals ( -2 , processCmdLineTargets ( 'startingPoint' ) )
+    assertEquals ( -4 , processCmdLineTargets ( 'startingPoint' ) )
     assertTrue ( output.startsWith ( 'Standard input, line 2 -- Error evaluating Gantfile: No signature of method: ' ) )
   }
   void testStringParameter ( ) {
