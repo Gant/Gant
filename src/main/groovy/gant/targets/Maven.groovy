@@ -1,6 +1,6 @@
 //  Gant -- A Groovy way of scripting Ant tasks.
 //
-//  Copyright © 2007-8 Russel Winder
+//  Copyright © 2007-9 Russel Winder
 //
 //  Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in
 //  compliance with the License. You may obtain a copy of the License at
@@ -199,7 +199,7 @@ final class Maven {
             }
           }
         }
-        catch ( FileNotFoundException fnfe ) { throw new RuntimeException ( 'Error: ' + owner.mainSourcePath + ' does not exist.' ) }
+        catch ( FileNotFoundException fnfe ) { throw new RuntimeException ( 'Error: ' + owner.mainSourcePath + ' does not exist.' , fnfe ) }
       }
     }
     /*
@@ -269,7 +269,7 @@ final class Maven {
               }
             }
           }
-          catch ( FileNotFoundException fnfe ) { throw new RuntimeException ( 'Error: ' + owner.testSourcePath + ' does not exist.' ) }
+          catch ( FileNotFoundException fnfe ) { throw new RuntimeException ( 'Error: ' + owner.testSourcePath + ' does not exist.' , fnfe ) }
         }
       }
     }
