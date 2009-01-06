@@ -1,6 +1,6 @@
 //  Gant -- A Groovy way of scripting Ant tasks.
 //
-//  Copyright © 2006-8 Russel Winder
+//  Copyright © 2006-9 Russel Winder
 //
 //  Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in
 //  compliance with the License. You may obtain a copy of the License at
@@ -17,6 +17,8 @@
 final zipExtension = '.zip'
 final tarExtension = '.tar'
 final tgzExtension = '.tgz'
+
+final groovyAntTaskTestVersionPropertyFileName = 'groovyAntTaskTestVersion.properties'
 
 ant.property ( file : 'local.build.properties' )
 ant.property ( file : 'build.properties' )
@@ -123,7 +125,7 @@ final distributionVersions = [ : ]
    distributionVersions.put ( 'standalone' , [ groupId : 'org.codehaus.groovy' , artifactId : 'groovy-all' , version : groovyStandaloneVersion ] )
 }
 
-//  As Jürgen Hermann pointed out the trailing / on the URL is very important.
+//  As Jürgen Hermann pointed out, the trailing / on the URL is very important.
 
 final distributionURL = 'https://dav.codehaus.org/dist/gant/'
 
@@ -307,8 +309,8 @@ final prepareZipFromTarAndRegisterForUpload = { String root , Closure closure ->
 }
 
 final preparePom = { String version ->
-  // Return the reference to an edited copy of the POM template , replacing the version numbers and other
-  // tokens with the values for this JAR.
+  //  Return the reference to an edited copy of the POM template , replacing the version numbers and other
+  //  tokens with the values for this JAR.
   def classifier = 'groovy' + version.split ( "[\\.-]" ) [ 0..1 ].join ( '.' )
   def targetPOM = classifier + '.pom'
   ant.copy ( tofile : targetPOM , file : 'pom.xml.in' ) {
@@ -327,7 +329,7 @@ final preparePom = { String version ->
 final doWithAllGroovyVersions = { Closure c ->
   def prefix = 'gant-' + gantVersion
   distributionVersions.each { label , item ->
-    def groovyAntTaskTestVersionPropertyFile = ( new File ( 'groovyAntTaskTestVersion.properties' ) )
+    def groovyAntTaskTestVersionPropertyFile = ( new File ( groovyAntTaskTestVersionPropertyFileName ) )
     groovyAntTaskTestVersionPropertyFile.write ( 'groovyAntTaskTestVersion = ' + item.version )
     def pathIdRoot = 'classpath' + item.version
     def pathId = pathIdRoot + 'PathId'
@@ -337,8 +339,7 @@ final doWithAllGroovyVersions = { Closure c ->
                                       [ groupId : 'org.apache.ant' , artifactId : 'ant-junit' , version : antVersion ] ,
                                       [ groupId : 'commons-cli' , artifactId : 'commons-cli' , version : commonsCliVersion ] ,
                                       [ groupId : 'junit' , artifactId : 'junit' , version : junitVersion ]
-                                      ]
-                    )
+                                      ] )
     //  Remove the compilation products of the last compilation so as not to affect this one!
     ant.delete ( dir : buildClassesDirectory )
     ant.delete ( dir : buildTestClassesDirectory )
@@ -433,6 +434,8 @@ target ( initializeNonDistribution : '' ) {
   //  good discriminator!
   if ( groovyHomeEnvironment ) {
     println ( "Building with the Groovy installation at GROOVY_HOME=${groovyHomeEnvironment}." )
+    //  TODO : Need to find out which version is actually being used -- this is currently a bug.
+    groovyVersion = groovy17Version
     ant.path ( id : groovyJarPathId ) { fileset ( dir : groovyHome + '/lib' , includes : 'groovy-*.jar' ) }
     ant.path ( id : compileJarSetPathId ) {
       path ( refid : groovyJarPathId )
@@ -449,13 +452,13 @@ target ( initializeNonDistribution : '' ) {
   }
   else {
     println ( 'Building without a Groovy installation.' )
-    getDependency ( groovyJarPathIdRoot , [ groupId : 'org.codehaus.groovy' , artifactId : 'groovy-all' , version : groovyStandaloneVersion ] )
+    groovyVersion = groovyStandaloneVersion
+    getDependency ( groovyJarPathIdRoot , [ groupId : 'org.codehaus.groovy' , artifactId : 'groovy-all' , version : groovyVersion ] )
     def compileJarsNotGroovyPathIdRoot = 'compileJarsNotGroovy'
     compileJarsNotGroovyPathId = compileJarsNotGroovyPathIdRoot + 'PathId'
     getDependency ( compileJarsNotGroovyPathIdRoot , [
                                      [ groupId : 'commons-cli' , artifactId : 'commons-cli' , version : commonsCliVersion ]
-                                     ]
-                    )
+                                     ] )
     ant.path ( id : compileJarSetPathId ) {
       path ( refid : groovyJarPathId )
       path ( refid : compileJarsNotGroovyPathId )
@@ -476,8 +479,13 @@ target ( compileTests : 'Compile all the tests for a Groovy installation depende
 
 target ( test : 'Test a build of Gant.' ) {
   depends ( compileTests )
+  if ( ! groovyHomeEnvironment ) {
+    groovyAntTaskTestVersionPropertyFile = ( new File ( groovyAntTaskTestVersionPropertyFileName ) )
+    groovyAntTaskTestVersionPropertyFile.write ( 'groovyAntTaskTestVersion = ' + groovyVersion )
+  }
   def returnCode = performTests ( compileJarSetPathId )
   if ( ! skipTests ) { println ( 'Tests ' + ( returnCode ? 'suceeded' : 'failed' ) + '.' ) }
+  if ( ! groovyHomeEnvironment ) { groovyAntTaskTestVersionPropertyFile.delete ( ) }
   returnCode ? 0 : 1
 }
 
