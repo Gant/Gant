@@ -190,7 +190,6 @@ final performCompileTests = { classpathId , boolean fork ->
 final performTests =  { classpathId ->
   if ( ! skipTests ) {                        
     ant.mkdir ( dir : buildTestReportsDirectory )
-    def groovyAntTaskTestVersionPropertyFile = ( new File ( 'groovyAntTaskTestVersion.properties' ) )
     if ( usingCobertura ) {
       ant.mkdir ( dir : buildCoberturaClassesDirectory )
       ant.mkdir ( dir : buildCoberturaReportsDirectory )
@@ -425,7 +424,8 @@ target ( reallyClean : 'Ensure all clean operations for the entire tree get acti
 }
 
 target ( initializeNonDistribution : '' ) {
-  groovyJarPathId = 'groovyJarPathId'
+  def groovyJarPathIdRoot = 'groovyJar'
+  groovyJarPathId = groovyJarPathIdRoot + 'PathId'
   compileJarSetPathId = 'compileJarSetPathId'
   testJarSetPathId = 'testJarSetPathId'
   //  If GROOVY_HOME is set then create a build of Gant dependent on that Groovy, otherwise pull down all
@@ -449,9 +449,10 @@ target ( initializeNonDistribution : '' ) {
   }
   else {
     println ( 'Building without a Groovy installation.' )
-    getDependency ( groovyJarPathId , [ groupId : 'org.codehaus.groovy' , artifactId : 'groovy-all' , version : groovyStandaloneVersion ] )
-    def compileJarsNotGroovyPathId = 'compileJarsNotGroovyPathId'
-    getDependency ( compileJarsNotGroovyPathId , [
+    getDependency ( groovyJarPathIdRoot , [ groupId : 'org.codehaus.groovy' , artifactId : 'groovy-all' , version : groovyStandaloneVersion ] )
+    def compileJarsNotGroovyPathIdRoot = 'compileJarsNotGroovy'
+    compileJarsNotGroovyPathId = compileJarsNotGroovyPathIdRoot + 'PathId'
+    getDependency ( compileJarsNotGroovyPathIdRoot , [
                                      [ groupId : 'commons-cli' , artifactId : 'commons-cli' , version : commonsCliVersion ]
                                      ]
                     )
