@@ -162,6 +162,7 @@ Author : Russel Winder <russel.winder@concertant.com>
 
   <target name="-test" depends="-initializeMavenAntTask,-compileTests" unless="skipTestsIsSet">
     <mkdir dir="${buildTestReportsDirectory}"/>
+    <!--  Only need this file if GROOVY_HOME is not set but write it anyway to save the hassle of decision making. -->
     <echo file="groovyAntTaskTestVersion.properties" message="groovyAntTaskTestVersion = ${groovyVersion}"/>
     <artifact:dependencies pathId="ivyJarPathId">
       <dependency groupId="org.apache.ivy" artifactId="ivy" version="${ivyVersion}"/>
