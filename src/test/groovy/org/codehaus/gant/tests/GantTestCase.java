@@ -14,9 +14,9 @@
 
 package org.codehaus.gant.tests ;
 
+import java.util.Arrays ;
+import java.util.ArrayList ;
 import java.util.List ;
-import java.util.ArrayList;
-import java.util.Arrays;
 
 import java.io.ByteArrayInputStream ;
 import java.io.ByteArrayOutputStream ;
@@ -74,16 +74,16 @@ public abstract class GantTestCase extends GroovyTestCase {
     super.tearDown ( ) ;
   }
   protected void setScript ( final String s ) { script = s ; System.setIn ( new ByteArrayInputStream ( script.getBytes ( ) ) ) ; }
-  protected Integer processTargets ( ) { gant.loadScript( System.in ) ; return gant.processTargets ( ) ; }
-  protected Integer processTargets ( final String s ) { gant.loadScript( System.in ) ; return gant.processTargets ( s ) ; }
-  protected Integer processTargets ( final List<String> l ) { gant.loadScript( System.in ) ; return gant.processTargets ( l ) ; }
-  protected Integer processCmdLineTargets ( ) { return gant.processArgs( new String[] { "-f" , "-" } ) ; }
-  protected Integer processCmdLineTargets ( final String s ) { return gant.processArgs( new String[] { "-f" , "-" , s } ) ; }
+  protected Integer processTargets ( ) { gant.loadScript ( System.in ) ; return gant.processTargets ( ) ; }
+  protected Integer processTargets ( final String s ) { gant.loadScript ( System.in ) ; return gant.processTargets ( s ) ; }
+  protected Integer processTargets ( final List<String> l ) { gant.loadScript ( System.in ) ; return gant.processTargets ( l ) ; }
+  protected Integer processCmdLineTargets ( ) { return gant.processArgs ( new String[] { "-f" , "-" } ) ; }
+  protected Integer processCmdLineTargets ( final String s ) { return gant.processArgs ( new String[] { "-f" , "-" , s } ) ; }
   protected Integer processCmdLineTargets ( final List<String> l ) {
     final List<String> args = new ArrayList<String> ( Arrays.asList ( "-f" , "-" ) ) ;
     args.addAll ( l ) ;
-    return gant.processArgs( args.toArray ( new String[ 0 ] ) ) ; }
+    return gant.processArgs ( args.toArray ( new String[0] ) ) ;
+  }
   protected String getOutput ( ) { return output.toString ( ).replace ( "\r" , "" ) ; }
-
   protected String escapeWindowsPath ( final String path ) { return isWindows ? path.replace ( "\\" ,  "\\\\" ) : path ; }
 }
