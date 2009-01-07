@@ -7,6 +7,8 @@ Fix the Posix shell scripts to try and deal with the weirdness of the Mac OS X r
 on Ubuntu, MSYS, Cygwin.  Solaris doesn't have readlink by default, the Sunfreeware version is the same as
 the one on Ubuntu, MSYS, Cygwin.
 
+Split the two cases where -2 is the return code, introduce -4 for one of the case.
+
 
 1.5.1 ( r10110 )
 ----------------
