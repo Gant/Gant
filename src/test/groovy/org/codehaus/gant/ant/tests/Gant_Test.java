@@ -126,14 +126,14 @@ public class Gant_Test extends TestCase {
    *
    *  @author Russel Winder
    */
-  private static final class StreamGobbler extends Thread {
+  private static final class StreamGobbler implements Runnable {
     private final InputStream is ;
     private final StringBuilder sb ;
     public StreamGobbler ( final InputStream is , final StringBuilder sb ) {
       this.is = is ;
       this.sb = sb ;
     }
-    @Override public void run ( ) {
+    public void run ( ) {
       try {
         final BufferedReader br = new BufferedReader ( new InputStreamReader ( is ) ) ;
         while ( true ) {
@@ -142,7 +142,7 @@ public class Gant_Test extends TestCase {
           sb.append ( line ).append ( '\n' ) ;
         }
       }
-      catch ( final IOException ioe ) { fail ( "Got an IOException reading a line in the read thread." ) ; }
+      catch ( final IOException ignore ) { fail ( "Got an IOException reading a line in the read thread." ) ; }
     }
   }
   /*
@@ -183,20 +183,20 @@ public class Gant_Test extends TestCase {
     final StringBuilder errorStringBuilder = new StringBuilder ( ) ;
     try {
       final Process p = pb.start ( ) ;  //  Could throw an IOException hence the try block.
-      final Thread outputGobbler = new StreamGobbler ( p.getInputStream ( ) , outputStringBuilder ) ;
-      final Thread errorGobbler = new StreamGobbler ( p.getErrorStream ( ) , errorStringBuilder ) ;
+      final Thread outputGobbler = new Thread ( new StreamGobbler ( p.getInputStream ( ) , outputStringBuilder ) ) ;
+      final Thread errorGobbler = new Thread ( new StreamGobbler ( p.getErrorStream ( ) , errorStringBuilder ) ) ;
       outputGobbler.start ( ) ;
       errorGobbler.start ( ) ;
       try { assertEquals ( expectedReturnCode , p.waitFor ( ) ) ; }
-      catch ( final InterruptedException ie ) { fail ( "Got an InterruptedException waiting for the Ant process to finish." ) ; }
+      catch ( final InterruptedException ignore ) { fail ( "Got an InterruptedException waiting for the Ant process to finish." ) ; }
       try { outputGobbler.join ( ) ;}
-      catch ( final InterruptedException ie ) { fail ( "Got an InterruptedException waiting for the output gobbler to terminate." ) ; }
+      catch ( final InterruptedException ignore ) { fail ( "Got an InterruptedException waiting for the output gobbler to terminate." ) ; }
       try { errorGobbler.join ( ) ;}
-      catch ( final InterruptedException ie ) { fail ( "Got an InterruptedException waiting for the error gobbler to terminate." ) ; }
+      catch ( final InterruptedException ignore ) { fail ( "Got an InterruptedException waiting for the error gobbler to terminate." ) ; }
       System.err.println ( errorStringBuilder ) ;
       return outputStringBuilder.toString ( ) ;
     }
-    catch ( final Exception e ) { fail ( "Got a " +  e.getClass ( ).getName ( ) + " from starting the process." ) ; }
+    catch ( final IOException ignore ) { fail ( "Got an IOException from starting the process." ) ; }
     //  Keep the compiler happy, it doesn't realize that execution cannot get here -- i.e. that fail is a non-returning function.
     return null ;
   }
