@@ -44,6 +44,12 @@ target ( hello : '' ) {
 }
 """
     assertEquals ( -13 , processCmdLineTargets ( 'hello' ) )
-    assertTrue ( output.startsWith ( 'groovy.lang.MissingMethodException: No signature of method: standard_input.groovyc() is applicable for argument types: (java.util.LinkedHashMap) values: ' ) )
+    assertEquals ( ''': Problem: failed to create task or type groovyc
+Cause: The name is undefined.
+Action: Check the spelling.
+Action: Check that any custom tasks/types have been declared.
+Action: Check that any <presetdef>/<macrodef> declarations have taken place.
+
+''' , output )
   }
 }
