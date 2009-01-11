@@ -86,7 +86,7 @@ public class GantMetaClass extends DelegatingMetaClass {
    *  @return The result of the <code>Closure</code>.
    */
   private Object processArgument ( final Object argument ) {
-    Object returnObject ;
+    final Object returnObject ;
     if ( argument instanceof Closure ) { returnObject = processClosure ( (Closure) argument ) ; }
     else {
       final String errorReport = "depends called with an argument (" + argument + ") that is not a known target or list of targets." ;
@@ -134,7 +134,7 @@ public class GantMetaClass extends DelegatingMetaClass {
       }
       catch ( final MissingMethodException mme ) {
         try { returnObject = ( (GantBuilder) ( binding.getVariable ( "ant" ) ) ).invokeMethod ( methodName , arguments ) ; }
-        catch ( final BuildException be ) { throw mme ; }
+        catch ( final BuildException ignore ) { throw mme ; }
       }
     }
     return returnObject ;

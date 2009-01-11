@@ -61,7 +61,7 @@ public class GantBuilder extends AntBuilder {
    *  @param arguments The parameters to the method call.
    *  @return The value returned by the method call or null if no value is returned.
    */
-  @SuppressWarnings ( "unchecked" ) 
+  @SuppressWarnings ( "unchecked" )
   @Override public Object invokeMethod ( final String name , final Object arguments ) {
     if ( GantState.dryRun ) {
       if ( GantState.verbosity > GantState.SILENT ) {
@@ -72,7 +72,7 @@ public class GantBuilder extends AntBuilder {
         if ( args[0] instanceof Map ) {
           // NB IntelliJ IDEA complains that (Map) is not a proper cast but using the cast (Map<?,?>) here
           // causes a type check error.
-          final Iterator<Map.Entry<?,?>> i = ( (Map) args[0] ).entrySet ( ).iterator ( ) ;
+          final Iterator<Map.Entry<?,?>> i = ( (Map) args[0] ).entrySet ( ).iterator ( ) ; // Unchecked conversion here.
           while ( i.hasNext ( ) ) {
             final Map.Entry<?,?> e = i.next ( ) ;
             System.out.print ( e.getKey ( ) + " : '" + e.getValue ( ) + '\'' ) ;
@@ -92,6 +92,7 @@ public class GantBuilder extends AntBuilder {
    *  Method to be called to trigger setting of the message output level on the <code>AntBuilder</code>
    *  project.  The verbosity level is determined from <code>GantState</code>.
    */
+  @SuppressWarnings ( "unchecked" )
   public void setMessageOutputLevel ( ) {
     try {
       //  The project is a private field in AntBuilder so we have to use reflection to get at it.  Maybe it
@@ -99,7 +100,7 @@ public class GantBuilder extends AntBuilder {
       final Field field = getClass ( ).getSuperclass ( ).getDeclaredField ( "project" ) ;
       field.setAccessible ( true ) ;
       final Project project = (Project) field.get ( this ) ;
-      final List<? extends BuildListener> listeners = project.getBuildListeners ( ) ;
+      final List<? extends BuildListener> listeners = project.getBuildListeners ( ) ; // Unchecked conversion here.
       assert listeners.size ( ) == 1 ;
       final BuildLogger logger = (BuildLogger) listeners.get ( 0 ) ;
       logger.setMessageOutputLevel ( GantState.verbosity ) ;

@@ -14,7 +14,6 @@
 
 package org.codehaus.gant
 
-import org.apache.tools.ant.BuildEvent
 import org.apache.tools.ant.BuildListener
 import org.apache.tools.ant.Project
 import org.apache.tools.ant.Target
@@ -113,8 +112,8 @@ public class GantBinding extends Binding implements Cloneable {
     setVariable ( 'includeTargets' , new IncludeTargets ( this ) )
     setVariable ( 'includeTool' , new IncludeTool ( this ) )
     setVariable ( 'target' , { Map<String, String> map , Closure closure ->
-        def targetName
-        def targetDescription
+        def targetName = ''
+        def targetDescription = ''
         def nameKey = 'name'
         def descriptionKey = 'description'
         Map targetMap = [:]
@@ -137,7 +136,7 @@ public class GantBinding extends Binding implements Cloneable {
         }
         if ( ! targetName ) { throw new RuntimeException ( 'Target specified without a name.' ) }
         try {
-          owner.getVariable ( targetName )
+          owner.getVariable ( (String) targetName )
           //
           //  Exceptions thrown in this Closure appear not to cause execution to enter an error path.  Must
           //  find out how to throw an exception from a Closure.
@@ -151,7 +150,7 @@ public class GantBinding extends Binding implements Cloneable {
         if ( targetDescription ) { targetDescriptions.put ( targetName , targetDescription ) }
         closure.metaClass = new GantMetaClass ( closure.metaClass , owner )
         def targetClosure =  { withTargetEvent(targetName, targetDescription) { closure ( targetMap ) } }
-        owner.setVariable ( targetName , targetClosure )
+        owner.setVariable ( (String) targetName , targetClosure )
         owner.setVariable ( targetName + '_description' , targetDescription )  //  For backward compatibility.
       } )
     setVariable ( 'task' , { Map<String, String> map , Closure closure ->
@@ -198,10 +197,10 @@ public class GantBinding extends Binding implements Cloneable {
   Object getVariable ( final String name ) {
     def returnValue
     try {
-      returnValue = super.getVariable ( name ) 
+      returnValue = super.getVariable ( name )
     }
     catch ( final MissingPropertyException mpe ) {
-      returnValue = super.getVariable ( 'ant' )?.project.getProperty ( name )
+      returnValue = super.getVariable ( 'ant' )?.project?.getProperty ( name )
       if ( returnValue == null ) { throw mpe }
     }
     returnValue
@@ -217,6 +216,10 @@ public class GantBinding extends Binding implements Cloneable {
     if ( ! initializing && [ 'target' , 'message' ].contains ( name ) ) { throw new RuntimeException ( 'Cannot redefine symbol ' + name ) }
     super.setVariable ( name , value )
   }
+  /**
+   *  Getter for the list of build listeners.  Used in {@code gant.Gant.withBuildListeners}.
+   */
+  List getBuildListeners ( ) { buildListeners }
 }
 
 /**

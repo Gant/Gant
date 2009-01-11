@@ -113,6 +113,7 @@ abstract class AbstractInclude {
       try { return theClass.getConstructor ( GantBinding ).newInstance ( [ binding ] as Object[] ) }
       catch ( NoSuchMethodException nsme ) { throw new RuntimeException ( 'Could not initialize ' + theClass.name , nsme ) }
     }
+    null // Be explicit about the return value to keep IntelliJ IDEA's inspectors happy.
   }
   /**
    *  Create an instance of a class included with the ** * operator.
@@ -143,7 +144,7 @@ abstract class AbstractInclude {
       def errorSource = ''
       for ( stackEntry in e.stackTrace ) {
         if ( ( stackEntry.fileName == file.name ) && ( stackEntry.lineNumber  != -1 ) ) {
-          errorSource += file.absolutePath + ', line ' + stackEntry.lineNumber + ' -- ' 
+          errorSource += file.absolutePath + ', line ' + stackEntry.lineNumber + ' -- '
         }
       }
       throw new RuntimeException( errorSource + e.toString ( ) , e )
