@@ -21,7 +21,7 @@ import org.codehaus.gant.tests.GantTestCase
 class GANT_49_Test extends GantTestCase {
   void testBuilderBug ( ) {
     //
-    //  This test works fine as a Gant program but it fails dismally as a unit test case.
+    //  This test fails dismally due to the way that exceptions are handled.
     //
     return
     //
