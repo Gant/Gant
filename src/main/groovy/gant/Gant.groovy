@@ -335,7 +335,7 @@ final class Gant {
     returnCode
   }
   /**
-   *  Execute a dispatch with allthe <code>BuildListener</code>s informed.
+   *  Execute a dispatch with all the <code>BuildListener</code>s informed.
    */
   private withBuildListeners ( Closure callable ) {
       def event = new GantEvent ( (Project) binding.ant.antProject , (GantBinding) binding )
@@ -486,7 +486,7 @@ final class Gant {
   protected Integer processTargets ( String function , List targets ) {
     // Configure the build based on this instance's settings.
     if ( dryRun ) { GantState.dryRun = true }
-    if ( verbosity != GantState.NORMAL ) { GantState.verbosity = verbosity ; binding.ant.setMessageOutputLevel ( ) }
+    if ( verbosity != GantState.verbosity ) { GantState.verbosity = verbosity ; binding.ant.setMessageOutputLevel ( ) }
     binding.cacheEnabled = useCache
     binding.gantLib = gantLib
     if ( script == null ) { throw new RuntimeException ( "No script has been loaded!" ) }
