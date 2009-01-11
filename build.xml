@@ -183,8 +183,8 @@ Author : Russel Winder <russel.winder@concertant.com>
         <path refid="testClasspathPathId"/>
       </classpath>
     </junit>
-    <junit printsummary="yes" fork="true" forkmode="once" failureproperty="testsFailed">
-    <!--junit printsummary="yes" fork="true" forkmode="perTest" failureproperty="testsFailed"-->
+    <!--junit printsummary="yes" fork="true" forkmode="once" failureproperty="testsFailed"-->
+    <junit printsummary="yes" fork="true" forkmode="perTest" failureproperty="testsFailed">
       <!--jvmarg line="-Xdebug -Xrunjdwp:transport=dt_socket,server=y,suspend=y,address=5005"/-->
       <formatter type="plain"/>
       <formatter type="xml"/> <!-- Must have XML output for the continuous integration builds. -->
