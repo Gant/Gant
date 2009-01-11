@@ -134,7 +134,8 @@ public class GantMetaClass extends DelegatingMetaClass {
       }
       catch ( final MissingMethodException mme ) {
         try { returnObject = ( (GantBuilder) ( binding.getVariable ( "ant" ) ) ).invokeMethod ( methodName , arguments ) ; }
-        catch ( final BuildException ignore ) { throw mme ; }
+        catch ( final BuildException be ) { throw be ; }
+        catch ( final Exception e ) { throw mme ; }
       }
     }
     return returnObject ;
