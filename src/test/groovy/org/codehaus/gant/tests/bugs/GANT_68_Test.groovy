@@ -18,22 +18,19 @@ import org.codehaus.gant.tests.GantTestCase
 
 class GANT_68_Test extends GantTestCase {
   void testGetReasonableErrorMessage ( ) {
-    script = '''
-sourceDirectory = 'sourceDirectoryOfSomeObscureName'
-buildDirectory = 'buildDirectoryOfSomeObscureName'
+    //  Use a preexisting directory!
+    final sourceDirectory = 'src/test/groovy/org/codehaus/gant/tests/bugs'
+    final buildDirectory = 'buildDirectoryOfSomeObscureNameThatDoesntExist'
+    script = """
+sourceDirectory = '${sourceDirectory}'
+buildDirectory = '${buildDirectory}'
 target ( compile : '' ) {
-  delete ( dir : sourceDirectory )
-  mkdir ( dir : sourceDirectory )
   delete ( dir : buildDirectory )
-  //mkdir ( dir : buildDirectory )
- javac ( srcdir : sourceDirectory , destdir : buildDirectory , fork : 'true' , failonerror : 'true' , source : '1.5' , target : '1.5' , debug : 'on' , deprecation : 'on' )
+  javac ( srcdir : sourceDirectory , destdir : buildDirectory , fork : 'true' , failonerror : 'true' , source : '1.5' , target : '1.5' , debug : 'on' , deprecation : 'on' )
 }
-'''
+"""
     assertEquals ( -13 , processCmdLineTargets ( 'compile' ) )
     //  TODO :  This currently shows the presence of the bug
-    assertEquals ( '''   [delete] Deleting directory /home/users/russel/Repositories/Bazaar/Branches/Gant/Development/sourceDirectoryOfSomeObscureName
-    [mkdir] Created dir: /home/users/russel/Repositories/Bazaar/Branches/Gant/Development/sourceDirectoryOfSomeObscureName
-groovy.lang.MissingMethodException: No signature of method: standard_input.javac() is applicable for argument types: (java.util.LinkedHashMap) values: [[srcdir:sourceDirectoryOfSomeObscureName, destdir:buildDirectoryOfSomeObscureName, fork:true, failonerror:true, source:1.5, target:1.5, debug:on, deprecation:on]]
-''' , output )
+    assertEquals ( "groovy.lang.MissingMethodException: No signature of method: standard_input.javac() is applicable for argument types: (java.util.LinkedHashMap) values: [[srcdir:${sourceDirectory}, destdir:${buildDirectory}, fork:true, failonerror:true, source:1.5, target:1.5, debug:on, deprecation:on]]\n" , output )
   }
 }
