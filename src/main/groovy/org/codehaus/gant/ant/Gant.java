@@ -41,7 +41,8 @@ import org.codehaus.gant.GantBuilder ;
  *
  *  <ul>
  *    <li>file &ndash; the path of the Gant script to execute.</li>
- *    <li>target &ndash; the target to execute.</li>
+ *    <li>target &ndash; the target to execute; must be a single target name.  For specifying than a
+ *        single target, use nested gantTarget tags.</li>
  *  </ul>
  *
  *  <p>Both of these are optional.  The file 'build.gant' and the default target are used by default.  An
@@ -105,7 +106,7 @@ public class Gant extends Task {
     targets.add ( gt ) ;
   }
   /**
-   *  Create a node to represent a nested <code>target</code> tag.
+   *  Create a node to represent a nested <code>gantTarget</code> tag.
    *
    *  @return a new <code>GantTarget</code> instance ready for values to be added.
    */
@@ -125,7 +126,7 @@ public class Gant extends Task {
     return definition ;
   }
   /**
-   * Load the file and then execute it
+   * Load the file and then execute it.
    */
   @Override public void execute ( ) throws BuildException {
     if ( ! ( new File ( file ) ).exists ( ) ) { throw new BuildException ( "Gantfile does not exist." , getLocation ( ) ) ; }
