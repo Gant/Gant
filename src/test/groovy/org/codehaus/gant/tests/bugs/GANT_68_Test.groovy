@@ -18,7 +18,7 @@ import org.codehaus.gant.tests.GantTestCase
 
 class GANT_68_Test extends GantTestCase {
   void testGetReasonableErrorMessage ( ) {
-    //  Use a preexisting directory!
+    //  Use a preexisting directory as the source directory and make sure the build directory doesn't exist!
     final sourceDirectory = 'src/test/groovy/org/codehaus/gant/tests/bugs'
     final buildDirectory = 'buildDirectoryOfSomeObscureNameThatDoesntExist'
     script = """
@@ -30,7 +30,15 @@ target ( compile : '' ) {
 }
 """
     assertEquals ( -13 , processCmdLineTargets ( 'compile' ) )
-    //  TODO :  This currently shows the presence of the bug
-    assertEquals ( "groovy.lang.MissingMethodException: No signature of method: standard_input.javac() is applicable for argument types: (java.util.LinkedHashMap) values: [[srcdir:${sourceDirectory}, destdir:${buildDirectory}, fork:true, failonerror:true, source:1.5, target:1.5, debug:on, deprecation:on]]\n" , output )
+    //  TODO :  This currently shows the presence of the bug.
+    if ( groovyMinorVersion < 6 ) {
+      assertEquals ( "groovy.lang.MissingMethodException: No signature of method: standard_input.javac() is applicable for argument types: (java.util.LinkedHashMap) values: {[\"srcdir\":\"${sourceDirectory}\", \"destdir\":\"${buildDirectory}\", \"fork\":\"true\", \"failonerror\":\"true\", \"source\":\"1.5\", \"target\":\"1.5\", \"debug\":\"on\", \"deprecation\":\"on\"]}\n" , output )
+    }
+    else if ( groovyMinorVersion < 7 ) {
+      assertEquals ( "groovy.lang.MissingMethodException: No signature of method: standard_input.javac() is applicable for argument types: (java.util.LinkedHashMap) values: {[srcdir:${sourceDirectory}, destdir:${buildDirectory}, fork:true, failonerror:true, source:1.5, target:1.5, debug:on, deprecation:on]}\n" , output )
+    }
+    else {
+      assertEquals ( "groovy.lang.MissingMethodException: No signature of method: standard_input.javac() is applicable for argument types: (java.util.LinkedHashMap) values: [[srcdir:${sourceDirectory}, destdir:${buildDirectory}, fork:true, failonerror:true, source:1.5, target:1.5, debug:on, deprecation:on]]\n" , output )
+    }
   }
 }
