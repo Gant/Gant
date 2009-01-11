@@ -75,6 +75,9 @@ final apiDocumentationDirectory = documentationDirectory + '/api'
 
 final buildMetadataDirectory = buildClassesDirectory + '/META-INF'
 
+final sourceCompatibility = '1.5'
+final targetCompatibility = '1.5'
+
 //  Labels for supporting use of the Maven Ant task.  NB Installing Gant installs the Maven and Ivy Ant
 //  tasks jars into the Groovy library.
 
@@ -171,7 +174,7 @@ final performCompile = { classpathId , boolean fork ->
       pathelement ( location : buildClassesDirectory )
       path ( refid : classpathId )
     }
-    javac ( source : '1.5' , target : '1.5' , debug : 'on' )
+    javac ( source : sourceCompatibility , target : targetCompatibility , debug : 'on' )
   }
 }
 
@@ -184,7 +187,7 @@ final performCompileTests = { classpathId , boolean fork ->
         pathelement ( location : buildClassesDirectory )
         path ( refid : classpathId )
       }
-      javac ( source : '1.5' , target : '1.5' , debug : 'on' )
+      javac ( source : sourceCompatibility , target : targetCompatibility , debug : 'on' )
     }
   }
 }
@@ -368,23 +371,26 @@ final doDocumentation = { ->
                                      ] )
   ant.mkdir ( dir : javaApiDocumentationDirectory )
   ant.mkdir ( dir : groovyApiDocumentationDirectory )
+  def packageTitle = "Gant (${version})"
+  def packageIncludeSpec = 'gant.*,org.codehaus.gant.*'
   //  Don't assume that &copy; and &ndash; are understood by the browser -- even though they are in the HTML
   //  4.0 specification.  Copyright symbol is &copy; or &#169;.  N-dash symbol is &ndash; or &#8211;
   def copyrightString = 'Copyright &#169; 2006&#8211;9 The Codehaus.  All rights reserved.'
   ant.javadoc (
                sourcepath : sourceDirectory ,
                destdir : javaApiDocumentationDirectory ,
-               packagenames : 'gant.*,org.codehaus.gant.*',
+               packagenames : packageIncludeSpec,
                overview : 'overview.html' ,
                'private' : 'true' ,
                encoding : 'UTF-8' ,
                use : 'true' ,
                author : 'true' ,
-               windowtitle : "Gant (${gantVersion})" ,
-               doctitle : "Gant (${gantVersion})" ,
-               header : "Gant (${gantVersion})" ,
+               version : 'true' ,
+               windowtitle : packageTitle ,
+               doctitle : packageTitle ,
+               header : packageTitle ,
                footer : copyrightString ,
-               source : 1.5
+               source : 1.6
                ) {
     classpath {
       pathelement ( location : buildClassesDirectory )
@@ -394,14 +400,14 @@ final doDocumentation = { ->
   ant.groovydoc (
              destdir : groovyApiDocumentationDirectory ,
              sourcepath : sourceDirectory ,
-             packagenames : 'gant.*,org.codehaus.gant.*' ,
+             packagenames : packageIncludeSpec ,
              //overview : 'overview.html' ,
              //author : 'true' ,
              //version : 'true' ,
              use : 'true' ,
              'private' : 'false' ,
-             windowtitle : "Gant (${gantVersion})" ,
-             //doctitle : "Gant (${gantVersion})" ,
+             windowtitle : packageTitle ,
+             //doctitle : packageTitle ,
              //encoding : 'UTF-8' ,
              footer : copyrightString
              )
