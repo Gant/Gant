@@ -387,7 +387,8 @@ final doDocumentation = { ->
       pathelement ( location : buildClassesDirectory )
       path ( refid : classpathId )
     }
-  }  
+  }
+
   ant.groovydoc (
              destdir : groovyApiDocumentationDirectory ,
              sourcepath : sourceDirectory ,
@@ -400,7 +401,7 @@ final doDocumentation = { ->
              windowtitle : "Gant (${gantVersion})" ,
              //doctitle : "Gant (${gantVersion})" ,
              //encoding : 'UTF-8' ,
-             //footer : 'Copyright &copy; 2006&ndash;8 The Codehaus.  All rights reserved.'
+             footer : 'Copyright &copy; 2006&ndash;8 The Codehaus.  All rights reserved.'
              )
 }
 
