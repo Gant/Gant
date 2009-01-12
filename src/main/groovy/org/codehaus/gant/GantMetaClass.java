@@ -31,8 +31,7 @@ import org.codehaus.groovy.runtime.MetaClassHelper ;
 import org.apache.tools.ant.BuildException ;
 
 /**
- *  This class is the metaclass used for target <code>Closure</code>s, any enclosed <code>Closures</code>,
- *  and the Gant script itself.
+ *  This class is the metaclass used for target <code>Closure</code>s, and any enclosed <code>Closures</code>.
  *
  *  <p>This metaclass deals with <code>depends</code> method calls and redirects unknown method calls to the
  *  instance of <code>GantBuilder</code>.  To process the <code>depends</code> all closures from the
@@ -63,8 +62,8 @@ public class GantMetaClass extends DelegatingMetaClass {
     this.binding = binding ;
   }
   /**
-   *  Execute a <code>Closure</code> only if it hasn't been executed previously.  Record the execution if it
-   *  is executed.  Only used for processing a <code>depends</code> call.
+   *  Execute a <code>Closure</code> only if it hasn't been executed previously.  If it is executed, record
+   *  the execution.  Only used for processing a <code>depends</code> call.
    *
    *  @param closure The <code>Closure</code> to potentially call.
    *  @return the result of the <code>Closure</code> call, or <code>null</code> if the closure was not
@@ -135,7 +134,12 @@ public class GantMetaClass extends DelegatingMetaClass {
       catch ( final MissingMethodException mme ) {
         try { returnObject = ( (GantBuilder) ( binding.getVariable ( "ant" ) ) ).invokeMethod ( methodName , arguments ) ; }
         catch ( final BuildException be ) {
-          if ( be.getCause ( ) == null ) { throw mme ; }
+          //  This BuildException could be a real exception due to a failed execution of a found Ant task
+          //  (in which case it should be propagated), or it could be due to a failed name lookup (in which
+          //  case the MissingMethodException should be propogated).  The big problem is distinguishing the
+          //  various uses of Build Exception here -- for now use string search of the exception message to
+          //  distinguish the cases.  NB GANT-49 and GANT-68 are the main conflicting issues here :-(
+          if ( be.getMessage ( ).startsWith ( "Problem: failed to create task or type" ) ) { throw mme ; }
           else { throw be ; }
         }
         catch ( final Exception e ) { throw mme ; }

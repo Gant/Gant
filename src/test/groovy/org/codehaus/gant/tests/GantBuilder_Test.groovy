@@ -33,23 +33,22 @@ final class GantBuilder_Test extends GantTestCase {
     assertEquals ( GantState.VERBOSE , GantState.verbosity )
   }
   void testGroovycTaskFail ( ) {
+    def sourceDirectory = '.'
+    def destinationDirectory = '/tmp/tmp/tmp/tmp'
+    def expectedResult = 'groovy.lang.MissingMethodException: No signature of method: standard_input.groovyc() is applicable for argument types: (java.util.LinkedHashMap) values: '
+    if ( groovyMinorVersion < 6 ) { expectedResult += "{[\"srcdir\":\"${sourceDirectory}\", \"destdir\":\"${destinationDirectory}\"]}\n" }
+    else if ( groovyMinorVersion < 7 ) { expectedResult += "{[srcdir:${sourceDirectory}, destdir:${destinationDirectory}]}\n" }
+    else { expectedResult += "[[srcdir:${sourceDirectory}, destdir:${destinationDirectory}]]\n" }
     //
-    //  This test can only be guaranteed to work if JUnit is operating in perTest fork mode since otherwise
+    //  This test may only be guaranteed to work if JUnit is operating in perTest fork mode since otherwise
     //  another test may have caused the Groovyc task to be loaded which leads to a 0 return value.
     //
-    def path = '/tmp/tmp/tmp/tmp'
     script = """
 target ( hello : '' ) {
-  groovyc ( srcdir : '.' , destdir : '${path}' )
+  groovyc ( srcdir : '${sourceDirectory}' , destdir : '${destinationDirectory}' )
 }
 """
     assertEquals ( -13 , processCmdLineTargets ( 'hello' ) )
-    assertEquals ( ''': Problem: failed to create task or type groovyc
-Cause: The name is undefined.
-Action: Check the spelling.
-Action: Check that any custom tasks/types have been declared.
-Action: Check that any <presetdef>/<macrodef> declarations have taken place.
-
-''' , output )
+    assertEquals ( expectedResult , output )
   }
 }
