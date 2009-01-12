@@ -21,10 +21,6 @@ import org.codehaus.gant.tests.GantTestCase
 class GANT_49_Test extends GantTestCase {
   void testBuilderBug ( ) {
     //
-    //  This test fails dismally due to the way that exceptions are handled.
-    //
-    return
-    //
     //  NB Codehaus Bamboo execution is not in a context such that
     //  org.codehaus.groovy.runtime.HandleMetaClass exists since it is running against Groovy 1.5.6
     //  rather than 1.6 or later.
@@ -60,7 +56,7 @@ target ( test : '' ) {
 }
 setDefaultTarget ( 'test' )
 '''
-    assertEquals ( -13 , processCmdLineTargets ( ) )
+    assertEquals ( 0 , processCmdLineTargets ( ) )
     assertEquals ( '''<beans>
   <resourceHolder>Something 1</resourceHolder>
   <container>
