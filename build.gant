@@ -371,7 +371,7 @@ final doDocumentation = { ->
                                      ] )
   ant.mkdir ( dir : javaApiDocumentationDirectory )
   ant.mkdir ( dir : groovyApiDocumentationDirectory )
-  def packageTitle = "Gant (${version})"
+  def packageTitle = "Gant (${gantVersion})"
   def packageIncludeSpec = 'gant.*,org.codehaus.gant.*'
   //  Don't assume that &copy; and &ndash; are understood by the browser -- even though they are in the HTML
   //  4.0 specification.  Copyright symbol is &copy; or &#169;.  N-dash symbol is &ndash; or &#8211;
