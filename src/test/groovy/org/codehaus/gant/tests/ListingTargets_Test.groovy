@@ -203,4 +203,55 @@ setDefaultTarget ( 'fail' )
     assertEquals ( '''Standard input, line 4 -- Error evaluating Gantfile: Target fail does not exist so cannot be made the default.
 ''' , output ) 
   }
+
+  // -------------------------------------------------------------------------------------------------
+
+  /*
+   *  In Gant 1.5.0 changes were made to the way the parameter to target was handled -- cf. GANT-56.
+   *  However, it seems no tests were introduced for printing things out.  GANT-71 raised this point.  The
+   *  following tests are directly the one from GANT-71 by Jason Messmer -- more tests needs adding.  In the
+   *  end GANT-71 was "Not A Bug", the original failing case was erroneous, and the new format worked fine.
+   */
+
+  void test_GANT_71_oldFormatStillWorksUsingP ( ) {
+    script = '''
+target ( test : 'testing' ) { println ( "$it.name:" ) }
+'''
+    assertEquals ( 0 , gant.processArgs ( [ '-p' , '-f' , '-' ] as String[] ) )
+    assertEquals ( '''
+ test  testing
+
+''' , output )
+  }
+  void test_GANT_71_newFormatWorksUsingP ( ) {
+    script = '''
+target ( name : 'test' , description : 'testing' ) { println ( "$it.name:" ) }
+'''
+    assertEquals ( 0 , gant.processArgs ( [ '-p' , '-f' , '-' ] as String[] ) )
+    assertEquals ( '''
+ test  testing
+
+''' , output )
+  }
+
+  void test_GANT_71_oldFormatStillWorksUsingT ( ) {
+    script = '''
+target ( test : 'testing' ) { println ( "$it.name:" ) }
+'''
+    assertEquals ( 0 , gant.processArgs ( [ '-T' , '-f' , '-' ] as String[] ) )
+    assertEquals ( '''
+ test  testing
+
+''' , output )
+  }
+  void test_GANT_71_newFormatWorksUsingT ( ) {
+    script = '''
+target ( name : 'test' , description : 'testing' ) { println ( "$it.name:" ) }
+'''
+    assertEquals ( 0 , gant.processArgs ( [ '-T' , '-f' , '-' ] as String[] ) )
+    assertEquals ( '''
+ test  testing
+
+''' , output )
+  }
 }
