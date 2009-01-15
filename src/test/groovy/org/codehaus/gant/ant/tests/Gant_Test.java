@@ -58,6 +58,7 @@ public class Gant_Test extends TestCase {
     sb.append ( "tests" ) ;
     path = sb.toString ( ) ;
   }
+  private final String absolutePath =  System.getProperty ( "user.dir" )  + separator + path ;
   private final File antFile = new File ( path , "gantTest.xml" ) ;
   private Project project ;
 
@@ -155,10 +156,11 @@ public class Gant_Test extends TestCase {
    *  Codehaus Bamboo runs without GROOVY_HOME being set.</p>
    *
    *  @param xmlFile the path to the XML file that Ant is to use.
+   *  @param target the target to run, pass "" or null for the default target.
    *  @param expectedReturnCode the return code that the Ant execution should return.
    *  @param withClasspath whether the Ant execution should use the full classpathso as to find all the classes.
    */
-  private String runAnt ( final String xmlFile , final int expectedReturnCode , final boolean withClasspath ) {
+  private String runAnt ( final String xmlFile , final String target , final int expectedReturnCode , final boolean withClasspath ) {
     final List<String> command = new ArrayList<String> ( ) ;
     final String antHomeString = System.getenv ( "ANT_HOME" ) ;
     String antCommand ;
@@ -178,6 +180,7 @@ public class Gant_Test extends TestCase {
         command.add ( p ) ;
       }
     }
+    if ( ( target != null ) && ! target.trim ( ).equals ( "" ) ) { command.add ( target ) ; }
     final ProcessBuilder pb = new ProcessBuilder ( command ) ;
     final StringBuilder outputStringBuilder = new StringBuilder ( ) ;
     final StringBuilder errorStringBuilder = new StringBuilder ( ) ;
@@ -216,46 +219,73 @@ public class Gant_Test extends TestCase {
   }
   public void testRunningAntFromShellFailsNoClasspath ( ) {
     //  On Windows the ant.bat file always returns zero :-(
-    assertEquals ( createBaseMessage ( ) , runAnt ( path + separator + "gantTest.xml" , ( isWindows ? 0 : 1 ) , false ) ) ;
+    assertEquals ( createBaseMessage ( ) , runAnt ( antFile.getPath ( ) , null , ( isWindows ? 0 : 1 ) , false ) ) ;
   }
   public void testRunningAntFromShellSuccessful ( ) {
-    assertEquals ( createBaseMessage ( ) + "\nBUILD SUCCESSFUL\n\n", trimTimeFromSuccessfulBuild ( runAnt ( path + separator + "gantTest.xml" , 0 , true ) ) ) ;
+    assertEquals ( createBaseMessage ( ) + "\nBUILD SUCCESSFUL\n\n", trimTimeFromSuccessfulBuild ( runAnt ( antFile.getPath ( ) , null , 0 , true ) ) ) ;
   }
   /*
-   *  The following test is based on the code presented in email exchanges on the Groovy developer list by
+   *  The following tests are based on the code presented in email exchanges on the Groovy developer list by
    *  Chris Miles.  cf.  GANT-50.  This assumes that the tests are run from a directory other than this one.
    */
-  public void testBasedirInSubdir ( ) {
-    final String pathToDirectory = System.getProperty ( "user.dir" )  + separator + path ;
+  private String basedirAntFilePath = path + separator + "basedir.xml" ;
+  //
+  //  TODO: The includeTag is needed because of an error -- it should be removed and the [groovy] tag always present.
+  //
+  private String createMessageStart ( final String target , final boolean includeFollowOn , final boolean includeTag ) {
     final StringBuilder sb = new StringBuilder ( ) ;
     sb.append ( "Buildfile: " ) ;
     sb.append ( path ).append ( separator ) ;
     sb.append ( "basedir.xml\n     [echo] basedir::ant basedir=" ) ;
-    sb.append ( pathToDirectory ) ;
-    sb.append ( "\n\n-initializeWithGroovyHome:\n\n-initializeNoGroovyHome:\n\nbuild:\n   [groovy] basedir::groovy basedir=" ) ;
-    sb.append ( pathToDirectory ) ;
-    sb.append ( "\n   [groovy] basedir::gant basedir=" ) ;
+    sb.append ( absolutePath ) ;
+    sb.append ( "\n\n-initializeWithGroovyHome:\n\n-initializeNoGroovyHome:\n\n" ) ;
+    sb.append ( target ) ;
+    sb.append ( ":\n" ) ;
+    if ( includeFollowOn ) {
+      sb.append ( "   [groovy] basedir::groovy basedir=" ) ;
+      sb.append ( absolutePath ) ;
+      sb.append ( "\n" ) ;
+      //
+      //  TODO : Why no groovy tag in some cases?
+      //
+      if ( includeTag ) { sb.append ( "   [groovy] " ) ; }
+      sb.append ( "basedir::gant basedir=" ) ;
+    }
+    return sb.toString ( ) ;
+  }
+  public void testBasedirInSubdirDefaultProjectForGant ( ) {
+    final String target = "defaultProject" ;
+    final StringBuilder sb = new StringBuilder ( ) ;
+    sb.append ( createMessageStart ( target , true , true) ) ;
     //
-    //  TODO :  this is wrong, it confirms the presence of the bug.
+    //  The first of the following two statements is the one that should be used, it specifies what should
+    //  happen.  The second of the statements shows what actually happens with the bug of GANT-50 in place.
     //
-    //sb.append ( pathToDirectory ) ;
+    //  TODO : this is wrong, it confirms the presence of the bug.
+    //
+    //sb.append ( absolutePath ) ;
     sb.append ( System.getProperty ( "user.dir" ) ) ;
-    //
-    sb.append ( "\n   [groovy] basedir::groovy basedir=" ) ;
-    sb.append ( pathToDirectory ) ;
-    //
-    //  TODO : Why no groovy tag here?
-    //
-    // sb.append ( "\n   [groovy] basedir::gant basedir=" ) ;
-    sb.append ( "\nbasedir::gant basedir=" ) ;
-    //
-    sb.append ( pathToDirectory ) ;
+    sb.append ( "\n\nBUILD SUCCESSFUL\n\n" ) ;
+    assertEquals ( sb.toString ( ) , trimTimeFromSuccessfulBuild ( runAnt ( basedirAntFilePath , target , 0 , false ) ) ) ;
+  }
+  public void testBasedirInSubdirExplicitProjectForGant ( ) {
+    final String target = "explicitProject" ;
+    final StringBuilder sb = new StringBuilder ( ) ;
+    sb.append ( createMessageStart ( target , true , false ) ) ;
+    sb.append ( absolutePath ) ;
+    sb.append ( "\n\nBUILD SUCCESSFUL\n\n" ) ;
+    assertEquals ( sb.toString ( ) , trimTimeFromSuccessfulBuild ( runAnt ( basedirAntFilePath , target , 0 , false ) ) ) ;
+  }
+  public void testBasedirInSubdirGantTask ( ) {
+    final String target = "gantTask" ;
+    final StringBuilder sb = new StringBuilder ( ) ;
+    sb.append ( createMessageStart ( target , false , false ) ) ;
     //
     //  TODO : The <gant file="..."/> tag fails at the moment.
     //
     //sb.append ( "\n     [gant] basedir::gant basedir=" ) ;
-    //sb.append ( pathToDirectory ) ;
-    sb.append ( "\n\nBUILD SUCCESSFUL\n\n" ) ;
-    assertEquals ( sb.toString ( ) , trimTimeFromSuccessfulBuild ( runAnt ( path + separator + "basedir.xml" , 0 , false ) ) ) ;
+    //sb.append ( absolutePath ) ;
+    //sb.append ( "\nBUILD SUCCESSFUL\n\n" ) ;
+    assertEquals ( sb.toString ( ) , trimTimeFromSuccessfulBuild ( runAnt ( basedirAntFilePath , target , 1 , false ) ) ) ;
   }
 }

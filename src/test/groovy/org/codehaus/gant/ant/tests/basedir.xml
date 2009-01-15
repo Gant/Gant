@@ -20,7 +20,7 @@ Author : Russel Winder <russel.winder@concertant.com>
 This test results from emails by Chris Miles on the Groovy Developer email list.  cf. GANT-50.
 -->
 
-<project name="Basedir_Tests" default="build" xmlns:artifact="urn:maven-artifact-ant" >
+<project name="Basedir_Tests" xmlns:artifact="urn:maven-artifact-ant" >
 
   <echo>basedir::ant basedir=${basedir}</echo>
 
@@ -68,22 +68,26 @@ This test results from emails by Chris Miles on the Groovy Developer email list.
     <taskdef name="gant" classname="org.codehaus.gant.ant.Gant" classpathref="classpathId"/>
   </target>
 
-  <target name="build" depends="-initializeWithGroovyHome,-initializeNoGroovyHome">
+  <target name="defaultProject" depends="-initializeWithGroovyHome,-initializeNoGroovyHome">
     <groovy>
       println ( "basedir::groovy basedir=${ant.project.properties.basedir}" )
       def gant = new gant.Gant ( )
       gant.loadScript ( new File ( ant.project.properties.'this.basedir' + '/basedir.gant' ) )
       gant.processTargets (  )
     </groovy>
+  </target>
+  
+  <target name="explicitProject" depends="-initializeWithGroovyHome,-initializeNoGroovyHome">
     <groovy>
       println ( "basedir::groovy basedir=${ant.project.properties.basedir}" )
       def gant = new gant.Gant ( ant.project )
       gant.loadScript ( new File ( ant.project.properties.'this.basedir' + '/basedir.gant' ) )
       gant.processTargets (  )
     </groovy>
-    <!--  The gant tag doesn't work just now.
+  </target>
+  
+  <target name="gantTask" depends="-initializeWithGroovyHome,-initializeNoGroovyHome">
     <gant file="basedir.gant"/>
-    -->
   </target>
   
 </project>
