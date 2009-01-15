@@ -209,8 +209,9 @@ setDefaultTarget ( 'fail' )
   /*
    *  In Gant 1.5.0 changes were made to the way the parameter to target was handled -- cf. GANT-56.
    *  However, it seems no tests were introduced for printing things out.  GANT-71 raised this point.  The
-   *  following tests are directly the one from GANT-71 by Jason Messmer -- more tests needs adding.  In the
-   *  end GANT-71 was "Not A Bug", the original failing case was erroneous, and the new format worked fine.
+   *  following tests are directly the ones from GANT-71 by Jason Messmer -- possibly more tests needs
+   *  adding.  In the end, GANT-71 was "Not A Bug", the original failing case was erroneous, and the new
+   *  format worked fine -- despite not having any unit tests.
    */
 
   void test_GANT_71_oldFormatStillWorksUsingP ( ) {

@@ -3,7 +3,7 @@
 <!--
 Gant - A Groovy build framework based on scripting Ant tasks.
 
-Copyright © 2008 Russel Winder
+Copyright © 2008-9 Russel Winder
 
 Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in
 compliance with the License. You may obtain a copy of the License at
@@ -20,11 +20,9 @@ Author : Russel Winder <russel.winder@concertant.com>
 This test results from emails by Chris Miles on the Groovy Developer email list.  cf. GANT-50.
 -->
 
-<project name="Basedir_Tests" xmlns:artifact="urn:maven-artifact-ant" >
+<project name="Basedir_Tests" xmlns:artifact="urn:maven-artifact-ant" basedir="." >
 
   <echo>basedir::ant basedir=${basedir}</echo>
-
-  <dirname property="this.basedir" file="${ant.file.Basedir_Tests}"/>
 
   <property name ="toplevelDirectory" value="../../../../../../../.."/>
 
@@ -47,8 +45,6 @@ This test results from emails by Chris Miles on the Groovy Developer email list.
       <fileset dir="${environment.GROOVY_HOME}/lib" includes="asm*.jar"/>
       <fileset dir="${environment.GROOVY_HOME}/lib" includes="antlr*.jar"/>
     </path>
-    <taskdef name="groovy" classname="org.codehaus.groovy.ant.Groovy" classpathref="classpathId" />
-    <taskdef name="gant" classname="org.codehaus.gant.ant.Gant" classpathref="classpathId"/>
   </target>
 
   <target name="-initializeNoGroovyHome" unless="groovyHomeIsSet">
@@ -64,29 +60,32 @@ This test results from emails by Chris Miles on the Groovy Developer email list.
       <pathelement location="${classesDirectory}"/>
       <path refid="groovyJarsId"/>
     </path>
+  </target>
+
+  <target name="-defineTasks">
     <taskdef name="groovy" classname="org.codehaus.groovy.ant.Groovy" classpathref="classpathId" />
     <taskdef name="gant" classname="org.codehaus.gant.ant.Gant" classpathref="classpathId"/>
   </target>
 
-  <target name="defaultProject" depends="-initializeWithGroovyHome,-initializeNoGroovyHome">
+  <target name="defaultProject" depends="-initializeWithGroovyHome,-initializeNoGroovyHome,-defineTasks">
     <groovy>
       println ( "basedir::groovy basedir=${ant.project.properties.basedir}" )
       def gant = new gant.Gant ( )
-      gant.loadScript ( new File ( ant.project.properties.'this.basedir' + '/basedir.gant' ) )
+      gant.loadScript ( new File ( ant.project.properties.'basedir' + '/basedir.gant' ) )
       gant.processTargets (  )
     </groovy>
   </target>
   
-  <target name="explicitProject" depends="-initializeWithGroovyHome,-initializeNoGroovyHome">
+  <target name="explicitProject" depends="-initializeWithGroovyHome,-initializeNoGroovyHome,-defineTasks">
     <groovy>
       println ( "basedir::groovy basedir=${ant.project.properties.basedir}" )
       def gant = new gant.Gant ( ant.project )
-      gant.loadScript ( new File ( ant.project.properties.'this.basedir' + '/basedir.gant' ) )
+      gant.loadScript ( new File ( ant.project.properties.'basedir' + '/basedir.gant' ) )
       gant.processTargets (  )
     </groovy>
   </target>
   
-  <target name="gantTask" depends="-initializeWithGroovyHome,-initializeNoGroovyHome">
+  <target name="gantTask" depends="-initializeWithGroovyHome,-initializeNoGroovyHome,-defineTasks">
     <gant file="basedir.gant"/>
   </target>
   

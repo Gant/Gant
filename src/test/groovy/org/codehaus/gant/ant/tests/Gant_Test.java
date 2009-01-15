@@ -232,38 +232,31 @@ public class Gant_Test extends TestCase {
   //
   //  TODO: The includeTag is needed because of an error -- it should be removed and the [groovy] tag always present.
   //
-  private String createMessageStart ( final String target , final boolean includeFollowOn , final boolean includeTag ) {
+  private String createMessageStart ( final String target ) {
     final StringBuilder sb = new StringBuilder ( ) ;
     sb.append ( "Buildfile: " ) ;
     sb.append ( path ).append ( separator ) ;
     sb.append ( "basedir.xml\n     [echo] basedir::ant basedir=" ) ;
     sb.append ( absolutePath ) ;
-    sb.append ( "\n\n-initializeWithGroovyHome:\n\n-initializeNoGroovyHome:\n\n" ) ;
+    sb.append ( "\n\n-initializeWithGroovyHome:\n\n-initializeNoGroovyHome:\n\n-defineTasks:\n\n" ) ;
     sb.append ( target ) ;
     sb.append ( ":\n" ) ;
-    if ( includeFollowOn ) {
-      sb.append ( "   [groovy] basedir::groovy basedir=" ) ;
-      sb.append ( absolutePath ) ;
-      sb.append ( "\n" ) ;
-      //
-      //  TODO : Why no groovy tag in some cases?
-      //
-      if ( includeTag ) { sb.append ( "   [groovy] " ) ; }
-      sb.append ( "basedir::gant basedir=" ) ;
-    }
     return sb.toString ( ) ;
   }
   public void testBasedirInSubdirDefaultProjectForGant ( ) {
     final String target = "defaultProject" ;
     final StringBuilder sb = new StringBuilder ( ) ;
-    sb.append ( createMessageStart ( target , true , true) ) ;
+    sb.append ( createMessageStart ( target ) ) ;
+    sb.append ( "   [groovy] basedir::groovy basedir=" ) ;
+    sb.append ( absolutePath ) ;
+    sb.append ( "\n   [groovy] basedir::gant basedir=" ) ;
     //
-    //  The first of the following two statements is the one that should be used, it specifies what should
-    //  happen.  The second of the statements shows what actually happens with the bug of GANT-50 in place.
+    //  Currently a Gant object instantiated in a Groovy task in an Ant script does not inherit the basedir
+    //  of the "calling" Ant.  Instead it assumes it is rooted in the process start directory.  According to
+    //  GANT-50 this is an error.  The question is to decide whether it is or not.
     //
-    //  TODO : this is wrong, it confirms the presence of the bug.
+    //  TODO : Should this be sb.append ( absolutePath ) ?  cf. GANT-50. 
     //
-    //sb.append ( absolutePath ) ;
     sb.append ( System.getProperty ( "user.dir" ) ) ;
     sb.append ( "\n\nBUILD SUCCESSFUL\n\n" ) ;
     assertEquals ( sb.toString ( ) , trimTimeFromSuccessfulBuild ( runAnt ( basedirAntFilePath , target , 0 , false ) ) ) ;
@@ -271,7 +264,17 @@ public class Gant_Test extends TestCase {
   public void testBasedirInSubdirExplicitProjectForGant ( ) {
     final String target = "explicitProject" ;
     final StringBuilder sb = new StringBuilder ( ) ;
-    sb.append ( createMessageStart ( target , true , false ) ) ;
+    sb.append ( createMessageStart ( target ) ) ;
+    sb.append ( "   [groovy] basedir::groovy basedir=" ) ;
+    sb.append ( absolutePath ) ;
+    //
+    //  In this case the instantiated Gant object is connected directly to the Project object instantiated
+    //  by Ant and so uses the same basedir.  However it seems that the output (and error) stream are not
+    //  routed through the bit of Ant that prefixes the output with the current task name.
+    //
+    //  TODO : Sort out whether Is it correct that [groovy] is not printed out at the start of this?  cf. GANT-50.
+    //
+    sb.append ( "\nbasedir::gant basedir=" ) ;
     sb.append ( absolutePath ) ;
     sb.append ( "\n\nBUILD SUCCESSFUL\n\n" ) ;
     assertEquals ( sb.toString ( ) , trimTimeFromSuccessfulBuild ( runAnt ( basedirAntFilePath , target , 0 , false ) ) ) ;
@@ -279,13 +282,10 @@ public class Gant_Test extends TestCase {
   public void testBasedirInSubdirGantTask ( ) {
     final String target = "gantTask" ;
     final StringBuilder sb = new StringBuilder ( ) ;
-    sb.append ( createMessageStart ( target , false , false ) ) ;
-    //
-    //  TODO : The <gant file="..."/> tag fails at the moment.
-    //
-    //sb.append ( "\n     [gant] basedir::gant basedir=" ) ;
-    //sb.append ( absolutePath ) ;
-    //sb.append ( "\nBUILD SUCCESSFUL\n\n" ) ;
-    assertEquals ( sb.toString ( ) , trimTimeFromSuccessfulBuild ( runAnt ( basedirAntFilePath , target , 1 , false ) ) ) ;
+    sb.append ( createMessageStart ( target ) ) ;
+    sb.append ( "     [gant] basedir::gant basedir=" ) ;
+    sb.append ( absolutePath ) ;
+    sb.append ( "\n\nBUILD SUCCESSFUL\n\n" ) ;
+    assertEquals ( sb.toString ( ) , trimTimeFromSuccessfulBuild ( runAnt ( basedirAntFilePath , target , 0 , false ) ) ) ;
   }
 }

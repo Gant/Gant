@@ -129,7 +129,6 @@ public class Gant extends Task {
    * Load the file and then execute it.
    */
   @Override public void execute ( ) throws BuildException {
-    if ( ! ( new File ( file ) ).exists ( ) ) { throw new BuildException ( "Gantfile does not exist." , getLocation ( ) ) ; }
     //
     //  To address the issues raised in GANT-50, we need to ensure that the org.apache.tools.ant.Project
     //  instance used by Gant is the one that initiated this task.  This means creating a new GantBinding
@@ -143,6 +142,8 @@ public class Gant extends Task {
     final Project newProject = new Project ( ) ;
     newProject.init ( ) ;
     newProject.setBaseDir ( getOwningTarget ( ).getProject ( ).getBaseDir ( ) ) ;
+    final File gantFile = new File ( newProject.getBaseDir ( ) , file ) ;
+    if ( ! gantFile.exists ( ) ) { throw new BuildException ( "Gantfile does not exist." , getLocation ( ) ) ; }
     final GantBuilder ant = new GantBuilder ( newProject ) ;
     final Map<String,String> environmentParameter = new HashMap<String,String> ( ) ;
     environmentParameter.put ( "environment" , "environment" ) ;
@@ -163,7 +164,7 @@ public class Gant extends Task {
     }
     System.setOut ( outSave ) ;
     final gant.Gant gant = new gant.Gant ( binding ) ;
-    gant.loadScript ( new File ( newProject.getBaseDir ( ) , file ) ) ;
+    gant.loadScript ( gantFile ) ;
     final List<String> targetsAsStrings = new ArrayList<String> ( ) ;
     for ( final GantTarget g : targets ) { targetsAsStrings.add ( g.getValue ( ) ) ; }
     final int returnCode =  gant.processTargets ( targetsAsStrings ) ;
