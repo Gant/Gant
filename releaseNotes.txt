@@ -9,6 +9,8 @@ the one on Ubuntu, MSYS, Cygwin.
 
 Split the two cases where -2 is the return code, introduce -4 for one of the cases.
 
+Various tinkerings associated with GANT-50, GANT-62, GANT-71.
+
 
 1.5.1 ( r10110 )
 ----------------
