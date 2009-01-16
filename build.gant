@@ -119,7 +119,7 @@ final distributionDirectories = [ 'documentation' , 'examples' , '.settings' , s
 
 final distributionVersions = [ : ]
  if ( testSpecialDistributionVersion ) {
-   distributionVersions.put ( 'groovy-' + groovy16Version , [ groupId : 'org.codehaus.groovy' , artifactId : 'groovy-all' , version : groovy16Version ] )
+   distributionVersions.put ( 'groovy-' + groovy15Version , [ groupId : 'org.codehaus.groovy' , artifactId : 'groovy-all' , version : groovy15Version ] )
  }
  else {
    [ groovy15Version , groovy16Version , groovy17Version ].each { version ->
