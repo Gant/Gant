@@ -1,3 +1,8 @@
+1.7.0 ( rXXXX )
+---------------
+
+
+
 1.6.0 ( rXXXX )
 ---------------
 
@@ -10,6 +15,10 @@ the one on Ubuntu, MSYS, Cygwin.
 Split the two cases where -2 is the return code, introduce -4 for one of the cases.
 
 Various tinkerings associated with GANT-50, GANT-62, GANT-71.
+
+Upgraded to use Groovy 1.6-RC-2.
+
+Upgraded to use Ivy 2.0.0.
 
 
 1.5.1 ( r10110 )
