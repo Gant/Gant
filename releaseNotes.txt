@@ -1,4 +1,4 @@
-1.6.0 ( rXXXX )
+1.6.0 ( r10161 )
 ---------------
 
 A first cut at adding BuildListeners added by Graeme Rocher.  cf. GANT-70.
