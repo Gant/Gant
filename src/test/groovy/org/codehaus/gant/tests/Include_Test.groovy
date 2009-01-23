@@ -488,7 +488,7 @@ includeTargets * gant.targets.Clean
 target ( test : '' ) { }
 '''
     assertEquals ( -4 , processCmdLineTargets ( 'test' ) )
-    assertEquals ( 'Standard input, line 2 -- Error evaluating Gantfile: No signature of method: org.codehaus.gant.IncludeTargets.multiply() is applicable for argument types: (java.lang.Class) values: ' + ( ( groovyMinorVersion < 7 ) ? '{class gant.targets.Clean}' : '[class gant.targets.Clean]' ) + '\n' , output )
+    assertEquals ( 'Standard input, line 2 -- Error evaluating Gantfile: No signature of method: org.codehaus.gant.IncludeTargets.multiply() is applicable for argument types: (java.lang.Class) values: ' + ( ( groovyMinorVersion < 6 ) ? '{class gant.targets.Clean}' : '[class gant.targets.Clean]' ) + '\n' , output )
   }
   void testErrorNullPower ( ) {
     script = '''
