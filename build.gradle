@@ -98,14 +98,14 @@ createTask ( 'documentation' , dependsOn : 'compile' ) {
              sourcepath : sourceDirectory ,
              destdir : groovyApiDocumentationDirectory ,
              packagenames : packageIncludeSpec ,
-             //overview : 'overview.html' ,
+             overview : 'overview.html' ,
              private : 'true' ,
              use : 'true' ,
              //author : 'true' ,
              //version : 'true' ,
              windowtitle : packageTitle ,
              doctitle : packageTitle ,
-             //header : packageTitle ,
+             header : packageTitle ,
              footer : copyrightString,
              //source : 1.5
              )

@@ -402,7 +402,7 @@ final doDocumentation = { ->
              sourcepath : sourceDirectory ,
              destdir : groovyApiDocumentationDirectory ,
              packagenames : packageIncludeSpec ,
-             //overview : 'overview.html' ,
+             overview : 'overview.html' ,
              private : 'true' ,
              //encoding : 'UTF-8' ,
              use : 'true' ,
@@ -410,7 +410,7 @@ final doDocumentation = { ->
              //version : 'true' ,
              windowtitle : packageTitle ,
              doctitle : packageTitle ,
-             //header : packageTitle ,
+             header : packageTitle ,
              footer : copyrightString ,
              //source : 1.5
              )
