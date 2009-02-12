@@ -391,7 +391,7 @@ final doDocumentation = { ->
                doctitle : packageTitle ,
                header : packageTitle ,
                footer : copyrightString ,
-               source : 1.5
+               source : sourceCompatibility
                ) {
     classpath {
       pathelement ( location : buildClassesDirectory )
@@ -412,7 +412,7 @@ final doDocumentation = { ->
              doctitle : packageTitle ,
              header : packageTitle ,
              footer : copyrightString ,
-             //source : 1.5
+             //source : sourceCompatibility
              )
 }
 
