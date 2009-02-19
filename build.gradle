@@ -1,6 +1,6 @@
 //  Gant -- A Groovy way of scripting Ant tasks.
 //
-//  Copyright © 2008 Russel Winder
+//  Copyright © 2008-9 Russel Winder
 //
 //  Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in
 //  compliance with the License. You may obtain a copy of the License at
@@ -48,7 +48,67 @@ dependencies {
                  ] )
 }
 
+//  The Java plugin clean task isn't flexible as as 2009-01-09 (Gradle version 0.5.2) so to remove the extra
+//  detritus we have to have use one of the hooks.  For no reason choose doLast rather than doFirst.
+
+clean.doLast {
+  ant.delete { fileset ( dir : '.' , includes : '**/*~' ) }
+}
+
+//  The javadoc task in the java and groovy plugins is not up to anything as yet since the parameters appear
+//  not to be setable.
+
+/*
 javadoc {
     title = "Gant API ${version}"
-    bottom = 'Copyright &#169; 2006&#8211;2008 Russel Winder.  All rights reserved.'
+    bottom = 'Copyright &#169; 2006&#8211;9 Russel Winder.  All rights reserved.'
 }
+*/
+
+createTask ( 'documentation' , dependsOn : 'compile' ) {
+  def javadocDirPath = 'build/' + javadocDirName
+  ant.delete ( dir : javadocDirPath , quiet : 'true' )
+  ant.mkdir ( dir : javadocDirPath )
+  def packageTitle = "Gant (${version})"
+  def packageIncludeSpec = 'gant.*,org.codehaus.gant.*'
+  def copyrightString = 'Copyright &#169; 1997&#8211;2009  The Codehaus.  All Rights Reserved.'
+  def sourceDirectory = groovySrcDirs[0]
+  ant.javadoc (
+               sourcepath : sourceDirectory ,
+               destdir : javadocDirPath ,
+               packagenames :  packageIncludeSpec ,
+               overview : 'overview.html' ,
+               'private' : 'yes' ,
+               encoding : 'UTF-8' ,
+               use : 'true' ,
+               author : 'true' ,
+               version : 'true' ,
+               windowtitle : packageTitle ,
+               doctitle : packageTitle ,
+               header : packageTitle ,
+               footer : copyrightString ,
+               source : sourceCompatibility
+               ) {
+    classpath {
+      pathelement ( location : classesDir )
+      //      path ( refid : classpathId )
+    }
+  }
+  ant.groovydoc (
+             sourcepath : sourceDirectory ,
+             destdir : groovyApiDocumentationDirectory ,
+             packagenames : packageIncludeSpec ,
+             overview : 'overview.html' ,
+             'private' : 'true' ,
+             use : 'true' ,
+             //author : 'true' ,
+             //version : 'true' ,
+             windowtitle : packageTitle ,
+             doctitle : packageTitle ,
+             header : packageTitle ,
+             footer : copyrightString,
+             //source : sourceCompatibility
+             )
+}
+
+usePlugin ( 'maven' )
