@@ -35,7 +35,6 @@ targetCompatibility = 1.5
 
 dependencies {
   addMavenRepo ( )
-  addMavenRepo ( 'file:/home/users/russel/.m2/repository' )
   groovy ( 'org.codehaus.groovy:groovy-all:' + groovyVersion )
   compile ( [
              'commons-cli:commons-cli:' + ant.antProject.properties.commonsCliVersion ,
