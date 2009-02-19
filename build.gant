@@ -382,7 +382,7 @@ final doDocumentation = { ->
                destdir : javaApiDocumentationDirectory ,
                packagenames : packageIncludeSpec,
                overview : 'overview.html' ,
-               'private' : 'true' ,
+               private : 'true' ,
                encoding : 'UTF-8' ,
                use : 'true' ,
                author : 'true' ,
@@ -391,7 +391,7 @@ final doDocumentation = { ->
                doctitle : packageTitle ,
                header : packageTitle ,
                footer : copyrightString ,
-               source : 1.6
+               source : sourceCompatibility
                ) {
     classpath {
       pathelement ( location : buildClassesDirectory )
@@ -399,18 +399,20 @@ final doDocumentation = { ->
     }
   }
   ant.groovydoc (
-             destdir : groovyApiDocumentationDirectory ,
              sourcepath : sourceDirectory ,
+             destdir : groovyApiDocumentationDirectory ,
              packagenames : packageIncludeSpec ,
-             //overview : 'overview.html' ,
+             overview : 'overview.html' ,
+             private : 'true' ,
+             //encoding : 'UTF-8' ,
+             use : 'true' ,
              //author : 'true' ,
              //version : 'true' ,
-             use : 'true' ,
-             'private' : 'false' ,
              windowtitle : packageTitle ,
-             //doctitle : packageTitle ,
-             //encoding : 'UTF-8' ,
-             footer : copyrightString
+             doctitle : packageTitle ,
+             header : packageTitle ,
+             footer : copyrightString ,
+             //source : sourceCompatibility
              )
 }
 
