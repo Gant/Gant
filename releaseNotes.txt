@@ -1,3 +1,10 @@
+1.6.1 ( r10179 )
+----------------
+
+Groovy 1.6.0 is released, declare a Gant bug-fix release so as to avoid any confusion regarding versions of
+Gant in the Maven repository and elsewhere.
+
+
 1.6.0 ( r10161 )
 ---------------
 
