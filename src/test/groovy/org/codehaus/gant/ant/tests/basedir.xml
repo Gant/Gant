@@ -52,7 +52,7 @@ This test results from emails by Chris Miles on the Groovy Developer email list.
       <fileset dir="${toplevelDirectory}/jarfiles" includes="maven-ant-tasks-*.jar"/>
     </path>
     <typedef resource="org/apache/maven/artifact/ant/antlib.xml" uri="urn:maven-artifact-ant" classpathref="mavenAntTaskJarPathId"/>
-    <property file="${toplevelDirectory}/groovyAntTaskTestVersion.properties"/>
+    <property file="${toplevelDirectory}/${groovyAntTaskTestVersionPropertyFileName}"/>
     <artifact:dependencies pathId="groovyJarsId">
       <dependency groupId="org.codehaus.groovy" artifactId="groovy-all" version="${groovyAntTaskTestVersion}"/>
     </artifact:dependencies>
@@ -62,12 +62,15 @@ This test results from emails by Chris Miles on the Groovy Developer email list.
     </path>
   </target>
 
-  <target name="-defineTasks">
+  <target name="-defineGroovyTask">
     <taskdef name="groovy" classname="org.codehaus.groovy.ant.Groovy" classpathref="classpathId" />
+  </target>
+
+  <target name="-defineGantTask">
     <taskdef name="gant" classname="org.codehaus.gant.ant.Gant" classpathref="classpathId"/>
   </target>
 
-  <target name="defaultProject" depends="-initializeWithGroovyHome,-initializeNoGroovyHome,-defineTasks">
+  <target name="defaultProject" depends="-initializeWithGroovyHome,-initializeNoGroovyHome,-defineGroovyTask">
     <groovy>
       println ( "basedir::groovy basedir=${ant.project.properties.basedir}" )
       def gant = new gant.Gant ( )
@@ -76,7 +79,7 @@ This test results from emails by Chris Miles on the Groovy Developer email list.
     </groovy>
   </target>
   
-  <target name="explicitProject" depends="-initializeWithGroovyHome,-initializeNoGroovyHome,-defineTasks">
+  <target name="explicitProject" depends="-initializeWithGroovyHome,-initializeNoGroovyHome,-defineGroovyTask">
     <groovy>
       println ( "basedir::groovy basedir=${ant.project.properties.basedir}" )
       def gant = new gant.Gant ( ant.project )
@@ -85,7 +88,7 @@ This test results from emails by Chris Miles on the Groovy Developer email list.
     </groovy>
   </target>
   
-  <target name="gantTask" depends="-initializeWithGroovyHome,-initializeNoGroovyHome,-defineTasks">
+  <target name="gantTask" depends="-initializeWithGroovyHome,-initializeNoGroovyHome,-defineGantTask">
     <gant file="basedir.gant"/>
   </target>
   

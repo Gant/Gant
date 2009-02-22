@@ -18,8 +18,6 @@ final zipExtension = '.zip'
 final tarExtension = '.tar'
 final tgzExtension = '.tgz'
 
-final groovyAntTaskTestVersionPropertyFileName = 'groovyAntTaskTestVersion.properties'
-
 ant.property ( file : 'local.build.properties' )
 ant.property ( file : 'build.properties' )
 

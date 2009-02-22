@@ -232,13 +232,15 @@ public class Gant_Test extends TestCase {
   //
   //  TODO: The includeTag is needed because of an error -- it should be removed and the [groovy] tag always present.
   //
-  private String createMessageStart ( final String target ) {
+  private String createMessageStart ( final String target , final String taskName ) {
     final StringBuilder sb = new StringBuilder ( ) ;
     sb.append ( "Buildfile: " ) ;
     sb.append ( path ).append ( separator ) ;
     sb.append ( "basedir.xml\n     [echo] basedir::ant basedir=" ) ;
     sb.append ( absolutePath ) ;
-    sb.append ( "\n\n-initializeWithGroovyHome:\n\n-initializeNoGroovyHome:\n\n-defineTasks:\n\n" ) ;
+    sb.append ( "\n\n-initializeWithGroovyHome:\n\n-initializeNoGroovyHome:\n\n-define" ) ;
+    sb.append ( taskName ) ;
+    sb.append ( "Task:\n\n" ) ;
     sb.append ( target ) ;
     sb.append ( ":\n" ) ;
     return sb.toString ( ) ;
@@ -246,7 +248,7 @@ public class Gant_Test extends TestCase {
   public void testBasedirInSubdirDefaultProjectForGant ( ) {
     final String target = "defaultProject" ;
     final StringBuilder sb = new StringBuilder ( ) ;
-    sb.append ( createMessageStart ( target ) ) ;
+    sb.append ( createMessageStart ( target , "Groovy" ) ) ;
     sb.append ( "   [groovy] basedir::groovy basedir=" ) ;
     sb.append ( absolutePath ) ;
     sb.append ( "\n   [groovy] basedir::gant basedir=" ) ;
@@ -264,7 +266,7 @@ public class Gant_Test extends TestCase {
   public void testBasedirInSubdirExplicitProjectForGant ( ) {
     final String target = "explicitProject" ;
     final StringBuilder sb = new StringBuilder ( ) ;
-    sb.append ( createMessageStart ( target ) ) ;
+    sb.append ( createMessageStart ( target , "Groovy" ) ) ;
     sb.append ( "   [groovy] basedir::groovy basedir=" ) ;
     sb.append ( absolutePath ) ;
     //
@@ -282,7 +284,7 @@ public class Gant_Test extends TestCase {
   public void testBasedirInSubdirGantTask ( ) {
     final String target = "gantTask" ;
     final StringBuilder sb = new StringBuilder ( ) ;
-    sb.append ( createMessageStart ( target ) ) ;
+    sb.append ( createMessageStart ( target , "Gant" ) ) ;
     sb.append ( "     [gant] basedir::gant basedir=" ) ;
     sb.append ( absolutePath ) ;
     sb.append ( "\n\nBUILD SUCCESSFUL\n\n" ) ;
