@@ -17,13 +17,26 @@
 ant.property ( file : 'local.build.properties' )
 ant.property ( file : 'build.properties' )
 
+groovyHome = System.getenv ( ).'GROOVY_HOME'
+if ( ! groovyHome ) { groovyHome = '/usr/share/gant' }
+def groovyVersionPatternString = /^groovy-(all-)?([0-9].*)\.jar/
+def items = ( new File ( groovyHome + '/lib' ) ).listFiles ( [ accept : { File dir , String name -> return ( name =~ groovyVersionPatternString ).find ( ) } ] as FilenameFilter )
+if ( items ) {
+  groovyVersion = ( items[0].name =~ groovyVersionPatternString )[0][2]
+  assert groovyVersion
+}
+else { throw new RuntimeException ( "Cannot determine the version of Groovy being used." ) }
+
+println ( "Using Groovy version " + groovyVersion + " from " + groovyHome )
+
+groovyAntTaskTestVersionPropertyFile = new File ( ant.antProject.properties.groovyAntTaskTestVersionPropertyFileName )
+groovyAntTaskTestVersionPropertyFile.write ( groovyVersion )
+
 archivesBaseName = 'gant'
 
 type = 'jar'
 group = 'org.codehaus.gant'
 version = ant.antProject.properties.gantVersion
-
-groovyVersion = ant.antProject.properties.groovy16Version
 
 usePlugin ( 'groovy' )
 
@@ -35,6 +48,7 @@ targetCompatibility = 1.5
 
 dependencies {
   addMavenRepo ( )
+  addMavenRepo ( 'file:///home/users/russel/.m2/repository' )
   groovy ( 'org.codehaus.groovy:groovy-all:' + groovyVersion )
   compile ( [
              'commons-cli:commons-cli:' + ant.antProject.properties.commonsCliVersion ,
@@ -53,6 +67,7 @@ dependencies {
 
 clean.doLast {
   ant.delete { fileset ( dir : '.' , includes : '**/*~' ) }
+  groovyAntTaskTestVersionPropertyFile.delete ( )
 }
 
 //  The javadoc task in the java and groovy plugins is not up to anything as yet since the parameters appear
