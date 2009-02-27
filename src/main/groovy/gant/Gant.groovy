@@ -321,6 +321,7 @@ final class Gant {
     Integer returnCode = 0
     final processDispatch = { target ->
       try {
+        owner.binding.setVariable ( 'initiatingTarget' , target )
         def returnValue = owner.binding.getVariable ( target ).call ( )
         returnCode = ( returnValue instanceof Number ) ? returnValue.intValue ( ) : 0
       }

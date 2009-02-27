@@ -1,5 +1,8 @@
-1.7.0 ( rXXXX )
----------------
+1.7.0 ( rXXXXX )
+----------------
+
+Added the binding variable initiatingTarget which is set by the Gant infrastructure just prior to processing
+each target, it allows the Gant script to know what the initiating target is.
 
 
 1.6.1 ( r10179 )

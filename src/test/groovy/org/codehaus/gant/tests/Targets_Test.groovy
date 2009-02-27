@@ -181,4 +181,40 @@ setDefaultTarget ( targetName )
     assertEquals ( 0 , processCmdLineTargets ( ) )
   }
 
+
+  //  Phil Swenson asked for the name of the target being completed to be available -- see the email on the Gant
+  //  Developer list dated 2009-09-26 20:48+00:00
+  void testInitiatingTargetAvailableToScript ( ) {
+    script = '''
+target ( 'one' : '' ) {
+  println ( initiatingTarget )
+}
+target ( 'two' : '' ) {
+  depends ( one )
+  println ( initiatingTarget )
+}
+'''
+    assertEquals ( 0 , processCmdLineTargets ( 'two' ) )
+    assertEquals ( '''two
+two
+''' , output )
+  }
+  
+  void testEachInitiatingTargetOfASequenceAvailableToScript ( ) {
+    script = '''
+target ( 'one' : '' ) {
+  println ( initiatingTarget )
+}
+target ( 'two' : '' ) {
+  depends ( one )
+  println ( initiatingTarget )
+}
+'''
+    assertEquals ( 0 , processCmdLineTargets ( [ 'one' , 'two' ] ) )
+    assertEquals ( '''one
+two
+two
+''' , output )
+  }
+  
 }
