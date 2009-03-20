@@ -181,14 +181,14 @@ setDefaultTarget ( targetName )
     assertEquals ( 0 , processCmdLineTargets ( ) )
   }
 
-  void test_nameIsAValidTargetNameWithOldDefinitionStyle ( ) {
+  void test_nameAsATargetNameImpliesExplicitDefinitionStyle ( ) {
     script = '''
-targetDescription = 'Some description or other'
-target ( name : targetDescription ) {
-  assert it.name == 'name'
-  assert it.description == targetDescription
+targetName = 'bar'
+target ( name : targetName ) {
+  assert it.name == targetName
+  assert it.description == null
 }
-setDefaultTarget ( name )
+setDefaultTarget ( targetName )
 '''
     assertEquals ( 0 , processCmdLineTargets ( ) )
     assertEquals ( '' , output )

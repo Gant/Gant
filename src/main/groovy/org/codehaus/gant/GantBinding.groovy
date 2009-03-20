@@ -118,8 +118,9 @@ public class GantBinding extends Binding implements Cloneable {
         def descriptionKey = 'description'
         Map targetMap = [:]
         if  ( ! map || map.size ( ) == 0 ) { throw new RuntimeException ( 'Target specified without a name.' ) }
-        if ( map.size ( ) == 1 ) {
-          // Implicit (original) style of specifying a target.
+        //  target ( name : 'flob' ) is treated as a specification of target flob.  
+        if ( map.size ( ) == 1 &&  ! map[nameKey] ) {
+          // Implicit style of specifying a target and description.
           targetName = map.keySet ( ).iterator ( ).next ( )
           targetDescription = map[targetName]
           // Create fake name/description entries in the map so that targets closures can still take
@@ -128,7 +129,7 @@ public class GantBinding extends Binding implements Cloneable {
           targetMap[descriptionKey]  = targetDescription
         }
         else {
-          // Explicit (new) way of specifying target name/description
+          // Explicit style of specifying target name (and possibly description)
           targetName = map[nameKey]
           targetDescription = map[descriptionKey]
           targetMap.putAll ( map )
