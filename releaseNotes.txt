@@ -4,6 +4,8 @@
 Added the binding variable initiatingTarget which is set by the Gant infrastructure just prior to processing
 each target, it allows the Gant script to know what the initiating target is.
 
+Added properties gant.version (the version of Gant currently executing) and gant.file (the initial Gant file
+being processed) to the binding to allow the script to process these data.
 
 1.6.1 ( r10179 )
 ----------------

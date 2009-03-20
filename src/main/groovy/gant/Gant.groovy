@@ -154,6 +154,10 @@ final class Gant {
    */
   def script
   /**
+   *  A bit of state to say whether to output a message about the build result.
+   */
+  private static boolean outputBuildTime = false
+  /**
    *  The binding object used for this run of Gant.  This binding object replaces the standard one to ensure
    *  that all the Gant specific things appear in the binding the script executes with.
    */
@@ -181,6 +185,8 @@ final class Gant {
     binding = b ?: new GantBinding ( )
     binding.classLoader = cl ?: getClass ( ).classLoader
     binding.groovyShell = new GroovyShell ( (ClassLoader) binding.classLoader , binding )
+    final gantPackage = binding.classLoader.getPackage ( 'gant' )
+    binding.'gant.version' = gantPackage?.implementationVersion
   }
   /**
    *  Constructor intended for use in code to be called from the Groovy Ant Task.
@@ -208,6 +214,7 @@ final class Gant {
   public Gant loadScript ( String text ) {
     if ( ! buildClassName ) { buildClassName = textInputClassName }
     script = binding.groovyShell.parse ( text , buildClassName )
+    binding.'gant.file' = '<text>'
     return this
   }
   /**
@@ -220,6 +227,7 @@ final class Gant {
   public Gant loadScript ( InputStream scriptSource ) {
     if ( ! buildClassName ) { buildClassName = streamInputClassName }
     script = binding.groovyShell.parse ( scriptSource , buildClassName )
+    binding.'gant.file' = '<stream>'
     return this
   }
   /**
@@ -250,6 +258,7 @@ final class Gant {
       script = loadClassFromCache ( buildClassName , scriptUrl.openConnection ( ).lastModified , scriptUrl )
     }
     else { loadScript ( scriptUrl.openStream ( ) ) }
+    binding.'gant.file' = scriptUrl.toString ( )
     return this
   }
   /**
@@ -259,6 +268,7 @@ final class Gant {
    */
   public Gant loadScriptClass ( String className ) {
     script = binding.classLoader.loadClass ( className ).newInstance ( )
+    binding.'gant.file' = '<class>'
     return this
   }
   /**
@@ -432,13 +442,7 @@ final class Gant {
       }
     }
     if ( options.P ) { options.P.split ( System.properties.'path.separator' ).each { String pathitem -> rootLoader?.addURL ( ( new File ( pathitem ) ).toURL ( ) ) } }
-    if ( options.V ) {
-      def version = ''
-      final gantPackage = binding.classLoader.getPackage ( 'gant' )
-      if ( gantPackage != null ) { version = gantPackage.implementationVersion }
-      println ( 'Gant version ' + ( ( ( version == null ) || ( version == '' ) ) ? '<unknown>' : version ) )
-      return 0
-    }
+    if ( options.V ) { println ( 'Gant version ' + ( binding.'gant.version'  ?: '<unknown>' ) ) ; return 0 }
     //  The rest of the arguments appear to be delivered as a single string as the first item in a list.  This is surely an error but
     //  with Commons CLI 1.0 it is the case.  So we must partition.  NB the split method delivers an array
     //  of Strings so we cast to a List.
@@ -456,6 +460,7 @@ final class Gant {
     catch ( FileNotFoundException fnfe ) { println ( 'Cannot open file ' + buildSource.name ) ; return -3 }
     catch ( Exception e ) { printMessageFrom ( e ) ; return -2 }
     def defaultReturnCode = targets?.size ( ) > 0 ? -11 : -12
+    outputBuildTime = function == 'dispatch'
     try { return processTargets ( function , targets ) }
     catch ( TargetExecutionException tee ) {
       if ( verbosity > GantState.NORMAL ) { tee.printStackTrace ( ) }
@@ -477,6 +482,8 @@ final class Gant {
       else { printMessageFrom ( e ) }
       return -4
     }
+    //  Cannot get here.
+    assert 1 == 0
   }
   public Integer processTargets ( ) { processTargets ( 'dispatch' , [ ] ) }
   public Integer processTargets ( String s ) { processTargets ( 'dispatch' , [ s ] ) }
@@ -509,5 +516,14 @@ final class Gant {
   /**
    *  The entry point for command line invocation.
    */
-  public static void main ( String[] args ) { System.exit ( ( ( new Gant ( ) ).processArgs ( args ) ) ) }
+  public static void main ( String[] args ) {
+    def startTime = System.nanoTime ( )
+    def returnValue = ( new Gant ( ) ).processArgs ( args )
+    if ( outputBuildTime ) {
+      def elapseTime = ( System.nanoTime ( ) - startTime ) / 1e9
+      println ( '\nBUILD ' + ( returnValue == 0 ? 'SUCCESSFUL' : 'FAILED' ) )
+      println ( 'Total time: ' + String.format ( '%.2f' , elapseTime ) + ' seconds' )
+    }
+    System.exit ( returnValue )
+  }
 }

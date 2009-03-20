@@ -124,7 +124,7 @@ target ( "${name}" : '' ) {
     assertEquals ( targetName + '\n' , output )
   }
 
-  //  Tests resulting from GANT-55 -- GString as aparameter to depends call causes problems.
+  //  Tests resulting from GANT-55 -- GString as a parameter to depends call causes problems.
   //
   //  GANT-61 turns out to be a replica of GANT-55.
 
@@ -181,9 +181,22 @@ setDefaultTarget ( targetName )
     assertEquals ( 0 , processCmdLineTargets ( ) )
   }
 
+  void test_nameIsAValidTargetNameWithOldDefinitionStyle ( ) {
+    script = '''
+targetDescription = 'Some description or other'
+target ( name : targetDescription ) {
+  assert it.name == 'name'
+  assert it.description == targetDescription
+}
+setDefaultTarget ( name )
+'''
+    assertEquals ( 0 , processCmdLineTargets ( ) )
+    assertEquals ( '' , output )
+  }
 
   //  Phil Swenson asked for the name of the target being completed to be available -- see the email on the Gant
   //  Developer list dated 2009-09-26 20:48+00:00
+
   void testInitiatingTargetAvailableToScript ( ) {
     script = '''
 target ( 'one' : '' ) {

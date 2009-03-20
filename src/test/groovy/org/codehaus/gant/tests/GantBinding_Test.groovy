@@ -177,4 +177,28 @@ target ( domTarget : 'Uses DOMCategory' ) {
     assertEquals ( 0 , processTargets ( 'domTarget' ) )
     assertEquals ( 'Target Three\n' , output )
   }
+
+  //  GANT-75 called for adding the properties gant.file and gant.version.  Unfortunately, the version
+  //  should always be null during testing as there is no jar, and no manifest.  Perhaps this means the way
+  //  the tests are run should change so that a jar and not the directory of compiled files is used?
+
+  void testGantFilePropertyIsAccessble ( ) {
+    script = '''
+target ( file : '' ) { println ( binding.'gant.file' ) }
+setDefaultTarget ( file )
+'''
+    assertEquals ( 0 , processTargets ( 'file' ) )
+    assertEquals ( '<stream>\n' , output )
+  }
+  
+  void testGantVersionPropertyIsAccessible ( ) {
+    System.err.println ( "Need to find a way of testing the actual version being correct instead of null." )
+    script = '''
+target ( version : '' ) { println ( binding.'gant.version' ) }
+setDefaultTarget ( version )
+'''
+    assertEquals ( 0 , processTargets ( 'version' ) )
+    assertEquals ( 'null\n' , output )
+  }
+
 }

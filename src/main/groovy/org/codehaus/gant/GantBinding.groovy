@@ -118,21 +118,20 @@ public class GantBinding extends Binding implements Cloneable {
         def descriptionKey = 'description'
         Map targetMap = [:]
         if  ( ! map || map.size ( ) == 0 ) { throw new RuntimeException ( 'Target specified without a name.' ) }
-        if ( map.size ( ) == 1  &&  ! ( ( targetName = map[nameKey] ) ) ) {
-            // Implicit (original) style of specifying a target.
-            targetName = map.keySet ( ).iterator ( ).next ( )
-            // Handle ambiguous case by forbidding implicitly named targets to be named 'name'.
-            targetDescription = map[ targetName ]
-            // Create fake name/description entries in the map so that targets closures can still take
-            // advantage of it.name and it.description
-            targetMap[nameKey]  = targetName
-            targetMap[descriptionKey]  = targetDescription
+        if ( map.size ( ) == 1 ) {
+          // Implicit (original) style of specifying a target.
+          targetName = map.keySet ( ).iterator ( ).next ( )
+          targetDescription = map[targetName]
+          // Create fake name/description entries in the map so that targets closures can still take
+          // advantage of it.name and it.description
+          targetMap[nameKey]  = targetName
+          targetMap[descriptionKey]  = targetDescription
         }
         else {
-            // Explicit (new) way of specifying target name/description
-            targetName = map[nameKey]
-            targetDescription = map[descriptionKey]
-            targetMap.putAll ( map )
+          // Explicit (new) way of specifying target name/description
+          targetName = map[nameKey]
+          targetDescription = map[descriptionKey]
+          targetMap.putAll ( map )
         }
         if ( ! targetName ) { throw new RuntimeException ( 'Target specified without a name.' ) }
         try {
@@ -149,7 +148,7 @@ public class GantBinding extends Binding implements Cloneable {
         catch ( MissingPropertyException mpe ) { /* Intentionally empty */ }
         if ( targetDescription ) { targetDescriptions.put ( targetName , targetDescription ) }
         closure.metaClass = new GantMetaClass ( closure.metaClass , owner )
-        def targetClosure =  { withTargetEvent(targetName, targetDescription) { closure ( targetMap ) } }
+        def targetClosure =  { withTargetEvent ( targetName , targetDescription ) { closure ( targetMap ) } }
         owner.setVariable ( (String) targetName , targetClosure )
         owner.setVariable ( targetName + '_description' , targetDescription )  //  For backward compatibility.
       } )
