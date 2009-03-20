@@ -519,7 +519,7 @@ final class Gant {
   public static void main ( String[] args ) {
     def startTime = System.nanoTime ( )
     def returnValue = ( new Gant ( ) ).processArgs ( args )
-    if ( outputBuildTime ) {
+    if ( outputBuildTime && ( GantState.verbosity > GantState.SILENT ) ) {
       def elapseTime = ( System.nanoTime ( ) - startTime ) / 1e9
       println ( '\nBUILD ' + ( returnValue == 0 ? 'SUCCESSFUL' : 'FAILED' ) )
       println ( 'Total time: ' + String.format ( '%.2f' , elapseTime ) + ' seconds' )
