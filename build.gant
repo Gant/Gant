@@ -18,8 +18,6 @@ final zipExtension = '.zip'
 final tarExtension = '.tar'
 final tgzExtension = '.tgz'
 
-final groovyAntTaskTestVersionPropertyFileName = 'groovyAntTaskTestVersion.properties'
-
 ant.property ( file : 'local.build.properties' )
 ant.property ( file : 'build.properties' )
 
@@ -137,7 +135,6 @@ final distributionURL = 'https://dav.codehaus.org/dist/gant/'
 
 final serverDistributionsDirectory = 'distributions'
 final serverJarsDirectory = 'jars'
-final serverPomsDirectory = 'poms'
 
 //  This is a map with key local source path and value server path.
 
@@ -324,6 +321,8 @@ final preparePom = { String version ->
       filter ( token : 'groovyVersion' , value : version )
       filter ( token : 'commonsCliVersion' , value : commonsCliVersion )
       filter ( token : 'antVersion' , value : antVersion )
+      filter ( token : 'mavenVersion' , value : mavenVersion )
+      filter ( token : 'ivyVersion' , value : ivyVersion )
     }
   }
   ant."${antlibXMLns}:pom" ( file : targetPOM , id : targetPOM )
@@ -626,7 +625,6 @@ target ( uploadDistribution : 'Upload a complete distribution.' ) {
   resource = loader.loadClass ( 'org.apache.webdav.lib.WebdavResource' ).getConstructor ( String ,  loader.loadClass ( 'org.apache.commons.httpclient.Credentials' ) , boolean ).newInstance ( distributionURL , credentials , true )
   if ( resource.statusCode != 200 ) { println ( 'Failed to open ' + distributionURL ) }
   else {
-    //serverUploadProducts [ 'pom.xml' ] = serverPomsDirectory + '/gant-' + gantVersion + '.pom'
     serverUploadProducts.each { source , destination ->
       def serverPath = resource.path + '/' + destination
       print ( 'Uploading ' + source + ' -> ' + destination + ' : ' )
