@@ -118,12 +118,6 @@
     </developer>
   </developers>
 
-  <contributors>
-    <contributor>
-      <name>Hans Dockter</name>
-    </contributor>
-  </contributors>
-
   <repositories>
     <repository>
       <id>Codehaus</id>
@@ -159,14 +153,14 @@
     <dependency>
       <groupId>org.apache.maven</groupId>
       <artifactId>maven-ant-tasks</artifactId>
-      <version>2.0.9</version>
+      <version>@mavenVersion@</version>
       <scope>runtime</scope>
     </dependency>
     <!-- For the Ivy tool only. -->
     <dependency>
       <groupId>org.apache.ivy</groupId>
       <artifactId>ivy</artifactId>
-      <version>2.0.0-rc1</version>
+      <version>@ivyVersion@</version>
       <scope>runtime</scope>
     </dependency>
   </dependencies>
