@@ -332,7 +332,7 @@ final preparePom = { String version ->
 final doWithAllGroovyVersions = { Closure c ->
   def prefix = 'gant-' + gantVersion
   distributionVersions.each { label , item ->
-    def groovyAntTaskTestVersionPropertyFile = ( new File ( groovyAntTaskTestVersionPropertyFileName ) )
+    def groovyAntTaskTestVersionPropertyFile = new File ( groovyAntTaskTestVersionPropertyFileName )
     groovyAntTaskTestVersionPropertyFile.write ( 'groovyAntTaskTestVersion = ' + item.version )
     def pathIdRoot = 'classpath' + item.version
     def pathId = pathIdRoot + 'PathId'
