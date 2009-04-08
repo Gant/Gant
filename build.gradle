@@ -27,24 +27,24 @@ if ( items ) {
 }
 else { throw new RuntimeException ( "Cannot determine the version of Groovy being used." ) }
 
+//groovyVersion = ant.antProject.properties.groovy16Version
+
 println ( "Using Groovy version " + groovyVersion + " from " + groovyHome )
 
 groovyAntTaskTestVersionPropertyFile = new File ( ant.antProject.properties.groovyAntTaskTestVersionPropertyFileName )
-groovyAntTaskTestVersionPropertyFile.write ( groovyVersion )
-
-archivesBaseName = 'gant'
+groovyAntTaskTestVersionPropertyFile.write ( 'groovyAntTaskTestVersion = ' + groovyVersion )
 
 type = 'jar'
-group = 'org.codehaus.gant'
+groupId = 'org.codehaus.gant'
+artifactId = 'gant'
+
 version = ant.antProject.properties.gantVersion
+archivesBaseName = artifactId
 
 usePlugin ( 'groovy' )
 
-//  As at 2008-10-06, the following must follow the above not precede it -- the plugin assigns the variables
-//  without checking if they are already defined.
-
-sourceCompatibility = 1.5
-targetCompatibility = 1.5
+sourceCompatibility = 5
+targetCompatibility = 5
 
 dependencies {
   addMavenRepo ( )
