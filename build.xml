@@ -49,7 +49,7 @@ Author : Russel Winder <russel.winder@concertant.com>
   <property file="local.build.properties"/>
   <property file="build.properties"/>
 
-  <property name="groovyVersion" value="${groovy15Version}"/>
+  <property name="groovyVersion" value="${groovy16Version}"/>
 
   <property environment="environment"/>
 
@@ -120,7 +120,7 @@ Author : Russel Winder <russel.winder@concertant.com>
   </target>
 
   <target name="-initializeNoGroovyHome" depends="-initializeMavenAntTask" unless="groovyHomeIsSet">
-    <echo message="Building without a Groovy installation."/>
+    <echo message="Building without a Groovy installation. Using Groovy ${groovyVersion} from Maven repository."/>
     <artifact:dependencies pathId="groovyJarPathId" filesetId="groovyJarFilesetId">
       <dependency groupId="org.codehaus.groovy" artifactId="groovy-all" version="${groovyVersion}"/>
     </artifact:dependencies>
