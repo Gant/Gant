@@ -39,10 +39,12 @@ import org.codehaus.groovy.runtime.InvokerHelper ;
 public abstract class GantTestCase extends GroovyTestCase {
   public static final int groovyMajorVersion ;
   public static final int groovyMinorVersion ;
+  public static final int groovyBugFixVersion ;
   static {
     final String[] version =  InvokerHelper.getVersion ( ).split ( "[.-]" , 3 ) ;
     groovyMajorVersion = Integer.parseInt ( version[0] ) ;
     groovyMinorVersion = Integer.parseInt ( version[1] ) ;
+    groovyBugFixVersion = Integer.parseInt ( version[2] ) ;
   }
   public static final boolean isWindows ;
   static {
