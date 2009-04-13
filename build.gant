@@ -212,14 +212,6 @@ final performTests =  { classpathId ->
       fileset ( dir : 'jarfiles' , includes : 'maven-ant-task*.jar' ) 
       path ( refid : classpathId )
     }                        
-    if ( ( testCase == null ) || ( testCase ==~ 'org.codehaus.gant.ant.tests.*_Test' ) ) {                        
-      ant.junit ( printsummary : 'yes' , failureproperty : 'testsFailed' , fork : 'true' , forkmode : 'once' ) {
-        formatter ( type : 'plain' )
-        formatter ( type : 'xml' ) // Must have XML output for the continuous integration builds.
-        batchtest ( todir : buildTestReportsDirectory ) { fileset ( dir : buildTestClassesDirectory , includes : '**/ant/tests/*_Test.class' ) }
-        classpath { path ( refid : 'testClasspathId' ) }
-      }
-    }
     if ( ! ( testCase ==~ 'org.codehaus.gant.ant.tests.*_Test' ) ) {                        
       ant.junit ( printsummary : 'yes' , failureproperty : 'testsFailed' , fork : 'true' , forkmode : 'once' ) {
         formatter ( type : 'plain' )
@@ -230,6 +222,14 @@ final performTests =  { classpathId ->
           path ( refid : 'testClasspathId' )
           pathelement ( location : buildClassesDirectory )
         }
+      }
+    }
+    if ( ( testCase == null ) || ( testCase ==~ 'org.codehaus.gant.ant.tests.*_Test' ) ) {                        
+      ant.junit ( printsummary : 'yes' , failureproperty : 'testsFailed' , fork : 'true' , forkmode : 'once' ) {
+        formatter ( type : 'plain' )
+        formatter ( type : 'xml' ) // Must have XML output for the continuous integration builds.
+        batchtest ( todir : buildTestReportsDirectory ) { fileset ( dir : buildTestClassesDirectory , includes : '**/ant/tests/*_Test.class' ) }
+        classpath { path ( refid : 'testClasspathId' ) }
       }
     }
     if ( usingCobertura ) { ant.'cobertura-report' ( srcdir : sourceDirectory , destdir : buildCoberturaReportsDirectory ) }
