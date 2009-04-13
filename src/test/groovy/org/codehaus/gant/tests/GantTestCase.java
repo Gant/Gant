@@ -41,10 +41,16 @@ public abstract class GantTestCase extends GroovyTestCase {
   public static final int groovyMinorVersion ;
   public static final int groovyBugFixVersion ;
   static {
+    //  Groovy numbering is x.y.z where x is the major number and is always an integer, y is the minor
+    //  number and is always an integer, and a is the bugfix number and is an integer for releases and an
+    //  alphanumeric string for pre-release snapshots.
     final String[] version =  InvokerHelper.getVersion ( ).split ( "[.-]" , 3 ) ;
     groovyMajorVersion = Integer.parseInt ( version[0] ) ;
     groovyMinorVersion = Integer.parseInt ( version[1] ) ;
-    groovyBugFixVersion = Integer.parseInt ( version[2] ) ;
+    int bugFixNumber = 0 ;
+    try { bugFixNumber = Integer.parseInt ( version[2] ) ; }
+    catch ( NumberFormatException nfe ) { /* Intentionally left blank */ }
+    groovyBugFixVersion = bugFixNumber ;
   }
   public static final boolean isWindows ;
   static {
