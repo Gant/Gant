@@ -49,7 +49,7 @@ Author : Russel Winder <russel.winder@concertant.com>
   <property file="local.build.properties"/>
   <property file="build.properties"/>
 
-  <property name="groovyVersion" value="${groovy15Version}"/>
+  <property name="groovyVersion" value="${groovy16Version}"/>
 
   <property environment="environment"/>
 
@@ -120,7 +120,7 @@ Author : Russel Winder <russel.winder@concertant.com>
   </target>
 
   <target name="-initializeNoGroovyHome" depends="-initializeMavenAntTask" unless="groovyHomeIsSet">
-    <echo message="Building without a Groovy installation."/>
+    <echo message="Building without a Groovy installation. Using Groovy ${groovyVersion} from Maven repository."/>
     <artifact:dependencies pathId="groovyJarPathId" filesetId="groovyJarFilesetId">
       <dependency groupId="org.codehaus.groovy" artifactId="groovy-all" version="${groovyVersion}"/>
     </artifact:dependencies>
@@ -173,18 +173,8 @@ Author : Russel Winder <russel.winder@concertant.com>
       <path refid="ivyJarPathId"/>
       <path refid="testJarSetPathId"/>
     </path>
+    <!-- Forkmode should be once for speed but perTest for safety. -->
     <junit printsummary="yes" fork="true" forkmode="once" failureproperty="testsFailed">
-      <formatter type="plain"/>
-      <formatter type="xml"/> <!-- Must have XML output for the continuous integration builds. -->
-      <batchtest todir="${buildTestReportsDirectory}">
-        <fileset dir="${buildTestClassesDirectory}" includes="**/ant/tests/*_Test.class"/>
-      </batchtest>
-      <classpath>
-        <path refid="testClasspathPathId"/>
-      </classpath>
-    </junit>
-    <!--junit printsummary="yes" fork="true" forkmode="once" failureproperty="testsFailed"-->
-    <junit printsummary="yes" fork="true" forkmode="perTest" failureproperty="testsFailed">
       <!--jvmarg line="-Xdebug -Xrunjdwp:transport=dt_socket,server=y,suspend=y,address=5005"/-->
       <formatter type="plain"/>
       <formatter type="xml"/> <!-- Must have XML output for the continuous integration builds. -->
@@ -194,6 +184,16 @@ Author : Russel Winder <russel.winder@concertant.com>
       <classpath>
         <path refid="testClasspathPathId"/>
         <pathelement location="${buildClassesDirectory}"/>
+      </classpath>
+    </junit>
+    <junit printsummary="yes" fork="true" forkmode="once" failureproperty="testsFailed">
+      <formatter type="plain"/>
+      <formatter type="xml"/> <!-- Must have XML output for the continuous integration builds. -->
+      <batchtest todir="${buildTestReportsDirectory}">
+        <fileset dir="${buildTestClassesDirectory}" includes="**/ant/tests/*_Test.class"/>
+      </batchtest>
+      <classpath>
+        <path refid="testClasspathPathId"/>
       </classpath>
     </junit>
     <delete file="groovyAntTaskTestVersion.properties"/>
