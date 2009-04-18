@@ -36,6 +36,11 @@ doReadLink ( ) {
             then
                 readlinkValue="$1"
             else
+                linkDir=`dirname $gantPath`
+                cd $gantLocation
+                cd $linkDir
+                gantLocation=`pwd`
+                gantPath=`basename $gantPath`
                 readlinkValue="$gantLocation/$gantPath"
             fi
             ;;
