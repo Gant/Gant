@@ -35,31 +35,34 @@ groovyAntTaskTestVersionPropertyFile = new File ( ant.antProject.properties.groo
 groovyAntTaskTestVersionPropertyFile.write ( 'groovyAntTaskTestVersion = ' + groovyVersion )
 
 type = 'jar'
-groupId = 'org.codehaus.gant'
-artifactId = 'gant'
+group = 'org.codehaus.gant'
+artifact = 'gant'
 
 version = ant.antProject.properties.gantVersion
-archivesBaseName = artifactId
+archivesBaseName = artifact
 
 usePlugin ( 'groovy' )
 
 sourceCompatibility = 5
 targetCompatibility = 5
 
+repositories {
+  mavenRepo ( name : 'Local' , urls : 'file:///home/users/russel/.m2/repository' )
+  mavenCentral ( )
+}
+  
 dependencies {
-  addMavenRepo ( )
-  addMavenRepo ( 'file:///home/users/russel/.m2/repository' )
   groovy ( 'org.codehaus.groovy:groovy-all:' + groovyVersion )
-  compile ( [
+  compile (
              'commons-cli:commons-cli:' + ant.antProject.properties.commonsCliVersion ,
              'org.apache.ant:ant:' + ant.antProject.properties.antVersion
-             ] )
-  testCompile ( [
+           )
+  testCompile (
                  'junit:junit:' + ant.antProject.properties.junitVersion
-                 ] )
-  testRuntime ( [
+                  )
+  testRuntime (
                  'org.apache.ivy:ivy:' + ant.antProject.properties.ivyVersion
-                 ] )
+                 )
 }
 
 //  The Java plugin clean task isn't flexible as as 2009-01-09 (Gradle version 0.5.2) so to remove the extra
