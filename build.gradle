@@ -75,7 +75,8 @@ test.doLast {
 //  detritus we have to have use one of the hooks.  For no reason choose doLast rather than doFirst.
 
 clean.doLast {
-  ant.delete { fileset ( dir : '.' , includes : '**/*~' ) }
+  ant.delete { fileset ( dir : '.' , includes : '**/*~, cobertura.ser, texput.log' ) }
+  ant.delete ( dir :  'target_forMavenTest' )
 }
 
 //  The javadoc task in the java and groovy plugins is not up to anything as yet since the parameters appear
