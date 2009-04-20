@@ -31,9 +31,6 @@ else { throw new RuntimeException ( "Cannot determine the version of Groovy bein
 
 println ( "Using Groovy version " + groovyVersion + " from " + groovyHome )
 
-groovyAntTaskTestVersionPropertyFile = new File ( ant.antProject.properties.groovyAntTaskTestVersionPropertyFileName )
-groovyAntTaskTestVersionPropertyFile.write ( 'groovyAntTaskTestVersion = ' + groovyVersion )
-
 type = 'jar'
 group = 'org.codehaus.gant'
 artifact = 'gant'
@@ -65,12 +62,20 @@ dependencies {
                  )
 }
 
+test.doFirst {
+  groovyAntTaskTestVersionPropertyFile = new File ( ant.antProject.properties.groovyAntTaskTestVersionPropertyFileName )
+  groovyAntTaskTestVersionPropertyFile.write ( 'groovyAntTaskTestVersion = ' + groovyVersion )
+}
+
+test.doLast {
+  groovyAntTaskTestVersionPropertyFile.delete ( )
+}
+
 //  The Java plugin clean task isn't flexible as as 2009-01-09 (Gradle version 0.5.2) so to remove the extra
 //  detritus we have to have use one of the hooks.  For no reason choose doLast rather than doFirst.
 
 clean.doLast {
   ant.delete { fileset ( dir : '.' , includes : '**/*~' ) }
-  groovyAntTaskTestVersionPropertyFile.delete ( )
 }
 
 //  The javadoc task in the java and groovy plugins is not up to anything as yet since the parameters appear
