@@ -67,7 +67,7 @@ target ( 'default' : '' ) { something ( ) }
   //  instantiates the class.  Test both correct and errorful behaviour
   private final targetsBuildScriptClass =  "includeTargets <<  groovyShell.evaluate ( '''${targetsScriptText} ; return ${targetsClassName}''' , '${targetsClassName}' )\n" + targetsBuildScriptBase
   private final targetsErrorBuildScriptClass =  "includeTargets <<  groovyShell.evaluate ( '''${targetsScriptText}''' , '${targetsClassName}' )\n" + targetsBuildScriptBase
-  private final resultErrorEvaluatingScript = 'Standard input, line 1 -- Error evaluating Gantfile: ' + ( ( groovyMinorVersion < 6 ) ? 'null' : "Cannot get property 'class' on null object" ) + '\n'
+  private final resultErrorEvaluatingScript = 'Standard input, line 1 -- Error evaluating Gantfile: ' + ( ( ( groovyMinorVersion < 6 ) && ( groovyBugFixVersion < 8 ) ) ? 'null' : "Cannot get property 'class' on null object" ) + '\n'
   private final String targetsBuildScriptFile
   private final targetsBuildScriptString =  "includeTargets <<  '''${targetsScriptText}'''\n" + targetsBuildScriptBase
   private final targetsBuildClassClass =  "includeTargets <<  groovyShell.evaluate ( '''${targetsClassText} ; return ${targetsClassName}''' )\n" + targetsBuildScriptBase
