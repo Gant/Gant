@@ -442,7 +442,7 @@ final class Gant {
       }
     }
     if ( options.P ) { options.P.split ( System.properties.'path.separator' ).each { String pathitem -> rootLoader?.addURL ( ( new File ( pathitem ) ).toURL ( ) ) } }
-    if ( options.V ) { println ( 'Gant version ' + ( binding.'gant.version'  ?: '<unknown>' ) ) ; return 0 }
+    if ( options.V ) { println ( 'Gant version ' + ( binding.'gant.version' ?: '<unknown>' ) ) ; return 0 }
     //  The rest of the arguments appear to be delivered as a single string as the first item in a list.  This is surely an error but
     //  with Commons CLI 1.0 it is the case.  So we must partition.  NB the split method delivers an array
     //  of Strings so we cast to a List.
