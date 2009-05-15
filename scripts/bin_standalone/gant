@@ -37,11 +37,13 @@ doReadLink ( ) {
                 readlinkValue="$1"
             else
                 linkDir=`dirname $gantPath`
+                currentDirectory=`pwd`
                 cd $gantLocation
                 cd $linkDir
                 gantLocation=`pwd`
                 gantPath=`basename $gantPath`
                 readlinkValue="$gantLocation/$gantPath"
+                cd $currentDirectory
             fi
             ;;
         SunOS )
