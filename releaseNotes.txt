@@ -1,9 +1,9 @@
 1.6.2 ( rXXXXX )
 ----------------
 
-Upgrade to using Groovy 1.5.8 instead of 1.5.7 as the Groovy 1.5.x verion.
+Upgrade to using Groovy 1.5.8 instead of 1.5.7 as the Groovy 1.5.x version.
 
-Upgrade to using Groovy 1.6.2 instead of 1.6.0 as the Groovy 1.6.x verion.
+Upgrade to using Groovy 1.6.3 instead of 1.6.0 as the Groovy 1.6.x version.
 
 
 1.6.1 ( r10179 )
