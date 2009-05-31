@@ -207,7 +207,8 @@ final performTests =  { classpathId ->
       ant.'cobertura-instrument' ( todir : buildCoberturaClassesDirectory ) { fileset ( dir : buildClassesDirectory ) }
     }
     getDependency ( 'ivyJar' , [ groupId : 'org.apache.ivy' , artifactId : 'ivy' , version : ivyVersion ] )
-    ant.path ( id : 'testClasspathId' ) {
+def testClasspathId = 'testClasspathId'
+    ant.path ( id : testClasspathId ) {
       if ( usingCobertura ) {
         // MUST appear in classpath before the uninstrumented classes.
         pathelement ( location : buildCoberturaClassesDirectory )
@@ -217,15 +218,17 @@ final performTests =  { classpathId ->
       path ( refid : 'ivyJarPathId' )
       fileset ( dir : jarfilesDirectory , includes : "maven-ant-task-${mavenVersion}.jar" ) 
       path ( refid : classpathId )
-    }                        
+    }
+    // Forkmode should be once for speed but perTest for safety.
     if ( ! ( testCase ==~ 'org.codehaus.gant.ant.tests.*_Test' ) ) {                        
       ant.junit ( printsummary : 'yes' , failureproperty : 'testsFailed' , fork : 'true' , forkmode : 'once' , includeantruntime : 'false' ) {
+        // jvmarg ( line : '-Xdebug -Xrunjdwp:transport=dt_socket,server=y,suspend=y,address=5005' )
         formatter ( type : 'plain' )
         formatter ( type : 'xml' ) // Must have XML output for the continuous integration builds.
         if ( testCase != null) { ant.test ( name : testCase , todir : buildTestReportsDirectory ) }
         else { batchtest ( todir : buildTestReportsDirectory ) { fileset ( dir : buildTestClassesDirectory , includes : '**/*_Test.class' , excludes : '**/ant/tests/*' ) } }
         classpath {
-          path ( refid : 'testClasspathId' )
+          path ( refid : testClasspathId )
           pathelement ( location : buildClassesDirectory )
         }
       }
@@ -235,7 +238,7 @@ final performTests =  { classpathId ->
         formatter ( type : 'plain' )
         formatter ( type : 'xml' ) // Must have XML output for the continuous integration builds.
         batchtest ( todir : buildTestReportsDirectory ) { fileset ( dir : buildTestClassesDirectory , includes : '**/ant/tests/*_Test.class' ) }
-        classpath { path ( refid : 'testClasspathId' ) }
+        classpath { path ( refid : testClasspathId ) }
       }
     }
     if ( usingCobertura ) { ant.'cobertura-report' ( srcdir : sourceDirectory , destdir : buildCoberturaReportsDirectory ) }
@@ -469,8 +472,8 @@ target ( initializeNonDistribution : '' ) {
     }
   }
   else {
-    println ( 'Building without a Groovy installation.' )
     groovyVersion = groovyStandaloneVersion
+    println ( "Building without a Groovy installation. Using Groovy ${groovyVersion}, Commons CLI ${commonsCliVersion}, Ant ${antVersion} from Maven repository." )
     getDependency ( groovyJarPathIdRoot , [ groupId : 'org.codehaus.groovy' , artifactId : 'groovy-all' , version : groovyVersion ] )
     def compileJarsNotGroovyPathIdRoot = 'compileJarsNotGroovy'
     compileJarsNotGroovyPathId = compileJarsNotGroovyPathIdRoot + 'PathId'
@@ -509,7 +512,7 @@ target ( test : 'Test a build of Gant.' ) {
     groovyAntTaskTestVersionPropertyFile = ( new File ( groovyAntTaskTestVersionPropertyFileName ) )
     groovyAntTaskTestVersionPropertyFile.write ( 'groovyAntTaskTestVersion = ' + groovyVersion )
   }
-  def returnCode = performTests ( compileJarSetPathId )
+  def returnCode = performTests ( testJarSetPathId )
   if ( ! skipTests ) { println ( 'Tests ' + ( returnCode ? 'suceeded' : 'failed' ) + '.' ) }
   if ( ! groovyHomeEnvironment ) { groovyAntTaskTestVersionPropertyFile.delete ( ) }
   returnCode ? 0 : 1
