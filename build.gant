@@ -21,8 +21,21 @@ final tgzExtension = '.tgz'
 ant.property ( file : 'local.build.properties' )
 ant.property ( file : 'build.properties' )
 
-if ( ! gantVersion ) {
-  println ( 'gantVersion not defined, terminating.' )
+carryOn = true
+[ 'gantVersion' ,
+  'groovy15Version' , 'groovy16Version' , 'groovy17Version' ,
+  'groovyStandaloneVersion' ,
+  'junitVersion' , 'commonsCliVersion' , 'ivyVersion' , 'antVersion' , 'mavenVersion' ,
+  'groovyAntTaskTestVersionPropertyFileName' ,
+  ].each { name ->
+           try { binding.getVariable ( name ) }
+           catch ( MissingPropertyException mpe ) {
+             println ( "${name} is not defined." )
+             carryOn = false
+           }
+}
+if ( ! carryOn ) {
+  println ( 'A required property is not set, so terminating.' )
   System.exit ( 1 )
 }
 
@@ -82,6 +95,8 @@ final targetCompatibility = '5'
 
 //  Labels for supporting use of the Maven Ant task.  NB Installing Gant installs the Maven and Ivy Ant
 //  tasks jars into the Groovy library.
+
+final mavenAntTaskJarName = 'maven-ant-tasks-' + mavenVersion + '.jar'
 
 final antlibXMLns = 'antlib:org.apache.maven.artifact.ant'
 final mavenPOMId = 'maven.pom'
@@ -216,7 +231,7 @@ def testClasspathId = 'testClasspathId'
       }
       pathelement ( location : buildTestClassesDirectory )
       path ( refid : 'ivyJarPathId' )
-      fileset ( dir : jarfilesDirectory , includes : "maven-ant-task-${mavenVersion}.jar" ) 
+      fileset ( dir : jarfilesDirectory , includes : mavenAntTaskJarName ) 
       path ( refid : classpathId )
     }
     // Forkmode should be once for speed but perTest for safety.
@@ -299,7 +314,7 @@ final prepareInstallDirectory = { path , gantJarName , pathIdRoots , isStandalon
   getDependency ( 'ivyJar' , [ groupId : 'org.apache.ivy' , artifactId : 'ivy' , version : ivyVersion ] )
   ant.copy ( todir : installationDirectory + '/lib' ) {
     fileset ( dir : buildDirectory , includes : gantJarName ) 
-    fileset ( dir : jarfilesDirectory , includes : "maven-ant-task-${mavenVersion}.jar" )
+    fileset ( dir : jarfilesDirectory , includes : mavenAntTaskJarName )
     fileset ( refid : ivyJarFilesetId )
     if ( isStandalone ) {
       if ( pathIdRoots instanceof List ) { for ( root in pathIdRoots ) { fileset ( refid : root + 'FilesetId' ) } }
