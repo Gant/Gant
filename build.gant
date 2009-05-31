@@ -450,7 +450,9 @@ target ( initializeNonDistribution : '' ) {
   //  good discriminator!
   if ( groovyHomeEnvironment ) {
     println ( "Building with the Groovy installation at GROOVY_HOME=${groovyHomeEnvironment}." )
+    //----------------------------------------------------------------------------------------------
     //  TODO : Need to find out which version is actually being used -- this is currently a bug.
+    //----------------------------------------------------------------------------------------------
     groovyVersion = groovy17Version
     ant.path ( id : groovyJarPathId ) { fileset ( dir : groovyHome + '/lib' , includes : 'groovy-*.jar' ) }
     ant.path ( id : compileJarSetPathId ) {
@@ -459,7 +461,7 @@ target ( initializeNonDistribution : '' ) {
       //  The ASM and Antlr jars are just transitive dependencies of the Groovy jar, the Ant and Commons CLI
       //  jars are needed directly by the Gant code.
       fileset ( dir : groovyHome + '/lib' , includes : 'asm*.jar' )
-      fileset ( dir : groovyHome + '/lib' , includes : 'ant*.jar' )  // Picks up antlr as well as ant. This is intended.
+      fileset ( dir : groovyHome + '/lib' , includes : 'ant*.jar' )  // Intentionally includes Ant and Antlr jars.
     } 
     ant.path ( id : testJarSetPathId ) {
       path ( refid : compileJarSetPathId )
@@ -473,13 +475,21 @@ target ( initializeNonDistribution : '' ) {
     def compileJarsNotGroovyPathIdRoot = 'compileJarsNotGroovy'
     compileJarsNotGroovyPathId = compileJarsNotGroovyPathIdRoot + 'PathId'
     getDependency ( compileJarsNotGroovyPathIdRoot , [
-                                     [ groupId : 'commons-cli' , artifactId : 'commons-cli' , version : commonsCliVersion ]
-                                     ] )
+                                                      [ groupId : 'commons-cli' , artifactId : 'commons-cli' , version : commonsCliVersion ] ,
+                                                      ] )
     ant.path ( id : compileJarSetPathId ) {
       path ( refid : groovyJarPathId )
       path ( refid : compileJarsNotGroovyPathId )
     }
-    ant.path ( id : testJarSetPathId ) { path ( refid : compileJarSetPathId ) }
+    def testAntJarSetPathIdRoot = 'testAntJarSet'
+    testAntJarSetPathId = testAntJarSetPathIdRoot + 'PathId'
+    getDependency ( testAntJarSetPathIdRoot , [
+                                               [ groupId : 'org.apache.ant' , artifactId : 'ant-junit' , version : antVersion ] ,
+                                               ] )
+    ant.path ( id : testJarSetPathId ) {
+      path ( refid : compileJarSetPathId )
+      path ( refid : testAntJarSetPathId )
+    }
   }
 }
   
