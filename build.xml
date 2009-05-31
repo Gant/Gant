@@ -108,12 +108,14 @@ Author : Russel Winder <russel.winder@concertant.com>
     <path id="compileJarSetPathId">
       <path refid="groovyJarPathId"/>
       <fileset dir="${environment.GROOVY_HOME}/lib" includes="commons-cli*.jar"/>
+      <!-- The ASM and Antlr jars are just transitive dependencies of the Groovy jar, the Ant and Commons
+           CLI jars are needed directly by the Gant code. -->
       <fileset dir="${environment.GROOVY_HOME}/lib" includes="asm*.jar"/>
       <fileset dir="${environment.GROOVY_HOME}/lib" includes="ant*.jar"/> <!-- Intentionally includes Ant and Antlr jars. -->
     </path>
     <path id="testJarSetPathId">
-      <fileset dir="${environment.GROOVY_HOME}/lib" includes="junit*.jar"/>
       <path refid="compileJarSetPathId"/>
+      <fileset dir="${environment.GROOVY_HOME}/lib" includes="junit*.jar"/>
     </path>
     <taskdef name="groovyc" classname="org.codehaus.groovy.ant.Groovyc" classpathref="compileJarSetPathId"/>
     <property name="scriptsExtrasDirectory" value="${scriptsDirectory}/bin_requiresGroovy"/>
@@ -131,8 +133,12 @@ Author : Russel Winder <russel.winder@concertant.com>
       <path refid="groovyJarPathId"/>
       <path refid="compileJarSet"/>
     </path>
+     <artifact:dependencies pathId="testJarSet" filesetId="compileJarSetFilesetId">
+      <dependency groupId="org.apache.ant" artifactId="ant-junit" version="${antVersion}"/>
+    </artifact:dependencies>
     <path id="testJarSetPathId">
       <path refid="compileJarSetPathId"/>
+      <path refid="testJarSet"/>
     </path>
     <taskdef name="groovyc" classname="org.codehaus.groovy.ant.Groovyc" classpathref="compileJarSetPathId"/>
     <property name="scriptsExtrasDirectory" value="${scriptsDirectory}/bin_standalone"/>
