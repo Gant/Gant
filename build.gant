@@ -101,9 +101,9 @@ final mavenAntTaskJarName = 'maven-ant-tasks-' + mavenVersion + '.jar'
 final antlibXMLns = 'antlib:org.apache.maven.artifact.ant'
 final mavenPOMId = 'maven.pom'
 final remoteRepositories = [
-                            'http://snapshots.repository.codehaus.org' ,
-                            'http://repository.codehaus.org' ,
-                            'http://repo1.maven.org/maven2'
+                            [ 'codehausSnapshot' , 'http://snapshots.repository.codehaus.org' ] ,
+                            [ 'codehausMain' , 'http://repository.codehaus.org' ] ,
+                            [ 'mavenCentral' , 'http://repo1.maven.org/maven2' ] ,
                             ]
 
 //  List of files from the top-level directory to put into the distribution files.
@@ -181,7 +181,7 @@ final getDependency = { root , dependencies ->
   ant."${antlibXMLns}:dependencies" ( pathId : pathId , filesetId : filesetId ) {
     if ( dependencies instanceof List ) { for ( item in dependencies ) { dependency ( item ) } }
     else { dependency ( dependencies ) }
-    remoteRepositories.each { String reposUrl -> remoteRepository ( url : reposUrl ) }
+    remoteRepositories.each { List item -> remoteRepository ( id : item[0] , url : item[1] ) }
   }
 }
 
