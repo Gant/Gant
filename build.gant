@@ -356,8 +356,8 @@ final doWithAllGroovyVersions = { Closure c ->
     ant.delete ( dir : buildTestClassesDirectory )
     ant.delete ( dir : buildFilteredScriptsDirectory )
     ant.delete ( dir : buildInstallDirectory )
-    performCompile ( pathId , true )
-    performCompileTests ( pathId , true )
+    performCompile ( pathId )
+    performCompileTests ( pathId )
     if ( ! skipTests && ! performTests ( pathId ) ) { someTestsFailed = true }
     def jarPath = buildDirectory + '/' + gantPrefix + '_groovy-' + item.version + '.jar'
     performPackage ( jarPath )
