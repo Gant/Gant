@@ -40,9 +40,6 @@ catch ( MissingPropertyException mpe ) { skipTests = false }
 try { testCase }
 catch ( MissingPropertyException mpe ) { testCase = null }
 
-try {  forkCompiles = Boolean.valueOf ( forkCompiles ) }
-catch ( MissingPropertyException mpe ) { forkCompiles = false }
-
 try { testSpecialDistributionVersion}
 catch ( MissingPropertyException mpe ) { testSpecialDistributionVersion = false }
 
@@ -114,11 +111,11 @@ final distributionDirectories = [ 'documentation' , 'examples' , '.settings' , s
 //  and this means we cannot build Gant against Groovy 1.0 since the joint compiler only arrived with 1.5.0.
 //  Opinion on the user list indicated that it seemed reasonable to drop support for Groovy 1.0.
 //
-//  The target distribution assumes that the groovyc fork mode works, which means we cannot build against
-//  any version prior to 1.5.2.  Using a forked Java task is not an option because there is no --classpath
-//  option in the 1.5.0 and 1.5.1 versions of Groovyc and this is essential to get things to work correctly.
-//  Gant can still be built and distributed against Groovy 1.5.0 and 1.5.1 but it has to be done the hard
-//  (manual) way.
+//  It is assumed that the groovyc fork mode works, which means we cannot sensibly build against any version
+//  of Groovy prior to 1.5.2 -- since that is the version in which groovyc fork mode appeared.  Using a
+//  forked Java task is not an option because there is no --classpath option in the 1.5.0 and 1.5.1 versions
+//  of Groovyc and this is essential to get things to work correctly.  Gant can still be built and
+//  distributed against Groovy 1.5.0 and 1.5.1 but it has to be done the hard (manual) way.
 //
 //  Allow a mechanism for testing individual distribution entries as well as producing all of them.
 
@@ -173,10 +170,10 @@ final getDependency = { root , dependencies ->
   }
 }
 
-final performCompile = { classpathId , boolean fork ->
+final performCompile = { classpathId ->
   ant.mkdir ( dir : buildClassesDirectory )
   ant.taskdef ( name : 'groovyc' , classname : 'org.codehaus.groovy.ant.Groovyc' , classpathref : classpathId )
-  ant.groovyc ( srcdir : sourceDirectory , destdir : buildClassesDirectory , fork : fork ? 'true' : 'false' , failonerror : 'true' ) {
+  ant.groovyc ( srcdir : sourceDirectory , destdir : buildClassesDirectory , fork : 'true' , failonerror : 'true' ) {
     classpath {
       pathelement ( location : buildClassesDirectory )
       path ( refid : classpathId )
@@ -185,11 +182,11 @@ final performCompile = { classpathId , boolean fork ->
   }
 }
 
-final performCompileTests = { classpathId , boolean fork ->
+final performCompileTests = { classpathId ->
   if ( ! skipTests ) {                              
     ant.mkdir ( dir : buildTestClassesDirectory )
     ant.taskdef ( name : 'groovyc' , classname : 'org.codehaus.groovy.ant.Groovyc' , classpathref : classpathId )
-    ant.groovyc ( srcdir : testsDirectory , destdir : buildTestClassesDirectory , fork : fork ? 'true' : 'false' , failonerror : 'true' ) {
+    ant.groovyc ( srcdir : testsDirectory , destdir : buildTestClassesDirectory , fork : 'true' , failonerror : 'true' ) {
       classpath {
         pathelement ( location : buildClassesDirectory )
         path ( refid : classpathId )
@@ -488,12 +485,12 @@ target ( initializeNonDistribution : '' ) {
   
 target ( compile : 'Compile everything needed for a Groovy installation dependent build of Gant.' ) {
   depends ( initializeNonDistribution )
-  performCompile ( compileJarSetPathId , forkCompiles )
+  performCompile ( compileJarSetPathId )
 }
 
 target ( compileTests : 'Compile all the tests for a Groovy installation dependent build of Gant.' ) {
   depends ( compile )
-  performCompileTests ( testJarSetPathId , forkCompiles )
+  performCompileTests ( testJarSetPathId )
 }
 
 target ( test : 'Test a build of Gant.' ) {
