@@ -55,7 +55,7 @@ catch ( MissingPropertyException mpe ) { testSpecialDistributionVersion = false 
 
 groovyHome = System.properties.'groovy.home'
 groovyHomeEnvironment = System.getenv ( ).GROOVY_HOME
- if ( groovyHomeEnvironment ) { assert groovyHome == groovyHomeEnvironment }
+if ( groovyHomeEnvironment ) { assert groovyHome == groovyHomeEnvironment }
 else { assert groovyHomeEnvironment == null }
 
 //  The Gant source is structured according to the standard Maven 2 hierarchy.
@@ -80,8 +80,8 @@ final apiDocumentationDirectory = documentationDirectory + '/api'
 
 final buildMetadataDirectory = buildClassesDirectory + '/META-INF'
 
-final sourceCompatibility = '1.5'
-final targetCompatibility = '1.5'
+final sourceCompatibility = '5'
+final targetCompatibility = '5'
 
 //  Labels for supporting use of the Maven Ant task.  NB Installing Gant installs the Maven and Ivy Ant
 //  tasks jars into the Groovy library.
@@ -218,7 +218,7 @@ final performTests =  { classpathId ->
       }
       pathelement ( location : buildTestClassesDirectory )
       path ( refid : 'ivyJarPathId' )
-      fileset ( dir : 'jarfiles' , includes : 'maven-ant-task*.jar' ) 
+      fileset ( dir : jarfilesDirectory , includes : "maven-ant-task-${mavenVersion}.jar" ) 
       path ( refid : classpathId )
     }                        
     if ( ! ( testCase ==~ 'org.codehaus.gant.ant.tests.*_Test' ) ) {                        
@@ -299,7 +299,7 @@ final prepareInstallDirectory = { path , gantJarName , pathIdRoots , isStandalon
   getDependency ( 'ivyJar' , [ groupId : 'org.apache.ivy' , artifactId : 'ivy' , version : ivyVersion ] )
   ant.copy ( todir : installationDirectory + '/lib' ) {
     fileset ( dir : buildDirectory , includes : gantJarName ) 
-    fileset ( dir : jarfilesDirectory , includes : 'maven*.jar' )
+    fileset ( dir : jarfilesDirectory , includes : "maven-ant-task-${mavenVersion}.jar" )
     fileset ( refid : ivyJarFilesetId )
     if ( isStandalone ) {
       if ( pathIdRoots instanceof List ) { for ( root in pathIdRoots ) { fileset ( refid : root + 'FilesetId' ) } }

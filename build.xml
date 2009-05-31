@@ -55,7 +55,7 @@ Author : Russel Winder <russel.winder@concertant.com>
 
   <property name="sourceDirectory" value="src/main/groovy"/>
   <property name="testsDirectory" value="src/test/groovy"/>
-  <property name="jarsDirectory" value="jarfiles"/>
+  <property name="jarfilesDirectory" value="jarfiles"/>
   <property name="scriptsDirectory" value="scripts"/>
 
   <property name="buildDirectory" value="target_gant"/>
@@ -95,7 +95,7 @@ Author : Russel Winder <russel.winder@concertant.com>
 
   <target name="-initializeMavenAntTask">
      <path id="mavenAntTaskJarPathId">
-      <fileset dir="${jarsDirectory}" includes="maven-ant-tasks-*.jar"/>
+      <fileset dir="${jarfilesDirectory}" includes="maven-ant-tasks-${mavenVersion}.jar"/>
     </path>
     <typedef resource="org/apache/maven/artifact/ant/antlib.xml" uri="urn:maven-artifact-ant" classpathref="mavenAntTaskJarPathId"/>
   </target>
@@ -145,7 +145,7 @@ Author : Russel Winder <russel.winder@concertant.com>
         <pathelement location="${buildClassesDirectory}"/>
         <path refid="compileJarSetPathId"/>
       </classpath>
-      <javac source="1.5" target="1.5" debug="on" encoding="UTF-8"/>
+      <javac source="5" target="5" debug="on" encoding="UTF-8"/>
     </groovyc>
   </target>
 
@@ -156,7 +156,7 @@ Author : Russel Winder <russel.winder@concertant.com>
         <pathelement location="${buildClassesDirectory}"/>
         <path refid="testJarSetPathId"/>
       </classpath>
-      <javac source="1.5" target="1.5" debug="on" encoding="UTF-8"/>
+      <javac source="5" target="5" debug="on" encoding="UTF-8"/>
     </groovyc>
   </target>
 
@@ -247,7 +247,7 @@ Author : Russel Winder <russel.winder@concertant.com>
     </artifact:dependencies>
     <copy todir="${installDirectory}/lib">
       <fileset dir="${buildDirectory}" includes="gant*.jar"/>
-      <fileset dir="${jarsDirectory}" includes="maven*.jar"/>
+      <fileset dir="${jarfilesDirectory}" includes="maven-ant-task-${mavenVersion}.jar"/>
       <fileset refid="ivyJarFilesetId"/>
       <mapper type="flatten"/>
     </copy>
