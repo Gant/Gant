@@ -21,6 +21,13 @@ final tgzExtension = '.tgz'
 ant.property ( file : 'local.build.properties' )
 ant.property ( file : 'build.properties' )
 
+if ( ! gantVersion ) {
+  println ( 'gantVersion not defined, terminating.' )
+  System.exit ( 1 )
+}
+
+gantPrefix = 'gant-' + gantVersion
+
 try { usingCobertura = Boolean.valueOf ( usingCobertura ) }
 catch ( MissingPropertyException mpe ) { usingCobertura = false }
 
@@ -103,21 +110,23 @@ final distributionDirectories = [ 'documentation' , 'examples' , '.settings' , s
 
 //  The versions of Gant in the Maven repository to build distribution version of Gant against.
 //
- //  Introducing the Gant Ant Task written in Java means we have to use the joint compiler to compile Gant
- //  and this means we cannot build Gant against Groovy 1.0 since the joint compiler only arrived with
- //  1.5.0.  Opinion on the user list indicated that it seemed reasonable to drop support for Groovy 1.0.
- //
- //  The target distribution assumes that the groovyc fork mode works, which means we cannot build against
- //  any version prior to 1.5.2.  Using a forked Java task is not an option because there is no --classpath
- //  option in the 1.5.0 and 1.5.1 versions of Groovyc and this is essential to get things to work
- //  correctly.  Gant can still be built and distributed against Groovy 1.5.0 and 1.5.1 but it has to be
- //  done the hard (manual) way.
- //
- //  Allow a mechanism for testing individual distribution entries as well as producing all of them.
+//  Introducing the Gant Ant Task written in Java means we have to use the joint compiler to compile Gant
+//  and this means we cannot build Gant against Groovy 1.0 since the joint compiler only arrived with 1.5.0.
+//  Opinion on the user list indicated that it seemed reasonable to drop support for Groovy 1.0.
+//
+//  The target distribution assumes that the groovyc fork mode works, which means we cannot build against
+//  any version prior to 1.5.2.  Using a forked Java task is not an option because there is no --classpath
+//  option in the 1.5.0 and 1.5.1 versions of Groovyc and this is essential to get things to work correctly.
+//  Gant can still be built and distributed against Groovy 1.5.0 and 1.5.1 but it has to be done the hard
+//  (manual) way.
+//
+//  Allow a mechanism for testing individual distribution entries as well as producing all of them.
 
 final distributionVersions = [ : ]
  if ( testSpecialDistributionVersion ) {
+   //def theGroovyVersion = groovy15Version
    def theGroovyVersion = groovy16Version
+   //def theGroovyVersion = groovy17Version
    distributionVersions.put ( 'groovy-' + theGroovyVersion , [ groupId : 'org.codehaus.groovy' , artifactId : 'groovy-all' , version : theGroovyVersion ] )
  }
  else {
@@ -330,19 +339,18 @@ final preparePom = { String version ->
 }
 
 final doWithAllGroovyVersions = { Closure c ->
-  def prefix = 'gant-' + gantVersion
   distributionVersions.each { label , item ->
     def groovyAntTaskTestVersionPropertyFile = new File ( groovyAntTaskTestVersionPropertyFileName )
     groovyAntTaskTestVersionPropertyFile.write ( 'groovyAntTaskTestVersion = ' + item.version )
     def pathIdRoot = 'classpath' + item.version
     def pathId = pathIdRoot + 'PathId'
     getDependency ( pathIdRoot , [
-                                      [ groupId : item.groupId , artifactId : item.artifactId , version : item.version ] ,
-                                      [ groupId : 'org.apache.ant' , artifactId : 'ant' , version : antVersion  ] ,
-                                      [ groupId : 'org.apache.ant' , artifactId : 'ant-junit' , version : antVersion ] ,
-                                      [ groupId : 'commons-cli' , artifactId : 'commons-cli' , version : commonsCliVersion ] ,
-                                      [ groupId : 'junit' , artifactId : 'junit' , version : junitVersion ]
-                                      ] )
+                                  [ groupId : item.groupId , artifactId : item.artifactId , version : item.version ] ,
+                                  [ groupId : 'org.apache.ant' , artifactId : 'ant' , version : antVersion  ] ,
+                                  [ groupId : 'org.apache.ant' , artifactId : 'ant-junit' , version : antVersion ] ,
+                                  [ groupId : 'commons-cli' , artifactId : 'commons-cli' , version : commonsCliVersion ] ,
+                                  [ groupId : 'junit' , artifactId : 'junit' , version : junitVersion ]
+                                  ] )
     //  Remove the compilation products of the last compilation so as not to affect this one!
     ant.delete ( dir : buildClassesDirectory )
     ant.delete ( dir : buildTestClassesDirectory )
@@ -351,7 +359,7 @@ final doWithAllGroovyVersions = { Closure c ->
     performCompile ( pathId , true )
     performCompileTests ( pathId , true )
     if ( ! skipTests && ! performTests ( pathId ) ) { someTestsFailed = true }
-    def jarPath = buildDirectory + '/' + prefix + '_groovy-' + item.version + '.jar'
+    def jarPath = buildDirectory + '/' + gantPrefix + '_groovy-' + item.version + '.jar'
     performPackage ( jarPath )
     c.call ( label , item , jarPath , pathIdRoot )
     groovyAntTaskTestVersionPropertyFile.delete ( )
@@ -561,25 +569,24 @@ target ( mavenDeploy : "Deploys the Gant artifacts to the appropriate Maven repo
 //  --------------------------------------------------------------------------------------------------------
 
 target ( distribution : 'Create the distributions of Gant.' ) {
-  def prefix = 'gant-' + gantVersion
   def distributionClasspathId = 'classpath'
   clean ( )
   someTestsFailed = false
   doWithAllGroovyVersions { label , item , jarPath , pathIdRoot ->
     def isStandalone = label == 'standalone'
-    def discriminator = isStandalone ? prefix : prefix + '_groovy-' + item.version
+    def discriminator = isStandalone ? gantPrefix : gantPrefix + '_groovy-' + item.version
     def jarName = new File ( jarPath ).name
     serverUploadProducts [ jarPath ] = serverJarsDirectory + '/' + jarName
     prepareInstallDirectory ( buildInstallDirectory , jarName , pathIdRoot , isStandalone , item )
     prepareZipFromTarAndRegisterForUpload ( discriminator ) {
       //  NB Rely on Closures not being closures:  path is only resolved when the Closure is executed.
       tar ( destfile :  path + tarExtension ) {
-        tarfileset ( dir : buildInstallDirectory , mode : '755' , prefix : prefix ) { include ( name : 'bin/*' ) }
-        tarfileset ( dir : buildInstallDirectory , prefix : prefix ) {
+        tarfileset ( dir : buildInstallDirectory , mode : '755' , prefix : gantPrefix ) { include ( name : 'bin/*' ) }
+        tarfileset ( dir : buildInstallDirectory , prefix : gantPrefix ) {
           include ( name : '**' )
           exclude ( name : 'bin/*' )
         }
-        tarfileset ( dir : '.' , includes : 'README*' , prefix : prefix )
+        tarfileset ( dir : '.' , includes : 'README*' , prefix : gantPrefix )
       }
     }
   }
@@ -587,8 +594,8 @@ target ( distribution : 'Create the distributions of Gant.' ) {
   prepareZipFromTarAndRegisterForUpload ( 'gant_src-' + gantVersion ) {
     //  NB Rely on Closures not being closures:  path is only resolved when the Closure is executed.
     tar ( destfile :  path + tarExtension ) {
-      tarfileset ( dir : '.' , includes : distributionTopLevelFiles.join ( ',' ) , prefix : prefix )
-      distributionDirectories.each { directory -> tarfileset ( dir : directory , prefix : prefix + System.properties.'file.separator' + directory ) }
+      tarfileset ( dir : '.' , includes : distributionTopLevelFiles.join ( ',' ) , prefix : gantPrefix )
+      distributionDirectories.each { directory -> tarfileset ( dir : directory , prefix : gantPrefix + System.properties.'file.separator' + directory ) }
     }
   }
   // Create the API documentation distribution.
@@ -596,7 +603,7 @@ target ( distribution : 'Create the distributions of Gant.' ) {
   prepareZipFromTarAndRegisterForUpload (  'gant_doc-' + gantVersion ) {
     //  NB Rely on Closures not being closures:  path is only resolved when the Closure is executed.
     tar ( destfile :  path + tarExtension ) {
-      tarfileset ( dir : documentationDirectory , prefix : prefix + System.properties.'file.separator' + 'doc' )
+      tarfileset ( dir : documentationDirectory , prefix : gantPrefix + System.properties.'file.separator' + 'doc' )
     }
   }
   //  Return the result of the test executions so that uploadDistributions can choose not to upload a failed
