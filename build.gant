@@ -173,7 +173,7 @@ final getDependency = { root , dependencies ->
 final performCompile = { classpathId ->
   ant.mkdir ( dir : buildClassesDirectory )
   ant.taskdef ( name : 'groovyc' , classname : 'org.codehaus.groovy.ant.Groovyc' , classpathref : classpathId )
-  ant.groovyc ( srcdir : sourceDirectory , destdir : buildClassesDirectory , fork : 'true' , failonerror : 'true' ) {
+    ant.groovyc ( srcdir : sourceDirectory , destdir : buildClassesDirectory , fork : 'true' , failonerror : 'true' , includeantruntime : 'false' ) {
     classpath {
       pathelement ( location : buildClassesDirectory )
       path ( refid : classpathId )
@@ -186,7 +186,7 @@ final performCompileTests = { classpathId ->
   if ( ! skipTests ) {                              
     ant.mkdir ( dir : buildTestClassesDirectory )
     ant.taskdef ( name : 'groovyc' , classname : 'org.codehaus.groovy.ant.Groovyc' , classpathref : classpathId )
-    ant.groovyc ( srcdir : testsDirectory , destdir : buildTestClassesDirectory , fork : 'true' , failonerror : 'true' ) {
+    ant.groovyc ( srcdir : testsDirectory , destdir : buildTestClassesDirectory , fork : 'true' , failonerror : 'true' , includeantruntime : 'false' ) {
       classpath {
         pathelement ( location : buildClassesDirectory )
         path ( refid : classpathId )

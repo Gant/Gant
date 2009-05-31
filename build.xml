@@ -146,7 +146,7 @@ Author : Russel Winder <russel.winder@concertant.com>
 
   <target name="-compile">
     <mkdir dir="${buildClassesDirectory}"/>
-    <groovyc srcdir="${sourceDirectory}" destdir="${buildClassesDirectory}" fork="true" failonerror="true">
+    <groovyc srcdir="${sourceDirectory}" destdir="${buildClassesDirectory}" fork="true" failonerror="true" includeantruntime="false">
       <classpath>
         <pathelement location="${buildClassesDirectory}"/>
         <path refid="compileJarSetPathId"/>
@@ -157,7 +157,7 @@ Author : Russel Winder <russel.winder@concertant.com>
 
   <target name="-compileTests" depends="-compile">
     <mkdir dir="${buildTestClassesDirectory}"/>
-    <groovyc srcdir="${testsDirectory}" destdir="${buildTestClassesDirectory}" fork="true" failonerror="true">
+    <groovyc srcdir="${testsDirectory}" destdir="${buildTestClassesDirectory}" fork="true" failonerror="true" includeantruntime="false">
       <classpath>
         <pathelement location="${buildClassesDirectory}"/>
         <path refid="testJarSetPathId"/>
