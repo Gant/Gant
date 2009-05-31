@@ -222,7 +222,7 @@ final performTests =  { classpathId ->
       path ( refid : classpathId )
     }                        
     if ( ! ( testCase ==~ 'org.codehaus.gant.ant.tests.*_Test' ) ) {                        
-      ant.junit ( printsummary : 'yes' , failureproperty : 'testsFailed' , fork : 'true' , forkmode : 'once' ) {
+      ant.junit ( printsummary : 'yes' , failureproperty : 'testsFailed' , fork : 'true' , forkmode : 'once' , includeantruntime : 'false' ) {
         formatter ( type : 'plain' )
         formatter ( type : 'xml' ) // Must have XML output for the continuous integration builds.
         if ( testCase != null) { ant.test ( name : testCase , todir : buildTestReportsDirectory ) }
@@ -234,7 +234,7 @@ final performTests =  { classpathId ->
       }
     }
     if ( ( testCase == null ) || ( testCase ==~ 'org.codehaus.gant.ant.tests.*_Test' ) ) {                        
-      ant.junit ( printsummary : 'yes' , failureproperty : 'testsFailed' , fork : 'true' , forkmode : 'once' ) {
+      ant.junit ( printsummary : 'yes' , failureproperty : 'testsFailed' , fork : 'true' , forkmode : 'once' , includeantruntime : 'false' ) {
         formatter ( type : 'plain' )
         formatter ( type : 'xml' ) // Must have XML output for the continuous integration builds.
         batchtest ( todir : buildTestReportsDirectory ) { fileset ( dir : buildTestClassesDirectory , includes : '**/ant/tests/*_Test.class' ) }
