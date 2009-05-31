@@ -140,7 +140,7 @@ Author : Russel Winder <russel.winder@concertant.com>
 
   <target name="-compile">
     <mkdir dir="${buildClassesDirectory}"/>
-    <groovyc srcdir="${sourceDirectory}" destdir="${buildClassesDirectory}">
+    <groovyc srcdir="${sourceDirectory}" destdir="${buildClassesDirectory}" fork="true" failonerror="true">
       <classpath>
         <pathelement location="${buildClassesDirectory}"/>
         <path refid="compileJarSetPathId"/>
@@ -151,7 +151,7 @@ Author : Russel Winder <russel.winder@concertant.com>
 
   <target name="-compileTests" depends="-compile">
     <mkdir dir="${buildTestClassesDirectory}"/>
-    <groovyc srcdir="${testsDirectory}" destdir="${buildTestClassesDirectory}">
+    <groovyc srcdir="${testsDirectory}" destdir="${buildTestClassesDirectory}" fork="true" failonerror="true">
       <classpath>
         <pathelement location="${buildClassesDirectory}"/>
         <path refid="testJarSetPathId"/>
@@ -174,7 +174,7 @@ Author : Russel Winder <russel.winder@concertant.com>
       <path refid="testJarSetPathId"/>
     </path>
     <!-- Forkmode should be once for speed but perTest for safety. -->
-    <junit printsummary="yes" fork="true" forkmode="once" failureproperty="testsFailed">
+    <junit printsummary="yes" fork="true" forkmode="once" failureproperty="testsFailed" includeantruntime="false">
       <!--jvmarg line="-Xdebug -Xrunjdwp:transport=dt_socket,server=y,suspend=y,address=5005"/-->
       <formatter type="plain"/>
       <formatter type="xml"/> <!-- Must have XML output for the continuous integration builds. -->
@@ -186,7 +186,7 @@ Author : Russel Winder <russel.winder@concertant.com>
         <pathelement location="${buildClassesDirectory}"/>
       </classpath>
     </junit>
-    <junit printsummary="yes" fork="true" forkmode="once" failureproperty="testsFailed">
+    <junit printsummary="yes" fork="true" forkmode="once" failureproperty="testsFailed" includeantruntime="false">
       <formatter type="plain"/>
       <formatter type="xml"/> <!-- Must have XML output for the continuous integration builds. -->
       <batchtest todir="${buildTestReportsDirectory}">
