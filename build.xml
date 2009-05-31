@@ -65,6 +65,8 @@ Author : Russel Winder <russel.winder@concertant.com>
 
   <property name="buildMetadataDirectory" value="${buildClassesDirectory}/META-INF"/>
 
+  <property name="mavenAntTaskJarName" value="maven-ant-tasks-${mavenVersion}.jar"/>
+
   <condition property="installDirectoryIsSet">
     <isset property="installDirectory"/>
   </condition>
@@ -95,7 +97,7 @@ Author : Russel Winder <russel.winder@concertant.com>
 
   <target name="-initializeMavenAntTask">
      <path id="mavenAntTaskJarPathId">
-      <fileset dir="${jarfilesDirectory}" includes="maven-ant-tasks-${mavenVersion}.jar"/>
+      <fileset dir="${jarfilesDirectory}" includes="${mavenAntTaskJarName}"/>
     </path>
     <typedef resource="org/apache/maven/artifact/ant/antlib.xml" uri="urn:maven-artifact-ant" classpathref="mavenAntTaskJarPathId"/>
   </target>
@@ -253,7 +255,7 @@ Author : Russel Winder <russel.winder@concertant.com>
     </artifact:dependencies>
     <copy todir="${installDirectory}/lib">
       <fileset dir="${buildDirectory}" includes="gant*.jar"/>
-      <fileset dir="${jarfilesDirectory}" includes="maven-ant-task-${mavenVersion}.jar"/>
+      <fileset dir="${jarfilesDirectory}" includes="${mavenAntTaskJarName}"/>
       <fileset refid="ivyJarFilesetId"/>
       <mapper type="flatten"/>
     </copy>
