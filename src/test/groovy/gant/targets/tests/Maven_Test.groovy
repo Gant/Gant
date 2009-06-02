@@ -36,8 +36,8 @@ includeTargets << gant.targets.Maven
     //  in place -- which causes the test to fail inappropriately.
     final file = new File ( compileDirectory )
     if ( file.exists ( ) ) {
-      if ( file.isDirectory ( ) ) { antBuilder.delete ( dir : compileDirectory ) }
-      else { antBuilder.delete ( file : compileDirectory ) }
+      if ( file.isDirectory ( ) ) { antBuilder.delete ( dir : compileDirectory , quiet : 'true' ) }
+      else { antBuilder.delete ( file : compileDirectory , quiet : 'true' ) }
     }
     script = """
 includeTargets ** gant.targets.Maven * [
@@ -45,9 +45,8 @@ includeTargets ** gant.targets.Maven * [
 ]
 """
     assertEquals ( 0 , processCmdLineTargets ( 'compile' ) )
-    assertTrue ( output.startsWith( '   [delete] Deleting directory' ) )
-    assertTrue ( output.contains( '[mkdir] Created dir:' ) )
-    assertTrue ( output.contains( '[groovyc] Compiling' ) )
+    assertTrue ( output.startsWith( '    [mkdir] Created dir:' ) )
+    assertTrue ( output.contains( '  [groovyc] Compiling' ) )
     assertTrue ( file.isDirectory ( ) )
     antBuilder.delete ( dir : compileDirectory )
     assertFalse ( file.exists ( ) )
