@@ -29,17 +29,8 @@ import org.apache.tools.ant.Project ;
 
 /**
  *  This class is a sub-class of <code>AntBuilder</code> to provide extra capabilities.  In particular, a
- *  dry-run capability, and the implementation of various levels of verbosity.
- *
- *  <p>If execution is from a command line Gant or call from a Groovy script then the class loader for all
- *  objects is a single instance of <code>org.codehaus.groovy.tools.RootLoader</code>, which already has Ant
- *  and Groovy jars in the classpath.  If however execution is from an Ant execution via the Gant Ant Task,
- *  then the classloader for the instance is an instance of <code>org.apache.tools.ant.AntClassLoader</code>
- *  with Ant and Groovy jars on the classpath BUT the class loader for the
- *  <code>org.apache.tools.ant.Project</code> instance is a simple <code>java.net.URLClassLoader</code> and
- *  does not have the necessary jars on the classpath.  When using Ant, the Ant jar has been loaded before
- *  the Groovy aspects of the classpath have been set up.  So we must allow for a specialized constructor
- *  taking a preprepared <code>org.apache.tools.ant.Project</code> to handle this situation. </p>
+ *  dry-run capability, and to give Gant access to the underlying <code>org.apache.tools.ant.Project</code>
+ *  instance.
  *
  *  @author Russel Winder <russel.winder@concertant.com>
  */
@@ -49,9 +40,20 @@ public class GantBuilder extends AntBuilder {
    */
   public GantBuilder ( ) { }
   /**
-   *  Constructor that specifies which <code>Project</code> to be associated with.
+   *  Constructor that specifies which <code>org.apache.tools.ant.Project</code> to be associated with.
    *
-   *  @param project The <code>Project</code> to be associated with.
+   *  <p>If execution is from a command line Gant or call from a Groovy script then the class loader for all
+   *  objects is a single instance of <code>org.codehaus.groovy.tools.RootLoader</code>, which already has
+   *  Ant and Groovy jars in the classpath.  If, however, execution is from an Ant execution via the Gant
+   *  Ant Task, then the classloader for the instance is an instance of
+   *  <code>org.apache.tools.ant.AntClassLoader</code> with Ant and Groovy jars on the classpath BUT the
+   *  class loader for the <code>org.apache.tools.ant.Project</code> instance is a simple
+   *  <code>java.net.URLClassLoader</code> and does not have the necessary jars on the classpath.  When
+   *  using Ant, the Ant jar has been loaded before the Groovy aspects of the classpath have been set up.
+   *  So we must allow for a specialized constructor (this one) taking a preprepared
+   *  <code>org.apache.tools.ant.Project</code> to handle this situation.</p>
+   * 
+   *  @param project The <code>org.apache.tools.ant.Project</code> to be associated with.
    */
   public GantBuilder ( final Project project ) { super ( project ) ; }
   /**
@@ -94,22 +96,9 @@ public class GantBuilder extends AntBuilder {
    */
   @SuppressWarnings ( "unchecked" )
   public void setMessageOutputLevel ( ) {
-    try {
-      //  The project is a private field in AntBuilder so we have to use reflection to get at it.  Maybe it
-      //  would be easier if this were a Groovy class :-)
-      final Field field = getClass ( ).getSuperclass ( ).getDeclaredField ( "project" ) ;
-      field.setAccessible ( true ) ;
-      final Project project = (Project) field.get ( this ) ;
-      final List<? extends BuildListener> listeners = project.getBuildListeners ( ) ; // Unchecked conversion here.
-      assert listeners.size ( ) == 1 ;
-      final BuildLogger logger = (BuildLogger) listeners.get ( 0 ) ;
-      logger.setMessageOutputLevel ( GantState.verbosity ) ;
-    }
-    catch ( final NoSuchFieldException nsfe ) {
-      throw new RuntimeException ( "No field named project in GantBuilder." , nsfe ) ;
-    }
-    catch ( final IllegalAccessException iae ) {
-      throw new RuntimeException ( "Unable to access field project in GantBuilder." , iae ) ;
-    }
+    final List<? extends BuildListener> listeners = getProject ( ).getBuildListeners ( ) ; // Unchecked conversion here.
+    assert listeners.size ( ) == 1 ;
+    final BuildLogger logger = (BuildLogger) listeners.get ( 0 ) ;
+    logger.setMessageOutputLevel ( GantState.verbosity ) ;
   }
 }
