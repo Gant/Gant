@@ -25,7 +25,6 @@ def foo { badvariable }
     assertEquals ( -2 , processCmdLineTargets( 'test' ) )
     assertEquals ( '''Error evaluating Gantfile: startup failed, standard_input: 3: unexpected token: foo @ line 3, column 5.
 1 error
-
 ''' , output )
   }
   void testMultipleFilesFailsCorrectly ( ) {
@@ -42,7 +41,6 @@ def foo { badvariable }
        ^
 
 1 error
-
 ''' ) )
   }
 }

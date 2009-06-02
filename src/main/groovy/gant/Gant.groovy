@@ -287,23 +287,25 @@ final class Gant {
     return fileName.replaceAll ( '\\.' , '_' )
   }
   /**
-   *  Filter the stacktrace of the exception so as to print the line number of the line in the script being
-   *  executed that caused the exception.
+   *  Filter the stacktrace of the exception so as to create a printable message with the line number of the
+   *  line in the script being executed that caused the exception.
    */
-  private void printMessageFrom ( exception ) {
+  private String constructMessageFrom ( exception ) {
+    final buffer = new StringBuilder ( )
     if ( exception instanceof GantException ) { exception = exception.cause }
     for ( stackEntry in exception.stackTrace ) {
       if ( ( stackEntry.fileName == buildClassName ) && ( stackEntry.lineNumber  != -1 ) ) {
         def sourceName = ( buildClassName == standardInputClassName ) ? 'Standard input' : buildClassName
-        print ( sourceName + ', line ' + stackEntry.lineNumber + ' -- ' )
+        buffer.append ( sourceName + ', line ' + stackEntry.lineNumber + ' -- ' )
       }
     }
     if ( exception instanceof InvocationTargetException ) { exception = exception.cause }
     if ( exception instanceof InvokerInvocationException ) { exception = exception.cause }
-    println ( 'Error evaluating Gantfile: ' + ( ( exception instanceof RuntimeException ) ? exception.message : exception.toString ( ) ) )
+    buffer.append ( 'Error evaluating Gantfile: ' + ( ( exception instanceof RuntimeException ) ? exception.message : exception.toString ( ) ) )
+    buffer.toString ( )
   }
   /**
-   *  The function that implements the creation of the list of targets for the -p and -T options.
+   *  The function that implements the printing of the list of targets for the -p and -T options.
    */
   private Integer targetList ( targets ) {
     def max = 0
@@ -417,7 +419,7 @@ final class Gant {
     if ( options.n ) { dryRun = true }
     def function =  ( options.p || options.T ) ? 'targetList' : 'dispatch'
     if ( options.d ) { verbosity = GantState.DEBUG }
-    if ( options.q ) { verbosity = GantState.QUIET }
+    if ( options.q ) { verbosity = GantState.ERRORS_ONLY }
     if ( options.s ) { verbosity = GantState.SILENT }
     if ( options.v ) { verbosity = GantState.VERBOSE }
     if ( useCache && options.C ) { cacheDirectory = new File ( (String) options.C ) }
@@ -456,30 +458,35 @@ final class Gant {
       }
     }
     if ( gotUnknownOptions ) { cli.usage ( ) ; return -1 ; }
+    //
+    //  Nota Bene: the Ant logger puts error level messages out on stderr and all other levels of message
+    //  out on stdout.  Currently the tests expect all information out on stdout.  Therefore put error
+    //  message out as warnings.
+    //
     try { loadScript ( buildSource ) }
-    catch ( FileNotFoundException fnfe ) { println ( 'Cannot open file ' + buildSource.name ) ; return -3 }
-    catch ( Exception e ) { printMessageFrom ( e ) ; return -2 }
+    catch ( FileNotFoundException fnfe ) { binding.ant.project.log ( 'Cannot open file ' + buildSource.name , Project.MSG_WARN ) ; return -3 }
+    catch ( Exception e ) { binding.ant.project.log ( constructMessageFrom ( e ) , Project.MSG_WARN ) ; return -2 }
     def defaultReturnCode = targets?.size ( ) > 0 ? -11 : -12
     outputBuildTime = function == 'dispatch'
     try { return processTargets ( function , targets ) }
     catch ( TargetExecutionException tee ) {
       if ( verbosity > GantState.NORMAL ) { tee.printStackTrace ( ) }
-      else { println ( tee.message ) }
+      else { binding.ant.project.log ( tee.message , Project.MSG_WARN ) }
       return -13
     }
     catch ( MissingTargetException mte ) {
       if ( verbosity > GantState.NORMAL ) { mte.printStackTrace ( ) }
-      else { println ( mte.message ) }
+      else { binding.ant.project.log ( mte.message , Project.MSG_WARN ) }
       return defaultReturnCode
     }
     catch ( TargetMissingPropertyException tmpe ) {
       if ( verbosity > GantState.NORMAL ) { tmpe.printStackTrace ( ) }
-      else { printMessageFrom ( tmpe ) }
+      else { binding.ant.project.log ( constructMessageFrom ( tmpe ) , Project.MSG_WARN ) }
       return defaultReturnCode
     }
     catch ( Exception e ) {
       if ( verbosity > GantState.NORMAL ) { e.printStackTrace ( ) }
-      else { printMessageFrom ( e ) }
+      else { binding.ant.project.log ( constructMessageFrom ( e ) , Project.MSG_WARN ) }
       return -4
     }
     //  Cannot get here.
@@ -518,11 +525,13 @@ final class Gant {
    */
   public static void main ( String[] args ) {
     def startTime = System.nanoTime ( )
-    def returnValue = ( new Gant ( ) ).processArgs ( args )
-    if ( outputBuildTime && ( GantState.verbosity > GantState.NORMAL ) ) {
+    def gant = new Gant ( )
+    def returnValue = gant.processArgs ( args )
+    if ( outputBuildTime ) {
       def elapseTime = ( System.nanoTime ( ) - startTime ) / 1e9
-      println ( '\nBUILD ' + ( returnValue == 0 ? 'SUCCESSFUL' : 'FAILED' ) )
-      println ( 'Total time: ' + String.format ( '%.2f' , elapseTime ) + ' seconds' )
+      def project = gant.binding.ant.project
+      project.log ( '\nBUILD ' + ( returnValue == 0 ? 'SUCCESSFUL' : 'FAILED' ) , GantState.WARNINGS_ERRORS )
+      project.log ( 'Total time: ' + String.format ( '%.2f' , elapseTime ) + ' seconds' , GantState.WARNINGS_ERRORS )
     }
     System.exit ( returnValue )
   }

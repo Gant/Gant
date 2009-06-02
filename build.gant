@@ -30,12 +30,12 @@ carryOn = true
   ].each { name ->
            try { binding.getVariable ( name ) }
            catch ( MissingPropertyException mpe ) {
-             println ( "${name} is not defined." )
+             ant.project.log ( "${name} is not defined." )
              carryOn = false
            }
 }
 if ( ! carryOn ) {
-  println ( 'A required property is not set, so terminating.' )
+  ant.project.log ( 'A required property is not set, so terminating.' )
   System.exit ( 1 )
 }
 
@@ -89,6 +89,12 @@ final documentationDirectory = buildDirectory + '/documentation'
 final apiDocumentationDirectory = documentationDirectory + '/api'
 
 final buildMetadataDirectory = buildClassesDirectory + '/META-INF'
+
+//  This is the name used in in
+//  gant.targets.tests.Maven_Tests.testCompileTargetInDirectoryOtherThanTheCurrentBuildDirectory.  It would
+//  be good if these could be made dependent rather than independent as they are now.
+
+final buildDirectoryForMavenTargetSet = 'target_forMavenTest'
 
 final sourceCompatibility = '5'
 final targetCompatibility = '5'
@@ -212,7 +218,7 @@ final performCompileTests = { classpathId ->
 }
 
 final performTests =  { classpathId ->
-  if ( ! skipTests ) {                        
+  if ( ! skipTests ) {
     ant.mkdir ( dir : buildTestReportsDirectory )
     if ( usingCobertura ) {
       ant.mkdir ( dir : buildCoberturaClassesDirectory )
@@ -222,7 +228,7 @@ final performTests =  { classpathId ->
       ant.'cobertura-instrument' ( todir : buildCoberturaClassesDirectory ) { fileset ( dir : buildClassesDirectory ) }
     }
     getDependency ( 'ivyJar' , [ groupId : 'org.apache.ivy' , artifactId : 'ivy' , version : ivyVersion ] )
-def testClasspathId = 'testClasspathId'
+    def testClasspathId = 'testClasspathId'
     ant.path ( id : testClasspathId ) {
       if ( usingCobertura ) {
         // MUST appear in classpath before the uninstrumented classes.
@@ -286,7 +292,7 @@ final performPackage =  { jarPath ->
 
 final setInstallationDirectory = { path ->
   if ( path == null ) {
-    println ( 'Property installationDirectory is not set, cannot undertake (un)install actions.' )
+    ant.project.log ( 'Property installationDirectory is not set, cannot undertake (un)install actions.' )
     System.exit ( 1 )
   }
   installationDirectory = path
@@ -449,7 +455,7 @@ final doDocumentation = { ->
 
 includeTargets << gant.targets.Clean
 cleanPattern <<  [ '**/*~' , 'cobertura.ser' , 'texput.log' ] 
-cleanDirectory << [ buildDirectory , 'target_forMavenTest' ]
+cleanDirectory << [ buildDirectory , buildDirectoryForMavenTargetSet ]
 
 includeTool << gant.tools.Execute
 
@@ -467,7 +473,7 @@ target ( initializeNonDistribution : '' ) {
   //  the required bits and pieces to make a standalone build.  NB System.properties.'groovy.home' is not a
   //  good discriminator!
   if ( groovyHomeEnvironment ) {
-    println ( "Building with the Groovy installation at GROOVY_HOME=${groovyHomeEnvironment}." )
+    ant.project.log ( "Building with the Groovy installation at GROOVY_HOME=${groovyHomeEnvironment}." )
     //----------------------------------------------------------------------------------------------
     //  TODO : Need to find out which version is actually being used -- this is currently a bug.
     //----------------------------------------------------------------------------------------------
@@ -488,7 +494,7 @@ target ( initializeNonDistribution : '' ) {
   }
   else {
     groovyVersion = groovyStandaloneVersion
-    println ( "Building without a Groovy installation. Using Groovy ${groovyVersion}, Commons CLI ${commonsCliVersion}, Ant ${antVersion} from Maven repository." )
+    ant.project.log ( "Building without a Groovy installation. Using Groovy ${groovyVersion}, Commons CLI ${commonsCliVersion}, Ant ${antVersion} from Maven repository." )
     getDependency ( groovyJarPathIdRoot , [ groupId : 'org.codehaus.groovy' , artifactId : 'groovy-all' , version : groovyVersion ] )
     def compileJarsNotGroovyPathIdRoot = 'compileJarsNotGroovy'
     compileJarsNotGroovyPathId = compileJarsNotGroovyPathIdRoot + 'PathId'
@@ -529,7 +535,7 @@ target ( test : 'Test a build of Gant.' ) {
       groovyAntTaskTestVersionPropertyFile.write ( 'groovyAntTaskTestVersion = ' + groovyVersion )
     }
     def returnCode = performTests ( testJarSetPathId )
-    println ( 'Tests ' + ( returnCode ? 'suceeded' : 'failed' ) + '.' )
+    ant.project.log ( 'Tests ' + ( returnCode ? 'suceeded' : 'failed' ) + '.' )
     if ( ! groovyHomeEnvironment ) { groovyAntTaskTestVersionPropertyFile.delete ( ) }
     return returnCode ? 0 : 1
   }
@@ -641,7 +647,7 @@ target ( distribution : 'Create the distributions of Gant.' ) {
 
 target ( uploadDistribution : 'Upload a complete distribution.' ) {
   if (  ( ! distribution ( ) ) && ( ! ignoreTestFailures ) ) {
-    println ( 'Not uploading as some tests failed.' )
+    ant.project.log ( 'Not uploading as some tests failed.' )
     return
   }
   //  Slide has been retired by the Apache Foundation in favour of Jackrabbit, but we use Slide anyway.
@@ -658,14 +664,14 @@ target ( uploadDistribution : 'Upload a complete distribution.' ) {
   def credentials =  loader.loadClass ( 'org.apache.commons.httpclient.UsernamePasswordCredentials' ).getConstructor ( String , String ).newInstance ( settings.username.toString ( ) , settings.password.toString ( ) )
   //  Have to put resource in the binding so that the Closures can access it.
   resource = loader.loadClass ( 'org.apache.webdav.lib.WebdavResource' ).getConstructor ( String ,  loader.loadClass ( 'org.apache.commons.httpclient.Credentials' ) , boolean ).newInstance ( distributionURL , credentials , true )
-  if ( resource.statusCode != 200 ) { println ( 'Failed to open ' + distributionURL ) }
+  if ( resource.statusCode != 200 ) { ant.project.log ( 'Failed to open ' + distributionURL ) }
   else {
     serverUploadProducts.each { source , destination ->
       def serverPath = resource.path + '/' + destination
-      print ( 'Uploading ' + source + ' -> ' + destination + ' : ' )
+      ant.project.log ( 'Uploading ' + source + ' -> ' + destination + ' : ' )
       def result = 'Failed.'
       if ( resource.putMethod ( serverPath , new File ( source ) ) ) { result = 'OK.' }
-      println ( result + ' Status : ' + resource.statusMessage )
+      ant.project.log ( result + ' Status : ' + resource.statusMessage )
     }
   }
   if ( resource != null ) { resource.close ( ) }

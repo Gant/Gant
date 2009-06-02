@@ -29,8 +29,8 @@ import org.apache.tools.ant.Project ;
 
 /**
  *  This class is a sub-class of <code>AntBuilder</code> to provide extra capabilities.  In particular, a
- *  dry-run capability, and to give Gant access to the underlying <code>org.apache.tools.ant.Project</code>
- *  instance.
+ *  dry-run capability, and things to help support interaction between Gant and the underlying
+ *  <code>Project</code>.
  *
  *  @author Russel Winder <russel.winder@concertant.com>
  */
@@ -40,20 +40,19 @@ public class GantBuilder extends AntBuilder {
    */
   public GantBuilder ( ) { }
   /**
-   *  Constructor that specifies which <code>org.apache.tools.ant.Project</code> to be associated with.
+   *  Constructor that specifies which <code>Project</code> to be associated with.
    *
    *  <p>If execution is from a command line Gant or call from a Groovy script then the class loader for all
    *  objects is a single instance of <code>org.codehaus.groovy.tools.RootLoader</code>, which already has
    *  Ant and Groovy jars in the classpath.  If, however, execution is from an Ant execution via the Gant
    *  Ant Task, then the classloader for the instance is an instance of
    *  <code>org.apache.tools.ant.AntClassLoader</code> with Ant and Groovy jars on the classpath BUT the
-   *  class loader for the <code>org.apache.tools.ant.Project</code> instance is a simple
-   *  <code>java.net.URLClassLoader</code> and does not have the necessary jars on the classpath.  When
-   *  using Ant, the Ant jar has been loaded before the Groovy aspects of the classpath have been set up.
-   *  So we must allow for a specialized constructor (this one) taking a preprepared
-   *  <code>org.apache.tools.ant.Project</code> to handle this situation.</p>
+   *  class loader for the <code>Project</code> instance is a simple <code>java.net.URLClassLoader</code>
+   *  and does not have the necessary jars on the classpath.  When using Ant, the Ant jar has been loaded
+   *  before the Groovy aspects of the classpath have been set up.  So we must allow for a specialized
+   *  constructor (this one) taking a preprepared <code>Project</code> to handle this situation.</p>
    * 
-   *  @param project The <code>org.apache.tools.ant.Project</code> to be associated with.
+   *  @param project The <code>Project</code> to be associated with.
    */
   public GantBuilder ( final Project project ) { super ( project ) ; }
   /**
@@ -91,14 +90,21 @@ public class GantBuilder extends AntBuilder {
     return super.invokeMethod ( name , arguments ) ;
   }
   /**
+   *  Accessor for the logger associated with the <code>Project</code>.
+   *
+   *  @return The <code>BuildLogger</code>.
+   */
+  public BuildLogger getLogger ( ) {
+    final List<? extends BuildListener> listeners = getProject ( ).getBuildListeners ( ) ; // Unchecked conversion here.
+    assert listeners.size ( ) == 1 ;
+    return (BuildLogger) listeners.get ( 0 ) ;
+  }
+  /**
    *  Method to be called to trigger setting of the message output level on the <code>AntBuilder</code>
    *  project.  The verbosity level is determined from <code>GantState</code>.
    */
   @SuppressWarnings ( "unchecked" )
   public void setMessageOutputLevel ( ) {
-    final List<? extends BuildListener> listeners = getProject ( ).getBuildListeners ( ) ; // Unchecked conversion here.
-    assert listeners.size ( ) == 1 ;
-    final BuildLogger logger = (BuildLogger) listeners.get ( 0 ) ;
-    logger.setMessageOutputLevel ( GantState.verbosity ) ;
+    getLogger ( ).setMessageOutputLevel ( GantState.verbosity ) ;
   }
 }

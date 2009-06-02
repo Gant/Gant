@@ -46,13 +46,8 @@ final class Subdirectories {
    */
   void runSubprocess ( final String command , final File directory ) {
     if ( GantState.verbosity > GantState.NORMAL ) { println "\n============ ${directory} ================" }
-    //  If we allowed ourselves Java SE 5.0 then we could use ProcessBuilder but we restrict ourselves to Java 1.4.
-    //def process = ( new ProcessBuilder ( [ 'sh' , '-c' , command ] )).directory ( directory ).start ( )
-    //
-    //  Groovy 1.0 RC-01 cannot deal with null in the first parameter.
-    //def process = command.execute ( null , directory )
-    def process = command.execute ( [ ] , directory )
-    if ( GantState.verbosity > GantState.QUIET ) {
+    def process = command.execute ( null , directory )
+    if ( GantState.verbosity >= GantState.NORMAL ) {
       ( new InputStreamReader ( process.err ) ).eachLine { line -> System.err.println ( line ) }
       ( new InputStreamReader ( process.in ) ).eachLine { line -> println ( line ) }
     }

@@ -33,11 +33,16 @@ public class GantState {
   /**
    *  Output no information ever.
    */
-  public static final int SILENT = Project.MSG_ERR ;
+  //  We have to know that the constants from Project are integer values starting at 0.
+  public static final int SILENT = -1 ;
+  /**
+   *  Output only information about errors.
+   */
+  public static final int ERRORS_ONLY = Project.MSG_ERR ;
   /**
    *  Output only the meagrest of information.
    */
-  public static final int QUIET = Project.MSG_WARN ;
+  public static final int WARNINGS_ERRORS = Project.MSG_WARN ;
   /**
    *  Output information about which task is executing, and other things.
    */

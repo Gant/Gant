@@ -87,7 +87,6 @@ target = 10
     assertEquals ( -2 , processCmdLineTargets ( ) )
     assertEquals ( '''Error evaluating Gantfile: startup failed, standard_input: 1: unexpected token: -> @ line 1, column 15.
 1 error
-
 ''' , output )
   }
 
