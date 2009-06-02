@@ -518,19 +518,22 @@ target ( compile : 'Compile everything needed for a Groovy installation dependen
 
 target ( compileTests : 'Compile all the tests for a Groovy installation dependent build of Gant.' ) {
   depends ( compile )
-  performCompileTests ( testJarSetPathId )
+  if ( ! skipTests ) { performCompileTests ( testJarSetPathId ) }
 }
 
 target ( test : 'Test a build of Gant.' ) {
   depends ( compileTests )
-  if ( ! groovyHomeEnvironment ) {
-    groovyAntTaskTestVersionPropertyFile = ( new File ( groovyAntTaskTestVersionPropertyFileName ) )
-    groovyAntTaskTestVersionPropertyFile.write ( 'groovyAntTaskTestVersion = ' + groovyVersion )
+  if ( ! skipTests ) {
+    if ( ! groovyHomeEnvironment ) {
+      groovyAntTaskTestVersionPropertyFile = ( new File ( groovyAntTaskTestVersionPropertyFileName ) )
+      groovyAntTaskTestVersionPropertyFile.write ( 'groovyAntTaskTestVersion = ' + groovyVersion )
+    }
+    def returnCode = performTests ( testJarSetPathId )
+    println ( 'Tests ' + ( returnCode ? 'suceeded' : 'failed' ) + '.' )
+    if ( ! groovyHomeEnvironment ) { groovyAntTaskTestVersionPropertyFile.delete ( ) }
+    return returnCode ? 0 : 1
   }
-  def returnCode = performTests ( testJarSetPathId )
-  if ( ! skipTests ) { println ( 'Tests ' + ( returnCode ? 'suceeded' : 'failed' ) + '.' ) }
-  if ( ! groovyHomeEnvironment ) { groovyAntTaskTestVersionPropertyFile.delete ( ) }
-  returnCode ? 0 : 1
+  return 0
 }
 
 target ( coberturaTest : 'Test a Groovy installation dependent build of Gant using Cobertura to get a coverage report.' ) {

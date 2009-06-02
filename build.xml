@@ -157,7 +157,7 @@ Author : Russel Winder <russel.winder@concertant.com>
     </groovyc>
   </target>
 
-  <target name="-compileTests" depends="-compile">
+  <target name="-compileTests" depends="-compile" unless="skipTestsIsSet">
     <mkdir dir="${buildTestClassesDirectory}"/>
     <groovyc srcdir="${testsDirectory}" destdir="${buildTestClassesDirectory}" fork="true" failonerror="true" includeantruntime="false">
       <classpath>
