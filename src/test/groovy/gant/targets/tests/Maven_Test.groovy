@@ -45,8 +45,9 @@ includeTargets ** gant.targets.Maven * [
 ]
 """
     assertEquals ( 0 , processCmdLineTargets ( 'compile' ) )
-    assertTrue ( output.startsWith( '    [mkdir] Created dir:' ) )
-    assertTrue ( output.contains( ' [groovyc] Compiling' ) )
+    assertTrue ( output.startsWith( '   [delete] Deleting directory' ) )
+    assertTrue ( output.contains( '[mkdir] Created dir:' ) )
+    assertTrue ( output.contains( '[groovyc] Compiling' ) )
     assertTrue ( file.isDirectory ( ) )
     antBuilder.delete ( dir : compileDirectory )
     assertFalse ( file.exists ( ) )
