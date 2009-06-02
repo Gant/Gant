@@ -1263,7 +1263,7 @@
   </component>
   <component name="ProjectFileVersion" converted="true" />
   <component name="ProjectKey">
-    <option name="state" value="project:///home/users/russel/Repositories/Bazaar/Branches/Gant/Development/Gant_Trunk.ipr" />
+    <option name="state" value="project:///home/users/russel/Repositories/Bazaar/Masters/Gant/Trunk_Development/Gant_Trunk.ipr" />
   </component>
   <component name="ProjectModuleManager">
     <modules>
@@ -1295,5 +1295,10 @@
     <mapping directory="" vcs="" />
   </component>
   <component name="WebServicesPlugin" addRequiredLibraries="true" />
+  <component name="copyright">
+    <Base>
+      <setting name="state" value="2" />
+    </Base>
+  </component>
 </project>
 
