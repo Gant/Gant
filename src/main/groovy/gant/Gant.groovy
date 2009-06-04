@@ -331,6 +331,11 @@ final class Gant {
    */
   private Integer dispatch ( List targets ) {
     Integer returnCode = 0
+    final attemptFinalize = { ->
+      try { owner.binding.getVariable ( 'finalize' ).call ( ) }
+      catch ( MissingPropertyException mme ) { /* Intentionally blank. */ }
+      catch ( Exception e ) { throw new TargetExecutionException ( e.toString ( ) , e ) }
+    }
     final processDispatch = { target ->
       try {
         owner.binding.forcedSettingOfVariable ( 'initiatingTarget' , target )
@@ -338,10 +343,14 @@ final class Gant {
         returnCode = ( returnValue instanceof Number ) ? returnValue.intValue ( ) : 0
       }
       catch ( MissingPropertyException mme ) {
+        attemptFinalize ( )
         if ( target == mme.property ) { throw new MissingTargetException ( "Target ${target} does not exist." , mme ) }
-        else throw new TargetMissingPropertyException ( mme.message , mme )
+        else { throw new TargetMissingPropertyException ( mme.message , mme ) }
       }
-      catch ( Exception e ) { throw new TargetExecutionException ( e.toString ( ) , e ) }
+      catch ( Exception e ) {
+        attemptFinalize ( )
+        throw new TargetExecutionException ( e.toString ( ) , e )
+      }
     }
     //  To support GANT-44 the script must have access to the targets and be able to edit it, this means
     //  iterating over the list of targets but knowing that if might change during execution.  So replace
@@ -360,6 +369,7 @@ final class Gant {
       }
     }
     else { withBuildListeners { processDispatch ( 'default' ) } }
+    attemptFinalize ( )
     returnCode
   }
   /**

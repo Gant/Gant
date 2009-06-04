@@ -66,4 +66,32 @@ target ( testing : '' ) {
     assertEquals ( 'Target two does not exist.\n' , output )
   }
   
+  //  GANT-81 requires that the target finalize is called in all circumstances if it is present.  If it
+  //  contains dependencies then they are ignored.
+
+  void testFinalizeIsCalledNormally ( ) {
+    def testingMessage =  'testing called'
+    def finalizeMessage = 'finalize called'
+    script = """
+target ( testing : '' ) { println ( '${testingMessage}' ) }
+target ( finalize : '' ) { println ( '${finalizeMessage}' ) }
+"""
+    assertEquals ( 0 , processCmdLineTargets ( 'testing' ) )
+    assertEquals ( """${testingMessage}
+${finalizeMessage}
+""" , output )
+  }
+  void testFinalizeIsCalledOnAnException ( ) {
+    def testingMessage =  'testing forcibly failed'
+    def finalizeMessage = 'finalize called'
+    script = """
+target ( testing : '' ) { throw new RuntimeException ( '${testingMessage}' ) }
+target ( finalize : '' ) { println ( '${finalizeMessage}' ) }
+"""
+    assertEquals ( -13 , processCmdLineTargets ( 'testing' ) )
+    assertEquals ( """${finalizeMessage}
+java.lang.RuntimeException: ${testingMessage}
+""" , output )
+  }
+  
 }

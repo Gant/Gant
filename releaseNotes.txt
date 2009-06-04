@@ -22,6 +22,9 @@ Various names present in the binding have been made read only within Gant script
 includeTargets, includeTool, targetDescriptions, setDefaultTarget, initiatingTarget, targets.  A build fails
 if an assignment is attempted on any of them.
 
+Made 'finalize' a special target name.  'finalize' is always called if present whether a build finishes
+normally or duie to an exception.  cf.  GANT-81.
+
 
 1.6.1 ( r10179 )
 ----------------
