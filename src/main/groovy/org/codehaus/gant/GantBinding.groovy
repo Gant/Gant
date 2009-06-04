@@ -213,7 +213,7 @@ public class GantBinding extends Binding implements Cloneable {
    *  @param value The value to associate with the name.
    */
   void setVariable ( final String name , final Object value ) {
-    if ( ! initializing && [ 'target' , 'message' ].contains ( name ) ) { throw new RuntimeException ( 'Cannot redefine symbol ' + name ) }
+    if ( ! initializing && [ 'target' , 'message' , 'ant' , 'includeTargets' , 'includeTool' , 'targetDescriptions' , 'setDefaultTarget' , 'targets' ].contains ( name ) ) { throw new RuntimeException ( 'Cannot redefine symbol ' + name ) }
     super.setVariable ( name , value )
   }
   /**

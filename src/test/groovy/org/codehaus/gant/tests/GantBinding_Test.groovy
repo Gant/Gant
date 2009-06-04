@@ -178,6 +178,27 @@ target ( domTarget : 'Uses DOMCategory' ) {
     assertEquals ( 'Target Three\n' , output )
   }
 
+  /*
+   *  Need a separate test method for each read-only attribute to ensure correct processing of the script.
+   *  It is a pity we cannot synthesize the methods as would be possible in interpreted Ruby.
+   */
+  private void undertakeTestingOfAReadOnlyEntryInBinding ( String name ) {
+    script = """
+${name} = null
+target ( 'default' : '' ) { println ( 'This should never be printed.' ) }
+"""
+    assertEquals ( -4 , processCmdLineTargets ( ) )
+    assertEquals ( "Standard input, line 2 -- Error evaluating Gantfile: Cannot redefine symbol ${name}\n" , output )
+  }
+  void testAttemptToAlterReadOnlyBindingEntriesCausesException_target ( ) { undertakeTestingOfAReadOnlyEntryInBinding ( 'target' ) }
+  void testAttemptToAlterReadOnlyBindingEntriesCausesException_message ( ) { undertakeTestingOfAReadOnlyEntryInBinding ( 'message' ) }
+  void testAttemptToAlterReadOnlyBindingEntriesCausesException_ant ( ) { undertakeTestingOfAReadOnlyEntryInBinding ( 'ant' ) }
+  void testAttemptToAlterReadOnlyBindingEntriesCausesException_includeTargets ( ) { undertakeTestingOfAReadOnlyEntryInBinding ( 'includeTargets' ) }
+  void testAttemptToAlterReadOnlyBindingEntriesCausesException_includeTool ( ) { undertakeTestingOfAReadOnlyEntryInBinding ( 'includeTool' ) }
+  void testAttemptToAlterReadOnlyBindingEntriesCausesException_targetDescriptions ( ) { undertakeTestingOfAReadOnlyEntryInBinding ( 'targetDescriptions' ) }
+  void testAttemptToAlterReadOnlyBindingEntriesCausesException_setDefaultTarget ( ) { undertakeTestingOfAReadOnlyEntryInBinding ( 'setDefaultTarget' ) }
+  void testAttemptToAlterReadOnlyBindingEntriesCausesException_targets ( ) { undertakeTestingOfAReadOnlyEntryInBinding ( 'targets' ) }
+
   //  GANT-75 called for adding the properties gant.file and gant.version.  Unfortunately, the version
   //  should always be null during testing as there is no jar, and no manifest.  Perhaps this means the way
   //  the tests are run should change so that a jar and not the directory of compiled files is used?
@@ -190,7 +211,6 @@ setDefaultTarget ( file )
     assertEquals ( 0 , processTargets ( 'file' ) )
     assertEquals ( '<stream>\n' , output )
   }
-  
   void testGantVersionPropertyIsAccessible ( ) {
     System.err.println ( "Need to find a way of testing the actual version being correct instead of null." )
     script = '''
@@ -200,5 +220,4 @@ setDefaultTarget ( version )
     assertEquals ( 0 , processTargets ( 'version' ) )
     assertEquals ( 'null\n' , output )
   }
-
 }
