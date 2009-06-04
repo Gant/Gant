@@ -44,4 +44,26 @@ target ( somethingElse : "Do something else." ) { }
     assertEquals ( 0 , processCmdLineTargets ( [ 'clean' , 'something' ] ) )
     assertEquals ( '' , output ) 
   }
+
+ //  GANT-44 asks for targets to have access to the command line target list so that it can be processed in targets.
+
+  void testTargetsListIsAccessbileAnChangeable ( ) {
+    script = '''
+target ( testing : '' ) {
+  assert targets.class == ArrayList
+  assert targets.size ( ) == 3
+  assert targets[0] == 'testing'
+  assert targets[1] == 'one'
+  assert targets[2] == 'two'
+  def x = targets.remove ( 1 )
+  assert x == 'one'
+  assert targets.size ( ) == 2
+  assert targets[0] == 'testing'
+  assert targets[1] == 'two'
+}
+'''
+    assertEquals ( -11 , processCmdLineTargets ( [ 'testing' , 'one' , 'two' ] ) )
+    assertEquals ( 'Target two does not exist.\n' , output )
+  }
+  
 }

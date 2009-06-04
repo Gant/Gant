@@ -13,6 +13,15 @@ Upgrade to using Groovy 1.6.3 instead of 1.6.0 as the Groovy 1.6.x version.
 
 Amend the way symbolic links are processed in the launch scripts on Mac OS X to correct various faults.
 
+Added features to solve GANT-44.  The binding variable 'targets' is now an entry in the binding and contains
+the list of as yet uncompleted targets.  This is the target list from the command line with all the already
+processed ones removed.  The list contents are mutable within the Gant script but the variable itself is
+read-only and so cannot be changed to refer to another list.
+
+Various names present in the binding have been made read only within Gant scripts: target, message, ant,
+includeTargets, includeTool, targetDescriptions, setDefaultTarget, initiatingTarget, targets.  A build fails
+if an assignment is attempted on any of them.
+
 
 1.6.1 ( r10179 )
 ----------------

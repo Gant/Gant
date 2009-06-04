@@ -213,9 +213,28 @@ public class GantBinding extends Binding implements Cloneable {
    *  @param value The value to associate with the name.
    */
   void setVariable ( final String name , final Object value ) {
-    if ( ! initializing && [ 'target' , 'message' , 'ant' , 'includeTargets' , 'includeTool' , 'targetDescriptions' , 'setDefaultTarget' , 'targets' ].contains ( name ) ) { throw new RuntimeException ( 'Cannot redefine symbol ' + name ) }
+    if ( ! initializing && [
+                            'target' ,
+                            'message' ,
+                            'ant' ,
+                            'includeTargets' ,
+                            'includeTool' ,
+                            'targetDescriptions' ,
+                            'setDefaultTarget' ,
+                            'initiatingTarget' ,
+                            'targets'
+                            ].contains ( name ) ) { throw new RuntimeException ( 'Cannot redefine symbol ' + name ) }
     super.setVariable ( name , value )
   }
+  /**
+   *  <code>setVariable</code> includes tests for certain names so as to make them read only as far as the
+   *  Gant script is concerned.  However the implementation code needs to be able to circumvent that
+   *  checking, and so we provide this method for implementation code to force things at times other than
+   *  initialization.  This need came about in realizing GANT-44.
+   *
+   *  @param ant the <code>GantBuilder</code> to assign to the 'ant' entry in the binding.
+   */
+  void forcedSettingOfVariable ( final String name , final Object value ) { super.setVariable ( name , value ) }
   /**
    *  Getter for the list of build listeners.  Used in {@code gant.Gant.withBuildListeners}.
    */

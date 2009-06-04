@@ -333,7 +333,7 @@ final class Gant {
     Integer returnCode = 0
     final processDispatch = { target ->
       try {
-        owner.binding.setVariable ( 'initiatingTarget' , target )
+        owner.binding.forcedSettingOfVariable ( 'initiatingTarget' , target )
         def returnValue = owner.binding.getVariable ( target ).call ( )
         returnCode = ( returnValue instanceof Number ) ? returnValue.intValue ( ) : 0
       }
@@ -343,7 +343,22 @@ final class Gant {
       }
       catch ( Exception e ) { throw new TargetExecutionException ( e.toString ( ) , e ) }
     }
-    if ( targets.size ( ) > 0 ) { withBuildListeners { targets.each { target -> processDispatch ( target ) } } }
+    //  To support GANT-44 the script must have access to the targets and be able to edit it, this means
+    //  iterating over the list of targets but knowing that if might change during execution.  So replace
+    //  the original code:
+    //
+    //    if ( targets.size ( ) > 0 ) { withBuildListeners { targets.each { target -> processDispatch ( target ) } } }
+    //
+    //  with something a little more amenable to alteration of the list mid loop.
+    binding.forcedSettingOfVariable ( 'targets' , targets )
+    if ( targets.size ( ) > 0 ) {
+      withBuildListeners {
+        while ( targets.size ( ) > 0 ) {
+          processDispatch ( targets[0] )
+          targets.remove ( 0 )
+        }
+      }
+    }
     else { withBuildListeners { processDispatch ( 'default' ) } }
     returnCode
   }

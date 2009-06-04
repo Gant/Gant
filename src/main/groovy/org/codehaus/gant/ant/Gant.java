@@ -154,8 +154,7 @@ public class Gant extends Task {
     System.setOut ( new PrintStream ( new ByteArrayOutputStream ( ) ) ) ;
     ant.invokeMethod ( "property" , new Object[] { environmentParameter } ) ;
     final GantBinding binding = new GantBinding ( ) ;
-    binding.setVariable ( "ant" , ant ) ;
-    binding.setVariable ( "Ant" , ant ) ; // TODO : deprecate and remove this.
+    binding.forcedSettingOfVariable ( "ant" , ant ) ; // Subvert that ant is a read-only item in the binding.
     for ( final Definition definition : definitions ) {
       final Map<String,String> definitionParameter = new HashMap<String,String> ( ) ;
       definitionParameter.put ( "name" , definition.getName ( ) ) ;

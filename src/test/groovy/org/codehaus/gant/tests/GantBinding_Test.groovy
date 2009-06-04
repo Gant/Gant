@@ -197,6 +197,7 @@ target ( 'default' : '' ) { println ( 'This should never be printed.' ) }
   void testAttemptToAlterReadOnlyBindingEntriesCausesException_includeTool ( ) { undertakeTestingOfAReadOnlyEntryInBinding ( 'includeTool' ) }
   void testAttemptToAlterReadOnlyBindingEntriesCausesException_targetDescriptions ( ) { undertakeTestingOfAReadOnlyEntryInBinding ( 'targetDescriptions' ) }
   void testAttemptToAlterReadOnlyBindingEntriesCausesException_setDefaultTarget ( ) { undertakeTestingOfAReadOnlyEntryInBinding ( 'setDefaultTarget' ) }
+  void testAttemptToAlterReadOnlyBindingEntriesCausesException_initiatimgTarget ( ) { undertakeTestingOfAReadOnlyEntryInBinding ( 'initiatingTarget' ) }
   void testAttemptToAlterReadOnlyBindingEntriesCausesException_targets ( ) { undertakeTestingOfAReadOnlyEntryInBinding ( 'targets' ) }
 
   //  GANT-75 called for adding the properties gant.file and gant.version.  Unfortunately, the version
