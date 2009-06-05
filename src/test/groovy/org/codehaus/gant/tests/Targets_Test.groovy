@@ -102,7 +102,7 @@ setDefaultTarget ( ${targetName} )
   void test_GANT_45_MessageBugDefaultTarget ( ) {
     script = testScript
     assertEquals ( -12 , processCmdLineTargets ( ) )
-    assertEquals ( 'default:\n' + targetName + ':\n' + expectedOutput , output )
+    assertEquals ( targetName + ':\n' + expectedOutput , output )
   }
   void test_GANT_45_MessageBugExplicitTarget ( ) {
     script = testScript
@@ -187,7 +187,7 @@ target ( name : targetName ) {
 setDefaultTarget ( targetName )
 """
     assertEquals ( 0 , processCmdLineTargets ( ) )
-    assertEquals ( resultString ( 'default' , resultString ( bar , '' ) ) , output )
+    assertEquals ( resultString ( bar , '' ) , output )
   }
 
   //  Phil Swenson asked for the name of the target being completed to be available -- see the email on the Gant

@@ -33,7 +33,7 @@ setDefaultTarget ( ${something} )
   }
   void testDefault ( ) {
     assertEquals ( 0 , processCmdLineTargets ( ) )
-    assertEquals ( resultString ( 'default' , resultString ( something , message + '\n' ) ) , output ) 
+    assertEquals ( resultString ( something , message + '\n' ) , output ) 
   }
   void testTargetNotPresent ( ) {
     final targetName = 'blah'

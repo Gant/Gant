@@ -25,6 +25,10 @@ if an assignment is attempted on any of them.
 Made 'finalize' a special target name.  'finalize' is always called if present whether a build finishes
 normally or duie to an exception.  cf.  GANT-81.
 
+setDefaultTarget used to generate a target called default which was problematic if a script defined a target
+of that name.  The default target processing has been changed to avoid this.
+
+
 
 1.6.1 ( r10179 )
 ----------------

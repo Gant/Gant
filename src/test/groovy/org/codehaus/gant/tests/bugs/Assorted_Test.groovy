@@ -108,14 +108,14 @@ target ( ${targetName} : '' ) {
 setDefaultTarget ( '${targetName}' )
 """
     assertEquals ( 0 , processCmdLineTargets ( ) )
-    assertEquals ( resultString ( 'default' , resultString ( targetName , '''<beans>
+    assertEquals ( resultString ( targetName , '''<beans>
   <resourceHolder>Something 1</resourceHolder>
   <container>
     <item>1</item>
     <item>2</item>
     <item>3</item>
   </container>
-</beans>''' ) ) , output )
+</beans>''' ) , output )
   }
 
   void test_GANT_58_singleFileFailsCorrectly ( ) {
@@ -148,8 +148,7 @@ target ( ${targetName} : '' ) {
 setDefaultTarget ( main )
 """
     assertEquals ( -13 , processCmdLineTargets ( ) )
-    assertTrue ( output.startsWith ( """default:
-${targetName}:
+    assertTrue ( output.startsWith ( """${targetName}:
 before
 java.io.FileNotFoundException: """ ) )
     assertTrue ( output.endsWith ( 'blahblahblahblahblah\n' ) )

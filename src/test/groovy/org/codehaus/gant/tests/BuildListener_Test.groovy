@@ -38,12 +38,11 @@ setDefaultTarget main
 '''
     processTargets ( )
     def starts = listener.targetStarts
-    assertEquals 3, starts.size ( )
-    assertEquals 3, listener.targetEnds.size ( )
-    assertEquals "default", starts[0].target.name
-    assertEquals "main", starts[1].target.name
-    assertEquals "doMore", starts[2].target.name
-    assertEquals "bar", starts[2].binding.foo
+    assertEquals 2, starts.size ( )
+    assertEquals 2, listener.targetEnds.size ( )
+    assertEquals "main", starts[0].target.name
+    assertEquals "doMore", starts[1].target.name
+    assertEquals "bar", starts[1].binding.foo
     assertEquals 1, listener.buildStarts.size ( )
     assertEquals 1, listener.buildEnds.size ( )
     assertEquals 2, listener.taskStarts.size ( )

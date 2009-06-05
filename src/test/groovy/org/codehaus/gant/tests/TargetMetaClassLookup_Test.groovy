@@ -46,7 +46,7 @@ setDefaultTarget ( ${something} )
   }
   void testDefault ( ) {
     assertEquals ( 0 , processCmdLineTargets (  ) )
-    assertEquals ( resultString ( 'default' , resultString ( something , "     [echo] ${message}\n" ) ) , output )
+    assertEquals ( resultString ( something , "     [echo] ${message}\n" ) , output )
   }
   void testMissingTarget ( ) {
     final missingTarget = 'blah'

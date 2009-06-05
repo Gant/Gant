@@ -73,25 +73,43 @@ target ( ${targetName} : '' ) {
   //  GANT-81 requires that the target finalize is called in all circumstances if it is present.  If it
   //  contains dependencies then they are ignored.
 
+  private final testingMessage =  'testing called'
+  private final finalizeMessage = 'finalize called'
+  private final finalize = 'finalize'
+  private final burble = 'burble'
   void testFinalizeIsCalledNormally ( ) {
-    final testingMessage =  'testing called'
-    final finalizeMessage = 'finalize called'
     script = """
 target ( ${targetName} : '' ) { println ( '${testingMessage}' ) }
-target ( finalize : '' ) { println ( '${finalizeMessage}' ) }
+target ( ${finalize} : '' ) { println ( '${finalizeMessage}' ) }
 """
     assertEquals ( 0 , processCmdLineTargets ( targetName ) )
-    assertEquals ( resultString ( targetName , testingMessage + '\n' ) + resultString ( 'finalize' , finalizeMessage + '\n' ) , output )
+    assertEquals ( resultString ( targetName , testingMessage + '\n' ) + resultString ( finalize , finalizeMessage + '\n' ) , output )
   }
   void testFinalizeIsCalledOnAnException ( ) {
-    final testingMessage =  'testing forcibly failed'
-    final finalizeMessage = 'finalize called'
     script = """
 target ( ${targetName} : '' ) { throw new RuntimeException ( '${testingMessage}' ) }
-target ( finalize : '' ) { println ( '${finalizeMessage}' ) }
+target ( ${finalize} : '' ) { println ( '${finalizeMessage}' ) }
 """
     assertEquals ( -13 , processCmdLineTargets ( targetName ) )
-    assertEquals ( targetName + ':\n' + resultString ( 'finalize' , finalizeMessage + '\n' ) + "java.lang.RuntimeException: ${testingMessage}\n" , output )
+    assertEquals ( targetName + ':\n' + resultString ( finalize , finalizeMessage + '\n' ) + "java.lang.RuntimeException: ${testingMessage}\n" , output )
+  }
+  void testUsingSetFinalizerFinalizeIsCalledNormally ( ) {
+    script = """
+target ( ${targetName} : '' ) { println ( '${testingMessage}' ) }
+target ( burble : '' ) { println ( '${finalizeMessage}' ) }
+setFinalizeTarget ( burble )
+"""
+    assertEquals ( 0 , processCmdLineTargets ( targetName ) )
+    assertEquals ( resultString ( targetName , testingMessage + '\n' ) + resultString ( burble , finalizeMessage + '\n' ) , output )
+  }
+  void testUsingSetFinalizerFinalizeIsCalledOnAnException ( ) {
+    script = """
+target ( ${targetName} : '' ) { throw new RuntimeException ( '${testingMessage}' ) }
+target ( burble : '' ) { println ( '${finalizeMessage}' ) }
+setFinalizeTarget ( burble )
+"""
+    assertEquals ( -13 , processCmdLineTargets ( targetName ) )
+    assertEquals ( targetName + ':\n' + resultString ( burble , finalizeMessage + '\n' ) + "java.lang.RuntimeException: ${testingMessage}\n" , output )
   }
 
   void testReturnValueFromOneTargetReceivedByCaller ( ) {

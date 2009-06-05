@@ -310,20 +310,22 @@ final class Gant {
   private Integer targetList ( targets ) {
     def max = 0
     binding.targetDescriptions.entrySet ( ).each { item ->
-      if ( item.key != 'default' ) {
-        def size = item.key.size ( )
-        if ( size > max ) { max = size }
-      }
+      def size = item.key.size ( )
+      if ( size > max ) { max = size }
     }
     println ( )
     binding.targetDescriptions.entrySet ( ).each { item ->
-      if ( item.key != 'default' ) {
-        println ( ' ' + item.key + ' ' * ( max - item.key.size ( ) ) + '  ' + item.value )
-      }
+      println ( ' ' + item.key + ' ' * ( max - item.key.size ( ) ) + '  ' + item.value )
     }
     println ( )
-    def message = binding.targetDescriptions [ 'default' ]
-    if ( message != null ) { println ( 'Default target is ' + message + '.' ) ; println ( ) }
+    String defaultTargetName = null
+    try {
+      final defaultTarget = binding.defaultTarget
+      assert defaultTarget.class == String
+      if ( binding.getVariable ( defaultTarget ) ) { defaultTargetName = defaultTarget }
+      if ( defaultTargetName ) { println ( 'Default target is ' + defaultTargetName + '.' ) ; println ( ) }
+    }
+    catch ( MissingPropertyException mpe ) { /* Intentionally blank. */ }
     0
   }
   /**
@@ -332,7 +334,20 @@ final class Gant {
   private Integer dispatch ( List targets ) {
     Integer returnCode = 0
     final attemptFinalize = { ->
-      try { owner.binding.getVariable ( 'finalize' ).call ( ) }
+      final finalizeTarget = owner.binding.getVariable ( 'finalizeTarget' )
+      try {
+        switch ( finalizeTarget.class ) {
+         case Closure :
+          finalizeTarget.call ( )
+          break
+         case String :
+          owner.binding.getVariable ( finalizeTarget ).call ( )
+          break
+         default :
+          throw new RuntimeException ( 'Gant finalizer is neither a closure nor a name.' )
+          break 
+        }
+      }
       catch ( MissingPropertyException mme ) { /* Intentionally blank. */ }
       catch ( Exception e ) { throw new TargetExecutionException ( e.toString ( ) , e ) }
     }
@@ -368,7 +383,11 @@ final class Gant {
         }
       }
     }
-    else { withBuildListeners { processDispatch ( 'default' ) } }
+    else {
+      final defaultTarget = binding.defaultTarget
+      assert defaultTarget.class == String
+      withBuildListeners { processDispatch ( defaultTarget ) }
+    }
     attemptFinalize ( )
     returnCode
   }
@@ -376,7 +395,7 @@ final class Gant {
    *  Execute a dispatch with all the <code>BuildListener</code>s informed.
    */
   private withBuildListeners ( Closure callable ) {
-      def event = new GantEvent ( (Project) binding.ant.antProject , (GantBinding) binding )
+      final event = new GantEvent ( (Project) binding.ant.antProject , (GantBinding) binding )
       try {
         binding.buildListeners.each { BuildListener listener -> listener.buildStarted ( event ) }
         callable.call ( )

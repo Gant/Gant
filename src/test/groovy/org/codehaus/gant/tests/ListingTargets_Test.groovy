@@ -61,14 +61,15 @@ target ( somethingElse : "Do ${theWord}." ) { }
     script = '''
 target ( something : "Do something." ) { }
 target ( somethingElse : "Do something else." ) { }
-target ( 'default' : 'something' ) { something ( ) }
+target ( 'default' : "The default." ) { something ( ) }
 '''
     assertEquals ( 0 , gant.processArgs ( [ '-p' ,  '-f' ,  '-' ] as String[] ) )
     assertEquals ( '''
+ default        The default.
  something      Do something.
  somethingElse  Do something else.
 
-Default target is something.
+Default target is default.
 
 ''' , output ) 
   }  
@@ -108,8 +109,11 @@ target ( something : "Do something." ) { }
 target ( somethingElse : "Do something else." ) { }
 setDefaultTarget ( 'fail' )
 '''
-    assertEquals ( -4 , gant.processArgs ( [ '-p' ,  '-f' ,  '-' ] as String[] ) )
-    assertEquals ( '''Standard input, line 4 -- Error evaluating Gantfile: Target fail does not exist so cannot be made the default.
+    assertEquals ( 0 , gant.processArgs ( [ '-p' ,  '-f' ,  '-' ] as String[] ) )
+    assertEquals ( '''
+ something      Do something.
+ somethingElse  Do something else.
+
 ''' , output ) 
   }
 
@@ -152,14 +156,15 @@ target ( somethingElse : "Do ${theWord}." ) { }
     script = '''
 target ( something : "Do something." ) { }
 target ( somethingElse : "Do something else." ) { }
-target ( 'default' : 'something' ) { something ( ) }
+target ( 'default' : "The default target." ) { something ( ) }
 '''
     assertEquals ( 0 , gant.processArgs ( [ '-T' ,  '-f' ,  '-' ] as String[] ) )
     assertEquals ( '''
+ default        The default target.
  something      Do something.
  somethingElse  Do something else.
 
-Default target is something.
+Default target is default.
 
 ''' , output ) 
   }  
@@ -199,8 +204,11 @@ target ( something : "Do something." ) { }
 target ( somethingElse : "Do something else." ) { }
 setDefaultTarget ( 'fail' )
 '''
-    assertEquals ( -4 , gant.processArgs ( [ '-T' ,  '-f' ,  '-' ] as String[] ) )
-    assertEquals ( '''Standard input, line 4 -- Error evaluating Gantfile: Target fail does not exist so cannot be made the default.
+    assertEquals ( 0 , gant.processArgs ( [ '-T' ,  '-f' ,  '-' ] as String[] ) )
+    assertEquals ( '''
+ something      Do something.
+ somethingElse  Do something else.
+
 ''' , output ) 
   }
 

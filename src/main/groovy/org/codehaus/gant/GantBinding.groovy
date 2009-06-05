@@ -172,25 +172,35 @@ public class GantBinding extends Binding implements Cloneable {
     setVariable ( 'setDefaultTarget' , { defaultTarget -> // Deal with Closure or String arguments.
          switch ( defaultTarget.class ) {
           case Closure :
-           def targetName = null
-           owner.variables.each { key , value -> if ( value.is ( defaultTarget ) ) { targetName = key } }
-           if ( targetName == null ) { throw new RuntimeException ( 'Parameter to setDefaultTarget method is not a known target.  This can never happen!' ) }
-           owner.target.call ( 'default' : targetName ) { defaultTarget ( ) }
+           String defaultTargetName = null
+           owner.variables.each { key , value -> if ( value.is ( defaultTarget ) ) { defaultTargetName = key } }
+           if ( defaultTargetName == null ) { throw new RuntimeException ( 'Parameter to setDefaultTarget method is not a known target.' ) }
+           else { owner.forcedSettingOfVariable ( 'defaultTarget' , defaultTargetName ) }
            break
           case String :
-           def failed = true
-           try {
-             def targetClosure = owner.getVariable ( defaultTarget )
-             if ( targetClosure != null ) { owner.target.call ( 'default' : defaultTarget ) { targetClosure ( ) } ; failed = false }
-           }
-           catch ( MissingPropertyException mpe ) { /* Intentionally empty. */ }
-           if ( failed ) { throw new RuntimeException ( "Target ${defaultTarget} does not exist so cannot be made the default." ) }
+           owner.forcedSettingOfVariable ( 'defaultTarget' , defaultTarget )
            break
           default :
            throw new RuntimeException ( 'Parameter to setDefaultTarget is of the wrong type -- must be a target reference or a string.' )
-           break
          }
       } )
+    setVariable ( 'defaultTarget' , 'default' )
+    setVariable ( 'setFinalizeTarget' , { finalizeTarget -> // Deal with Closure or String arguments.
+         switch ( finalizeTarget.class ) {
+          case Closure :
+           String finalizeTargetName = null
+           owner.variables.each { key , value -> if ( value.is ( finalizeTarget ) ) { finalizeTargetName = key } }
+           if ( finalizeTargetName == null ) { throw new RuntimeException ( 'Parameter to setFinalizeTarget method is not a known target.' ) }
+           else { owner.forcedSettingOfVariable ( 'finalizeTarget' , finalizeTargetName ) }
+           break
+          case String :
+           owner.forcedSettingOfVariable ( 'finalizeTarget' , finalizeTarget )
+           break
+          default :
+           throw new RuntimeException ( 'Parameter to setFinalizeTarget is of the wrong type -- must be a target reference or a string.' )
+         }
+      } )
+    setVariable ( 'finalizeTarget' , 'finalize' )
     setVariable ( 'cacheEnabled' , false )
     def item = System.getenv ( ).GANTLIB ;
     if ( item == null ) { gantLib = [ ] }
@@ -228,7 +238,9 @@ public class GantBinding extends Binding implements Cloneable {
                             'targetDescriptions' ,
                             'setDefaultTarget' ,
                             'initiatingTarget' ,
-                            'targets'
+                            'targets' ,
+                            'defaultTarget' ,
+                            'finalizeTarget' ,
                             ].contains ( name ) ) { throw new RuntimeException ( 'Cannot redefine symbol ' + name ) }
     super.setVariable ( name , value )
   }
