@@ -27,80 +27,79 @@ final class Maven_Test extends GantTestCase {
 includeTargets << gant.targets.Maven
 """
     assertEquals ( 0 , processCmdLineTargets ( 'initialize' ) )
-    assertEquals ( '' , output )
+    assertEquals ( 'initialize:\n' + exitMarker + 'initialize\n' , output )
   }
   void testCompileTargetInDirectoryOtherThanTheCurrentBuildDirectory ( ) {
     final antBuilder = new AntBuilder ( )
-    final compileDirectory = 'target_forMavenTest'
     //  Ensure the directory does not exist to protect against a failed test run leaving a version
     //  in place -- which causes the test to fail inappropriately.
-    final file = new File ( compileDirectory )
-    if ( file.exists ( ) ) {
-      if ( file.isDirectory ( ) ) { antBuilder.delete ( dir : compileDirectory , quiet : 'true' ) }
-      else { antBuilder.delete ( file : compileDirectory , quiet : 'true' ) }
+    final name = new File ( 'target_forMavenTest' )
+    if ( name.exists ( ) ) {
+      if ( name.isDirectory ( ) ) { antBuilder.delete ( dir : name.name , quiet : 'true' ) }
+      else { antBuilder.delete ( file : name.name , quiet : 'true' ) }
     }
     script = """
 includeTargets ** gant.targets.Maven * [
-    targetPath : '${compileDirectory}'
+    targetPath : '${name.name}'
 ]
 """
     assertEquals ( 0 , processCmdLineTargets ( 'compile' ) )
-    assertTrue ( output.startsWith( '    [mkdir] Created dir:' ) )
-    assertTrue ( output.contains( '  [groovyc] Compiling' ) )
-    assertTrue ( file.isDirectory ( ) )
-    antBuilder.delete ( dir : compileDirectory )
-    assertFalse ( file.exists ( ) )
+    assertTrue ( output.startsWith ( 'compile:\ninitialize:\n' + exitMarker + 'initialize\n    [mkdir] Created dir:' ) )
+    assertTrue ( output.contains ( '  [groovyc] Compiling' ) )
+    assertTrue ( name.isDirectory ( ) )
+    antBuilder.delete ( dir : name.name )
+    assertFalse ( name.exists ( ) )
   }
   void testPackageNoGroupIdLeftShift ( ) {
+    final targetName = 'package'
     script = """
 includeTargets << gant.targets.Maven
 """
-    assertEquals ( -13 , processCmdLineTargets ( 'package' ) )
-    assertEquals ( '''java.lang.RuntimeException: maven.groupId must be set to achieve target package.
-''' , output )
+    assertEquals ( -13 , processCmdLineTargets ( targetName ) )
+    assertEquals ( targetName + ':\njava.lang.RuntimeException: maven.groupId must be set to achieve target package.\n' , output )
   }
   void testPackageNoGroupIdPower ( ) {
+    def targetName = 'package'
     script = """
 includeTargets ** gant.targets.Maven * [ : ]
 """
-    assertEquals ( -13 , processCmdLineTargets ( 'package' ) )
-    assertEquals ( '''java.lang.RuntimeException: maven.groupId must be set to achieve target package.
-''' , output )
+    assertEquals ( -13 , processCmdLineTargets ( targetName ) )
+    assertEquals ( targetName + ':\njava.lang.RuntimeException: maven.groupId must be set to achieve target package.\n' , output )
   }
   void testPackageNoArtifactIdLeftShift ( ) {
+    final targetName = 'package'
     script = """
 includeTargets << gant.targets.Maven
 maven.groupId = 'flob'
 """
-    assertEquals ( -13 , processCmdLineTargets ( 'package' ) )
-    assertEquals ( '''java.lang.RuntimeException: maven.artifactId must be set to achieve target package.
-''' , output )
+    assertEquals ( -13 , processCmdLineTargets ( targetName ) )
+    assertEquals ( targetName + ':\njava.lang.RuntimeException: maven.artifactId must be set to achieve target package.\n' , output )
   }
   void testPackageNoArtifactIdPower ( ) {
+    def targetName = 'package'
     script = """
 includeTargets ** gant.targets.Maven * [ groupId : 'flob' ]
 """
-    assertEquals ( -13 , processCmdLineTargets ( 'package' ) )
-    assertEquals ( '''java.lang.RuntimeException: maven.artifactId must be set to achieve target package.
-''' , output )
+    assertEquals ( -13 , processCmdLineTargets ( targetName ) )
+    assertEquals ( targetName + ':\njava.lang.RuntimeException: maven.artifactId must be set to achieve target package.\n' , output )
   }
   void testPackageVersionLeftShift ( ) {
+    final targetName = 'package'
     script = """
 includeTargets << gant.targets.Maven
 maven.groupId = 'flob'
 maven.artifactId = 'adob'
 """
-    assertEquals ( -13 , processCmdLineTargets ( 'package' ) )
-    assertEquals ( '''java.lang.RuntimeException: maven.version must be set to achieve target package.
-''' , output )
+    assertEquals ( -13 , processCmdLineTargets ( targetName ) )
+    assertEquals ( targetName + ':\njava.lang.RuntimeException: maven.version must be set to achieve target package.\n' , output )
   }
   void testPackageVersionPower ( ) {
+    final targetName = 'package'
     script = """
 includeTargets ** gant.targets.Maven * [ groupId : 'flob' , artifactId : 'adob' ]
 """
-    assertEquals ( -13 , processCmdLineTargets ( 'package' ) )
-    assertEquals ( '''java.lang.RuntimeException: maven.version must be set to achieve target package.
-''' , output )
+    assertEquals ( -13 , processCmdLineTargets ( targetName ) )
+    assertEquals ( targetName + ':\njava.lang.RuntimeException: maven.version must be set to achieve target package.\n' , output )
   }
   void testBindingPropertyIsReadOnlyLeftShift ( ) {
     script = """
@@ -108,31 +107,31 @@ includeTargets << gant.targets.Maven
 maven.binding = new Binding ( )
 """
     assertEquals ( -4 , processCmdLineTargets ( 'initialize' ) )
-    assertEquals ( '''Standard input, line 3 -- Error evaluating Gantfile: Cannot amend the property binding.
-''' , output )
+    assertEquals ( 'Standard input, line 3 -- Error evaluating Gantfile: Cannot amend the property binding.\n' , output )
   }
   void testBindingPropertyIsReadOnlyPower ( ) {
     script = """
 includeTargets ** gant.targets.Maven * [ binding : new Binding ( ) ]
 """
     assertEquals ( -4 , processCmdLineTargets ( 'initialize' ) )
-    assertEquals ( '''Standard input, line 2 -- Error evaluating Gantfile: Cannot amend the property binding.
-''' , output )
+    assertEquals ( 'Standard input, line 2 -- Error evaluating Gantfile: Cannot amend the property binding.\n' , output )
   }
   void testAdditionalTarget ( ) {
-    script = '''
+    final targetName = 'sayHello'
+    script = """
 includeTargets << gant.targets.Maven
-target ( sayHello : '' ) { println ( 'Hello.' ) }
-'''
-    assertEquals ( 0 , processCmdLineTargets ( 'sayHello' ) )
-    assertEquals ( 'Hello.\n' , output )
+target ( ${targetName} : '' ) { println ( 'Hello.' ) }
+"""
+    assertEquals ( 0 , processCmdLineTargets ( targetName ) )
+    assertEquals ( resultString ( targetName , 'Hello.\n' ) , output )
   }
   void testAdditionalTargetError ( ) {
-    script = '''
+    final targetName = 'sayHello'
+    script = """
 includeTargets << gant.targets.Maven
-target ( sayHello , '' ) { println ( 'Hello.' ) }
-'''
-    assertEquals ( -4 , processCmdLineTargets ( 'sayHello' ) )
+target ( ${targetName} , '' ) { println ( 'Hello.' ) }
+"""
+    assertEquals ( -4 , processCmdLineTargets ( targetName ) )
     assertEquals ( 'Standard input, line 3 -- Error evaluating Gantfile: No such property: sayHello for class: standard_input\n' , output )
   }
 }

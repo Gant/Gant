@@ -1,6 +1,6 @@
 //  Gant -- A Groovy way of scripting Ant tasks.
 //
-//  Copyright © 2008 Russel Winder
+//  Copyright © 2008-9 Russel Winder
 //
 //  Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in
 //  compliance with the License. You may obtain a copy of the License at
@@ -54,6 +54,6 @@ return Test
 """
     script = flob
     assertEquals ( 0 , processCmdLineTargets ( targetName ) )
-    assertEquals ( 'root element:<?xml version="1.0" encoding="UTF-8"?>' + xmlScript + '\n' , output )
+    assertEquals ( resultString ( targetName , 'root element:<?xml version="1.0" encoding="UTF-8"?>' + xmlScript + '\n' ) , output )
   }
 }

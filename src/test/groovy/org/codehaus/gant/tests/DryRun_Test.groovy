@@ -1,6 +1,6 @@
 //  Gant -- A Groovy way of scripting Ant tasks.
 //
-//  Copyright © 2006-8 Russel Winder
+//  Copyright © 2006-9 Russel Winder
 //
 //  Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in
 //  compliance with the License. You may obtain a copy of the License at
@@ -20,27 +20,29 @@ package org.codehaus.gant.tests
  *  @author Russel Winder <russel.winder@concertant.com>
  */
 final class DryRun_Test extends GantTestCase {
+  final something = 'something'
+  final somethingElse = 'somethingElse'
   void setUp ( ) {
     super.setUp ( )
-    script = '''
-target ( something : "Do something." ) { echo ( message : "Did something." ) }
-target ( somethingElse : "Do something else." ) { echo ( message : "Did something else." ) }
-'''
+    script = """
+target ( ${something} : '' ) { echo ( message : '${something}' ) }
+target ( ${somethingElse} : '' ) { echo ( message : '${somethingElse}' ) }
+"""
   }
   void testMissingDefault ( ) {
     assertEquals ( -12 , gant.processArgs ( [ '-n' ,  '-f' ,  '-'  ] as String[] ) )
     assertEquals ( 'Target default does not exist.\n' , output )
   }
   void testMissingNamedTarget ( ) {
-    assertEquals ( -11 , gant.processArgs ( [ '-n' ,  '-f' ,  '-'  , 'blah'] as String[] ) )
+    assertEquals ( -11 , gant.processArgs ( [ '-n' ,  '-f' ,  '-'  , 'blah' ] as String[] ) )
     assertEquals ( "Target blah does not exist.\n" , output )
   }
   void testSomething ( ) {
-    assertEquals ( 0 , gant.processArgs ( [ '-n' ,  '-f' ,  '-'  , 'something'] as String[] ) )
-    assertEquals ( "     [echo] message : 'Did something.'\n" , output )
+    assertEquals ( 0 , gant.processArgs ( [ '-n' ,  '-f' ,  '-'  , something ] as String[] ) )
+    assertEquals ( resultString ( something , "     [echo] message : '${something}'\n" ) , output )
   }
   void testSomethingElse ( ) {
-    assertEquals ( 0 , gant.processArgs ( [ '-n' ,  '-f' ,  '-'  , 'somethingElse'] as String[] ) )
-    assertEquals ( "     [echo] message : 'Did something else.'\n" , output )
+    assertEquals ( 0 , gant.processArgs ( [ '-n' ,  '-f' ,  '-'  , somethingElse ] as String[] ) )
+    assertEquals ( resultString ( somethingElse , "     [echo] message : '${somethingElse}'\n" ) , output )
   }
 }

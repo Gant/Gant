@@ -1,6 +1,6 @@
 //  Gant -- A Groovy way of scripting Ant tasks.
 //
-//  Copyright © 2007-8 Russel Winder
+//  Copyright © 2007-9 Russel Winder
 //
 //  Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in
 //  compliance with the License. You may obtain a copy of the License at
@@ -29,100 +29,91 @@ final class LaTeX_Test extends GantTestCase {
   }  
   def optionTestGantFile ( name , key ) { """
 includeTool << gant.tools.LaTeX
-target ( add${name}Option : "" ) {
-  laTeX.add${name}Option ( "-blah" )
+target ( add${name}Option : '' ) {
+  laTeX.add${name}Option ( '-blah' )
   println ( laTeX.environment[ "${key}Options" ] )
 }
 """
   }
   def optionListTestGantFile ( name , key ) { """
 includeTool << gant.tools.LaTeX
-target ( add${name}OptionList : "" ) {
-  laTeX.add${name}Option ( [ "-blah" , "--flobadob" ] )
+target ( add${name}OptionList : '' ) {
+  laTeX.add${name}Option ( [ '-blah' , '--flobadob' ] )
   println ( laTeX.environment[ "${key}Options" ] )
 }
 """
   }
+
   void testAddLaTeXOption ( ) {
+    final targetName = 'addLaTeXOption'
     script = optionTestGantFile ( 'LaTeX' , 'latex' )
-    assertEquals ( 0 , processCmdLineTargets ( 'addLaTeXOption' ) )
-    assertEquals ( ( groovyMinorVersion > 5 ) ? '''[-interaction=nonstopmode, -halt-on-error, -blah]
-''' : '''["-interaction=nonstopmode", "-halt-on-error", "-blah"]
-''' , output ) 
+    assertEquals ( 0 , processCmdLineTargets ( targetName ) )
+    assertEquals ( resultString ( targetName , ( groovyMinorVersion > 5 ) ? '[-interaction=nonstopmode, -halt-on-error, -blah]\n' : '["-interaction=nonstopmode", "-halt-on-error", "-blah"]\n' ) , output ) 
   }
   void testAddLaTeXOptionList ( ) {
+    final targetName = 'addLaTeXOptionList'
     script = optionListTestGantFile ( 'LaTeX' , 'latex' )
-    assertEquals ( 0 , processCmdLineTargets ( 'addLaTeXOptionList' ) )
-    assertEquals ( ( groovyMinorVersion > 5 ) ? '''[-interaction=nonstopmode, -halt-on-error, -blah, --flobadob]
-''' : '''["-interaction=nonstopmode", "-halt-on-error", "-blah", "--flobadob"]
-''' , output ) 
+    assertEquals ( 0 , processCmdLineTargets ( targetName ) )
+    assertEquals ( resultString ( targetName , ( groovyMinorVersion > 5 ) ? '[-interaction=nonstopmode, -halt-on-error, -blah, --flobadob]\n' : '["-interaction=nonstopmode", "-halt-on-error", "-blah", "--flobadob"]\n' ) , output ) 
   }
   void testAddBibTeXOption ( ) {
+    final targetName = 'addBibTeXOption'
     script = optionTestGantFile ( 'BibTeX' , 'bibtex' )
-    assertEquals ( 0 , processCmdLineTargets ( 'addBibTeXOption' ) )
-    assertEquals ( ( groovyMinorVersion > 5 ) ? '''[-blah]
-''' : '''["-blah"]
-''' , output ) 
+    assertEquals ( 0 , processCmdLineTargets ( targetName ) )
+    assertEquals ( resultString ( targetName , ( groovyMinorVersion > 5 ) ? '[-blah]\n' : '["-blah"]\n' ) , output ) 
   }
   void testAddBibTeXOptionList ( ) {
+    final targetName = 'addBibTeXOptionList'
     script = optionListTestGantFile ( 'BibTeX' , 'bibtex' )
-    assertEquals ( 0 , processCmdLineTargets ( 'addBibTeXOptionList' ) )
-    assertEquals ( ( groovyMinorVersion > 5 ) ? '''[-blah, --flobadob]
-''' : '''["-blah", "--flobadob"]
-''' , output ) 
+    assertEquals ( 0 , processCmdLineTargets ( targetName ) )
+    assertEquals ( resultString ( targetName , ( groovyMinorVersion > 5 ) ? '[-blah, --flobadob]\n' : '["-blah", "--flobadob"]\n' ) , output ) 
   }
   void testAddMakeindexOption ( ) {
+    final targetName = 'addMakeindexOption'
     script = optionTestGantFile ( 'Makeindex' , 'makeindex' )
-    assertEquals ( 0 , processCmdLineTargets ( 'addMakeindexOption' ) )
-    assertEquals ( ( groovyMinorVersion > 5 ) ? '''[-blah]
-''' : '''["-blah"]
-''' , output ) 
+    assertEquals ( 0 , processCmdLineTargets ( targetName ) )
+    assertEquals ( resultString ( targetName , ( groovyMinorVersion > 5 ) ? '[-blah]\n' : '["-blah"]\n' ) , output ) 
   }
   void testAddMakeindexOptionList ( ) {
+    final targetName = 'addMakeindexOptionList'
     script = optionListTestGantFile ( 'Makeindex' , 'makeindex' )
-    assertEquals ( 0 , processCmdLineTargets ( 'addMakeindexOptionList' ) )
-    assertEquals ( ( groovyMinorVersion > 5 ) ? '''[-blah, --flobadob]
-''' : '''["-blah", "--flobadob"]
-''' , output ) 
+    assertEquals ( 0 , processCmdLineTargets ( targetName ) )
+    assertEquals ( resultString ( targetName , ( groovyMinorVersion > 5 ) ? '[-blah, --flobadob]\n' : '["-blah", "--flobadob"]\n' ) , output ) 
   }
   void testAddDvipsOption ( ) {
+    final targetName = 'addDvipsOption'
     script = optionTestGantFile ( 'Dvips' , 'dvips' )
-    assertEquals ( 0 , processCmdLineTargets ( 'addDvipsOption' ) )
-    assertEquals ( ( groovyMinorVersion > 5 ) ? '''[-blah]
-''' : '''["-blah"]
-''' , output ) 
+    assertEquals ( 0 , processCmdLineTargets ( targetName ) )
+    assertEquals ( resultString ( targetName , ( groovyMinorVersion > 5 ) ? '[-blah]\n' : '["-blah"]\n' ) , output ) 
   }
   void testAddDvipsOptionList ( ) {
+    final targetName = 'addDvipsOptionList'
     script = optionListTestGantFile ( 'Dvips' , 'dvips' )
-    assertEquals ( 0 , processCmdLineTargets ( 'addDvipsOptionList' ) )
-    assertEquals ( ( groovyMinorVersion > 5 ) ? '''[-blah, --flobadob]
-''' : '''["-blah", "--flobadob"]
-''' , output ) 
+    assertEquals ( 0 , processCmdLineTargets ( targetName ) )
+    assertEquals ( resultString ( targetName , ( groovyMinorVersion > 5 ) ? '[-blah, --flobadob]\n' : '["-blah", "--flobadob"]\n' ) , output ) 
   }
   void testAddPs2pdfOption ( ) {
+    final targetName = 'addPs2pdfOption'
     script = optionTestGantFile ( 'Ps2pdf' , 'ps2pdf' )
-    assertEquals ( 0 , processCmdLineTargets ( 'addPs2pdfOption' ) )
-    assertEquals ( ( groovyMinorVersion > 5 ) ? '''[-blah]
-''' : '''["-blah"]
-''' , output ) 
+    assertEquals ( 0 , processCmdLineTargets ( targetName ) )
+    assertEquals ( resultString ( targetName , ( groovyMinorVersion > 5 ) ? '[-blah]\n' : '["-blah"]\n' ) , output ) 
   }
   void testAddPs2pdfOptionList ( ) {
+    final targetName = 'addPs2pdfOptionList'
     script = optionListTestGantFile ( 'Ps2pdf' , 'ps2pdf' )
-    assertEquals ( 0 , processCmdLineTargets ( 'addPs2pdfOptionList' ) )
-    assertEquals ( ( groovyMinorVersion > 5 ) ? '''[-blah, --flobadob]
-''' : '''["-blah", "--flobadob"]
-''' , output ) 
+    assertEquals ( 0 , processCmdLineTargets ( targetName ) )
+    assertEquals ( resultString ( targetName , ( groovyMinorVersion > 5 ) ? '[-blah, --flobadob]\n' : '["-blah", "--flobadob"]\n' ) , output ) 
   }
-  final buildScript = '''
+  void testEmptyFile ( ) {
+    final buildScript = '''
 includeTool << gant.tools.LaTeX
 target ( "pdf" : "" ) { laTeX.generatePDF ( root : "TESTFILENAME" ) }
 includeTargets << gant.targets.Clean
 laTeX.intermediateExtensions.each { extension -> cleanPattern << '*' + extension }
 '''
-  void testEmptyFile ( ) {
     if ( executablePresent ) {
-      def extension = '.ltx'
-      def filename = File.createTempFile ( 'gantLaTeXTest_' , extension , new File ( '.' ) )
+      final extension = '.ltx'
+      final filename = File.createTempFile ( 'gantLaTeXTest_' , extension , new File ( '.' ) )
       script = buildScript.replace ( 'TESTFILENAME' , filename.name.replaceAll ( extension , '' ) )
       assertEquals ( 0 , processCmdLineTargets ( 'pdf' ) )
       assertTrue ( output.contains (
@@ -135,16 +126,18 @@ laTeX.intermediateExtensions.each { extension -> cleanPattern << '*' + extension
     }
     else { System.err.println ( 'testEmptyFile not run since pdflatex executable is not available.' ) }
   }
-
   void testInitialized ( ) {
-    script = '''
+    final targetName = 'test'
+    script = """
 includeTool ** gant.tools.LaTeX * [ latexOptions : 'flobadob' ]
-target ( test : "" ) { println ( laTeX.environment['latexOptions'] ) }
-'''
-    assertEquals ( 0 , processCmdLineTargets ( 'test' ) )
-    assertEquals (  ( groovyMinorVersion > 5 )
-                    ? '[-interaction=nonstopmode, -halt-on-error, flobadob]\n'
-                    : '["-interaction=nonstopmode", "-halt-on-error", "flobadob"]\n'
-                    , output )
+target ( ${targetName} : "" ) { println ( laTeX.environment['latexOptions'] ) }
+"""
+    assertEquals ( 0 , processCmdLineTargets ( targetName ) )
+    assertEquals ( resultString ( targetName ,
+                                  ( groovyMinorVersion > 5 )
+                                  ? '[-interaction=nonstopmode, -halt-on-error, flobadob]\n'
+                                  : '["-interaction=nonstopmode", "-halt-on-error", "flobadob"]\n'
+                                  )
+                   , output )
   }
 }

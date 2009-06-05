@@ -251,7 +251,7 @@ public class Gant_Test extends TestCase {
     sb.append ( createMessageStart ( target , "Groovy" ) ) ;
     sb.append ( "   [groovy] basedir::groovy basedir=" ) ;
     sb.append ( absolutePath ) ;
-    sb.append ( "\n   [groovy] basedir::gant basedir=" ) ;
+    sb.append ( "\n   [groovy] default:\n   [groovy] \n   [groovy] basedir::gant basedir=" ) ;
     //
     //  Currently a Gant object instantiated in a Groovy task in an Ant script does not inherit the basedir
     //  of the "calling" Ant.  Instead it assumes it is rooted in the process start directory.  According to
@@ -260,7 +260,7 @@ public class Gant_Test extends TestCase {
     //  TODO : Should this be sb.append ( absolutePath ) ?  cf. GANT-50. 
     //
     sb.append ( System.getProperty ( "user.dir" ) ) ;
-    sb.append ( "\n\nBUILD SUCCESSFUL\n\n" ) ;
+    sb.append ( "\n   [groovy] ------ default\n   [groovy] \n\nBUILD SUCCESSFUL\n\n" ) ;
     assertEquals ( sb.toString ( ) , trimTimeFromSuccessfulBuild ( runAnt ( basedirAntFilePath , target , 0 , false ) ) ) ;
   }
   public void testBasedirInSubdirExplicitProjectForGant ( ) {
@@ -276,9 +276,9 @@ public class Gant_Test extends TestCase {
     //
     //  TODO : Sort out whether Is it correct that [groovy] is not printed out at the start of this?  cf. GANT-50.
     //
-    sb.append ( "\nbasedir::gant basedir=" ) ;
+    sb.append ( "\ndefault:\nbasedir::gant basedir=" ) ;
     sb.append ( absolutePath ) ;
-    sb.append ( "\n\nBUILD SUCCESSFUL\n\n" ) ;
+    sb.append ( "\n------ default\n\nBUILD SUCCESSFUL\n\n" ) ;
     assertEquals ( sb.toString ( ) , trimTimeFromSuccessfulBuild ( runAnt ( basedirAntFilePath , target , 0 , false ) ) ) ;
   }
   public void testBasedirInSubdirGantTask ( ) {

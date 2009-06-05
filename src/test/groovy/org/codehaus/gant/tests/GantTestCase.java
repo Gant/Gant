@@ -37,6 +37,7 @@ import org.codehaus.groovy.runtime.InvokerHelper ;
  *  @author Russel Winder <russel.winder@concertant.com>
  */
 public abstract class GantTestCase extends GroovyTestCase {
+  public static final String exitMarker = "------ " ;
   public static final int groovyMajorVersion ;
   public static final int groovyMinorVersion ;
   public static final int groovyBugFixVersion ;
@@ -94,4 +95,8 @@ public abstract class GantTestCase extends GroovyTestCase {
   }
   protected String getOutput ( ) { return output.toString ( ).replace ( "\r" , "" ) ; }
   protected String escapeWindowsPath ( final String path ) { return isWindows ? path.replace ( "\\" ,  "\\\\" ) : path ; }
+
+  protected String resultString ( final String targetName , final String result ) {
+    return targetName + ":\n" + result + exitMarker + targetName + '\n' ;
+  }
 }

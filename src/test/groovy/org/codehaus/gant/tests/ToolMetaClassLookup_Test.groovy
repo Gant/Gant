@@ -1,6 +1,6 @@
 //  Gant -- A Groovy way of scripting Ant tasks.
 //
-//  Copyright © 2006-8 Russel Winder
+//  Copyright © 2006-9 Russel Winder
 //
 //  Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in
 //  compliance with the License. You may obtain a copy of the License at
@@ -20,25 +20,28 @@ package org.codehaus.gant.tests
  *  @author Russel Winder <russel.winder@concertant.com>
  */
 final class ToolMetaClassLookup_Test extends GantTestCase {
+  private final something = 'something'
+  private final message = 'yes'
   void setUp ( ) {
     super.setUp ( )
-    def command = isWindows ? 'cmd /c echo yes' : 'echo yes'
+    def command = ( isWindows ? 'cmd /c echo ' : 'echo ' ) + message
     script = """
 includeTool << gant.tools.Subdirectories
-target ( something : 'Do something.' ) { subdirectories.runSubprocess ( '${command}' , new File ( 'src' ) ) }
-target ( 'default' : 'something' ) { something ( ) }
+target ( ${something} : '' ) { subdirectories.runSubprocess ( '${command}' , new File ( 'src' ) ) }
+setDefaultTarget ( ${something} )
 """
   }
   void testDefault ( ) {
     assertEquals ( 0 , processCmdLineTargets ( ) )
-    assertEquals ( 'yes\n' , output ) 
+    assertEquals ( resultString ( 'default' , resultString ( something , message + '\n' ) ) , output ) 
   }
-  void testBlah ( ) {
-    assertEquals ( -11 , processCmdLineTargets ( 'blah' ) )
-    assertEquals ( 'Target blah does not exist.\n' , output ) 
+  void testTargetNotPresent ( ) {
+    final targetName = 'blah'
+    assertEquals ( -11 , processCmdLineTargets ( targetName ) )
+    assertEquals ( "Target ${targetName} does not exist.\n" , output ) 
   }
   void testSomething ( ) {
-    assertEquals ( 0 , processCmdLineTargets ( 'something' ) )
-    assertEquals ( 'yes\n' , output ) 
+    assertEquals ( 0 , processCmdLineTargets ( something ) )
+    assertEquals ( resultString ( something , message + '\n' ) , output ) 
   }
 }

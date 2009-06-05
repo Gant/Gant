@@ -21,140 +21,175 @@ package org.codehaus.gant.tests
  *  @author Russel Winder <russel.winder@concertant.com>
  */
 final class Depends_Test extends GantTestCase {
+  final outputMessage = 'done.'
+  final targetName = 'getOnWithIt'
+  final outputFunction = 'outputFunction'
+   final caseA = 'caseA'
+   final caseB = 'caseB'
+   final caseC = 'caseC'
   void testNone ( ) {
-    script = '''
-target ( noneDoit : '' ) { println ( 'done.' ) }
-target ( noneDoA : '' ) { noneDoit ( ) }
-target ( noneDoB : '' ) { noneDoit ( ) }
-target ( noneDoC : '' ) { noneDoit ( ) }
-target ( noneDoAll : '' ) { noneDoA ( ) ; noneDoB ( ) ; noneDoC ( ) }
-'''
-    assertEquals ( 0 , processCmdLineTargets ( 'noneDoAll' ) )
-    assertEquals ( '''done.
-done.
-done.
-''' , output ) 
+    script = """
+target ( ${outputFunction} : '' ) { println ( '${outputMessage}' ) }
+target ( ${caseA} : '' ) { ${outputFunction} ( ) }
+target ( ${caseB} : '' ) { ${outputFunction} ( ) }
+target ( ${caseC} : '' ) { ${outputFunction} ( ) }
+target ( ${targetName} : '' ) { ${caseA} ( ) ; ${caseB} ( ) ; ${caseC} ( ) }
+"""
+    assertEquals ( 0 , processCmdLineTargets ( targetName ) )
+    assertEquals ( resultString ( targetName ,
+                                  resultString ( caseA , resultString ( outputFunction , outputMessage + '\n' ) )
+                                  + resultString ( caseB , resultString ( outputFunction , outputMessage + '\n' ) )
+                                  + resultString ( caseC , resultString ( outputFunction , outputMessage + '\n' ) )
+                                  ) , output ) 
   }
   void testMixed ( ) {
-    script = '''
-target ( mixedDoit : '' ) { println ( 'done.' ) }
-target ( mixedDoA : '' ) { depends ( mixedDoit ) }
-target ( mixedDoB : '' ) { mixedDoit ( ) }
-target ( mixedDoC : '' ) { depends ( mixedDoit ) }
-target ( mixedDoAll : '' ) { mixedDoA ( ) ; mixedDoB ( ) ; mixedDoC ( ) }
-'''
-    assertEquals ( 0 , processCmdLineTargets ( 'mixedDoAll' ) )
-    assertEquals ( '''done.
-done.
-''' , output ) 
+    script = """
+target ( ${outputFunction} : '' ) { println ( '${outputMessage}' ) }
+target ( ${caseA} : '' ) { depends ( ${outputFunction} ) }
+target ( ${caseB} : '' ) { ${outputFunction} ( ) }
+target ( ${caseC} : '' ) { depends ( ${outputFunction} ) }
+target ( ${targetName} : '' ) { ${caseA} ( ) ; ${caseB} ( ) ; ${caseC} ( ) }
+"""
+    assertEquals ( 0 , processCmdLineTargets ( targetName ) )
+    assertEquals ( resultString ( targetName , 
+                                  resultString ( caseA , resultString ( outputFunction , outputMessage + '\n' ) )
+                                  + resultString ( caseB , resultString ( outputFunction , outputMessage + '\n' ) )
+                                  + resultString ( caseC , '' )
+                                  ) , output ) 
   }
   void testAll ( ) {
-    script = '''
-target ( allDoit : '' ) { println ( 'done.' ) }
-target ( allDoA : '' ) { depends ( allDoit ) }
-target ( allDoB : '' ) { depends ( allDoit ) }
-target ( allDoC : '' ) { depends ( allDoit ) }
-target ( allDoAll : '' ) { allDoA ( ) ; allDoB ( ) ; allDoC ( ) }
-'''
-    assertEquals ( 0 , processCmdLineTargets ( 'allDoAll' ) )
-    assertEquals ( 'done.\n' , output ) 
+    script = """
+target ( ${outputFunction} : '' ) { println ( '${outputMessage}' ) }
+target ( ${caseA} : '' ) { depends ( ${outputFunction} ) }
+target ( ${caseB} : '' ) { depends ( ${outputFunction} ) }
+target ( ${caseC} : '' ) { depends ( ${outputFunction} ) }
+target ( ${targetName} : '' ) { ${caseA} ( ) ; ${caseB} ( ) ; ${caseC} ( ) }
+"""
+    assertEquals ( 0 , processCmdLineTargets ( targetName ) )
+    assertEquals ( resultString ( targetName ,
+                                  resultString ( caseA , resultString ( outputFunction , outputMessage + '\n' ) )
+                                  + resultString ( caseB , '' )
+                                  + resultString ( caseC , '' )
+                                  ) , output ) 
   }
   void testMultiple ( ) {
-    script = '''
-target ( multipleDoit : '' ) { println ( 'done.' ) }
-target ( multipleDoA : '' ) { depends ( multipleDoit ) }
-target ( multipleDoB : '' ) { depends ( multipleDoit ) }
-target ( multipleDoC : '' ) { depends ( multipleDoit ) }
-target ( multipleDoAll : '' ) { depends ( multipleDoA , multipleDoB , multipleDoC ) }
-'''
-    assertEquals ( 0 , processCmdLineTargets ( 'multipleDoAll' ) )
-    assertEquals ( 'done.\n' , output ) 
+    script = """
+target ( ${outputFunction} : '' ) { println ( '${outputMessage}' ) }
+target ( ${caseA} : '' ) { depends ( ${outputFunction} ) }
+target ( ${caseB} : '' ) { depends ( ${outputFunction} ) }
+target ( ${caseC} : '' ) { depends ( ${outputFunction} ) }
+target ( ${targetName} : '' ) { depends ( ${caseA} , ${caseB} , ${caseC} ) }
+"""
+    assertEquals ( 0 , processCmdLineTargets ( targetName ) )
+    assertEquals ( resultString ( targetName ,
+                                  resultString ( caseA , resultString ( outputFunction , outputMessage + '\n' ) )
+                                  + resultString ( caseB , '' )
+                                  + resultString ( caseC , '' )
+                                  ) , output ) 
   }
   void testList ( ) {
-    script = '''
-target ( listDoit : '' ) { println ( 'done.' ) }
-target ( listDoA : '' ) { depends ( listDoit ) }
-target ( listDoB : '' ) { depends ( listDoit ) }
-target ( listDoC : '' ) { depends ( listDoit ) }
-target ( listDoAll : '' ) { depends ( [ listDoA , listDoB , listDoC ] ) }
-'''
-    assertEquals ( 0 , processCmdLineTargets ( 'listDoAll' ) )
-    assertEquals ( 'done.\n' , output ) 
+    script = """
+target ( ${outputFunction} : '' ) { println ( '${outputMessage}' ) }
+target ( ${caseA} : '' ) { depends ( ${outputFunction} ) }
+target ( ${caseB} : '' ) { depends ( ${outputFunction} ) }
+target ( ${caseC} : '' ) { depends ( ${outputFunction} ) }
+target ( ${targetName} : '' ) { depends ( [ ${caseA} , ${caseB} , ${caseC} ] ) }
+"""
+    assertEquals ( 0 , processCmdLineTargets ( targetName ) )
+    assertEquals ( resultString ( targetName ,
+                                  resultString ( caseA , resultString ( outputFunction , outputMessage + '\n' ) )
+                                  + resultString ( caseB , '' )
+                                  + resultString ( caseC , '' )
+                                  ) , output )
   }
   void testNotClosure ( ) {
-    script = '''
+    script = """
 datum = 1
-target ( notClosure : '' ) { depends ( datum ) }
-'''
-    assertEquals ( -13 , processCmdLineTargets ( 'notClosure' ) )
-    assertEquals ( 'java.lang.RuntimeException: depends called with an argument (1) that is not a known target or list of targets.\n' , output )
+target ( ${targetName} : '' ) { depends ( datum ) }
+"""
+    assertEquals ( -13 , processCmdLineTargets ( targetName ) )
+    assertEquals ( targetName + ':\njava.lang.RuntimeException: depends called with an argument (1) that is not a known target or list of targets.\n' , output )
   }
   void testNotListClosure ( ) {
-    script = '''
+    script = """
 datum = 1
-target ( notListClosure : '' ) { depends ( [ datum ] ) }
-'''
-    assertEquals ( -13 , processCmdLineTargets ( 'notListClosure' ) )
-    assertEquals ( 'java.lang.RuntimeException: depends called with an argument (1) that is not a known target or list of targets.\n' , output )
+target ( ${targetName} : '' ) { depends ( [ datum ] ) }
+"""
+    assertEquals ( -13 , processCmdLineTargets ( targetName ) )
+    assertEquals ( targetName + ':\njava.lang.RuntimeException: depends called with an argument (1) that is not a known target or list of targets.\n' , output )
   }
   void testOutOfOrder ( ) {
-    script = '''
-target ( outOfOrderDoAll : '' ) { depends ( outOfOrderDoA , outOfOrderDoB , outOfOrderDoC ) }
-target ( outOfOrderDoC : '' ) { depends ( outOfOrderDoit ) }
-target ( outOfOrderDoB : '' ) { depends ( outOfOrderDoit ) }
-target ( outOfOrderDoA : '' ) { depends ( outOfOrderDoit ) }
-target ( outOfOrderDoit : '' ) { println ( 'done.' ) }
-'''
-    assertEquals ( 0 , processCmdLineTargets ( 'outOfOrderDoAll' ) )
-    assertEquals ( 'done.\n' , output )
+    script = """
+target ( ${targetName} : '' ) { depends ( ${caseA} , ${caseB} , ${caseC} ) }
+target ( ${caseC} : '' ) { depends ( ${outputFunction} ) }
+target ( ${caseB} : '' ) { depends ( ${outputFunction} ) }
+target ( ${caseA} : '' ) { depends ( ${outputFunction} ) }
+target ( ${outputFunction} : '' ) { println ( '${outputMessage}' ) }
+"""
+    assertEquals ( 0 , processCmdLineTargets ( targetName ) )
+    assertEquals ( resultString ( targetName ,
+                                  resultString ( caseA , resultString ( outputFunction , outputMessage + '\n' ) )
+                                  + resultString ( caseB , '' )
+                                  + resultString ( caseC , '' )
+                                  ) , output )
   }
   void testOutOfOrderList ( ) {
-    script = '''
-target ( outOfOrderListDoAll : '' ) { depends ( [ outOfOrderListDoA , outOfOrderListDoB , outOfOrderListDoC ] ) }
-target ( outOfOrderListDoC : '' ) { depends ( outOfOrderListDoit ) }
-target ( outOfOrderListDoB : '' ) { depends ( outOfOrderListDoit ) }
-target ( outOfOrderListDoA : '' ) { depends ( outOfOrderListDoit ) }
-target ( outOfOrderListDoit : '' ) { println ( 'done.' ) }
-'''
-    assertEquals ( 0 , processCmdLineTargets ( 'outOfOrderListDoAll' ) )
-    assertEquals ( 'done.\n' , output )
+    script = """
+target ( ${targetName} : '' ) { depends ( [ ${caseA} , ${caseB} , ${caseC} ] ) }
+target ( ${caseC} : '' ) { depends ( ${outputFunction} ) }
+target ( ${caseB} : '' ) { depends ( ${outputFunction} ) }
+target ( ${caseA} : '' ) { depends ( ${outputFunction} ) }
+target ( ${outputFunction} : '' ) { println ( '${outputMessage}' ) }
+"""
+    assertEquals ( 0 , processCmdLineTargets ( targetName ) )
+    assertEquals ( resultString ( targetName ,
+                                  resultString ( caseA , resultString ( outputFunction , outputMessage + '\n' ) )
+                                  + resultString ( caseB , '' )
+                                  + resultString ( caseC , '' )
+                                  ) , output )
   }
   void testSameTargetAndFileName ( ) {
     //  Having a target of the same name as the script being compiled is fine until the target name is used in
     //  a depend.  At this point the class name not the name in the binding is picked up and all hell breaks
     //  loose.  Standard input is compiled as class standard_input.
-    script = '''
-target ( standard_input , '' ) { println ( 'done.' ) }
-target ( startingPoint , '' ) { depends ( standard_input ) }
-'''
-    assertEquals ( -4 , processCmdLineTargets ( 'startingPoint' ) )
+    script = """
+target ( standard_input , '' ) { println ( '${outputMessage}' ) }
+target ( ${targetName} , '' ) { depends ( standard_input ) }
+"""
+    assertEquals ( -4 , processCmdLineTargets ( targetName ) )
     assertTrue ( output.startsWith ( 'Standard input, line 2 -- Error evaluating Gantfile: No signature of method: ' ) )
   }
   void testStringParameter ( ) {
-    script = '''
-target ( anotherTarget : '' ) { println ( 'done.' ) }
-target ( stringParameter : '' ) { depends ( 'anotherTarget' ) }
-'''
-    assertEquals ( 0 , processCmdLineTargets ( 'stringParameter' ) )
-    assertEquals ( 'done.\n' , output )
+    script = """
+target ( ${caseA} : '' ) { println ( '${outputMessage}' ) }
+target ( ${targetName} : '' ) { depends ( '${caseA}' ) }
+"""
+    assertEquals ( 0 , processCmdLineTargets ( targetName ) )
+    assertEquals ( resultString ( targetName , resultString ( caseA , outputMessage + '\n' ) ) , output )
   }
   void testStringListParameter ( ) {
-    script = '''
-target ( aTarget : '' ) { println ( 'done.' ) }
-target ( anotherTarget : '' ) { println ( 'done.' ) }
-target ( stringListParameter : '' ) { depends ( [ 'aTarget' , 'anotherTarget' ] ) }
-'''
-    assertEquals ( 0 , processCmdLineTargets ( 'stringListParameter' ) )
-    assertEquals ( 'done.\ndone.\n' , output )
+    script = """
+target ( ${caseA} : '' ) { println ( '${outputMessage}' ) }
+target ( ${caseB} : '' ) { println ( '${outputMessage}' ) }
+target ( ${targetName} : '' ) { depends ( [ '${caseA}' , '${caseB}' ] ) }
+"""
+    assertEquals ( 0 , processCmdLineTargets ( targetName ) )
+    assertEquals ( resultString ( targetName , 
+                                  resultString ( caseA , outputMessage + '\n' )
+                                  + resultString ( caseB , outputMessage + '\n' )
+                                  ) , output )
   }
   void testMixedListParameter ( ) {
-    script = '''
-target ( aTarget : '' ) { println ( 'done.' ) }
-target ( anotherTarget : '' ) { println ( 'done.' ) }
-target ( mixedListParameter : '' ) { depends ( [ aTarget , 'anotherTarget' ] ) }
-'''
-    assertEquals ( 0 , processCmdLineTargets ( 'mixedListParameter' ) )
-    assertEquals ( 'done.\ndone.\n' , output )
+    script = """
+target ( ${caseA} : '' ) { println ( '${outputMessage}' ) }
+target ( ${caseB} : '' ) { println ( '${outputMessage}' ) }
+target ( ${targetName} : '' ) { depends ( [ ${caseA} , '${caseB}' ] ) }
+"""
+    assertEquals ( 0 , processCmdLineTargets ( targetName ) )
+    assertEquals ( resultString ( targetName , 
+                                  resultString ( caseA , outputMessage + '\n' )
+                                  + resultString ( caseB , outputMessage + '\n' )
+                                  ) , output )
   }
   void testCircularDependency ( ) {
     //  Should this actually fail? cf. GANT-9.  Current view is that it is fine as is.
@@ -164,43 +199,40 @@ target ( B : '' ) { depends ( C )  ; println ( 'B' ) }
 target ( C : '' ) { depends ( A )  ; println ( 'C' ) }
 '''
     assertEquals ( 0 , processCmdLineTargets ( 'A' ) )
-    assertEquals ( '''A
-C
-B
-A
-''' , output )    
+    assertEquals ( resultString ( 'A' ,
+                                  resultString ( 'B' , 
+                                                 resultString ( 'C' ,
+                                                                resultString ( 'A' , 'A\n' )
+                                                                + 'C\n' )
+                                                 + 'B\n' )
+                                  + 'A\n' ) , output )
   }
   void testMultipleIndependentTargets ( ) {
-    script = '''
-target ( one : 'One Target' ) { println 'Running one...' }
-target ( two : 'Two Target' ) { println 'Running two...' }
-'''
-    assertEquals ( 0 , processCmdLineTargets ( [ 'one' , 'two' ] ) )
-    assertEquals ( '''Running one...
-Running two...
-''' , output )
+    script = """
+target ( ${caseA} : '' ) { println ( '${caseA}' ) }
+target ( ${caseB} : '' ) { println ( '${caseB}' ) }
+"""
+    assertEquals ( 0 , processCmdLineTargets ( [ caseA , caseB ] ) )
+    assertEquals ( resultString ( caseA , caseA + '\n' ) + resultString ( caseB , caseB + '\n' ) , output )
   }
   void testEmbeddedDepend ( ) {
-    script = '''
-target ( targetA : '' ) { println ( 'done.' ) }
-target ( targetB : '' ) { (0..3).each { depends ( targetA ) } }
-'''
-    assertEquals ( 0 , processCmdLineTargets ( 'targetB' ) )
-    assertEquals ( 'done.\n' , output )
+    script = """
+target ( ${caseA} : '' ) { println ( '${outputMessage}' ) }
+target ( ${targetName} : '' ) { (0..3).each { depends ( ${caseA} ) } }
+"""
+    assertEquals ( 0 , processCmdLineTargets ( targetName ) )
+    assertEquals ( resultString ( targetName , resultString ( caseA , outputMessage + '\n' ) ) , output )
   }
   //  cf. GANT-26
   void testMultipleDependentTargets ( ) {
-    script = '''
-target ( one : 'One Target' ) {
-  depends ( two )
-  println 'Running one...'
+    script = """
+target ( ${caseA} : '' ) {
+  depends ( ${caseB} )
+  println ( '${caseA}' )
 }
-target ( two : 'Two Target' ) { println 'Running two...' }
-'''
-    assertEquals ( 0 , processCmdLineTargets ( [ 'one' , 'two' ] ) )
-    assertEquals ( '''Running two...
-Running one...
-Running two...
-''' , output )
+target ( ${caseB} : '' ) { println ( '${caseB}' ) }
+"""
+    assertEquals ( 0 , processCmdLineTargets ( [ caseA , caseB ] ) )
+    assertEquals ( resultString ( caseA , resultString ( caseB , caseB + '\n' ) + caseA + '\n' ) + resultString ( caseB , caseB + '\n' ) , output )
   }
 }

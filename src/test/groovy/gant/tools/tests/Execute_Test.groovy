@@ -1,6 +1,6 @@
 //  Gant -- A Groovy way of scripting Ant tasks.
 //
-//  Copyright © 2007-8 Russel Winder
+//  Copyright © 2007-9 Russel Winder
 //
 //  Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in
 //  compliance with the License. You may obtain a copy of the License at
@@ -22,65 +22,55 @@ import org.codehaus.gant.tests.GantTestCase
  *  @author Russel Winder <russel.winder@concertant.com>
  */
 final class Execute_Test extends GantTestCase {
+  final targetName = 'testing'
   void testExecutableString ( ) {
-    def command = isWindows ? 'cmd /c echo 1' : 'echo 1'
+    final command = isWindows ? 'cmd /c echo 1' : 'echo 1'
     script = """includeTool << gant.tools.Execute
-target ( testing : '' ) { execute.executable ( '${command}' ) }
+target ( ${targetName} : '' ) { execute.executable ( '${command}' ) }
 """
-    assertEquals ( 0 , processCmdLineTargets ( 'testing' ) )
-    assertEquals ( """  [execute] ${command}
-1
-""" , output )
+    assertEquals ( 0 , processCmdLineTargets ( targetName ) )
+    assertEquals ( resultString ( targetName , '  [execute] ' + command + '\n1\n' ) , output )
   }
   void testExecutableListOfString ( ) {
     //  Format these correctly and they are both input and expected value.
-    def command = isWindows ? '["cmd", "/c", "echo", "1"]' : '["echo", "1"]'
-    def expected = ( groovyMinorVersion > 5 ) ? command.replaceAll ( '"' , '' ) : command
+    final command = isWindows ? '["cmd", "/c", "echo", "1"]' : '["echo", "1"]'
+    final expected = ( groovyMinorVersion > 5 ) ? command.replaceAll ( '"' , '' ) : command
     script = """includeTool << gant.tools.Execute
-target ( testing : '' ) { execute.executable ( ${command} ) }
+target ( ${targetName} : '' ) { execute.executable ( ${command} ) }
 """
-    assertEquals ( 0 , processCmdLineTargets ( 'testing' ) )
-    assertEquals ( """  [execute] ${expected}
-1
-""" , output ) 
+    assertEquals ( 0 , processCmdLineTargets ( targetName ) )
+    assertEquals ( resultString ( targetName , '  [execute] ' + expected + '\n1\n' ) , output )
   }
   void testShellString ( ) {
-    script = '''includeTool << gant.tools.Execute
-target ( testing : '' ) { execute.shell ( 'echo 1' ) }
-''' 
-    assertEquals ( 0 , processCmdLineTargets ( 'testing' ) )
-    assertEquals ( '''    [shell] echo 1
-1
-''' , output ) 
+    script = """includeTool << gant.tools.Execute
+target ( ${targetName} : '' ) { execute.shell ( 'echo 1' ) }
+"""
+    assertEquals ( 0 , processCmdLineTargets ( targetName ) )
+    assertEquals ( resultString ( targetName , '    [shell] echo 1\n1\n' ) , output )
   }
   void testExecuteReturnCodeCorrect ( ) {
-   def command = isWindows ? 'cmd /c echo 1' : 'echo 1'
+   final command = isWindows ? 'cmd /c echo 1' : 'echo 1'
      script = """includeTool << gant.tools.Execute
-target ( testing : '' ) { assert execute.executable ( '${command}' ) == 0 }
+target ( ${targetName} : '' ) { assert execute.executable ( '${command}' ) == 0 }
 """
-    assertEquals ( 0 , processCmdLineTargets ( 'testing' ) )
-    assertEquals ( """  [execute] ${command}
-1
-""" , output )
+    assertEquals ( 0 , processCmdLineTargets ( targetName ) )
+    assertEquals ( resultString ( targetName , '  [execute] ' + command + '\n1\n' ) , output )
   }
   void testExecuteReturnCodeError ( ) {
     //  TODO:  Find out what can be done in Windows to check this.
     if ( ! isWindows ) {
-      script = '''includeTool << gant.tools.Execute
-target ( testing : '' ) { assert execute.executable ( 'false' ) == 1 }
-'''
-      assertEquals ( 0 , processCmdLineTargets ( 'testing' ) )
-      assertEquals ( '''  [execute] false
-''' , output )
+      script = """includeTool << gant.tools.Execute
+target ( ${targetName} : '' ) { assert execute.executable ( 'false' ) == 1 }
+"""
+      assertEquals ( 0 , processCmdLineTargets ( targetName ) )
+      assertEquals ( resultString ( targetName , '  [execute] false\n' ) , output )
     }
   }
   void testParameterizedUsage ( ) {
-    script = '''includeTool ** gant.tools.Execute * [ command : 'echo 1' ]
-target ( testing : '' ) { execute.shell ( 'echo 1' ) }
-''' 
-    assertEquals ( 0 , processCmdLineTargets ( 'testing' ) )
-    assertEquals ( '''    [shell] echo 1
-1
-''' , output ) 
- }
+    script = """includeTool ** gant.tools.Execute * [ command : 'echo 1' ]
+target ( ${targetName} : '' ) { execute.shell ( 'echo 1' ) }
+"""
+    assertEquals ( 0 , processCmdLineTargets ( targetName ) )
+    assertEquals ( resultString ( targetName , '    [shell] echo 1\n1\n' ) , output )
+  }
 }

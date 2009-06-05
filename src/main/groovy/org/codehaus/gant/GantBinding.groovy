@@ -1,6 +1,6 @@
 //  Gant -- A Groovy way of scripting Ant tasks.
 //
-//  Copyright © 2008 Russel Winder
+//  Copyright © 2008-9 Russel Winder
 //
 //  Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in
 //  compliance with the License. You may obtain a copy of the License at
@@ -149,7 +149,13 @@ public class GantBinding extends Binding implements Cloneable {
         catch ( MissingPropertyException mpe ) { /* Intentionally empty */ }
         if ( targetDescription ) { targetDescriptions.put ( targetName , targetDescription ) }
         closure.metaClass = new GantMetaClass ( closure.metaClass , owner )
-        def targetClosure =  { withTargetEvent ( targetName , targetDescription ) { closure ( targetMap ) } }
+        def targetClosure =  {
+          def returnCode = 0
+          owner.ant.project.log ( targetName + ':' )
+          withTargetEvent ( targetName , targetDescription ) { returnCode = closure ( targetMap ) }
+          owner.ant.project.log ( '------ ' + targetName )
+          returnCode
+        }
         owner.setVariable ( (String) targetName , targetClosure )
         owner.setVariable ( targetName + '_description' , targetDescription )  //  For backward compatibility.
       } )

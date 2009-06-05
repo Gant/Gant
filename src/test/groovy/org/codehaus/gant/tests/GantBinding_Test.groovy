@@ -25,6 +25,7 @@ import org.codehaus.gant.IncludeTool
  *  @author Russel Winder <russel.winder@concertant.com>
  */
 final class GantBinding_Test extends GantTestCase {
+  final targetName = 'targetName'
   void testCreate ( ) {
     def object = new GantBinding ( )
     assertTrue ( object.ant instanceof GantBuilder )
@@ -38,126 +39,118 @@ final class GantBinding_Test extends GantTestCase {
     assertTrue ( object.gantLib instanceof List )
   }
   void testAntReferenceProperlyDeprecated ( ) {
-     def object = new GantBinding ( )
+    final object = new GantBinding ( )
     assertTrue ( object.Ant instanceof GantBuilder )
-    script = '''
-target ( testAntDeprecation : '' ) {
-  Ant.echo ( message : 'hello.' )
+    final message = 'hello.' 
+    script = """
+target ( ${targetName} : '' ) {
+  Ant.echo ( message : '${message}' )
 }
-'''
-    assertEquals ( 0 , processCmdLineTargets ( 'testAntDeprecation' ) )
-    assertEquals ( '     [echo] hello.\n' , output )
+"""
+    assertEquals ( 0 , processCmdLineTargets ( targetName ) )
+    assertEquals ( resultString ( targetName , "     [echo] ${message}\n" ) , output )
   }
   void testGantBindingIsActuallyUsedOutsideTarget ( ) {
-    script = '''
+    script = """
 assert binding instanceof org.codehaus.gant.GantBinding
-target ( testBindingObject : '' ) {
-}
-'''
-    assertEquals ( 0 , processCmdLineTargets ( 'testBindingObject' ) )
-    assertEquals ( '' , output )
+target ( ${targetName} : '' ) { }
+"""
+    assertEquals ( 0 , processCmdLineTargets ( targetName ) )
+    assertEquals ( resultString ( targetName , '' ) , output )
   }
   void testGantBindingIsActuallyUsedInsideTarget ( ) {
-    script = '''
-target ( testBindingObject : '' ) {
+    script = """
+target ( ${targetName} : '' ) {
   assert binding instanceof org.codehaus.gant.GantBinding
 }
-'''
-    assertEquals ( 0 , processCmdLineTargets ( 'testBindingObject' ) )
-    assertEquals ( '' , output )
+"""
+    assertEquals ( 0 , processCmdLineTargets ( targetName ) )
+    assertEquals ( resultString ( targetName , '' ) , output )
   }
   void testAntPropertyAccessAsAntPropertyOutsideTarget ( ) {
-    script = '''
+    script = """
 assert ant.project.properties.'java.vm.specification.version' == '1.0'
-target ( antProperty : '' ) {
-}
-'''
-    assertEquals ( 0 , processCmdLineTargets ( 'antProperty' ) )
-    assertEquals ( '' , output )
+target ( ${targetName} : '' ) { }
+"""
+    assertEquals ( 0 , processCmdLineTargets ( targetName ) )
+    assertEquals ( resultString ( targetName , '' ) , output )
   }
   void testAntPropertyAccessAsAntPropertyInsideTarget ( ) {
-    script = '''
-target ( antProperty : '' ) {
+    script = """
+target ( ${targetName} : '' ) {
   assert ant.project.properties.'java.vm.specification.version' == '1.0'
 }
-'''
-    assertEquals ( 0 , processCmdLineTargets ( 'antProperty' ) )
-    assertEquals ( '' , output )
+"""
+    assertEquals ( 0 , processCmdLineTargets ( targetName ) )
+    assertEquals ( resultString ( targetName , '' ) , output )
   }
   void testAntPropertyAccessAsBindingVariableOutsideTarget ( ) {
-    script = '''
+    script = """
 assert binding.'java.vm.specification.version' == '1.0'
-target ( antProperty : '' ) {
-}
-'''
-    assertEquals ( 0 , processCmdLineTargets ( 'antProperty' ) )
-    assertEquals ( '' , output )
+target ( ${targetName} : '' ) { }
+"""
+    assertEquals ( 0 , processCmdLineTargets ( targetName ) )
+    assertEquals ( resultString ( targetName , '' ) , output )
   }
   void testAntPropertyAccessAsBindingVariableInsideTarget ( ) {
-    script = '''
-target ( antProperty : '' ) {
+    script = """
+target ( ${targetName} : '' ) {
   assert binding.'java.vm.specification.version' == '1.0'
 }
-'''
-    assertEquals ( 0 , processCmdLineTargets ( 'antProperty' ) )
-    assertEquals ( '' , output )
+"""
+    assertEquals ( 0 , processCmdLineTargets ( targetName ) )
+    assertEquals ( resultString ( targetName , '' ) , output )
   }
   void testAntPropertyAccessViaObjectSpecifierOutsideTarget ( ) {
-    script = '''
+    script = """
 assert this.'java.vm.specification.version' == '1.0'
-target ( antProperty : '' ) {
-}
-'''
-    assertEquals ( 0 , processCmdLineTargets ( 'antProperty' ) )
-    assertEquals ( '' , output )
+target ( ${targetName} : '' ) { }
+"""
+    assertEquals ( 0 , processCmdLineTargets ( targetName ) )
+    assertEquals ( resultString ( targetName , '' ) , output )
   }
   void testAntPropertyAccessViaObjectSpecifierInsideTarget ( ) {
-    script = '''
-target ( antProperty : '' ) {
+    script = """
+target ( ${targetName} : '' ) {
   assert this.'java.vm.specification.version' == '1.0'
   assert owner.'java.vm.specification.version' == '1.0'
   assert delegate.'java.vm.specification.version' == '1.0'
 }
-'''
-    assertEquals ( 0 , processCmdLineTargets ( 'antProperty' ) )
-    assertEquals ( '' , output )
+"""
+    assertEquals ( 0 , processCmdLineTargets ( targetName ) )
+    assertEquals ( resultString ( targetName , '' ) , output )
   }
-
-  //  The following two tests behave differently depending on the forkmode of the junit task: it works if
-  //  using perTest mode but fails with perBatch or once mode.  So why does the property call work for
-  //  perTest and not otherwise?
-
   void testPropertySettingWorksAsExpectedOutsideTarget ( ) {
-    script = '''
+    script = """
 final name = 'flobadob'
 final value = 'burble'
-assert null == ant.project.properties."${name}"
+assert null == ant.project.properties."\${name}"
 ant.property ( name : name , value : value )
-assert value == ant.project.properties."${name}"
-assert value == binding."${name}"
-assert value == this."${name}"
-target ( antProperty : '' ) {
+assert value == ant.project.properties."\${name}"
+assert value == binding."\${name}"
+assert value == this."\${name}"
+target ( ${targetName} : '' ) {
 }
-'''
-    assertEquals ( 0 , processCmdLineTargets ( 'antProperty' ) )
-    assertEquals ( '' , output )
+"""
+    assertEquals ( 0 , processCmdLineTargets ( targetName ) )
+    assertEquals ( resultString ( targetName , '' ) , output )
   }
   void testPropertySettingWorksAsExpectedInTarget ( ) {
-    script = '''
-target ( antProperty : '' ) {
+    script = """
+target ( ${targetName} : '' ) {
   final name = 'flobadob'
   final value = 'burble'
-  assert null == ant.project.properties."${name}"
+  assert null == ant.project.properties."\${name}"
   property ( name : name , value : value )
-  assert value == ant.project.properties."${name}"
-  assert value == binding."${name}"
-  assert value == this."${name}"
-  assert value == owner."${name}"
-  assert value == delegate."${name}"
+  assert value == ant.project.properties."\${name}"
+  assert value == binding."\${name}"
+  assert value == this."\${name}"
+  assert value == owner."\${name}"
+  assert value == delegate."\${name}"
 }
-'''
-    assertEquals ( 0 , processCmdLineTargets ( 'antProperty' ) )
-    assertEquals ( '' , output )
+"""
+    assertEquals ( 0 , processCmdLineTargets ( targetName ) )
+    assertEquals ( resultString ( targetName , '' ) , output )
   }
   void testPropertyAccessInsideCategory ( ) {
     /*
@@ -168,14 +161,15 @@ target ( antProperty : '' ) {
      *
      *  See http://jira.codehaus.org/browse/GROOVY-3109
      */
+    final message = 'Hello World'
     if ( groovyMinorVersion < 6 ) { return }
-    script = '''
-target ( domTarget : 'Uses DOMCategory' ) {
-  use ( groovy.xml.dom.DOMCategory ) { println ( "Target Three" ) }
+    script = """
+target ( ${targetName} : '' ) {
+  use ( groovy.xml.dom.DOMCategory ) { println ( "${message}" ) }
 }
-'''
-    assertEquals ( 0 , processTargets ( 'domTarget' ) )
-    assertEquals ( 'Target Three\n' , output )
+"""
+    assertEquals ( 0 , processTargets ( targetName ) )
+    assertEquals ( resultString ( targetName , message + '\n' ) , output )
   }
 
   /*
@@ -205,20 +199,14 @@ target ( 'default' : '' ) { println ( 'This should never be printed.' ) }
   //  the tests are run should change so that a jar and not the directory of compiled files is used?
 
   void testGantFilePropertyIsAccessble ( ) {
-    script = '''
-target ( file : '' ) { println ( binding.'gant.file' ) }
-setDefaultTarget ( file )
-'''
-    assertEquals ( 0 , processTargets ( 'file' ) )
-    assertEquals ( '<stream>\n' , output )
+    script = "target ( ${targetName} : '' ) { println ( binding.'gant.file' ) }"
+    assertEquals ( 0 , processTargets ( targetName ) )
+    assertEquals ( resultString ( targetName , '<stream>\n' ) , output )
   }
   void testGantVersionPropertyIsAccessible ( ) {
     System.err.println ( "Need to find a way of testing the actual version being correct instead of null." )
-    script = '''
-target ( version : '' ) { println ( binding.'gant.version' ) }
-setDefaultTarget ( version )
-'''
-    assertEquals ( 0 , processTargets ( 'version' ) )
-    assertEquals ( 'null\n' , output )
+    script = "target ( ${targetName} : '' ) { println ( binding.'gant.version' ) }"
+    assertEquals ( 0 , processTargets ( targetName ) )
+    assertEquals ( resultString ( targetName , 'null\n' ) , output )
   }
 }

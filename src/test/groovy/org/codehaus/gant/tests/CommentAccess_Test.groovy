@@ -1,6 +1,6 @@
 //  Gant -- A Groovy way of scripting Ant tasks.
 //
-//  Copyright © 2007-8 Russel Winder
+//  Copyright © 2007-9 Russel Winder
 //
 //  Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in
 //  compliance with the License. You may obtain a copy of the License at
@@ -21,11 +21,18 @@ package org.codehaus.gant.tests
  */
 final class CommentAccess_Test extends GantTestCase {
   void testcommentAccess ( ) {
+    final targetName = 'commentAccess'
+    final success = 'Success.'
     script = """
 theComment = 'Some comment.'
-target ( commentAccess : theComment ) { assert commentAccess_description == theComment ; println ( 'Success.' ) }
+target ( ${targetName} : theComment ) {
+ //  This is old-style and should be deprecated.
+ assert commentAccess_description == theComment
+ assert it.description == theComment
+ println ( '${success}' )
+}
 """
     assertEquals ( 0 , processCmdLineTargets ( 'commentAccess' ) )
-    assertEquals ( 'Success.\n' , output )
+    assertEquals ( resultString ( targetName , success + '\n' ) , output )
   }
 }

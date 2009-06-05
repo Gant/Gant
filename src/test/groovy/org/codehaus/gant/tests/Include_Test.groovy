@@ -33,35 +33,40 @@ final class Include_Test extends GantTestCase {
   private final toolClassName = 'ToolClass'
   private final toolBindingName = 'toolClass'
   private final String toolClassFilePath
+  private final flobbed = 'flobbed.'
+  private final flob = 'flob'
+  private final burble = 'burble'
+  private final something = 'something'
+  private final defaultTarget = 'default'
   private final toolClassText =  """
 import org.codehaus.gant.GantBinding
 class ${toolClassName} {
   ${toolClassName} ( GantBinding binding ) { }
-  void flob ( ) { println ( 'flobbed.' ) }
+  void ${flob} ( ) { println ( '${flobbed}' ) }
 }
 """
   private final toolBuildScriptBase =  """
-target ( something : '' ) { ${toolBindingName}.flob ( ) }
-target ( 'default' : '' ) { something ( ) }
+target ( ${something} : '' ) { ${toolBindingName}.${flob} ( ) }
+target ( '${defaultTarget}' : '' ) { ${something} ( ) }
 """
   private final toolBuildScriptClass =  "includeTool <<  groovyShell.evaluate ( '''${toolClassText} ; return ${toolClassName}''' )\n" + toolBuildScriptBase
   private final String toolBuildScriptFile
   private final toolBuildScriptString =  "includeTool <<  '''${toolClassText}'''\n" + toolBuildScriptBase
   private final String targetsScriptFilePath
-  private final targetsScriptText =  '''
-target ( flob : '' ) { println ( 'flobbed.' ) }
-'''
+  private final targetsScriptText =  """
+target ( ${flob} : '' ) { println ( '${flobbed}' ) }
+"""
   private final targetsClassName = 'TargetsClass'
   private final String targetsClassFilePath
   private final targetsClassText =  """
 import org.codehaus.gant.GantBinding
 class ${targetsClassName} {
-  ${targetsClassName} ( GantBinding binding ) { binding.target.call ( flob : '' ) { println ( 'flobbed.' ) } }
+  ${targetsClassName} ( GantBinding binding ) { binding.target.call ( ${flob} : '' ) { println ( '${flobbed}' ) } }
 }
 """
   private final targetsBuildScriptBase =  """
-target ( something : '' ) { flob ( ) }
-target ( 'default' : '' ) { something ( ) }
+target ( ${something} : '' ) { ${flob} ( ) }
+target ( '${defaultTarget}' : '' ) { ${something} ( ) }
 """
   //  Source containing just a class and not a complete script must be turned into a script that
   //  instantiates the class.  Test both correct and errorful behaviour
@@ -79,7 +84,6 @@ target ( 'default' : '' ) { something ( ) }
   private final targetsErrorBuildClassString =  "includeTargets <<  '''${targetsClassText}'''\n" + targetsBuildScriptBase
   private final resultErrorEvaluatingClass = "Standard input, line 1 -- Error evaluating Gantfile: java.lang.InstantiationException: ${targetsClassName}\n"
   private final String nonExistentFilePath
-  private final resultFlobbed = 'flobbed.\n'
   Include_Test ( ) {
     //////////////////////////////////////////////////////////////////////////////////////////////////////////
     ////  createTempFile delivers a File object that delivers a string for the path that is platform
@@ -100,6 +104,11 @@ target ( 'default' : '' ) { something ( ) }
     targetsErrorBuildClassFile =  "includeTargets <<  new File ( '${targetsClassFilePath}' )\n" + targetsBuildScriptBase
     nonExistentFilePath = temporaryDirectoryPath + '/tmp' * 3
   }
+  private final String resultFlob = resultString ( flob , flobbed + '\n' )
+  private final String resultSomething = resultString ( something , flobbed + '\n' )
+   private final String resultSomethingFlob = resultString ( something , resultFlob )
+  private final String resultFlobbedTool ( final String target ) { resultString ( target , resultSomething ) }
+  private final String resultFlobbedTargets ( final String target ) { resultString ( target , resultString ( something , resultString ( flob , flobbed + '\n' ) ) ) }
   private resultTargetDoesNotExist ( String target ) { 'Target ' + target + ' does not exist.\n' }
   void setUp ( ) {
     super.setUp ( )
@@ -119,86 +128,80 @@ target ( 'default' : '' ) { something ( ) }
   void testToolDefaultClass ( ) {
     script = toolBuildScriptClass
     assertEquals ( 0 , processCmdLineTargets ( ) )
-    assertEquals ( resultFlobbed , output )
+    assertEquals ( resultFlobbedTool ( defaultTarget ) , output )
   }
   void testToolDefaultFile ( ) {
     script = toolBuildScriptFile
     assertEquals ( 0 , processCmdLineTargets ( ) )
-    assertEquals ( resultFlobbed , output )
+    assertEquals ( resultFlobbedTool ( defaultTarget ) , output )
   }
   void testToolDefaultString ( ) {
     script = toolBuildScriptString
     assertEquals ( 0 , processCmdLineTargets ( ) )
-    assertEquals ( resultFlobbed , output )
+    assertEquals ( resultFlobbedTool ( defaultTarget ) , output )
   }
   void testToolFlobClass ( ) {
-    def target = 'flob'
     script = toolBuildScriptClass
-    assertEquals ( -11 , processCmdLineTargets ( target ) )
-    assertEquals ( resultTargetDoesNotExist ( target ) , output )
+    assertEquals ( -11 , processCmdLineTargets ( flob ) )
+    assertEquals ( resultTargetDoesNotExist ( flob ) , output )
   }
   void testToolFlobFile ( ) {
-    def target = 'flob'
     script = toolBuildScriptFile
-    assertEquals ( -11 , processCmdLineTargets ( target ) )
-    assertEquals ( resultTargetDoesNotExist ( target ) , output )
+    assertEquals ( -11 , processCmdLineTargets ( flob ) )
+    assertEquals ( resultTargetDoesNotExist ( flob ) , output )
   }
   void testToolFlobString ( ) {
-    def target = 'flob'
     script = toolBuildScriptString
-    assertEquals ( -11 , processCmdLineTargets ( target ) )
-    assertEquals ( resultTargetDoesNotExist ( target ) , output )
+    assertEquals ( -11 , processCmdLineTargets ( flob ) )
+    assertEquals ( resultTargetDoesNotExist ( flob ) , output )
   }
   void testToolBurbleClass ( ) {
-    def target = 'burble'
     script = toolBuildScriptClass
-    assertEquals ( -11 , processCmdLineTargets ( target ) )
-    assertEquals ( resultTargetDoesNotExist ( target ) , output )
+    assertEquals ( -11 , processCmdLineTargets ( burble ) )
+    assertEquals ( resultTargetDoesNotExist ( burble ) , output )
   }
   void testToolBurbleFile ( ) {
-    def target = 'burble'
     script = toolBuildScriptFile
-    assertEquals ( -11 , processCmdLineTargets ( target ) )
-    assertEquals ( resultTargetDoesNotExist ( target ) , output )
+    assertEquals ( -11 , processCmdLineTargets ( burble ) )
+    assertEquals ( resultTargetDoesNotExist ( burble ) , output )
   }
   void testToolBurbleString ( ) {
-    def target = 'burble'
     script = toolBuildScriptString
-    assertEquals ( -11 , processCmdLineTargets ( target ) )
-    assertEquals ( resultTargetDoesNotExist ( target ) , output )
+    assertEquals ( -11 , processCmdLineTargets ( burble ) )
+    assertEquals ( resultTargetDoesNotExist ( burble ) , output )
   }
   void testToolSomethingClass ( ) {
     script = toolBuildScriptClass
-    assertEquals ( 0 , processCmdLineTargets ( 'something' ) )
-    assertEquals ( resultFlobbed , output )
+    assertEquals ( 0 , processCmdLineTargets ( something ) )
+    assertEquals ( resultSomething , output )
   }
   void testToolSomethingFile ( ) {
     script = toolBuildScriptFile
-    assertEquals ( 0 , processCmdLineTargets ( 'something' ) )
-    assertEquals ( resultFlobbed , output )
+    assertEquals ( 0 , processCmdLineTargets ( something ) )
+    assertEquals ( resultSomething , output )
   }
   void testToolSomethingString ( ) {
     script = toolBuildScriptString
-    assertEquals ( 0 , processCmdLineTargets ( 'something' ) )
-    assertEquals ( resultFlobbed , output )
+    assertEquals ( 0 , processCmdLineTargets ( something ) )
+    assertEquals ( resultSomething , output )
   }
   void testToolClassNoFile ( ) {
     script = toolBuildScriptFile.replace ( toolClassFilePath , nonExistentFilePath )
     def errorMessage = 'Standard input, line 1 -- Error evaluating Gantfile: java.io.FileNotFoundException: '
     if ( isWindows ) { errorMessage += nonExistentFilePath.replaceAll ( '/' , '\\\\' ) + ' (The system cannot find the path specified)\n' }
     else { errorMessage += nonExistentFilePath + ' (No such file or directory)\n' }
-    assertEquals ( -4 , processCmdLineTargets ( 'flob' ) )
+    assertEquals ( -4 , processCmdLineTargets ( flob ) )
     assertEquals ( errorMessage , output )
   }
   void testTargetsDefaultClassClass ( ) {
     script = targetsBuildClassClass
     assertEquals ( 0 , processCmdLineTargets ( ) )
-    assertEquals ( resultFlobbed , output )
+    assertEquals ( resultFlobbedTargets ( defaultTarget ) , output )
   }
   void testTargetsDefaultClassFile ( ) {
     script = targetsBuildClassFile
     assertEquals ( 0 , processCmdLineTargets ( ) )
-    assertEquals ( resultFlobbed , output )
+    assertEquals ( resultFlobbedTargets ( defaultTarget ) , output )
   }
   void testErrorTargetsDefaultClassFile ( ) {
     script = targetsErrorBuildClassFile
@@ -208,7 +211,7 @@ target ( 'default' : '' ) { something ( ) }
   void testTargetsDefaultClassString ( ) {
     script = targetsBuildClassString
     assertEquals ( 0 , processCmdLineTargets ( ) )
-    assertEquals ( resultFlobbed , output )
+    assertEquals ( resultFlobbedTargets ( defaultTarget ) , output )
   }
   void testErrorTargetsDefaultClassString ( ) {
     script = targetsErrorBuildClassString
@@ -217,92 +220,89 @@ target ( 'default' : '' ) { something ( ) }
   }
   void testTargetsFlobClassClass ( ) {
     script = targetsBuildClassClass
-    assertEquals ( 0 , processCmdLineTargets ( 'flob' ) )
-    assertEquals ( resultFlobbed , output )
+    assertEquals ( 0 , processCmdLineTargets ( flob ) )
+    assertEquals ( resultFlob , output )
   }
   void testTargetsFlobClassFile ( ) {
     script = targetsBuildClassFile
-    assertEquals ( 0 , processCmdLineTargets ( 'flob' ) )
-    assertEquals ( resultFlobbed , output )
+    assertEquals ( 0 , processCmdLineTargets ( flob ) )
+    assertEquals ( resultFlob , output )
   }
   void testErrorTargetsFlobClassFile ( ) {
     script = targetsErrorBuildClassFile
-    assertEquals ( -4 , processCmdLineTargets ( 'flob' ) )
+    assertEquals ( -4 , processCmdLineTargets ( flob ) )
     assertEquals ( resultErrorEvaluatingClass , output )
   }
   void testTargetsFlobClassString ( ) {
     script = targetsBuildClassString
-    assertEquals ( 0 , processCmdLineTargets ( 'flob' ) )
-    assertEquals ( resultFlobbed , output )
+    assertEquals ( 0 , processCmdLineTargets ( flob ) )
+    assertEquals ( resultFlob , output )
   }
   void testErrorTargetsFlobClassString ( ) {
     script = targetsErrorBuildClassString
-    assertEquals ( -4 , processCmdLineTargets ( 'flob' ) )
+    assertEquals ( -4 , processCmdLineTargets ( flob ) )
     assertEquals ( resultErrorEvaluatingClass , output )
   }
   void testTargetsBurbleClassClass ( ) {
-    def target = 'burble'
     script = targetsBuildClassClass
-    assertEquals ( -11 , processCmdLineTargets ( target ) )
-    assertEquals ( resultTargetDoesNotExist ( target ) , output )
+    assertEquals ( -11 , processCmdLineTargets ( burble ) )
+    assertEquals ( resultTargetDoesNotExist ( burble ) , output )
   }
   void testTargetsBurbleClassFile ( ) {
-    def target = 'burble'
     script = targetsBuildClassFile
-    assertEquals ( -11 , processCmdLineTargets ( target ) )
-    assertEquals ( resultTargetDoesNotExist ( target ) , output )
+    assertEquals ( -11 , processCmdLineTargets ( burble ) )
+    assertEquals ( resultTargetDoesNotExist ( burble ) , output )
   }
   void testErrorTargetsBurbleClassFile ( ) {
     script = targetsErrorBuildClassFile
-    assertEquals ( -4 , processCmdLineTargets ( 'burble' ) )
+    assertEquals ( -4 , processCmdLineTargets ( burble ) )
     assertEquals ( resultErrorEvaluatingClass , output )
   }
   void testTargetsBurbleClassString ( ) {
-    def target = 'burble'
     script = targetsBuildClassString
-    assertEquals ( -11 , processCmdLineTargets ( target ) )
-    assertEquals ( resultTargetDoesNotExist ( target ) , output )
+    assertEquals ( -11 , processCmdLineTargets ( burble ) )
+    assertEquals ( resultTargetDoesNotExist ( burble ) , output )
   }
   void testErrorTargetsBurbleClassString ( ) {
     script = targetsErrorBuildClassString
-    assertEquals ( -4 , processCmdLineTargets ( 'burble') )
+    assertEquals ( -4 , processCmdLineTargets ( burble ) )
     assertEquals ( resultErrorEvaluatingClass , output )
   }
   void testTargetsSomethingClassClass ( ) {
     script = targetsBuildClassClass
-    assertEquals ( 0 , processCmdLineTargets ( 'something' ) )
-    assertEquals ( resultFlobbed , output )
+    assertEquals ( 0 , processCmdLineTargets ( something ) )
+    assertEquals ( resultSomethingFlob , output )
   }
   void testTargetsSomethingClassFile ( ) {
     script = targetsBuildClassFile
-    assertEquals ( 0 , processCmdLineTargets ( 'something') )
-    assertEquals ( resultFlobbed , output )
+    assertEquals ( 0 , processCmdLineTargets ( something ) )
+    assertEquals ( resultSomethingFlob , output )
   }
   void testErrorTargetsSomethingClassFile ( ) {
     script = targetsErrorBuildClassFile
-    assertEquals ( -4 , processCmdLineTargets ( 'something' ) )
+    assertEquals ( -4 , processCmdLineTargets ( something ) )
     assertEquals ( resultErrorEvaluatingClass , output )
   }
   void testTargetsSomethingClassString ( ) {
     script = targetsBuildClassString
-    assertEquals ( 0 , processCmdLineTargets ( 'something' ) )
-    assertEquals ( resultFlobbed , output )
+    assertEquals ( 0 , processCmdLineTargets ( something ) )
+    assertEquals ( resultSomethingFlob , output )
   }
   void testErrorTargetsSomethingClassString ( ) {
     script = targetsErrorBuildClassString
-    assertEquals ( -4 , processCmdLineTargets ( 'something' ) )
+    assertEquals ( -4 , processCmdLineTargets ( something ) )
     assertEquals ( resultErrorEvaluatingClass , output )
   }
   void testTargetsClassNoFile ( ) {
     script = targetsBuildClassFile.replace ( targetsClassFilePath , nonExistentFilePath )
-    assertEquals ( -4 , processCmdLineTargets ( 'flob' ) )
+    assertEquals ( -4 , processCmdLineTargets ( flob ) )
     //  The returned string is platform dependent and dependent on whether NFS is used to mount stores, or
     //  even RAID.  We therefore choose not to check the output to avoid having large numbers of cases.
   }
   void testTargetsDefaultScriptClass ( ) {
     script = targetsBuildScriptClass
     assertEquals ( 0 , processCmdLineTargets ( ) )
-    assertEquals ( resultFlobbed , output )
+    assertEquals ( resultFlobbedTargets ( defaultTarget ) , output )
   }
   void testErrorTargetsDefaultScriptClass ( ) {
     script = targetsErrorBuildScriptClass
@@ -312,79 +312,76 @@ target ( 'default' : '' ) { something ( ) }
   void testTargetsDefaultScriptFile ( ) {
     script = targetsBuildScriptFile
     assertEquals ( 0 , processCmdLineTargets ( ) )
-    assertEquals ( resultFlobbed , output )
+    assertEquals ( resultFlobbedTargets ( defaultTarget ) , output )
   }
   void testTargetsDefaultScriptString ( ) {
     script = targetsBuildScriptString
     assertEquals ( 0 , processCmdLineTargets ( ) )
-    assertEquals ( resultFlobbed , output )
+    assertEquals ( resultFlobbedTargets ( defaultTarget ) , output )
   }
   void testTargetsFlobScriptClass ( ) {
     script = targetsBuildScriptClass
-    assertEquals ( 0 , processCmdLineTargets ( 'flob' ) )
-    assertEquals ( resultFlobbed , output )
+    assertEquals ( 0 , processCmdLineTargets ( flob ) )
+    assertEquals ( resultFlob , output )
   }
   void testErrorTargetsFlobScriptClass ( ) {
     script = targetsErrorBuildScriptClass
-    assertEquals ( -4 , processCmdLineTargets ( 'flob' ) )
+    assertEquals ( -4 , processCmdLineTargets ( flob ) )
     assertEquals ( resultErrorEvaluatingScript , output )
   }
   void testTargetsFlobScriptFile ( ) {
     script = targetsBuildScriptFile
-    assertEquals ( 0 , processCmdLineTargets ( 'flob' ) )
-    assertEquals ( resultFlobbed , output )
+    assertEquals ( 0 , processCmdLineTargets ( flob ) )
+    assertEquals ( resultFlob , output )
   }
   void testTargetsFlobScriptString ( ) {
     script = targetsBuildScriptString
-    assertEquals ( 0 , processCmdLineTargets ( 'flob' ) )
-    assertEquals ( resultFlobbed , output )
+    assertEquals ( 0 , processCmdLineTargets ( flob ) )
+    assertEquals ( resultFlob , output )
   }
   void testTargetsBurbleScriptClass ( ) {
-    def target = 'burble'
     script = targetsBuildScriptClass
-    assertEquals ( -11 , processCmdLineTargets ( target ) )
-    assertEquals ( resultTargetDoesNotExist ( target ) , output )
+    assertEquals ( -11 , processCmdLineTargets ( burble ) )
+    assertEquals ( resultTargetDoesNotExist ( burble ) , output )
   }
   void testErrorTargetsBurbleScriptClass ( ) {
     script = targetsErrorBuildScriptClass
-    assertEquals ( -4 , processCmdLineTargets ( 'burble' ) )
+    assertEquals ( -4 , processCmdLineTargets ( burble ) )
     assertEquals ( resultErrorEvaluatingScript , output )
   }
   void testTargetsBurbleScriptFile ( ) {
-    def target = 'burble'
     script = targetsBuildScriptFile
-    assertEquals ( -11 , processCmdLineTargets ( target ) )
-    assertEquals ( resultTargetDoesNotExist ( target ) , output )
+    assertEquals ( -11 , processCmdLineTargets ( burble ) )
+    assertEquals ( resultTargetDoesNotExist ( burble ) , output )
   }
   void testTargetsBurbleScriptString ( ) {
-    def target = 'burble'
     script = targetsBuildScriptString
-    assertEquals ( -11 , processCmdLineTargets ( target ) )
-    assertEquals ( resultTargetDoesNotExist ( target ) , output )
+    assertEquals ( -11 , processCmdLineTargets ( burble ) )
+    assertEquals ( resultTargetDoesNotExist ( burble ) , output )
   }
   void testTargetsSomethingScriptClass ( ) {
     script = targetsBuildScriptClass
-    assertEquals ( 0 , processCmdLineTargets ( 'something' ) )
-    assertEquals ( resultFlobbed , output )
+    assertEquals ( 0 , processCmdLineTargets ( something ) )
+    assertEquals ( resultSomethingFlob , output )
   }
   void testErrorTargetsSomethingScriptClass ( ) {
     script = targetsErrorBuildScriptClass
-    assertEquals ( -4 , processCmdLineTargets ( 'something' ) )
+    assertEquals ( -4 , processCmdLineTargets ( something ) )
     assertEquals ( resultErrorEvaluatingScript , output )
   }
   void testTargetsSomethingScriptFile ( ) {
     script = targetsBuildScriptFile
-    assertEquals ( 0 , processCmdLineTargets ( 'something' ) )
-    assertEquals ( resultFlobbed , output )
+    assertEquals ( 0 , processCmdLineTargets ( something ) )
+    assertEquals ( resultSomethingFlob , output )
   }
   void testTargetsSomethingScriptString ( ) {
     script = targetsBuildScriptString
-    assertEquals ( 0 , processCmdLineTargets ( 'something' ) )
-    assertEquals ( resultFlobbed , output )
+    assertEquals ( 0 , processCmdLineTargets ( something ) )
+    assertEquals ( resultSomethingFlob , output )
   }
   void testTargetsScriptNoFile ( ) {
     script = targetsBuildScriptFile.replace ( targetsScriptFilePath , nonExistentFilePath )
-    assertEquals ( -4 , processCmdLineTargets ( 'flob' ) )
+    assertEquals ( -4 , processCmdLineTargets ( flob ) )
     //  The returned string is platform dependent and dependent on whether NFS is used to mount stores, or
     //  even RAID.  We therefore choose not to check the output to avoid having large numbers of cases.
   }
@@ -394,22 +391,22 @@ target ( 'default' : '' ) { something ( ) }
   void testTargetsMultipleIncludeDefaultScriptFile ( ) {
     script = "includeTargets <<  new File ( '${targetsScriptFilePath}' )\n" + targetsBuildScriptFile
     assertEquals ( 0 , processCmdLineTargets ( ) )
-    assertEquals ( resultFlobbed , output )
+    assertEquals ( resultFlobbedTargets ( defaultTarget ) , output )
   }
   void testTargetsMultipleIncludeDefaultScriptString ( ) {
     script = "includeTargets <<  '''${targetsScriptText}'''\n" + targetsBuildScriptString
     assertEquals ( 0 , processCmdLineTargets ( ) )
-    assertEquals ( resultFlobbed , output )
+    assertEquals ( resultFlobbedTargets ( defaultTarget ) , output )
   }
   void testTargetsMultipleIncludeFlobScriptFile ( ) {
     script = "includeTargets <<  new File ( '${targetsScriptFilePath}' )\n" + targetsBuildScriptFile
-    assertEquals ( 0 , processCmdLineTargets ( 'flob' ) )
-    assertEquals ( resultFlobbed , output )
+    assertEquals ( 0 , processCmdLineTargets ( flob ) )
+    assertEquals ( resultFlob , output )
   }
   void testTargetsMultipleIncludeFlobScriptString ( ) {
     script = "includeTargets <<  '''${targetsScriptText}'''\n" + targetsBuildScriptString
-    assertEquals ( 0 , processCmdLineTargets ( 'flob' ) )
-    assertEquals ( resultFlobbed , output )
+    assertEquals ( 0 , processCmdLineTargets ( flob ) )
+    assertEquals ( resultFlob , output )
   }
   void testTargetsMultipleIncludeBurbleScriptFile ( ) {
     def target = 'burble'
@@ -418,20 +415,19 @@ target ( 'default' : '' ) { something ( ) }
     assertEquals ( resultTargetDoesNotExist ( target ) , output )
   }
   void testTargetsMultipleIncludeBurbleScriptString ( ) {
-    def target = 'burble'
     script = "includeTargets <<  '''${targetsScriptText}'''\n" + targetsBuildScriptString
-    assertEquals ( -11 , processCmdLineTargets ( target ) )
-    assertEquals ( resultTargetDoesNotExist ( target ) , output )
+    assertEquals ( -11 , processCmdLineTargets ( burble ) )
+    assertEquals ( resultTargetDoesNotExist ( burble ) , output )
   }
   void testTargetsMultipleIncludeSomethingScriptFile ( ) {
     script = "includeTargets <<  new File ( '${targetsScriptFilePath}' )\n" + targetsBuildScriptFile
-    assertEquals ( 0 , processCmdLineTargets ( 'flob' ) )
-    assertEquals ( resultFlobbed , output )
+    assertEquals ( 0 , processCmdLineTargets ( flob ) )
+    assertEquals ( resultFlob , output )
   }
   void testTargetsMultipleIncludeSomethingScriptString ( ) {
     script = "includeTargets <<  '''${targetsScriptText}'''\n" + targetsBuildScriptString
-    assertEquals ( 0 , processCmdLineTargets ( 'flob' ) )
-    assertEquals ( resultFlobbed , output )
+    assertEquals ( 0 , processCmdLineTargets ( flob ) )
+    assertEquals ( resultFlob , output )
   }
   void testUsingParameterConstructor ( ) {
     def theToolClassName = 'TheTool'
@@ -440,62 +436,64 @@ target ( 'default' : '' ) { something ( ) }
 import org.codehaus.gant.GantBinding
 class ${theToolClassName} {
   ${theToolClassName} ( GantBinding binding , Map map ) { }
-  void flob ( ) { println ( 'flobbed.' ) }
+  void ${flob} ( ) { println ( '${flobbed}' ) }
 }
 """
     script = """
 includeTool ** groovyShell.evaluate ( '''${theToolClassText} ; return ${theToolClassName}''' ) * [ flob : 'adob' , foo : 'bar' ]
-target ( something : '' ) { ${theToolBindingName}.flob ( ) }
+target ( ${something} : '' ) { ${theToolBindingName}.${flob} ( ) }
 """
-    assertEquals ( 0 , processCmdLineTargets ( 'something' ) )
-    assertEquals ( resultFlobbed , output )
+    assertEquals ( 0 , processCmdLineTargets ( something ) )
+    assertEquals ( resultSomething , output )
   }
   //  cf. GANT-29
   void testInlineToolClass ( ) {
-    script = '''
+    final targetName = 'doit'
+    final data = 'data'
+    script = """
 import org.codehaus.gant.GantBinding
 class SampleTool {
-  private final Map properties = [name : '' ]
+  private final Map properties = [ name : '' ]
   SampleTool ( GantBinding binding ) { properties.binding = binding }
   def getProperty ( String name ) { properties[name] }
   void setProperty ( String name , value ) { properties[name] = value }
 }
 includeTool << SampleTool
-target ( doit : '' ) {
-  sampleTool.name = 'name'
+target ( ${targetName} : '' ) {
+  sampleTool.name = '${data}'
   println ( sampleTool.name )
 }
-'''
-    assertEquals ( 0 , processCmdLineTargets ( 'doit' ) )
-    assertEquals ( 'name\n' , output )
+"""
+    assertEquals ( 0 , processCmdLineTargets ( targetName ) )
+    assertEquals ( resultString ( targetName , data + '\n' ) , output )
   }
 
   //  Make sure that errors are correctly trapped.
 
   void testErrorPowerNoMultiply ( ) {
     // ** without * is effectively a no-op due to the way things are processed.
-    script = '''
+    script = """
 includeTargets ** gant.targets.Clean
-target ( test : '' ) { }
-'''
-    assertEquals ( 0 , processCmdLineTargets ( 'test' ) )
-    assertEquals ( '' , output )
+target ( ${something} : '' ) { }
+"""
+    assertEquals ( 0 , processCmdLineTargets ( something ) )
+    assertEquals ( resultString ( something , '' ) , output )
   }
   void testErrorNoPower ( ) {
     // * instead of ** is an error because of the type of the right hand parameter.
-    script = '''
+    script = """
 includeTargets * gant.targets.Clean
-target ( test : '' ) { }
-'''
-    assertEquals ( -4 , processCmdLineTargets ( 'test' ) )
+target ( ${something} : '' ) { }
+"""
+    assertEquals ( -4 , processCmdLineTargets ( something ) )
     assertEquals ( 'Standard input, line 2 -- Error evaluating Gantfile: No signature of method: org.codehaus.gant.IncludeTargets.multiply() is applicable for argument types: (java.lang.Class) values: ' + ( ( groovyMinorVersion < 6 ) ? '{class gant.targets.Clean}' : '[class gant.targets.Clean]' ) + '\n' , output )
   }
   void testErrorNullPower ( ) {
-    script = '''
+    script = """
 includeTargets ** null * [ ]
-target ( test : '' ) { }
-'''
-    assertEquals ( -4 , processCmdLineTargets ( 'test' ) )
+target ( ${something} : '' ) { }
+"""
+    assertEquals ( -4 , processCmdLineTargets ( something ) )
     assertEquals ( 'Standard input, line 2 -- Error evaluating Gantfile: wrong number of arguments\n' , output )
   }
 

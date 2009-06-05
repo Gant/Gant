@@ -20,36 +20,40 @@ package org.codehaus.gant.tests
  *  @author Russel Winder <russel.winder@concertant.com>
  */
 final class ExecutingTargets_Test extends GantTestCase {
-  final coreScript = '''
-target ( something : "Do something." ) { }
-target ( somethingElse : "Do something else." ) { }
-'''
+  final targetName = 'testing'
+  final clean = 'clean'
+  final something = 'something'
+  final somethingElse = 'somethingElse'
+  final coreScript = """
+target ( ${something} : '' ) { }
+target ( ${somethingElse} : '' ) { }
+"""
   void testSomethingArgs ( ) {
     script = coreScript
-    assertEquals ( 0 , gant.processArgs ( [ '-f' ,  '-' , 'something' ] as String[] ) )
-    assertEquals ( '' , output ) 
+    assertEquals ( 0 , gant.processArgs ( [ '-f' ,  '-' , something ] as String[] ) )
+    assertEquals ( resultString ( something , '' ) , output ) 
   }
   void testSomethingTargets ( ) {
     script = coreScript
-    assertEquals ( 0 , processCmdLineTargets ( 'something' ) )
-    assertEquals ( '' , output ) 
+    assertEquals ( 0 , processCmdLineTargets ( something ) )
+    assertEquals ( resultString ( something , '' ) , output ) 
   }
   void testCleanAndSomethingArgs ( ) {
     script = 'includeTargets << gant.targets.Clean\n' + coreScript
-    assertEquals ( 0 , gant.processArgs ( [ '-f' ,  '-' , 'clean' , 'something' ] as String[] ) )
-    assertEquals ( '' , output ) 
+    assertEquals ( 0 , gant.processArgs ( [ '-f' ,  '-' , clean , something ] as String[] ) )
+    assertEquals ( resultString ( clean , '' ) + resultString ( something , '' ) , output ) 
   }
   void testCleanAndSomethingTargets ( ) {
     script = 'includeTargets << gant.targets.Clean\n' + coreScript
-    assertEquals ( 0 , processCmdLineTargets ( [ 'clean' , 'something' ] ) )
-    assertEquals ( '' , output ) 
+    assertEquals ( 0 , processCmdLineTargets ( [ clean , something ] ) )
+    assertEquals ( resultString ( clean , '' ) + resultString ( something , '' ) , output ) 
   }
 
  //  GANT-44 asks for targets to have access to the command line target list so that it can be processed in targets.
 
   void testTargetsListIsAccessbileAnChangeable ( ) {
-    script = '''
-target ( testing : '' ) {
+    script = """
+target ( ${targetName} : '' ) {
   assert targets.class == ArrayList
   assert targets.size ( ) == 3
   assert targets[0] == 'testing'
@@ -61,45 +65,42 @@ target ( testing : '' ) {
   assert targets[0] == 'testing'
   assert targets[1] == 'two'
 }
-'''
-    assertEquals ( -11 , processCmdLineTargets ( [ 'testing' , 'one' , 'two' ] ) )
-    assertEquals ( 'Target two does not exist.\n' , output )
+"""
+    assertEquals ( -11 , processCmdLineTargets ( [ targetName , 'one' , 'two' ] ) )
+    assertEquals ( resultString ( targetName , '' ) + 'Target two does not exist.\n' , output )
   }
   
   //  GANT-81 requires that the target finalize is called in all circumstances if it is present.  If it
   //  contains dependencies then they are ignored.
 
   void testFinalizeIsCalledNormally ( ) {
-    def testingMessage =  'testing called'
-    def finalizeMessage = 'finalize called'
+    final testingMessage =  'testing called'
+    final finalizeMessage = 'finalize called'
     script = """
-target ( testing : '' ) { println ( '${testingMessage}' ) }
+target ( ${targetName} : '' ) { println ( '${testingMessage}' ) }
 target ( finalize : '' ) { println ( '${finalizeMessage}' ) }
 """
-    assertEquals ( 0 , processCmdLineTargets ( 'testing' ) )
-    assertEquals ( """${testingMessage}
-${finalizeMessage}
-""" , output )
+    assertEquals ( 0 , processCmdLineTargets ( targetName ) )
+    assertEquals ( resultString ( targetName , testingMessage + '\n' ) + resultString ( 'finalize' , finalizeMessage + '\n' ) , output )
   }
   void testFinalizeIsCalledOnAnException ( ) {
-    def testingMessage =  'testing forcibly failed'
-    def finalizeMessage = 'finalize called'
+    final testingMessage =  'testing forcibly failed'
+    final finalizeMessage = 'finalize called'
     script = """
-target ( testing : '' ) { throw new RuntimeException ( '${testingMessage}' ) }
+target ( ${targetName} : '' ) { throw new RuntimeException ( '${testingMessage}' ) }
 target ( finalize : '' ) { println ( '${finalizeMessage}' ) }
 """
-    assertEquals ( -13 , processCmdLineTargets ( 'testing' ) )
-    assertEquals ( """${finalizeMessage}
-java.lang.RuntimeException: ${testingMessage}
-""" , output )
+    assertEquals ( -13 , processCmdLineTargets ( targetName ) )
+    assertEquals ( targetName + ':\n' + resultString ( 'finalize' , finalizeMessage + '\n' ) + "java.lang.RuntimeException: ${testingMessage}\n" , output )
   }
 
   void testReturnValueFromOneTargetReceivedByCaller ( ) {
-    script = '''
-target ( called : '' ) { 17 }
-target ( caller : '' ) { assert called ( ) == 17 }
-'''
-    assertEquals ( 0 , processCmdLineTargets ( 'caller' ) )
-    assertEquals ( '' , output )
+    final called = 'called'
+    script = """
+target ( ${called} : '' ) { 17 }
+target ( ${targetName} : '' ) { assert ${called} ( ) == 17 }
+"""
+    assertEquals ( 0 , processCmdLineTargets ( targetName ) )
+    assertEquals ( resultString ( targetName , resultString ( called , '' ) ) , output )
   }
 }

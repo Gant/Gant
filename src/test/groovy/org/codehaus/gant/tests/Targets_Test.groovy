@@ -20,25 +20,27 @@ package org.codehaus.gant.tests
  *  @author Russel Winder <russel.winder@concertant.com>
  */
 final class Targets_Test extends GantTestCase {
-  final result = 'OK.'
+  private final targetName = 'targetname'
+  private final ok = 'OK.'
+  private final result = resultString ( targetName , ok )
   void testNoDescription ( ) {
-    script = "target ( noDescription : '' ) { print ( '${result}' ) }"
-    assertEquals ( 0 , processCmdLineTargets ( 'noDescription' ) )
+    script = "target ( ${targetName} : '' ) { print ( '${ok}' ) }"
+    assertEquals ( 0 , processCmdLineTargets ( targetName ) )
     assertEquals ( result , output )
   }
   void testWithDescription ( ) {
-    script = "target ( withDescription : 'Blah blah' ) { print ( '${result}' ) }"
-    assertEquals ( 0 , processCmdLineTargets ( 'withDescription' ) )
+    script = "target ( ${targetName} : 'Blah blah' ) { print ( '${ok}' ) }"
+    assertEquals ( 0 , processCmdLineTargets ( targetName ) )
     assertEquals ( result , output )
   }
   void testEmptyMap ( ) {
-    script = "target ( [ : ] ) { print ( '${result}' ) }"
-    assertEquals ( -4 , processCmdLineTargets ( 'withDescription' ) )
+    script = "target ( [ : ] ) { print ( '${ok}' ) }"
+    assertEquals ( -4 , processCmdLineTargets ( targetName ) )
     assertEquals ( 'Standard input, line 1 -- Error evaluating Gantfile: Target specified without a name.\n' , output )
   }
   void testMultipleEntries ( ) {
-    script = "target ( fred : '' , debbie : '' ) { print ( '${result}' ) }"
-    assertEquals ( -4 , processCmdLineTargets ( 'withDescription' ) )
+    script = "target ( fred : '' , debbie : '' ) { print ( '${ok}' ) }"
+    assertEquals ( -4 , processCmdLineTargets ( targetName ) )
     assertEquals ( 'Standard input, line 1 -- Error evaluating Gantfile: Target specified without a name.\n' , output )
   }
   void testOverwriting ( ) {
@@ -46,41 +48,41 @@ final class Targets_Test extends GantTestCase {
     //  TODO : Fix the problem of overwriting targets.  Until changed, creating a new symbol in the binding
     //  using a target overwrites the old symbol.  This is clearly wrong behaviour and needs amending.
     //
-    script = '''
-target ( hello : '' ) { println ( 'Hello 1' ) }
-target ( hello : '' ) { println ( 'Hello 2' ) }
-'''
+    script = """
+target ( ${targetName} : '' ) { println ( 'Hello 1' ) }
+target ( ${targetName} : '' ) { println ( 'Hello 2' ) }
+"""
     System.err.println ( 'testOverwriting: This test is wrong -- it shows that target overwriting is supported.' )
-    assertEquals ( 0 , processCmdLineTargets ( 'hello' ) )
-    assertEquals ( 'Hello 2\n' , output )
+    assertEquals ( 0 , processCmdLineTargets ( targetName ) )
+    assertEquals ( resultString ( targetName , 'Hello 2\n' ) , output )
   }
   void testForbidRedefinitionOfTarget ( ) {
-    script = '''
-target ( test : '' ) { }
+    script = """
+target ( ${targetName} : '' ) { }
 target = 10
-'''
-    assertEquals ( -4 , processCmdLineTargets ( 'test' ) )
+"""
+    assertEquals ( -4 , processCmdLineTargets ( targetName ) )
     assertEquals ( 'Standard input, line 3 -- Error evaluating Gantfile: Cannot redefine symbol target\n' , output )
   }
   void testStringParameter ( ) {
-    script = "target ( 'string' ) { print ( '${result}' ) }"
-    assertEquals ( -4 , processCmdLineTargets ( 'string' ) )
+    script = "target ( '${targetName}' ) { print ( '${ok}' ) }"
+    assertEquals ( -4 , processCmdLineTargets ( targetName ) )
     assertTrue ( output.startsWith ( 'Standard input, line 1 -- Error evaluating Gantfile: No signature of method: org.codehaus.gant.GantBinding$_initializeGantBinding_closure' ) )
   }
   void testStringSequenceParameter ( ) {
-    script = "target ( 'key' , 'description' ) { print ( '${result}' ) }"
-    assertEquals ( -4 , processCmdLineTargets ( 'key' ) )
+    script = "target ( '${targetName}' , 'description' ) { print ( '${ok}' ) }"
+    assertEquals ( -4 , processCmdLineTargets ( targetName ) )
     assertTrue ( output.startsWith ( 'Standard input, line 1 -- Error evaluating Gantfile: No signature of method: org.codehaus.gant.GantBinding$_initializeGantBinding_closure' ) )
   }
   void testMissingTargetInScriptExplicitTarget ( ) {
-    script = 'setDefaultTarget ( blah )'
-    assertEquals ( -4 , processCmdLineTargets ( 'blah' ) )
-    assertEquals ( 'Standard input, line 1 -- Error evaluating Gantfile: No such property: blah for class: standard_input\n' , output )
+    script = "setDefaultTarget ( ${targetName} )"
+    assertEquals ( -4 , processCmdLineTargets ( targetName ) )
+    assertEquals ( "Standard input, line 1 -- Error evaluating Gantfile: No such property: ${targetName} for class: standard_input\n" , output )
   }
   void testMissingTargetInScriptDefaultTarget ( ) {
-    script = 'setDefaultTarget ( blah )'
+    script = "setDefaultTarget ( ${targetName} )"
     assertEquals ( -4 , processCmdLineTargets ( ) )
-    assertEquals ( 'Standard input, line 1 -- Error evaluating Gantfile: No such property: blah for class: standard_input\n' , output )
+    assertEquals ( "Standard input, line 1 -- Error evaluating Gantfile: No such property: ${targetName} for class: standard_input\n" , output )
   }
   void testFaultyScript ( ) {
     script = 'XXXXX : YYYYY ->'
@@ -92,50 +94,49 @@ target = 10
 
   //  Tests resulting from GANT-45.
 
-  final theTarget = 'stuff'
   final testScript = """
-target ( ${theTarget} : '' ) { println ( home ) }
-setDefaultTarget ( ${theTarget} )
+target ( ${targetName} : '' ) { println ( home ) }
+setDefaultTarget ( ${targetName} )
 """
   final expectedOutput = ( ( ( groovyMinorVersion < 6 ) && ( groovyBugFixVersion < 8 ) ) ? '' : 'Standard input, line 2 -- ' ) + 'Error evaluating Gantfile: No such property: home for class: standard_input\n'
   void test_GANT_45_MessageBugDefaultTarget ( ) {
     script = testScript
     assertEquals ( -12 , processCmdLineTargets ( ) )
-    assertEquals ( expectedOutput , output )
+    assertEquals ( 'default:\n' + targetName + ':\n' + expectedOutput , output )
   }
   void test_GANT_45_MessageBugExplicitTarget ( ) {
     script = testScript
-    assertEquals ( -11 , processCmdLineTargets ( theTarget ) )
-    assertEquals ( expectedOutput , output )
+    assertEquals ( -11 , processCmdLineTargets ( targetName ) )
+    assertEquals ( targetName + ':\n' + expectedOutput , output )
   }
 
   //  Test relating to GStrings as target names
 
   void testGStringWorkingAsATargetName ( ) {
-    def targetName = 'fred'
-    script = '''
-def name = "''' + targetName + '''"
-target ( "${name}" : '' ) {
-  println ( "${name}" )
-}
-'''
+    script = """
+def name = '${targetName}'
+target ( "\${name}" : '' ) { println ( "\${name}" ) }
+"""
     assertEquals ( 0 , processCmdLineTargets ( targetName ) )
-    assertEquals ( targetName + '\n' , output )
+    assertEquals ( resultString ( targetName , targetName + '\n' ) , output )
   }
 
   //  Tests resulting from GANT-55 -- GString as a parameter to depends call causes problems.
   //
   //  GANT-61 turns out to be a replica of GANT-55.
 
-  void test_GANT_55_originalFailure ( ) {
-    def targetName = 'test'
-    script = '''
-def tag = "''' + targetName + '''"
-target ( "${tag}.profile" : "Profile for $tag" ) { println "Profile for $tag" }
-target ( "${tag}.compile" : "Compile for $tag" ) {
-  depends ( "${tag}.profile" )
-  println "Compile for $tag"
-}'''
+  private final profileTag = '.profile'
+  private final compileTag = '.compile'
+  private final expectedGant55Result =  resultString ( targetName + compileTag , resultString ( targetName + profileTag , "Profile for ${targetName}\n" ) + "Compile for ${targetName}\n" )
+  void test_GANT_55_original_usingGStringKeys ( ) {
+    script = """
+def tag = '${targetName}'
+target ( "\${tag}${profileTag}" : '' ) { println ( "Profile for \$tag" ) }
+target ( "\${tag}${compileTag}" : '' ) {
+  depends ( "\${tag}${profileTag}" )
+  println ( "Compile for \$tag" )
+}
+"""
     /*
      *  The original behaviour:
      *
@@ -144,24 +145,19 @@ target ( "${tag}.compile" : "Compile for $tag" ) {
     *
     *  Is now fixed:
     */
-    assertEquals ( 0 , processCmdLineTargets ( 'test.compile' ) )
-    assertEquals ( """Profile for ${targetName}
-Compile for ${targetName}
-""" , output )
+    assertEquals ( 0 , processCmdLineTargets ( "${targetName}${compileTag}" ) ) // NB parameter must be a String!
+    assertEquals ( expectedGant55Result , output )
   }
-  void test_GANT_55_originalFixed ( ) {
-    def targetName = 'test'
-    script = '''
-def tag = "''' + targetName + '''"
-target ( "${tag}.profile" : "Profile for $tag" ) { println "Profile for $tag" }
-target ( "${tag}.compile" : "Compile for $tag" ) {
-  depends ( '' + "${tag}.profile" )
-  println "Compile for $tag"
-}'''
-    assertEquals ( 0 , processCmdLineTargets ( 'test.compile' ) )
-    assertEquals ( """Profile for ${targetName}
-Compile for ${targetName}
-""" , output )
+  void test_GANT_55_usingStringKeys ( ) {
+    script = """
+target ( '${targetName}${profileTag}' : '' ) { println ( 'Profile for $targetName' ) }
+target ( '${targetName}${compileTag}' : '' ) {
+  depends ( '${targetName}${profileTag}' )
+  println ( 'Compile for $targetName' )
+}
+"""
+    assertEquals ( 0 , processCmdLineTargets ( targetName + compileTag ) )
+    assertEquals ( expectedGant55Result , output )
   }
 
   //  Tests to ensure the patch of GANT-56 doesn't do nasty things.  A couple of tests from earlier change
@@ -181,52 +177,42 @@ setDefaultTarget ( targetName )
   }
 
   void test_nameAsATargetNameImpliesExplicitDefinitionStyle ( ) {
-    script = '''
-targetName = 'bar'
+    final bar = 'bar'
+    script = """
+targetName = '${bar}'
 target ( name : targetName ) {
   assert it.name == targetName
   assert it.description == null
 }
 setDefaultTarget ( targetName )
-'''
+"""
     assertEquals ( 0 , processCmdLineTargets ( ) )
-    assertEquals ( '' , output )
+    assertEquals ( resultString ( 'default' , resultString ( bar , '' ) ) , output )
   }
 
   //  Phil Swenson asked for the name of the target being completed to be available -- see the email on the Gant
   //  Developer list dated 2009-09-26 20:48+00:00
 
+  private final one = 'one'
+  private final two = 'two'
+  private final initiatingTargetScript = """
+target ( ${one} : '' ) {
+  println ( initiatingTarget )
+}
+target ( ${two} : '' ) {
+  depends ( ${one} )
+  println ( initiatingTarget )
+}
+"""
   void testInitiatingTargetAvailableToScript ( ) {
-    script = '''
-target ( 'one' : '' ) {
-  println ( initiatingTarget )
-}
-target ( 'two' : '' ) {
-  depends ( one )
-  println ( initiatingTarget )
-}
-'''
-    assertEquals ( 0 , processCmdLineTargets ( 'two' ) )
-    assertEquals ( '''two
-two
-''' , output )
+    script = initiatingTargetScript
+    assertEquals ( 0 , processCmdLineTargets ( two ) )
+    assertEquals ( resultString ( two , resultString ( one , two + '\n' ) + two + '\n' ) , output )
   }
-  
   void testEachInitiatingTargetOfASequenceAvailableToScript ( ) {
-    script = '''
-target ( 'one' : '' ) {
-  println ( initiatingTarget )
-}
-target ( 'two' : '' ) {
-  depends ( one )
-  println ( initiatingTarget )
-}
-'''
-    assertEquals ( 0 , processCmdLineTargets ( [ 'one' , 'two' ] ) )
-    assertEquals ( '''one
-two
-two
-''' , output )
+    script = initiatingTargetScript
+    assertEquals ( 0 , processCmdLineTargets ( [ one , two ] ) )
+    assertEquals ( resultString ( one , one + '\n' ) + resultString ( two , resultString ( one , two + '\n' ) + two + '\n' ) , output )
   }
   
 }

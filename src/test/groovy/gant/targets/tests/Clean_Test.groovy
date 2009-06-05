@@ -1,6 +1,6 @@
 //  Gant -- A Groovy way of scripting Ant tasks.
 //
-//  Copyright © 2007-8 Russel Winder
+//  Copyright © 2007-9 Russel Winder
 //
 //  Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in
 //  compliance with the License. You may obtain a copy of the License at
@@ -22,104 +22,87 @@ import org.codehaus.gant.tests.GantTestCase
  *  @author Russel Winder <russel.winder@concertant.com>
  */
 final class Clean_Test extends GantTestCase {
+  final targetName = 'targetName'
   void testCleanDirectoryString ( ) {
     script = """
 includeTargets << gant.targets.Clean
 cleanDirectory << 'target'
-target ( testClean : '' ) { println ( cleanDirectory ) }
+target ( ${targetName} : '' ) { println ( cleanDirectory ) }
 """
-    assertEquals ( 0 , processCmdLineTargets ( 'testClean' ) )
-    assertEquals (  ( groovyMinorVersion > 5 ) ? '''[target]
-''' : '''["target"]
-''' , output ) 
+    assertEquals ( 0 , processCmdLineTargets ( targetName ) )
+    assertEquals ( resultString ( targetName , ( groovyMinorVersion > 5 ) ? '[target]\n' : '["target"]\n' ) , output )
   }
   void testCleanDirectoryList ( ) {
     script = """
 includeTargets << gant.targets.Clean
 cleanDirectory << [ 'target_a' , 'target_b' ]
-target ( testClean : '' ) { println ( cleanDirectory ) }
+target ( ${targetName} : '' ) { println ( cleanDirectory ) }
 """ 
-    assertEquals ( 0 , processCmdLineTargets ( 'testClean' ) ) 
-    assertEquals ( ( groovyMinorVersion > 5 ) ? '''[[target_a, target_b]]
-''' :  '''[["target_a", "target_b"]]
-''' , output ) 
+    assertEquals ( 0 , processCmdLineTargets ( targetName ) ) 
+    assertEquals ( resultString ( targetName , ( groovyMinorVersion > 5 ) ? '[[target_a, target_b]]\n' :  '[["target_a", "target_b"]]\n' ) , output )
   }
   void testCleanPatternString ( ) {
     script = """
 includeTargets << gant.targets.Clean
 cleanPattern << '**/*~'
-target ( testClean : '' ) {println ( cleanPattern ) }
+target ( ${targetName} : '' ) {println ( cleanPattern ) }
 """
-    assertEquals ( 0 , processCmdLineTargets ( 'testClean' ) )
-    assertEquals ( ( groovyMinorVersion > 5 ) ? '''[**/*~]
-''' : '''["**/*~"]
-''' , output ) 
+    assertEquals ( 0 , processCmdLineTargets ( targetName ) )
+    assertEquals ( resultString ( targetName , ( groovyMinorVersion > 5 ) ? '[**/*~]\n' : '["**/*~"]\n' ) , output ) 
   }
   void testCleanPatternList ( ) {
     script = """
 includeTargets << gant.targets.Clean
 cleanPattern << [ '**/*~' , '**/*.bak' ]
-target ( testClean : '' ) { println ( cleanPattern ) }
+target ( ${targetName} : '' ) { println ( cleanPattern ) }
 """
-    assertEquals ( 0 , processCmdLineTargets ( 'testClean' ) )
-    assertEquals ( ( groovyMinorVersion > 5 ) ? '''[[**/*~, **/*.bak]]
-''' : '''[["**/*~", "**/*.bak"]]
-''' , output ) 
+    assertEquals ( 0 , processCmdLineTargets ( targetName ) )
+    assertEquals ( resultString ( targetName , ( groovyMinorVersion > 5 ) ? '[[**/*~, **/*.bak]]\n' : '[["**/*~", "**/*.bak"]]\n' ) , output ) 
   }
   void testClobberDirectoryString ( ) {
     script = """
 includeTargets << gant.targets.Clean
 clobberDirectory << 'target'
-target ( testClobber : '' ) { println ( clobberDirectory ) }
+target ( ${targetName} : '' ) { println ( clobberDirectory ) }
 """
-    assertEquals ( 0 , processCmdLineTargets ( 'testClobber' ) )
-    assertEquals ( ( groovyMinorVersion > 5 ) ? '''[target]
-''' : '''["target"]
-''' , output ) 
+    assertEquals ( 0 , processCmdLineTargets ( targetName ) )
+    assertEquals ( resultString ( targetName , ( groovyMinorVersion > 5 ) ? '[target]\n' : '["target"]\n' ) , output ) 
   }
   void testClobberDirectoryList ( ) {
     script = """
 includeTargets << gant.targets.Clean
 clobberDirectory << [ 'target_a' , 'target_b' ]
-target ( testClobber : '' ) { println ( clobberDirectory ) }
+target ( ${targetName} : '' ) { println ( clobberDirectory ) }
 """
-    assertEquals ( 0 , processCmdLineTargets ( 'testClobber' ) )
-    assertEquals ( ( groovyMinorVersion > 5 ) ? '''[[target_a, target_b]]
-''' : '''[["target_a", "target_b"]]
-''' , output ) 
+    assertEquals ( 0 , processCmdLineTargets ( targetName ) )
+    assertEquals ( resultString ( targetName , ( groovyMinorVersion > 5 ) ? '[[target_a, target_b]]\n' : '[["target_a", "target_b"]]\n' ) , output ) 
   }
   void testClobberPatternString ( ) {
     script = """
 includeTargets << gant.targets.Clean
 clobberPattern << '**/*~'
-target ( testClobber : '' ) {
+target ( ${targetName} : '' ) {
   println ( clobberPattern )
 }
 """
-    assertEquals ( 0 , processCmdLineTargets ( 'testClobber' ) )
-    assertEquals ( ( groovyMinorVersion > 5 ) ? '''[**/*~]
-''' : '''["**/*~"]
-''' , output ) 
+    assertEquals ( 0 , processCmdLineTargets ( targetName ) )
+    assertEquals ( resultString ( targetName , ( groovyMinorVersion > 5 ) ? '[**/*~]\n' : '["**/*~"]\n' ) , output ) 
   }
   void testClobberPatternList ( ) {
     script = """
 includeTargets << gant.targets.Clean
 clobberPattern << [ '**/*~' , '**/*.bak' ]
-target ( testClobber : '' ) { println ( clobberPattern ) }
+target ( ${targetName} : '' ) { println ( clobberPattern ) }
 """
-    assertEquals ( 0 , processCmdLineTargets ( 'testClobber' ) )
-    assertEquals ( ( groovyMinorVersion > 5 ) ? '''[[**/*~, **/*.bak]]
-''' : '''[["**/*~", "**/*.bak"]]
-''' , output ) 
+    assertEquals ( 0 , processCmdLineTargets ( targetName ) )
+    assertEquals ( resultString ( targetName , ( groovyMinorVersion > 5 ) ? '[[**/*~, **/*.bak]]\n' : '[["**/*~", "**/*.bak"]]\n' ) , output ) 
   }
   void testParameterizedInclude ( ) {
    script = """
 includeTargets ** gant.targets.Clean * [ cleanDirectory : 'target' ]
-target ( testClean : '' ) { println ( cleanDirectory ) }
+target ( ${targetName} : '' ) { println ( cleanDirectory ) }
 """
-    assertEquals ( 0 , processCmdLineTargets ( 'testClean' ) )
-    assertEquals (  ( groovyMinorVersion > 5 ) ? '''[target]
-''' : '''["target"]
-''' , output ) 
+    assertEquals ( 0 , processCmdLineTargets ( targetName ) )
+    assertEquals ( resultString ( targetName , ( groovyMinorVersion > 5 ) ? '[target]\n' : '["target"]\n' ) , output ) 
   }
 }

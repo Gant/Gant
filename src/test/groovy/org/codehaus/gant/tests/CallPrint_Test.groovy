@@ -1,6 +1,6 @@
 //  Gant -- A Groovy way of scripting Ant tasks.
 //
-//  Copyright © 2006-8 Russel Winder
+//  Copyright © 2006-9 Russel Winder
 //
 //  Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in
 //  compliance with the License. You may obtain a copy of the License at
@@ -20,27 +20,23 @@ package org.codehaus.gant.tests
  *  @author Russel Winder <russel.winder@concertant.com>
  */
 final class CallPrint_Test extends GantTestCase {
+  final outputString = 'Hello World.'
   void testSystemOutPrintln ( ) {
-    script = '''
-target ( systemOutPrintln : "Do something." ) { System.out.println ( "Hello World" ) }
-'''
-    assertEquals ( 0 , processCmdLineTargets ( 'systemOutPrintln' ) )
-    assertEquals ( '''Hello World
-''' , output ) 
+    final targetName = 'systemOutPrintln'
+    script = "target ( ${targetName} : '' ) { System.out.println ( '${outputString}' ) }"
+    assertEquals ( 0 , processCmdLineTargets ( targetName ) )
+    assertEquals ( resultString ( targetName , outputString + '\n' ) , output ) 
   }
   void testPrintln ( ) {
-    script = '''
-target ( testPrintln : "Do something." ) { println ( "Hello World" ) }
-'''
-    assertEquals ( 0 , processCmdLineTargets ( 'testPrintln' ) )
-    assertEquals ( '''Hello World
-''' , output ) 
+    final targetName = 'testPrintln'
+    script = "target ( ${targetName} : '' ) { println ( '${outputString}' ) }"
+    assertEquals ( 0 , processCmdLineTargets ( targetName ) )
+    assertEquals ( resultString ( targetName , outputString + '\n' ) , output ) 
   }
   void testMessage ( ) {
-    script = '''
-target ( testMessage : "Do something." ) { message ( 'message' , 'A message.' ) }
-'''
-    assertEquals ( 0 , processCmdLineTargets ( 'testMessage' ) )
-    assertEquals ( '  [message] A message.\n' , output ) 
+    final targetName = 'testMessage'
+    script = "target ( ${targetName} : '' ) { message ( 'message' , '${outputString}' ) }"
+    assertEquals ( 0 , processCmdLineTargets ( targetName ) )
+    assertEquals ( resultString ( targetName , "  [message] " + outputString + '\n' ) , output ) 
   }
 }

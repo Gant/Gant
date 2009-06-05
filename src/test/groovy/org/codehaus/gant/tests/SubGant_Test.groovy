@@ -1,6 +1,6 @@
 //  Gant -- A Groovy way of scripting Ant tasks.
 //
-//  Copyright © 2008 Russel Winder
+//  Copyright © 2008-9 Russel Winder
 //
 //  Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in
 //  compliance with the License. You may obtain a copy of the License at
@@ -20,9 +20,10 @@ package org.codehaus.gant.tests
  *  @author Russel Winder <russel.winder@concertant.com>
  */
 final class SubGant_Test extends GantTestCase {
-  final targetName = 'targetName'
-  final resultMessage = 'Do thing.'
-  File buildFile
+  private final targetName = 'targetName'
+  private final internalTarget = 'doTarget'
+  private final resultMessage = 'Do thing.'
+  private File buildFile
   public void setUp ( ) {
     super.setUp ( )
     buildFile = File.createTempFile ( 'gant_' , '_SubGant_Test' ) // Must ensure name is a valid Java class name.
@@ -32,56 +33,49 @@ final class SubGant_Test extends GantTestCase {
     buildFile.delete ( )
   }
   public void testSimple ( ) {
-    def buildScript = """
-def internalTarget = 'doTarget'
-target ( ( internalTarget ) : '' ) { println ( '${resultMessage}' ) }
-target ( '${targetName}' : '' ) {
+    final buildScript = """
+target ( ${internalTarget} : '' ) { println ( '${resultMessage}' ) }
+target ( ${targetName} : '' ) {
   subGant = new gant.Gant ( )
   subGant.loadScript ( new File ( '${escapeWindowsPath ( buildFile.path )}' ) )
-  subGant.processTargets ( internalTarget )
+  subGant.processTargets ( '${internalTarget}' )
 }
 """
     buildFile.write ( buildScript )
     script = buildScript
     assertEquals ( 0 , processCmdLineTargets ( targetName ) )
-    assertEquals ( resultMessage + '\n' , output )
+    assertEquals ( resultString ( targetName , resultString ( internalTarget , resultMessage + '\n' ) ) , output )
   }
   public void testWithBinding ( ) {
-    def buildScript = """
-def internalTarget = 'doTarget'
-target ( ( internalTarget ) : '' ) { println ( '${resultMessage}' ) }
-target ( '${targetName}' : '' ) {
+    final buildScript = """
+target ( ${internalTarget} : '' ) { println ( '${resultMessage}' ) }
+target ( ${targetName} : '' ) {
   subGant = new gant.Gant ( binding.clone ( ) )
   subGant.loadScript ( new File ( '${escapeWindowsPath ( buildFile.path )}' ) )
-  subGant.processTargets ( internalTarget )
+  subGant.processTargets ( '${internalTarget}' )
 }
 """
     buildFile.write ( buildScript )
     script = buildScript
     assertEquals ( 0 , processCmdLineTargets ( targetName ) )
-    assertEquals ( resultMessage + '\n' , output )
+    assertEquals ( resultString ( targetName , resultString ( internalTarget , resultMessage + '\n' ) ) , output )
   }
   public void testSettingBindingVariable ( ) {
-    def buildScript = """
-target ( doOutput : '' ) {
-  println ( 'flobadob = ' + flobadob )
-}
-target ( '${targetName}' : '' ) {
+    final flobadob = 'flobadob'
+    final weed = 'weed'
+    final buildScript = """
+target ( ${internalTarget} : '' ) { println ( '${flobadob} = ' + ${flobadob} ) }
+target ( ${targetName} : '' ) {
   def newBinding = binding.clone ( )
-  newBinding.flobadob = 'weed'
+  newBinding.${flobadob} = '${weed}'
   subGant = new gant.Gant ( newBinding )
   subGant.loadScript ( new File ( '${escapeWindowsPath ( buildFile.path )}' ) )
-  subGant.processTargets ( 'doOutput' )
+  subGant.processTargets ( '${internalTarget}' )
 }
 """
     buildFile.write ( buildScript )
     script = buildScript
     assertEquals ( 0 , processCmdLineTargets ( targetName ) )
-    assertEquals ( 'flobadob = weed\n' , output )
-    assertEquals ( 0 , processCmdLineTargets ( 'doOutput' ) )
-    //
-    //  TODO :  Correct this erroneous result.
-    //
-    assertEquals ( 'flobadob = weed\nflobadob = weed\n' , output )
+    assertEquals ( resultString ( targetName , resultString ( internalTarget , flobadob + ' = ' + weed + '\n' ) ) , output )
   }
 }

@@ -1,6 +1,6 @@
 //  Gant -- A Groovy way of scripting Ant tasks.
 //
-//  Copyright © 2008 Russel Winder
+//  Copyright © 2008-9 Russel Winder
 //
 //  Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in
 //  compliance with the License. You may obtain a copy of the License at
@@ -19,7 +19,7 @@ import org.codehaus.gant.tests.GantTestCase
 /**
  *  A test to ensure that Gant objects are garbage collected appropriately.
  *
- *  <p>Original idea for the test from GANT-33, due to Peter Ledbrook.</p>
+ *  <p>Original idea for the test due to Peter Ledbrook.</p>
  *
  *  @author Russel Winder <russel.winder@concertant.com>
  */

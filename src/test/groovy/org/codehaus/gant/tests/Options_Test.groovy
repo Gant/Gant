@@ -1,6 +1,6 @@
 //  Gant -- A Groovy way of scripting Ant tasks.
 //
-//  Copyright © 2007-8 Russel Winder
+//  Copyright © 2007-9 Russel Winder
 //
 //  Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in
 //  compliance with the License. You may obtain a copy of the License at
@@ -20,6 +20,7 @@ package org.codehaus.gant.tests
  *  @author Russel Winder <russel.winder@concertant.com>
  */
 final class Options_Test extends GantTestCase {
+  private final targetName = 'printDefinitions'
   void testVersion ( ) {
     assertEquals ( 0 , gant.processArgs ( [ '-V' ] as String[] ) )
     //  It appears that during test, the manifest version number is not actually found so we get <unknown>
@@ -27,22 +28,23 @@ final class Options_Test extends GantTestCase {
     assertEquals ( 'Gant version <unknown>' , output.trim ( ) )
   }
   void testDefinitions ( ) {
-    script = '''
-target ( printDefinitions : "Print some definitions" ) {
+    script = """
+target ( ${targetName} : '' ) {
   println ( first )
   println ( second )
   println ( third )
-}'''
-    assertEquals ( 0 , gant.processArgs ( [ '-f' , '-' , '-Dfirst=tsrif' , '-Dsecond=dnoces' , '-Dthird=driht' , 'printDefinitions' ] as String[] ) )
-    assertEquals ( '''tsrif
+}
+"""
+    assertEquals ( 0 , gant.processArgs ( [ '-f' , '-' , '-Dfirst=tsrif' , '-Dsecond=dnoces' , '-Dthird=driht' , targetName ] as String[] ) )
+    assertEquals ( resultString ( targetName , '''tsrif
 dnoces
 driht
-''' , output )
+''' ) , output )
   }
   void testFileOptionLong ( ) {
-    script = 'target ( test : "Test entry" ) { println ( "Hello." ) }'
-    assertEquals ( 0 , gant.processArgs ( [ '--file' , '-' , 'test' ] as String[] ) )
-    assertEquals ( '''Hello.
-''' , output )
+    final message = 'Hello.'
+    script = "target ( ${targetName} : '' ) { println ( '${message}' ) }"
+    assertEquals ( 0 , gant.processArgs ( [ '--file' , '-' , targetName ] as String[] ) )
+    assertEquals ( resultString ( targetName , message + '\n' ) , output )
   }
 }

@@ -1,6 +1,6 @@
 //  Gant -- A Groovy way of scripting Ant tasks.
 //
-//  Copyright © 2006-8 Russel Winder
+//  Copyright © 2006-9 Russel Winder
 //
 //  Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in
 //  compliance with the License. You may obtain a copy of the License at
@@ -20,14 +20,16 @@ package org.codehaus.gant.tests
  *  @author Russel Winder <russel.winder@concertant.com>
  */
 final class TargetMetaClassLookup_Test extends GantTestCase {
+  private final something = 'something'
+  private final message = 'message'
   void setUp ( ) {
     super.setUp ( )
-    script = '''
+    script = """
 includeTargets << gant.targets.Clean
-cleanPattern << "**/*~"
-target ( something : "Do something." ) { ant.echo ( message : "Did something." ) }
-setDefaultTarget ( something )
-'''
+cleanPattern << '**/*~'
+target ( ${something} : '' ) { ant.echo ( message : '${message}' ) }
+setDefaultTarget ( ${something} )
+"""
   }
 
   //  It seems that the same gant.targets.Clean instance is used for all tests in this class which is a bit
@@ -38,20 +40,21 @@ setDefaultTarget ( something )
   void testClean ( ) {
     //  Have to do this dry run or the result is indeterminate.
     assertEquals ( 0 , gant.processArgs ( [ '-n' , '-f' ,  '-'  , 'clean' ] as String[] ) )
-    assertEquals ( '''   [delete] quiet : 'false'
+    assertEquals ( resultString ( 'clean' , '''   [delete] quiet : 'false'
   [fileset] dir : '.' , includes : '**/*~' , defaultexcludes : 'false'
-''' , output ) //// */ Emacs fontlock fixup.
+''' ) , output ) //// */ Emacs fontlock fixup.
   }
   void testDefault ( ) {
     assertEquals ( 0 , processCmdLineTargets (  ) )
-    assertEquals (  "     [echo] Did something.\n" , output )
+    assertEquals ( resultString ( 'default' , resultString ( something , "     [echo] ${message}\n" ) ) , output )
   }
-  void testBlah ( ) {
-    assertEquals ( -11 , processCmdLineTargets ( 'blah' ) )
-    assertEquals ( 'Target blah does not exist.\n' , output )
+  void testMissingTarget ( ) {
+    final missingTarget = 'blah'
+    assertEquals ( -11 , processCmdLineTargets ( missingTarget ) )
+    assertEquals ( "Target ${missingTarget} does not exist.\n" , output )
   }
   void testSomething ( ) {
-    assertEquals ( 0 , processCmdLineTargets ( 'something' ) )
-    assertEquals ( "     [echo] Did something.\n" , output )
+    assertEquals ( 0 , processCmdLineTargets ( something ) )
+    assertEquals ( resultString ( something , "     [echo] ${message}\n" ) , output )
   }
 }

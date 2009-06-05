@@ -1,6 +1,6 @@
 //  Gant -- A Groovy way of scripting Ant tasks.
 //
-//  Copyright © 2007-8 Russel Winder
+//  Copyright © 2007-9 Russel Winder
 //
 //  Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in
 //  compliance with the License. You may obtain a copy of the License at
@@ -20,112 +20,83 @@ package org.codehaus.gant.tests
  *  @author Russel Winder <russel.winder@concertant.com>
  */
 final class NoAntObject_Test extends GantTestCase {
+  private final targetName = 'targetName'
+  private final message = 'Hello'
+  private final followUp = ' World'
+  private final replicationCount = 4
+  private String resultMessage = resultString ( targetName , "     [echo] ${message}\n" )
+  private String resultReplicated = resultString ( targetName , "     [echo] ${message}\n" * replicationCount )
   void testEchoAttribute ( ) {
-    script = 'target ( test : "" ) { echo ( message : "Hello." ) } '
-    assertEquals ( 0 , processCmdLineTargets ( 'test' ) )
-    assertEquals ( '''     [echo] Hello.
-''' , output ) 
+    script = "target ( ${targetName} : '' ) { echo ( message : '${message}' ) }"
+    assertEquals ( 0 , processCmdLineTargets ( targetName ) )
+    assertEquals ( resultMessage , output ) 
   }
   void testEchoText ( ) {
-    script = 'target ( test : "" ) { echo { "Hello." } } '
-    assertEquals ( 0 , processCmdLineTargets ( 'test' ) )
-    assertEquals ( '' , output ) 
+    script = "target ( ${targetName} : '' ) { echo { '${message}' } }"
+    assertEquals ( 0 , processCmdLineTargets ( targetName ) )
+    assertEquals ( resultString ( targetName , '' ) , output ) 
   }
   void testEchoMixed ( ) {
-    script = 'target ( test : "" ) { echo ( message : "Hello" ) { " World." } } '
-    assertEquals ( 0 , processCmdLineTargets ( 'test' ) )
-    assertEquals ( '''     [echo] Hello
-''' , output ) 
+    script = "target ( ${targetName} : '' ) { echo ( message : '${message}' ) { ' ${followUp}' } }"
+    assertEquals ( 0 , processCmdLineTargets ( targetName ) )
+    assertEquals ( resultMessage , output ) 
   }
   //  cf. GANT-10
   void testWithAntReferenceScriptLevel ( ) {
-    script = '''
-ant.echo ( message : "Hello" )
-target ( test : '' ) { ant.echo ( message : "World" ) }
-'''
-    assertEquals ( 0 , processCmdLineTargets ( 'test' ) )
-    assertEquals ( '''     [echo] Hello
-     [echo] World
-''' , output ) 
+    script = """
+ant.echo ( message : '${message}' )
+target ( ${targetName} : '' ) { ant.echo ( message : '${followUp}' ) }
+"""
+    assertEquals ( 0 , processCmdLineTargets ( targetName ) )
+    assertEquals ( "     [echo] ${message}\n" + resultString ( targetName , "     [echo] ${followUp}\n" ) , output ) 
   }
-  /*
   void testWithoutAntReferenceScriptLevel ( ) {
-    script = '''
-echo ( message : "Hello" )
-target ( test : '' ) { echo ( message : "World" ) }
-'''
-    assertEquals ( 0 , processCmdLineTargets ( 'test' ) )
-    assertEquals ( '''     [echo] Hello
-     [echo] World
-''' , output ) 
+    script = """
+ant.echo ( message : '${message}' )
+target ( ${targetName} : '' ) { echo ( message : '${followUp}' ) }
+"""
+    assertEquals ( 0 , processCmdLineTargets ( targetName ) )
+    assertEquals (  "     [echo] ${message}\n" + resultString ( targetName , "     [echo] ${followUp}\n" ) , output ) 
   }
-  */
   void testWithAntReferenceInClosure ( ) {
-    script = '''
-target ( test : '' ) {
-  ( 0..3 ).each { ant.echo ( message : "Hello World!" ) }
-}
-'''
-    assertEquals ( 0 , processCmdLineTargets ( 'test' ) )
-    assertEquals ( '''     [echo] Hello World!
-     [echo] Hello World!
-     [echo] Hello World!
-     [echo] Hello World!
-''' , output ) 
+    script = "target ( ${targetName} : '' ) { ( 0..<${replicationCount} ).each { ant.echo ( message : '${message}' ) } }"
+    assertEquals ( 0 , processCmdLineTargets ( targetName ) )
+    assertEquals ( resultReplicated , output ) 
   }
   void testWithoutAntReferenceInClosure ( ) {
-    script = '''target ( test : '' ) { ( 0..3 ).each { echo ( message : "Hello World!" ) } }'''
-    assertEquals ( 0 , processCmdLineTargets ( 'test' ) )
-    assertEquals ( '''     [echo] Hello World!
-     [echo] Hello World!
-     [echo] Hello World!
-     [echo] Hello World!
-''' , output ) 
+    script = "target ( ${targetName} : '' ) { ( 0..<${replicationCount} ).each { echo ( message : '${message}' ) } }"
+    assertEquals ( 0 , processCmdLineTargets ( targetName ) )
+    assertEquals ( resultReplicated , output )
   }
   void testWithoutAntReferenceInMapClosure ( ) {
-    script = '''target ( test : '' ) { [ a : 'A' , b : 'B' ].each { key , value -> echo ( message : "${key}:${value}" ) } }'''
-    assertEquals ( 0 , processCmdLineTargets ( 'test' ) )
-    assertEquals ( '''     [echo] a:A
+    script = "target ( ${targetName} : '' ) { [ a : 'A' , b : 'B' ].each { key , value -> echo ( message : \"\${key}:\${value}\" ) } }"
+    assertEquals ( 0 , processCmdLineTargets ( targetName ) )
+    assertEquals ( resultString ( targetName , '''     [echo] a:A
      [echo] b:B
-''' , output ) 
+''' ) , output ) 
   }
   void testClosureWithAnt ( ) {
-    script = '''
-closure = { ant.echo ( message : "Hello World!" ) }
-target ( test : '' ) { ( 0..3 ).each closure }
-'''
-    assertEquals ( 0 , processCmdLineTargets ( 'test' ) )
-    assertEquals ( '''     [echo] Hello World!
-     [echo] Hello World!
-     [echo] Hello World!
-     [echo] Hello World!
-''' , output ) 
+    script = """
+closure = { ant.echo ( message : '${message}' ) }
+target ( ${targetName} : '' ) { ( 0..<${replicationCount} ).each closure }
+"""
+    assertEquals ( 0 , processCmdLineTargets ( targetName ) )
+    assertEquals ( resultReplicated , output )
   }
   void testClosureWithoutAntWithExplictMetaClassSetting ( ) {
-    script = '''
-closure = { echo ( message : "Hello World!" ) }
+    script = """
+closure = { echo ( message : '${message}' ) }
 closure.metaClass = new org.codehaus.gant.GantMetaClass ( closure.metaClass , binding )
-target ( test : '' ) { ( 0..3 ).each closure }
-'''
-    assertEquals ( 0 , processCmdLineTargets ( 'test' ) )
-    assertEquals ( '''     [echo] Hello World!
-     [echo] Hello World!
-     [echo] Hello World!
-     [echo] Hello World!
-''' , output ) 
+target ( ${targetName} : '' ) { ( 0..<${replicationCount} ).each closure }
+"""
+    assertEquals ( 0 , processCmdLineTargets ( targetName ) )
+    assertEquals ( resultReplicated , output )
   }
-  /*
   void testClosureWithoutAnt ( ) {
-    script = '''
-closure = { echo ( message : "Hello World!" ) }
-target ( test : '' ) { ( 0..3 ).each closure }
-'''
-    assertEquals ( 0 , processCmdLineTargets ( 'test' ) )
-    assertEquals ( '''     [echo] Hello World!
-     [echo] Hello World!
-     [echo] Hello World!
-     [echo] Hello World!
-''' , output ) 
+    script = """
+closure = { echo ( message : '${message}' ) }
+target ( ${targetName} : '' ) { ( 0..<${replicationCount} ).each closure }
+"""
+    assertEquals ( -13 , processCmdLineTargets ( targetName ) )
   }
-  */
 }

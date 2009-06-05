@@ -27,15 +27,16 @@ final class GantBuilder_Test extends GantTestCase {
     //  org.apache.tools.ant.BuildLogger appears to have no way of querying the message output level only of
     //  setting it. This means we can only test that using the setMessageOutputLevel fails to fail.
     assertEquals ( GantState.NORMAL , GantState.verbosity )
-    final def gantBuilder = new GantBuilder ( )
+    final gantBuilder = new GantBuilder ( )
     GantState.verbosity = GantState.VERBOSE
     gantBuilder.setMessageOutputLevel ( )
     assertEquals ( GantState.VERBOSE , GantState.verbosity )
   }
   void testGroovycTaskFail ( ) {
-    def sourceDirectory = '.'
-    def destinationDirectory = '/tmp/tmp/tmp/tmp'
-    def expectedResult = 'groovy.lang.MissingMethodException: No signature of method: standard_input.groovyc() is applicable for argument types: (java.util.LinkedHashMap) values: '
+    final targetName = 'hello'
+    final sourceDirectory = '.'
+    final destinationDirectory = '/tmp/tmp/tmp/tmp'
+    final expectedResult = 'groovy.lang.MissingMethodException: No signature of method: standard_input.groovyc() is applicable for argument types: (java.util.LinkedHashMap) values: '
     if ( groovyMinorVersion < 6 ) { expectedResult += "{[\"srcdir\":\"${sourceDirectory}\", \"destdir\":\"${destinationDirectory}\"]}\n" }
     else { expectedResult += "[[srcdir:${sourceDirectory}, destdir:${destinationDirectory}]]\n" }
     //
@@ -43,11 +44,11 @@ final class GantBuilder_Test extends GantTestCase {
     //  another test may have caused the Groovyc task to be loaded which leads to a 0 return value.
     //
     script = """
-target ( hello : '' ) {
+target ( ${targetName} : '' ) {
   groovyc ( srcdir : '${sourceDirectory}' , destdir : '${destinationDirectory}' )
 }
 """
-    assertEquals ( -13 , processCmdLineTargets ( 'hello' ) )
-    assertEquals ( expectedResult , output )
+    assertEquals ( -13 , processCmdLineTargets ( targetName ) )
+    assertEquals ( targetName + ':\n' + expectedResult , output )
   }
 }
