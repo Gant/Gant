@@ -401,7 +401,7 @@ final class Maven {
     }
     properties.binding.target.call ( site : 'Create the website.' ) {
       depends ( owner.binding.initialize )
-      println ( 'Site not implemented as yet.' )
+      throw new RuntimeException ( 'Site not implemented as yet.' )
     }
     properties.binding.includeTargets << Clean
     properties.binding.cleanDirectory << "${properties.targetPath}"
