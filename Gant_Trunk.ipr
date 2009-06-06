@@ -1028,7 +1028,6 @@
           <option name="myCssVersion" value="css3" />
         </inspection_tool>
         <inspection_tool class="ToArrayCallWithZeroLengthArrayArgument" level="WARNING" enabled="false" />
-        <inspection_tool class="HardcodedLineSeparators" level="WARNING" enabled="true" />
         <inspection_tool class="HardcodedFileSeparators" level="WARNING" enabled="true">
           <option name="m_recognizeExampleMediaType" value="false" />
         </inspection_tool>
@@ -1097,6 +1096,16 @@
       <item index="2" class="java.lang.String" itemvalue="WARNING" />
       <item index="3" class="java.lang.String" itemvalue="ERROR" />
     </list>
+  </component>
+  <component name="IssueNavigationConfiguration">
+    <option name="links">
+      <list>
+        <IssueNavigationLink>
+          <option name="issueRegexp" value="GANT\-\d+" />
+          <option name="linkRegexp" value="http://jira.codehaus.org/browse/GANT/browse/$0" />
+        </IssueNavigationLink>
+      </list>
+    </option>
   </component>
   <component name="JavacSettings">
     <option name="DEBUGGING_INFO" value="true" />
@@ -1292,7 +1301,7 @@
     <option name="myVersion" value="123" />
   </component>
   <component name="VcsDirectoryMappings">
-    <mapping directory="" vcs="" />
+    <mapping directory="" vcs="Bazaar" />
   </component>
   <component name="WebServicesPlugin" addRequiredLibraries="true" />
   <component name="copyright">

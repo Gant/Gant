@@ -228,7 +228,7 @@ public class Gant_Test extends TestCase {
    *  The following tests are based on the code presented in email exchanges on the Groovy developer list by
    *  Chris Miles.  cf.  GANT-50.  This assumes that the tests are run from a directory other than this one.
    */
-  private String basedirAntFilePath = path + separator + "basedir.xml" ;
+  private final String basedirAntFilePath = path + separator + "basedir.xml" ;
   //
   //  TODO: The includeTag is needed because of an error -- it should be removed and the [groovy] tag always present.
   //
@@ -257,7 +257,7 @@ public class Gant_Test extends TestCase {
     //  of the "calling" Ant.  Instead it assumes it is rooted in the process start directory.  According to
     //  GANT-50 this is an error.  The question is to decide whether it is or not.
     //
-    //  TODO : Should this be sb.append ( absolutePath ) ?  cf. GANT-50. 
+    //  TODO : Should this be sb.append ( absolutePath ) ?  cf. GANT-50.
     //
     sb.append ( System.getProperty ( "user.dir" ) ) ;
     sb.append ( "\n   [groovy] ------ default\n   [groovy] \n\nBUILD SUCCESSFUL\n\n" ) ;
