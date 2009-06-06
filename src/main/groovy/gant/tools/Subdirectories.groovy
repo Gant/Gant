@@ -1,6 +1,6 @@
 //  Gant -- A Groovy way of scripting Ant tasks.
 //
-//  Copyright © 2006-8 Russel Winder
+//  Copyright © 2006-9 Russel Winder
 //
 //  Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in
 //  compliance with the License. You may obtain a copy of the License at
@@ -45,7 +45,7 @@ final class Subdirectories {
    *  @param directory Path of the directory in which to execute the shell command.
    */
   void runSubprocess ( final String command , final File directory ) {
-    if ( GantState.verbosity > GantState.NORMAL ) { println "\n============ ${directory} ================" }
+    binding.ant.project.log ( "\n============ ${directory} ================" , GantState.VERBOSE )
     def process = command.execute ( null , directory )
     if ( GantState.verbosity >= GantState.NORMAL ) {
       ( new InputStreamReader ( process.err ) ).eachLine { line -> System.err.println ( line ) }
