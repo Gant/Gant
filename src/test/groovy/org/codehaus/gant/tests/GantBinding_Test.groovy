@@ -48,7 +48,9 @@ target ( ${targetName} : '' ) {
 }
 """
     assertEquals ( 0 , processCmdLineTargets ( targetName ) )
-    assertEquals ( resultString ( targetName , "     [echo] ${message}\n" ) , output )
+    assertEquals ( resultString ( targetName , """Ant is deprecated, please amend your Gant files to use ant instead of Ant.
+     [echo] ${message}
+""" ) , output )
   }
   void testGantBindingIsActuallyUsedOutsideTarget ( ) {
     script = """

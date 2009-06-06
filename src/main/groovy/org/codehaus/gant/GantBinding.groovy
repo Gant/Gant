@@ -143,7 +143,7 @@ public class GantBinding extends Binding implements Cloneable {
           //
           //throw new RuntimeException ( "Attempt to redefine " + targetName )
           //
-          System.err.println ( 'Warning, target causing name overwriting of name ' + targetName )
+          owner.binding.ant.project.log ( 'Warning, target causing name overwriting of name ' + targetName , Project.MSG_WARN )
           //System.exit ( -101 )
         }
         catch ( MissingPropertyException mpe ) { /* Intentionally empty */ }
@@ -160,7 +160,7 @@ public class GantBinding extends Binding implements Cloneable {
         owner.setVariable ( targetName + '_description' , targetDescription )  //  For backward compatibility.
       } )
     setVariable ( 'task' , { Map<String, String> map , Closure closure ->
-        System.err.println ( 'task has now been removed from Gant, please update your Gant files to use target instead of task.' )
+        owner.binding.ant.project.log ( 'task has now been removed from Gant, please update your Gant files to use target instead of task.' , Project.MSG_ERR )
         System.exit ( -99 ) ;
       } )
     setVariable ( 'targetDescriptions' , new TreeMap ( ) )
@@ -266,15 +266,15 @@ public class GantBinding extends Binding implements Cloneable {
  */
 class DeprecatedAntBuilder extends GantBuilder {
   DeprecatedAntBuilder ( GantBuilder b ) { super ( b.project ) }
-  private void printDeprecationMessage ( ) {
-    System.err.println ( 'Ant is deprecated, please amend your Gant files to use ant instead of Ant.' )
+  private void outputDeprecationMessage ( ) {
+    super.project.log ( 'Ant is deprecated, please amend your Gant files to use ant instead of Ant.' , Project.MSG_WARN )
   }
   def invokeMethod ( String name , args ) {
-    printDeprecationMessage ( )
+    outputDeprecationMessage ( )
     super.invokeMethod ( name , args )
   }
   def getProperty ( String name ) {
-    printDeprecationMessage ( )
+    outputDeprecationMessage ( )
     super.getProperty ( name )
   }
 }
