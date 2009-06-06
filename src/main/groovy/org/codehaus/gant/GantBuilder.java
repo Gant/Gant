@@ -94,6 +94,7 @@ public class GantBuilder extends AntBuilder {
    *
    *  @return The <code>BuildLogger</code>.
    */
+  @SuppressWarnings ( "unchecked" )
   public BuildLogger getLogger ( ) {
     final List<? extends BuildListener> listeners = getProject ( ).getBuildListeners ( ) ; // Unchecked conversion here.
     assert listeners.size ( ) == 1 ;
@@ -103,7 +104,6 @@ public class GantBuilder extends AntBuilder {
    *  Method to be called to trigger setting of the message output level on the <code>AntBuilder</code>
    *  project.  The verbosity level is determined from <code>GantState</code>.
    */
-  @SuppressWarnings ( "unchecked" )
   public void setMessageOutputLevel ( ) {
     getLogger ( ).setMessageOutputLevel ( GantState.verbosity ) ;
   }
