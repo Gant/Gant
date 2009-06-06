@@ -105,7 +105,14 @@ final class Gant {
    *  The class name to use for a script provided as plain text.
    */
   private final textInputClassName = 'text_input'
-
+   /**
+    *  Closure encapsulating how to load a cached, pre-compiled Gant script from the cache.
+    *
+    *  @param className The name of the class to be loaded.
+    *  @param lastModified ?
+    *  @param url The  URL of the cache
+    *  @return instance of the class.
+    */
   private final loadClassFromCache = { className , lastModified , url  ->
     try {
       def classUrl = binding.classLoader.getResource ( "${className}.class" )
@@ -207,9 +214,10 @@ final class Gant {
     binding.removeBuildListener ( buildListener )
   }
   /**
-   *  Treats the given text as a Gant script and loads it.
+   *  Treat the given text as a Gant script and load it.
    *
    *  @params text The text of the Gant script to load.
+   *  @return The <code>Gant</code> instance (to allow chaining).
    */
   public Gant loadScript ( String text ) {
     if ( ! buildClassName ) { buildClassName = textInputClassName }
@@ -218,11 +226,12 @@ final class Gant {
     return this
   }
   /**
-   *  Loads a Gant script from the given input stream, using the default Groovy encoding to convert the
+   *  Load a Gant script from the given input stream, using the default Groovy encoding to convert the
    *  bytes to characters.
    *
    *  @params scriptSource The stream containing the Gant script source, i.e. the Groovy code, not the
    *  compiled class.
+   *  @return The <code>Gant</code> instance (to allow chaining).
    */
   public Gant loadScript ( InputStream scriptSource ) {
     if ( ! buildClassName ) { buildClassName = streamInputClassName }
@@ -231,20 +240,22 @@ final class Gant {
     return this
   }
   /**
-   *  Loads a Gant script from the given file, using the default Groovy encoding to convert the bytes
+   *  Load a Gant script from the given file, using the default Groovy encoding to convert the bytes
    *  to characters.
    *
    *  @params scriptFile The file containing the Gant script source, i.e. the Groovy code, not the
    *  compiled class.
+   *  @return The <code>Gant</code> instance (to allow chaining).
    */
   public Gant loadScript ( File scriptFile ) {
     return loadScript ( scriptFile.toURI ( ).toURL ( ) )
   }
   /**
-   *  Loads a Gant script from the given URL, using the default Groovy encoding to convert the bytes
+   *  Load a Gant script from the given URL, using the default Groovy encoding to convert the bytes
    *  to characters.
    *
    *  @params scriptUrl The URL where the the Gant script source is located.
+   *  @return The <code>Gant</code> instance (to allow chaining).
    */
   public Gant loadScript ( URL scriptUrl ) {
     if ( ! buildClassName ) {
@@ -262,9 +273,10 @@ final class Gant {
     return this
   }
   /**
-   *  Loads a pre-compiled Gant script using the configured class loader.
+   *  Load a pre-compiled Gant script using the configured class loader.
    *
    *  @params className The fully qualified name of the class to load.
+   *  @return The <code>Gant</code> instance (to allow chaining).
    */
   public Gant loadScriptClass ( String className ) {
     script = binding.classLoader.loadClass ( className ).newInstance ( )
@@ -280,6 +292,9 @@ final class Gant {
    *
    *  <p>Up to Gant 1.5.0 the algorithm was to simply transform '\\.' to '_'.  However this means that
    *  build.groovy got transformed to build_groovy and this caused problems in Eclipse, cf. GANT-30.</p>
+   *
+   *  @param fileName The name of the file.
+   *  @return The transformed name.
    */
   private String classNameFromFileName ( fileName ) {
     def index = fileName.lastIndexOf ( '.' )
@@ -289,6 +304,9 @@ final class Gant {
   /**
    *  Filter the stacktrace of the exception so as to create a printable message with the line number of the
    *  line in the script being executed that caused the exception.
+   *
+   *  @param exception The exception whose stack trace is to be filtered.
+   *  @return The filteres stacktrace information.
    */
   private String constructMessageFrom ( exception ) {
     final buffer = new StringBuilder ( )
@@ -305,7 +323,10 @@ final class Gant {
     buffer.toString ( )
   }
   /**
-   *  The function that implements the printing of the list of targets for the -p and -T options.
+   *  Print of the list of targets for the -p and -T options.
+   *
+   *  @param targets The <code>List</code> (of <code>String</code>s) that is the list of targets to achieve.
+   *  @return The return code.
    */
   private Integer targetList ( targets ) {
     def max = 0
@@ -329,7 +350,13 @@ final class Gant {
     0
   }
   /**
-   *  The function that handles actioning the targets.
+   *  Action the targets.
+   *
+   *  <p>Check to see if there is a finalizer defined in the script and if one is, ensures it is called
+   *  whether the script completed successfully or there was an exception.</p>
+   *
+   *  @param targets The <code>List</code> (of <code>String</code>s) that is the list of targets to achieve.
+   *  @return The return code.
    */
   private Integer dispatch ( List targets ) {
     Integer returnCode = 0
@@ -367,6 +394,8 @@ final class Gant {
         throw new TargetExecutionException ( e.toString ( ) , e )
       }
     }
+    //  As part of GANT-77 output information about the buildfile.
+    ////binding.ant.project.log ( 'Buildfile: ' + binding.'gant.file' + '\n\n' )
     //  To support GANT-44 the script must have access to the targets and be able to edit it, this means
     //  iterating over the list of targets but knowing that if might change during execution.  So replace
     //  the original code:
