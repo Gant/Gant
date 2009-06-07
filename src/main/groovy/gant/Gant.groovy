@@ -500,13 +500,12 @@ final class Gant {
       options.Ds.each { definition ->
         def pair = definition.split ( '=' ) as List
         if ( pair.size ( ) < 2 ) { pair << '' }
-        //  Do not allow the output to escape.  The problem here is that if the output is allowed out then
+        //  Do not allow the output of the ant.property call to escape.  If the output is allowed out then
         //  Ant, Gant, Maven, Eclipse and IntelliJ IDEA all behave slightly differently.  This makes testing
         //  nigh on impossible.  Also the user doesn't need to know about these.
-        final outSave = System.out
-        System.out = new PrintStream ( new ByteArrayOutputStream ( ) )
+        binding.ant.logger.setMessageOutputLevel ( GantState.SILENT )
         binding.ant.property ( name : pair[0] , value : pair[1] )
-        System.out = outSave
+        binding.ant.logger.setMessageOutputLevel ( GantState.verbosity )
       }
     }
     if ( options.L ) {
@@ -574,7 +573,7 @@ final class Gant {
   protected Integer processTargets ( String function , List targets ) {
     // Configure the build based on this instance's settings.
     if ( dryRun ) { GantState.dryRun = true }
-    if ( verbosity != GantState.verbosity ) { GantState.verbosity = verbosity ; binding.ant.setMessageOutputLevel ( ) }
+    if ( verbosity != GantState.verbosity ) { GantState.verbosity = verbosity ; binding.logger.setMessageOutputLevel ( verbosity ) }
     binding.cacheEnabled = useCache
     binding.gantLib = gantLib
     if ( script == null ) { throw new RuntimeException ( "No script has been loaded!" ) }
@@ -603,8 +602,8 @@ final class Gant {
     if ( outputBuildTime ) {
       def elapseTime = ( System.nanoTime ( ) - startTime ) / 1e9
       def project = gant.binding.ant.project
-      project.log ( '\nBUILD ' + ( returnValue == 0 ? 'SUCCESSFUL' : 'FAILED' ) , GantState.WARNINGS_ERRORS )
-      project.log ( 'Total time: ' + String.format ( '%.2f' , elapseTime ) + ' seconds' , GantState.WARNINGS_ERRORS )
+      project.log ( '\nBUILD ' + ( returnValue == 0 ? 'SUCCESSFUL' : 'FAILED' ) , GantState.WARNINGS_AND_ERRORS )
+      project.log ( 'Total time: ' + String.format ( '%.2f' , elapseTime ) + ' seconds' , GantState.WARNINGS_AND_ERRORS )
     }
     System.exit ( returnValue )
   }

@@ -29,7 +29,7 @@ final class GantBuilder_Test extends GantTestCase {
     assertEquals ( GantState.NORMAL , GantState.verbosity )
     final gantBuilder = new GantBuilder ( )
     GantState.verbosity = GantState.VERBOSE
-    gantBuilder.setMessageOutputLevel ( )
+    gantBuilder.logger.setMessageOutputLevel ( GantState.verbosity )
     assertEquals ( GantState.VERBOSE , GantState.verbosity )
   }
   void testGroovycTaskFail ( ) {

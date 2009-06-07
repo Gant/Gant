@@ -14,7 +14,6 @@
 
 package org.codehaus.gant.ant ;
 
-import java.io.ByteArrayOutputStream ;
 import java.io.File ;
 import java.io.PrintStream ;
 
@@ -29,6 +28,7 @@ import org.apache.tools.ant.Task ;
 
 import org.codehaus.gant.GantBinding ;
 import org.codehaus.gant.GantBuilder ;
+import org.codehaus.gant.GantState ;
 
 /**
  *  Execute a Gant script.
@@ -147,21 +147,15 @@ public class Gant extends Task {
     final GantBuilder ant = new GantBuilder ( newProject ) ;
     final Map<String,String> environmentParameter = new HashMap<String,String> ( ) ;
     environmentParameter.put ( "environment" , "environment" ) ;
-    //  Do not allow the output to escape.  The problem here is that if the output is allowed out then
-    //  Ant, Gant, Maven, Eclipse and IntelliJ IDEA all behave slightly differently.  This makes testing
-    //  nigh on impossible.  Also the user doesn't need to know about these.
-    final PrintStream outSave = System.out ;
-    System.setOut ( new PrintStream ( new ByteArrayOutputStream ( ) ) ) ;
     ant.invokeMethod ( "property" , new Object[] { environmentParameter } ) ;
     final GantBinding binding = new GantBinding ( ) ;
-    binding.forcedSettingOfVariable ( "ant" , ant ) ; // Subvert that ant is a read-only item in the binding.
+    binding.forcedSettingOfVariable ( "ant" , ant ) ;
     for ( final Definition definition : definitions ) {
       final Map<String,String> definitionParameter = new HashMap<String,String> ( ) ;
       definitionParameter.put ( "name" , definition.getName ( ) ) ;
       definitionParameter.put ( "value" , definition.getValue ( ) ) ;
       ant.invokeMethod ( "property" , new Object[] { definitionParameter } ) ;
     }
-    System.setOut ( outSave ) ;
     final gant.Gant gant = new gant.Gant ( binding ) ;
     gant.loadScript ( gantFile ) ;
     final List<String> targetsAsStrings = new ArrayList<String> ( ) ;

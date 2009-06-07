@@ -101,17 +101,16 @@ public class GantBinding extends Binding implements Cloneable {
    *  Method holding all the code common to all construction.
    */
   private void initializeGantBinding ( ) {
-    //  Do not allow the output to escape.  The problem here is that if the output is allowed out then
-    //  Ant, Gant, Maven, Eclipse and IntelliJ IDEA all behave slightly differently.  This makes testing
-    //  nigh on impossible.  Also the user doesn't need to know about these.
-    final outSave = System.out
-    System.out = new PrintStream ( new ByteArrayOutputStream ( ) )
+    //  Do not allow the output of the ant.property call to escape.  If the output is allowed out then Ant,
+    //  Gant, Maven, Eclipse and IntelliJ IDEA all behave slightly differently.  This makes testing nigh on
+    //  impossible.  Also the user doesn't need to know about these.
+    ant.logger.setMessageOutputLevel ( GantState.SILENT )
     ant.property ( environment : 'environment' )
-    System.out = outSave
-    setVariable ( 'Ant' , new DeprecatedAntBuilder ( ant ) )
-    setVariable ( 'includeTargets' , new IncludeTargets ( this ) )
-    setVariable ( 'includeTool' , new IncludeTool ( this ) )
-    setVariable ( 'target' , { Map<String, String> map , Closure closure ->
+    ant.logger.setMessageOutputLevel ( GantState.verbosity )
+    super.setVariable ( 'Ant' , new DeprecatedAntBuilder ( ant ) )
+    super.setVariable ( 'includeTargets' , new IncludeTargets ( this ) )
+    super.setVariable ( 'includeTool' , new IncludeTool ( this ) )
+    super.setVariable ( 'target' , { Map<String, String> map , Closure closure ->
         def targetName = ''
         def targetDescription = ''
         def nameKey = 'name'
@@ -149,7 +148,7 @@ public class GantBinding extends Binding implements Cloneable {
         catch ( MissingPropertyException mpe ) { /* Intentionally empty */ }
         if ( targetDescription ) { targetDescriptions.put ( targetName , targetDescription ) }
         closure.metaClass = new GantMetaClass ( closure.metaClass , owner )
-        def targetClosure =  {
+        final targetClosure =  {
           def returnCode = 0
           owner.ant.project.log ( targetName + ':' )
           withTargetEvent ( targetName , targetDescription ) { returnCode = closure ( targetMap ) }
@@ -159,17 +158,17 @@ public class GantBinding extends Binding implements Cloneable {
         owner.setVariable ( (String) targetName , targetClosure )
         owner.setVariable ( targetName + '_description' , targetDescription )  //  For backward compatibility.
       } )
-    setVariable ( 'task' , { Map<String, String> map , Closure closure ->
+    super.setVariable ( 'task' , { Map<String, String> map , Closure closure ->
         owner.binding.ant.project.log ( 'task has now been removed from Gant, please update your Gant files to use target instead of task.' , Project.MSG_ERR )
         System.exit ( -99 ) ;
       } )
-    setVariable ( 'targetDescriptions' , new TreeMap ( ) )
-    setVariable ( 'message' , { String tag , Object message ->
+    super.setVariable ( 'targetDescriptions' , new TreeMap ( ) )
+    super.setVariable ( 'message' , { String tag , Object message ->
         def padding = 9 - tag.length ( )
         if ( padding < 0 ) { padding = 0 }
         println ( "           ".substring ( 0 , padding ) + '[' + tag + '] ' + message )
       } )
-    setVariable ( 'setDefaultTarget' , { defaultTarget -> // Deal with Closure or String arguments.
+    super.setVariable ( 'setDefaultTarget' , { defaultTarget -> // Deal with Closure or String arguments.
          switch ( defaultTarget.class ) {
           case Closure :
            String defaultTargetName = null
@@ -184,8 +183,8 @@ public class GantBinding extends Binding implements Cloneable {
            throw new RuntimeException ( 'Parameter to setDefaultTarget is of the wrong type -- must be a target reference or a string.' )
          }
       } )
-    setVariable ( 'defaultTarget' , 'default' )
-    setVariable ( 'setFinalizeTarget' , { finalizeTarget -> // Deal with Closure or String arguments.
+    super.setVariable ( 'defaultTarget' , 'default' )
+    super.setVariable ( 'setFinalizeTarget' , { finalizeTarget -> // Deal with Closure or String arguments.
          switch ( finalizeTarget.class ) {
           case Closure :
            String finalizeTargetName = null
@@ -200,9 +199,9 @@ public class GantBinding extends Binding implements Cloneable {
            throw new RuntimeException ( 'Parameter to setFinalizeTarget is of the wrong type -- must be a target reference or a string.' )
          }
       } )
-    setVariable ( 'finalizeTarget' , 'finalize' )
-    setVariable ( 'cacheEnabled' , false )
-    def item = System.getenv ( ).GANTLIB ;
+    super.setVariable ( 'finalizeTarget' , 'finalize' )
+    super.setVariable ( 'cacheEnabled' , false )
+    final item = System.getenv ( ).GANTLIB ;
     if ( item == null ) { gantLib = [ ] }
     else { gantLib = Arrays.asList ( item.split ( System.properties.'path.separator' ) ) }
     initializing = false
@@ -212,9 +211,7 @@ public class GantBinding extends Binding implements Cloneable {
    */
   Object getVariable ( final String name ) {
     def returnValue
-    try {
-      returnValue = super.getVariable ( name )
-    }
+    try { returnValue = super.getVariable ( name ) }
     catch ( final MissingPropertyException mpe ) {
       returnValue = super.getVariable ( 'ant' )?.project?.getProperty ( name )
       if ( returnValue == null ) { throw mpe }

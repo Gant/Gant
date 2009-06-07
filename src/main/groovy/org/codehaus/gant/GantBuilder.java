@@ -66,9 +66,10 @@ public class GantBuilder extends AntBuilder {
   @Override public Object invokeMethod ( final String name , final Object arguments ) {
     if ( GantState.dryRun ) {
       if ( GantState.verbosity > GantState.SILENT ) {
+        final StringBuilder sb = new StringBuilder ( ) ;
         int padding = 9 - name.length ( ) ;
         if ( padding < 0 ) { padding = 0 ; }
-        System.out.print ( "         ".substring ( 0 , padding ) + '[' + name + "] ") ;
+        sb.append ( "         ".substring ( 0 , padding ) + '[' + name + "] ") ;
         final Object[] args = (Object[]) arguments ;
         if ( args[0] instanceof Map ) {
           // NB IntelliJ IDEA complains that (Map) is not a proper cast but using the cast (Map<?,?>) here
@@ -76,13 +77,14 @@ public class GantBuilder extends AntBuilder {
           final Iterator<Map.Entry<?,?>> i = ( (Map) args[0] ).entrySet ( ).iterator ( ) ; // Unchecked conversion here.
           while ( i.hasNext ( ) ) {
             final Map.Entry<?,?> e = i.next ( ) ;
-            System.out.print ( e.getKey ( ) + " : '" + e.getValue ( ) + '\'' ) ;
-            if ( i.hasNext ( ) ) { System.out.print ( " , " ) ; }
+            sb.append ( e.getKey ( ) + " : '" + e.getValue ( ) + '\'' ) ;
+            if ( i.hasNext ( ) ) { sb.append ( " , " ) ; }
           }
-          System.out.println ( ) ;
+          sb.append ( '\n' ) ;
+          getProject ( ).log ( sb.toString ( ) ) ;
           if ( args.length == 2 ) { ( (Closure) args[1] ).call ( ) ; }
         }
-        else if ( args[0] instanceof Closure ) { System.out.println ( ) ; ( (Closure) args[0] ).call ( ) ; }
+        else if ( args[0] instanceof Closure ) { ( (Closure) args[0] ).call ( ) ; }
         else { throw new RuntimeException ( "Unexpected type of parameter to method " + name ) ; }
       }
       return null ;
@@ -99,12 +101,5 @@ public class GantBuilder extends AntBuilder {
     final List<? extends BuildListener> listeners = getProject ( ).getBuildListeners ( ) ; // Unchecked conversion here.
     assert listeners.size ( ) == 1 ;
     return (BuildLogger) listeners.get ( 0 ) ;
-  }
-  /**
-   *  Method to be called to trigger setting of the message output level on the <code>AntBuilder</code>
-   *  project.  The verbosity level is determined from <code>GantState</code>.
-   */
-  public void setMessageOutputLevel ( ) {
-    getLogger ( ).setMessageOutputLevel ( GantState.verbosity ) ;
   }
 }

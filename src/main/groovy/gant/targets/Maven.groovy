@@ -15,6 +15,7 @@
 package gant.targets
 
 import org.codehaus.gant.GantBinding
+import org.codehaus.gant.GantState
 
 /**
  *  A class to provide the Maven 2 style lifecycle targets associated with a project.
@@ -133,13 +134,12 @@ final class Maven {
           owner.testDependencies.each { item -> dependency ( createDependencyMap ( [ scope : 'test' ] , item ) ) }
         }
       }
-      //  Do not allow the output to escape.  The problem here is that if the output is allowed out then
+      //  Do not allow the output of the ant.property call to escape.  If the output is allowed out then
       //  Ant, Gant, Maven, Eclipse and IntelliJ IDEA all behave slightly differently.  This makes testing
-      //  nigh on impossible.  Also the user doesn't need to know about this.
-      final outSave = System.out
-      System.out = new PrintStream ( new ByteArrayOutputStream ( ) )
+      //  nigh on impossible.  Also the user doesn't need to know about these.
+      owner.binding.ant.logger.setMessageOutputLevel ( GantState.SILENT )
       owner.binding.ant.taskdef ( name : 'groovyc' , classname : 'org.codehaus.groovy.ant.Groovyc' )
-      System.out = outSave
+      owner.binding.ant.logger.setMessageOutputLevel ( GantState.verbosity )
     }
     /*
     properties.binding.target.call ( validate : 'Validate the project is correct and all necessary information is available.' ) {

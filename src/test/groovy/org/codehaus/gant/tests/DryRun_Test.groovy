@@ -34,8 +34,9 @@ target ( ${somethingElse} : '' ) { echo ( message : '${somethingElse}' ) }
     assertEquals ( 'Target default does not exist.\n' , output )
   }
   void testMissingNamedTarget ( ) {
-    assertEquals ( -11 , gant.processArgs ( [ '-n' ,  '-f' ,  '-'  , 'blah' ] as String[] ) )
-    assertEquals ( "Target blah does not exist.\n" , output )
+    final missingTargetName = 'blah'
+    assertEquals ( -11 , gant.processArgs ( [ '-n' ,  '-f' ,  '-'  , missingTargetName ] as String[] ) )
+    assertEquals ( "Target ${missingTargetName} does not exist.\n" , output )
   }
   void testSomething ( ) {
     assertEquals ( 0 , gant.processArgs ( [ '-n' ,  '-f' ,  '-'  , something ] as String[] ) )
