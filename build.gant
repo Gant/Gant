@@ -79,6 +79,7 @@ final buildDirectory = 'target_gant'
 final buildClassesDirectory = buildDirectory + '/classes' 
 final buildTestClassesDirectory = buildDirectory + '/test-classes' 
 final buildTestReportsDirectory = buildDirectory + '/test-reports'
+final buildTestReportsHTMLDirectory = buildDirectory + '/test-reports/html'
 final buildCoberturaClassesDirectory = buildDirectory + '/cobertura-classes' 
 final buildCoberturaReportsDirectory = buildDirectory + '/cobertura-reports'
 
@@ -220,6 +221,7 @@ final performCompileTests = { classpathId ->
 final performTests =  { classpathId ->
   if ( ! skipTests ) {
     ant.mkdir ( dir : buildTestReportsDirectory )
+    ant.mkdir ( dir : buildTestReportsHTMLDirectory )
     if ( usingCobertura ) {
       ant.mkdir ( dir : buildCoberturaClassesDirectory )
       ant.mkdir ( dir : buildCoberturaReportsDirectory )
@@ -261,6 +263,10 @@ final performTests =  { classpathId ->
         batchtest ( todir : buildTestReportsDirectory ) { fileset ( dir : buildTestClassesDirectory , includes : '**/ant/tests/*_Test.class' ) }
         classpath { path ( refid : testClasspathId ) }
       }
+    }
+    ant.junitreport ( todir : buildTestReportsDirectory ) {
+      fileset ( dir : buildTestReportsDirectory , includes : 'TEST-*.xml' )
+      report ( todir : buildTestReportsHTMLDirectory )
     }
     if ( usingCobertura ) { ant.'cobertura-report' ( srcdir : sourceDirectory , destdir : buildCoberturaReportsDirectory ) }
   }
