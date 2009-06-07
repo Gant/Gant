@@ -33,41 +33,41 @@ target ( 'default' : 'The default target.' ) {
     script = theScript
     assertEquals ( 0 , processCmdLineTargets ( ) )
     assertEquals ( resultString ( 'default' , 'Default Target\n' ) , output )
+    assertEquals ( '' , error )
   }
   void testTarget1 ( ) {
     final targetName = 'target1'
     script = theScript
     assertEquals ( 0 , processCmdLineTargets ( targetName ) )
     assertEquals ( resultString ( targetName , 'Target One\n' ) , output )
+    assertEquals ( '' , error )
   }
   void testTarget2 ( ) {
     final targetName = 'target2'
     script = theScript
-    assertEquals ( -11 , processCmdLineTargets ( targetName ) )
-    assertEquals ( """${targetName}:
-Target Two
-Standard input, line 7 -- Error evaluating Gantfile: No such property: p1 for class: standard_input
-""" , output )
+    assertEquals ( -11 , processCmdLineTargets ( targetName ) ) 
+    assertEquals ( "${targetName}:\nTarget Two\n" , output )
+    assertEquals ( "Standard input, line 7 -- Error evaluating Gantfile: No such property: p1 for class: standard_input\n" , error )
   }
   void testDefaultTargetCommandLine ( ) {
     script = theScript
     assertEquals ( 0 , gant.processArgs ( [ '-f' , '-' ] as String[] ) )
     assertEquals ( resultString ( 'default' , 'Default Target\n' ) , output )
+    assertEquals ( '' , error )
   }
   void testTarget1CommandLine ( ) {
     final targetName = 'target1'
     script = theScript
     assertEquals ( 0 , gant.processArgs ( [ '-f' , '-' , targetName ] as String[] ) )
     assertEquals ( resultString ( targetName , 'Target One\n' ) , output )
+    assertEquals ( '' , error )
   }
   void testTarget2CommandLine ( ) {
     final targetName = 'target2'
     script = theScript
     assertEquals ( -11 , gant.processArgs ( [ '-f' , '-' , targetName ] as String[] ) )
-    assertEquals ( """${targetName}:
-Target Two
-Standard input, line 7 -- Error evaluating Gantfile: No such property: p1 for class: standard_input
-""" , output )
+    assertEquals ( "${targetName}:\nTarget Two\n" , output )
+    assertEquals ( "Standard input, line 7 -- Error evaluating Gantfile: No such property: p1 for class: standard_input\n" , error )
   }
   void testTarget2CommandLineWithDefinitionNoSpace ( ) {
     final targetName = 'target2'
@@ -76,6 +76,7 @@ Standard input, line 7 -- Error evaluating Gantfile: No such property: p1 for cl
     assertEquals (resultString ( targetName ,  '''Target Two
 p1=MyVal
 ''' ) , output )
+    assertEquals ( '' , error )
   }
   void testTarget2CommandLineWithDefinitionWithSpace ( ) {
     final targetName = 'target2'
@@ -84,5 +85,6 @@ p1=MyVal
     assertEquals ( resultString ( targetName , '''Target Two
 p1=MyVal
 ''' ) , output )
+    assertEquals ( '' , error )
   }
 }

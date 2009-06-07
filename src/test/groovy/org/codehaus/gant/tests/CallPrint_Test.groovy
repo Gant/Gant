@@ -25,18 +25,21 @@ final class CallPrint_Test extends GantTestCase {
     final targetName = 'systemOutPrintln'
     script = "target ( ${targetName} : '' ) { System.out.println ( '${outputString}' ) }"
     assertEquals ( 0 , processCmdLineTargets ( targetName ) )
-    assertEquals ( resultString ( targetName , outputString + '\n' ) , output ) 
+    assertEquals ( resultString ( targetName , outputString + '\n' ) , output )
+    assertEquals ( '' , error )
   }
   void testPrintln ( ) {
     final targetName = 'testPrintln'
     script = "target ( ${targetName} : '' ) { println ( '${outputString}' ) }"
     assertEquals ( 0 , processCmdLineTargets ( targetName ) )
     assertEquals ( resultString ( targetName , outputString + '\n' ) , output ) 
+    assertEquals ( '' , error )
   }
   void testMessage ( ) {
     final targetName = 'testMessage'
     script = "target ( ${targetName} : '' ) { message ( 'message' , '${outputString}' ) }"
     assertEquals ( 0 , processCmdLineTargets ( targetName ) )
     assertEquals ( resultString ( targetName , "  [message] " + outputString + '\n' ) , output ) 
+    assertEquals ( '' , error )
   }
 }

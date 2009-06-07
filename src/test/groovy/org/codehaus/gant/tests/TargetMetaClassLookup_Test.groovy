@@ -43,18 +43,22 @@ setDefaultTarget ( ${something} )
     assertEquals ( resultString ( 'clean' , '''   [delete] quiet : 'false'
   [fileset] dir : '.' , includes : '**/*~' , defaultexcludes : 'false'
 ''' ) , output ) //// */ Emacs fontlock fixup.
+    assertEquals ( '' , error )
   }
   void testDefault ( ) {
     assertEquals ( 0 , processCmdLineTargets (  ) )
     assertEquals ( resultString ( something , "     [echo] ${message}\n" ) , output )
+    assertEquals ( '' , error )
   }
   void testMissingTarget ( ) {
     final missingTarget = 'blah'
     assertEquals ( -11 , processCmdLineTargets ( missingTarget ) )
-    assertEquals ( "Target ${missingTarget} does not exist.\n" , output )
+    assertEquals ( '' , output )
+    assertEquals ( "Target ${missingTarget} does not exist.\n" , error )
   }
   void testSomething ( ) {
     assertEquals ( 0 , processCmdLineTargets ( something ) )
     assertEquals ( resultString ( something , "     [echo] ${message}\n" ) , output )
+    assertEquals ( '' , error )
   }
 }

@@ -59,14 +59,19 @@ public abstract class GantTestCase extends GroovyTestCase {
     isWindows = ( osName.length ( ) > 6 ) && osName.substring ( 0 , 7 ).equals ( "Windows" ) ;
   }
   private ByteArrayOutputStream output ;
+  private ByteArrayOutputStream error ;
   private PrintStream savedOut ;
+  private PrintStream savedErr ;
   protected Gant gant ;
   protected String script ;
   @Override protected void setUp ( ) throws Exception {
     super.setUp ( ) ;
     savedOut = System.out ;
+    savedErr = System.err ;
     output = new ByteArrayOutputStream ( ) ;
+    error = new ByteArrayOutputStream ( ) ;
     System.setOut ( new PrintStream ( output ) ) ;
+    System.setErr ( new PrintStream ( error ) ) ;
     gant = new Gant ( ) ;
     gant.setBuildClassName ( "standard_input" ) ;
     script = "" ;
@@ -80,6 +85,7 @@ public abstract class GantTestCase extends GroovyTestCase {
   }
   @Override protected void tearDown ( ) throws Exception {
     System.setOut ( savedOut ) ;
+    System.setErr ( savedErr ) ;
     super.tearDown ( ) ;
   }
   protected void setScript ( final String s ) { script = s ; System.setIn ( new ByteArrayInputStream ( script.getBytes ( ) ) ) ; }
@@ -94,8 +100,8 @@ public abstract class GantTestCase extends GroovyTestCase {
     return gant.processArgs ( args.toArray ( new String[0] ) ) ;
   }
   protected String getOutput ( ) { return output.toString ( ).replace ( "\r" , "" ) ; }
+  protected String getError ( ) { return error.toString ( ).replace ( "\r" , "" ) ; }
   protected String escapeWindowsPath ( final String path ) { return isWindows ? path.replace ( "\\" ,  "\\\\" ) : path ; }
-
   protected String resultString ( final String targetName , final String result ) {
     return targetName + ":\n" + result + exitMarker + targetName + '\n' ;
   }

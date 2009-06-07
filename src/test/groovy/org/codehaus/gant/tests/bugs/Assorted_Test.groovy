@@ -31,9 +31,10 @@ target ( ${targetName} : '' ) { foo }
 def foo { badvariable }
 """
     assertEquals ( -2 , processCmdLineTargets( targetName ) )
+    assertEquals ( '' , output )
     assertEquals ( '''Error evaluating Gantfile: startup failed, standard_input: 3: unexpected token: foo @ line 3, column 5.
 1 error
-''' , output )
+''' , error )
   }
   void test_GANT_32_multipleFilesFailsCorrectly ( ) {
     final targetName = 'test'
@@ -44,8 +45,9 @@ def foo { badvariable }
     script = "includeTargets << new File ( '${escapeWindowsPath ( file.path )}' )"
     try { assertEquals ( -4 , processCmdLineTargets ( targetName ) ) }
     finally { file.delete ( ) }
-    assertTrue ( output.startsWith ( 'Standard input, line 1 -- Error evaluating Gantfile: org.codehaus.groovy.control.MultipleCompilationErrorsException: startup failed, ' ) )
-    assertTrue ( output.endsWith ( '''GANT_32.groovy: 2: unexpected token: foo @ line 2, column 5.
+    assertEquals ( '' , output )
+    assertTrue ( error.startsWith ( 'Standard input, line 1 -- Error evaluating Gantfile: org.codehaus.groovy.control.MultipleCompilationErrorsException: startup failed, ' ) )
+    assertTrue ( error.endsWith ( '''GANT_32.groovy: 2: unexpected token: foo @ line 2, column 5.
    def foo { badvariable }
        ^
 
@@ -67,6 +69,7 @@ target ( 'default' : '' ) {
     assertEquals ( 0 , processCmdLineTargets ( ) )
     //  The output is not tested since it is extensive and it is not clear that it is guaranteed to be the
     //  same on all platforms: it contains the Ivy jar version number and some timings.
+    assertEquals ( '' , error )
   }
 
   void test_GANT_49_builderBug ( ) {
@@ -116,6 +119,7 @@ setDefaultTarget ( '${targetName}' )
     <item>3</item>
   </container>
 </beans>''' ) , output )
+    assertEquals ( '' , error )
   }
 
   void test_GANT_58_singleFileFailsCorrectly ( ) {
@@ -131,7 +135,8 @@ target ( 'default' , '' ) { }
 """
     try {
       assertEquals ( -4 , processCmdLineTargets ( ) )
-      assertEquals ( "Standard input, line 2 -- Error evaluating Gantfile: ${file.path}, line 4 -- java.lang.ArithmeticException: / by zero\n" , output )
+      assertEquals ( '' , output )
+      assertEquals ( "Standard input, line 2 -- Error evaluating Gantfile: ${file.path}, line 4 -- java.lang.ArithmeticException: / by zero\n" , error )
     }
     finally { file.delete ( ) }
   }
@@ -148,10 +153,9 @@ target ( ${targetName} : '' ) {
 setDefaultTarget ( main )
 """
     assertEquals ( -13 , processCmdLineTargets ( ) )
-    assertTrue ( output.startsWith ( """${targetName}:
-before
-java.io.FileNotFoundException: """ ) )
-    assertTrue ( output.endsWith ( 'blahblahblahblahblah\n' ) )
+    assertEquals ( "${targetName}:\nbefore\n" , output )
+    assertTrue ( error.startsWith ( 'java.io.FileNotFoundException: ' ) )
+    assertTrue ( error.endsWith ( 'blahblahblahblahblah\n' ) )
   }
 
   void test_GANT_68_getReasonableErrorMessageForMissingDestination ( ) {
@@ -167,8 +171,9 @@ target ( ${targetName} : '' ) {
   javac ( srcdir : sourceDirectory , destdir : destinationDirectory , fork : 'true' , failonerror : 'true' , source : '5' , target : '5' , debug : 'on' , deprecation : 'on' )
 }
 """
-    assertEquals ( -13 , processCmdLineTargets ( 'compile' ) )
-    assertEquals ( "${targetName}:\n: destination directory \"${ ( new File ( destinationDirectory ) ).absolutePath }\" does not exist or is not a directory\n" , output )
+    assertEquals ( -13 , processCmdLineTargets ( targetName ) )
+    assertEquals ( "${targetName}:\n" , output )
+    assertEquals ( ": destination directory \"${ ( new File ( destinationDirectory ) ).absolutePath }\" does not exist or is not a directory\n" , error )
   }
 
 }

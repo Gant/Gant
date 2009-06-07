@@ -41,5 +41,6 @@ target ( '${defaultTargetName}' : '' ) {
   void testDefault ( ) {
     assertEquals ( 0 , processCmdLineTargets ( ) )
     assertEquals ( resultString ( defaultTargetName , introducer + '\n' + outputString + '\n' + ender + '\n' ) , output )
+    assertEquals ( '' , error )
   }
 }

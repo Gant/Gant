@@ -53,6 +53,7 @@ final class AntFile_Test extends GantTestCase {
   private void performExecutableTest ( ) {
     assertEquals ( 0 , processCmdLineTargets ( ) )
     assertEquals ( '     [echo] Hello world.\n' , output )
+    assertEquals ( '' , error )
   }
   private void performListingTest ( ) {
     assertEquals ( 0 , gant.processArgs ( [ '-p' , '-f' , '-' ] as String[] ) )
@@ -62,6 +63,7 @@ final class AntFile_Test extends GantTestCase {
 Default target is execute.
 
 ''' , output )
+    assertEquals ( '' , error )
   }
 
   private uninitializedScript = """

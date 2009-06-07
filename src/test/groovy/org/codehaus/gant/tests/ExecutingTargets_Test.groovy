@@ -32,21 +32,25 @@ target ( ${somethingElse} : '' ) { }
     script = coreScript
     assertEquals ( 0 , gant.processArgs ( [ '-f' ,  '-' , something ] as String[] ) )
     assertEquals ( resultString ( something , '' ) , output ) 
+    assertEquals ( '' , error )
   }
   void testSomethingTargets ( ) {
     script = coreScript
     assertEquals ( 0 , processCmdLineTargets ( something ) )
     assertEquals ( resultString ( something , '' ) , output ) 
+    assertEquals ( '' , error )
   }
   void testCleanAndSomethingArgs ( ) {
     script = 'includeTargets << gant.targets.Clean\n' + coreScript
     assertEquals ( 0 , gant.processArgs ( [ '-f' ,  '-' , clean , something ] as String[] ) )
     assertEquals ( resultString ( clean , '' ) + resultString ( something , '' ) , output ) 
+    assertEquals ( '' , error )
   }
   void testCleanAndSomethingTargets ( ) {
     script = 'includeTargets << gant.targets.Clean\n' + coreScript
     assertEquals ( 0 , processCmdLineTargets ( [ clean , something ] ) )
     assertEquals ( resultString ( clean , '' ) + resultString ( something , '' ) , output ) 
+    assertEquals ( '' , error )
   }
 
  //  GANT-44 asks for targets to have access to the command line target list so that it can be processed in targets.
@@ -67,7 +71,8 @@ target ( ${targetName} : '' ) {
 }
 """
     assertEquals ( -11 , processCmdLineTargets ( [ targetName , 'one' , 'two' ] ) )
-    assertEquals ( resultString ( targetName , '' ) + 'Target two does not exist.\n' , output )
+    assertEquals ( resultString ( targetName , '' ) , output )
+    assertEquals ( 'Target two does not exist.\n' , error )
   }
   
   //  GANT-81 requires that the target finalize is called in all circumstances if it is present.  If it
@@ -84,6 +89,7 @@ target ( ${finalize} : '' ) { println ( '${finalizeMessage}' ) }
 """
     assertEquals ( 0 , processCmdLineTargets ( targetName ) )
     assertEquals ( resultString ( targetName , testingMessage + '\n' ) + resultString ( finalize , finalizeMessage + '\n' ) , output )
+    assertEquals ( '' , error )
   }
   void testFinalizeIsCalledOnAnException ( ) {
     script = """
@@ -91,7 +97,8 @@ target ( ${targetName} : '' ) { throw new RuntimeException ( '${testingMessage}'
 target ( ${finalize} : '' ) { println ( '${finalizeMessage}' ) }
 """
     assertEquals ( -13 , processCmdLineTargets ( targetName ) )
-    assertEquals ( targetName + ':\n' + resultString ( finalize , finalizeMessage + '\n' ) + "java.lang.RuntimeException: ${testingMessage}\n" , output )
+    assertEquals ( targetName + ':\n' + resultString ( finalize , finalizeMessage + '\n' ) , output )
+    assertEquals ( "java.lang.RuntimeException: ${testingMessage}\n" , error )
   }
   void testUsingSetFinalizerFinalizeIsCalledNormally ( ) {
     script = """
@@ -101,6 +108,7 @@ setFinalizeTarget ( burble )
 """
     assertEquals ( 0 , processCmdLineTargets ( targetName ) )
     assertEquals ( resultString ( targetName , testingMessage + '\n' ) + resultString ( burble , finalizeMessage + '\n' ) , output )
+    assertEquals ( '' , error )
   }
   void testUsingSetFinalizerFinalizeIsCalledOnAnException ( ) {
     script = """
@@ -109,9 +117,9 @@ target ( burble : '' ) { println ( '${finalizeMessage}' ) }
 setFinalizeTarget ( burble )
 """
     assertEquals ( -13 , processCmdLineTargets ( targetName ) )
-    assertEquals ( targetName + ':\n' + resultString ( burble , finalizeMessage + '\n' ) + "java.lang.RuntimeException: ${testingMessage}\n" , output )
+    assertEquals ( targetName + ':\n' + resultString ( burble , finalizeMessage + '\n' ) , output )
+    assertEquals ( "java.lang.RuntimeException: ${testingMessage}\n" , error )
   }
-
   void testReturnValueFromOneTargetReceivedByCaller ( ) {
     final called = 'called'
     script = """
@@ -120,5 +128,6 @@ target ( ${targetName} : '' ) { assert ${called} ( ) == 17 }
 """
     assertEquals ( 0 , processCmdLineTargets ( targetName ) )
     assertEquals ( resultString ( targetName , resultString ( called , '' ) ) , output )
+    assertEquals ( '' , error )
   }
 }

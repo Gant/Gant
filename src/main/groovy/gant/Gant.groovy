@@ -530,35 +530,30 @@ final class Gant {
       }
     }
     if ( gotUnknownOptions ) { cli.usage ( ) ; return -1 ; }
-    //
-    //  Nota Bene: the Ant logger puts error level messages out on stderr and all other levels of message
-    //  out on stdout.  Currently the tests expect all information out on stdout.  Therefore put error
-    //  message out as warnings.
-    //
     try { loadScript ( buildSource ) }
-    catch ( FileNotFoundException fnfe ) { binding.ant.project.log ( 'Cannot open file ' + buildSource.name , Project.MSG_WARN ) ; return -3 }
-    catch ( Exception e ) { binding.ant.project.log ( constructMessageFrom ( e ) , Project.MSG_WARN ) ; return -2 }
+    catch ( FileNotFoundException fnfe ) { binding.ant.project.log ( 'Cannot open file ' + buildSource.name , Project.MSG_ERR ) ; return -3 }
+    catch ( Exception e ) { binding.ant.project.log ( constructMessageFrom ( e ) , Project.MSG_ERR ) ; return -2 }
     def defaultReturnCode = targets?.size ( ) > 0 ? -11 : -12
     outputBuildTime = function == 'dispatch'
     try { return processTargets ( function , targets ) }
     catch ( TargetExecutionException tee ) {
-      if ( verbosity > GantState.NORMAL ) { tee.printStackTrace ( ) }
-      else { binding.ant.project.log ( tee.message , Project.MSG_WARN ) }
+      if ( verbosity > GantState.NORMAL ) { binding.ant.project.log ( tee.message , tee , Project.ERR ) }
+      else { binding.ant.project.log ( tee.message , Project.MSG_ERR ) }
       return -13
     }
     catch ( MissingTargetException mte ) {
-      if ( verbosity > GantState.NORMAL ) { mte.printStackTrace ( ) }
-      else { binding.ant.project.log ( mte.message , Project.MSG_WARN ) }
+      if ( verbosity > GantState.NORMAL ) { binding.ant.project.log ( mte.message , mte , Project.ERR ) }
+      else { binding.ant.project.log ( mte.message , Project.MSG_ERR ) }
       return defaultReturnCode
     }
     catch ( TargetMissingPropertyException tmpe ) {
-      if ( verbosity > GantState.NORMAL ) { tmpe.printStackTrace ( ) }
-      else { binding.ant.project.log ( constructMessageFrom ( tmpe ) , Project.MSG_WARN ) }
+      if ( verbosity > GantState.NORMAL ) { binding.ant.project.log ( constructMessageFrom ( tmpe ) , tmpe , Project.ERR ) }
+      else { binding.ant.project.log ( constructMessageFrom ( tmpe ) , Project.MSG_ERR ) }
       return defaultReturnCode
     }
     catch ( Exception e ) {
-      if ( verbosity > GantState.NORMAL ) { e.printStackTrace ( ) }
-      else { binding.ant.project.log ( constructMessageFrom ( e ) , Project.MSG_WARN ) }
+      if ( verbosity > GantState.NORMAL ) { binding.ant.project.log ( constructMessageFrom ( e ) , e , Project.ERR ) }
+      else { binding.ant.project.log ( constructMessageFrom ( e ) , Project.MSG_ERR ) }
       return -4
     }
     //  Cannot get here.

@@ -51,6 +51,7 @@ target ( ${targetName} : '' ) {
     assertEquals ( resultString ( targetName , """Ant is deprecated, please amend your Gant files to use ant instead of Ant.
      [echo] ${message}
 """ ) , output )
+    assertEquals ( '' , error )
   }
   void testGantBindingIsActuallyUsedOutsideTarget ( ) {
     script = """
@@ -59,6 +60,7 @@ target ( ${targetName} : '' ) { }
 """
     assertEquals ( 0 , processCmdLineTargets ( targetName ) )
     assertEquals ( resultString ( targetName , '' ) , output )
+    assertEquals ( '' , error )
   }
   void testGantBindingIsActuallyUsedInsideTarget ( ) {
     script = """
@@ -68,6 +70,7 @@ target ( ${targetName} : '' ) {
 """
     assertEquals ( 0 , processCmdLineTargets ( targetName ) )
     assertEquals ( resultString ( targetName , '' ) , output )
+    assertEquals ( '' , error )
   }
   void testAntPropertyAccessAsAntPropertyOutsideTarget ( ) {
     script = """
@@ -76,6 +79,7 @@ target ( ${targetName} : '' ) { }
 """
     assertEquals ( 0 , processCmdLineTargets ( targetName ) )
     assertEquals ( resultString ( targetName , '' ) , output )
+    assertEquals ( '' , error )
   }
   void testAntPropertyAccessAsAntPropertyInsideTarget ( ) {
     script = """
@@ -85,6 +89,7 @@ target ( ${targetName} : '' ) {
 """
     assertEquals ( 0 , processCmdLineTargets ( targetName ) )
     assertEquals ( resultString ( targetName , '' ) , output )
+    assertEquals ( '' , error )
   }
   void testAntPropertyAccessAsBindingVariableOutsideTarget ( ) {
     script = """
@@ -93,6 +98,7 @@ target ( ${targetName} : '' ) { }
 """
     assertEquals ( 0 , processCmdLineTargets ( targetName ) )
     assertEquals ( resultString ( targetName , '' ) , output )
+    assertEquals ( '' , error )
   }
   void testAntPropertyAccessAsBindingVariableInsideTarget ( ) {
     script = """
@@ -102,6 +108,7 @@ target ( ${targetName} : '' ) {
 """
     assertEquals ( 0 , processCmdLineTargets ( targetName ) )
     assertEquals ( resultString ( targetName , '' ) , output )
+    assertEquals ( '' , error )
   }
   void testAntPropertyAccessViaObjectSpecifierOutsideTarget ( ) {
     script = """
@@ -110,6 +117,7 @@ target ( ${targetName} : '' ) { }
 """
     assertEquals ( 0 , processCmdLineTargets ( targetName ) )
     assertEquals ( resultString ( targetName , '' ) , output )
+    assertEquals ( '' , error )
   }
   void testAntPropertyAccessViaObjectSpecifierInsideTarget ( ) {
     script = """
@@ -121,6 +129,7 @@ target ( ${targetName} : '' ) {
 """
     assertEquals ( 0 , processCmdLineTargets ( targetName ) )
     assertEquals ( resultString ( targetName , '' ) , output )
+    assertEquals ( '' , error )
   }
   void testPropertySettingWorksAsExpectedOutsideTarget ( ) {
     script = """
@@ -136,6 +145,7 @@ target ( ${targetName} : '' ) {
 """
     assertEquals ( 0 , processCmdLineTargets ( targetName ) )
     assertEquals ( resultString ( targetName , '' ) , output )
+    assertEquals ( '' , error )
   }
   void testPropertySettingWorksAsExpectedInTarget ( ) {
     script = """
@@ -153,6 +163,7 @@ target ( ${targetName} : '' ) {
 """
     assertEquals ( 0 , processCmdLineTargets ( targetName ) )
     assertEquals ( resultString ( targetName , '' ) , output )
+    assertEquals ( '' , error )
   }
   void testPropertyAccessInsideCategory ( ) {
     /*
@@ -172,6 +183,7 @@ target ( ${targetName} : '' ) {
 """
     assertEquals ( 0 , processTargets ( targetName ) )
     assertEquals ( resultString ( targetName , message + '\n' ) , output )
+    assertEquals ( '' , error )
   }
 
   /*
@@ -184,7 +196,8 @@ ${name} = null
 target ( 'default' : '' ) { println ( 'This should never be printed.' ) }
 """
     assertEquals ( -4 , processCmdLineTargets ( ) )
-    assertEquals ( "Standard input, line 2 -- Error evaluating Gantfile: Cannot redefine symbol ${name}\n" , output )
+    assertEquals ( '' , output )
+    assertEquals ( "Standard input, line 2 -- Error evaluating Gantfile: Cannot redefine symbol ${name}\n" , error )
   }
   void testAttemptToAlterReadOnlyBindingEntriesCausesException_target ( ) { undertakeTestingOfAReadOnlyEntryInBinding ( 'target' ) }
   void testAttemptToAlterReadOnlyBindingEntriesCausesException_message ( ) { undertakeTestingOfAReadOnlyEntryInBinding ( 'message' ) }
@@ -204,11 +217,13 @@ target ( 'default' : '' ) { println ( 'This should never be printed.' ) }
     script = "target ( ${targetName} : '' ) { println ( binding.'gant.file' ) }"
     assertEquals ( 0 , processTargets ( targetName ) )
     assertEquals ( resultString ( targetName , '<stream>\n' ) , output )
+    assertEquals ( '' , error )
   }
   void testGantVersionPropertyIsAccessible ( ) {
-    System.err.println ( "Need to find a way of testing the actual version being correct instead of null." )
+    // TODO: Need to find a way of testing the actual version being correct instead of null.
     script = "target ( ${targetName} : '' ) { println ( binding.'gant.version' ) }"
     assertEquals ( 0 , processTargets ( targetName ) )
     assertEquals ( resultString ( targetName , 'null\n' ) , output )
+    assertEquals ( '' , error )
   }
 }

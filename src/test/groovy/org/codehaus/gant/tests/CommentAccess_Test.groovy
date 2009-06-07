@@ -34,5 +34,6 @@ target ( ${targetName} : theComment ) {
 """
     assertEquals ( 0 , processCmdLineTargets ( 'commentAccess' ) )
     assertEquals ( resultString ( targetName , success + '\n' ) , output )
+    assertEquals ( '' , error )
   }
 }

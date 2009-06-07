@@ -28,6 +28,7 @@ includeTargets << gant.targets.Maven
 """
     assertEquals ( 0 , processCmdLineTargets ( 'initialize' ) )
     assertEquals ( 'initialize:\n' + exitMarker + 'initialize\n' , output )
+    assertEquals ( '' , error )
   }
   void testCompileTargetInDirectoryOtherThanTheCurrentBuildDirectory ( ) {
     final antBuilder = new AntBuilder ( )
@@ -47,6 +48,7 @@ includeTargets ** gant.targets.Maven * [
     assertTrue ( output.startsWith ( 'compile:\ninitialize:\n' + exitMarker + 'initialize\n    [mkdir] Created dir:' ) )
     assertTrue ( output.contains ( '  [groovyc] Compiling' ) )
     assertTrue ( name.isDirectory ( ) )
+    assertEquals ( '' , error )
     antBuilder.delete ( dir : name.name )
     assertFalse ( name.exists ( ) )
   }
@@ -56,7 +58,8 @@ includeTargets ** gant.targets.Maven * [
 includeTargets << gant.targets.Maven
 """
     assertEquals ( -13 , processCmdLineTargets ( targetName ) )
-    assertEquals ( targetName + ':\njava.lang.RuntimeException: maven.groupId must be set to achieve target package.\n' , output )
+    assertEquals ( targetName + ':\n' , output )
+    assertEquals ( 'java.lang.RuntimeException: maven.groupId must be set to achieve target package.\n' , error )
   }
   void testPackageNoGroupIdPower ( ) {
     def targetName = 'package'
@@ -64,7 +67,8 @@ includeTargets << gant.targets.Maven
 includeTargets ** gant.targets.Maven * [ : ]
 """
     assertEquals ( -13 , processCmdLineTargets ( targetName ) )
-    assertEquals ( targetName + ':\njava.lang.RuntimeException: maven.groupId must be set to achieve target package.\n' , output )
+    assertEquals ( targetName + ':\n' , output )
+    assertEquals ( 'java.lang.RuntimeException: maven.groupId must be set to achieve target package.\n' , error )
   }
   void testPackageNoArtifactIdLeftShift ( ) {
     final targetName = 'package'
@@ -73,7 +77,8 @@ includeTargets << gant.targets.Maven
 maven.groupId = 'flob'
 """
     assertEquals ( -13 , processCmdLineTargets ( targetName ) )
-    assertEquals ( targetName + ':\njava.lang.RuntimeException: maven.artifactId must be set to achieve target package.\n' , output )
+    assertEquals ( targetName + ':\n' , output )
+    assertEquals ( 'java.lang.RuntimeException: maven.artifactId must be set to achieve target package.\n' , error )
   }
   void testPackageNoArtifactIdPower ( ) {
     def targetName = 'package'
@@ -81,7 +86,8 @@ maven.groupId = 'flob'
 includeTargets ** gant.targets.Maven * [ groupId : 'flob' ]
 """
     assertEquals ( -13 , processCmdLineTargets ( targetName ) )
-    assertEquals ( targetName + ':\njava.lang.RuntimeException: maven.artifactId must be set to achieve target package.\n' , output )
+    assertEquals ( targetName + ':\n' , output )
+    assertEquals ( 'java.lang.RuntimeException: maven.artifactId must be set to achieve target package.\n' , error )
   }
   void testPackageVersionLeftShift ( ) {
     final targetName = 'package'
@@ -91,7 +97,8 @@ maven.groupId = 'flob'
 maven.artifactId = 'adob'
 """
     assertEquals ( -13 , processCmdLineTargets ( targetName ) )
-    assertEquals ( targetName + ':\njava.lang.RuntimeException: maven.version must be set to achieve target package.\n' , output )
+    assertEquals ( targetName + ':\n' , output )
+    assertEquals ( 'java.lang.RuntimeException: maven.version must be set to achieve target package.\n' , error )
   }
   void testPackageVersionPower ( ) {
     final targetName = 'package'
@@ -99,7 +106,8 @@ maven.artifactId = 'adob'
 includeTargets ** gant.targets.Maven * [ groupId : 'flob' , artifactId : 'adob' ]
 """
     assertEquals ( -13 , processCmdLineTargets ( targetName ) )
-    assertEquals ( targetName + ':\njava.lang.RuntimeException: maven.version must be set to achieve target package.\n' , output )
+    assertEquals ( targetName + ':\n' , output )
+    assertEquals ( 'java.lang.RuntimeException: maven.version must be set to achieve target package.\n' , error )
   }
   void testBindingPropertyIsReadOnlyLeftShift ( ) {
     script = """
@@ -107,14 +115,16 @@ includeTargets << gant.targets.Maven
 maven.binding = new Binding ( )
 """
     assertEquals ( -4 , processCmdLineTargets ( 'initialize' ) )
-    assertEquals ( 'Standard input, line 3 -- Error evaluating Gantfile: Cannot amend the property binding.\n' , output )
+    assertEquals ( '' , output )
+    assertEquals ( 'Standard input, line 3 -- Error evaluating Gantfile: Cannot amend the property binding.\n' , error )
   }
   void testBindingPropertyIsReadOnlyPower ( ) {
     script = """
 includeTargets ** gant.targets.Maven * [ binding : new Binding ( ) ]
 """
     assertEquals ( -4 , processCmdLineTargets ( 'initialize' ) )
-    assertEquals ( 'Standard input, line 2 -- Error evaluating Gantfile: Cannot amend the property binding.\n' , output )
+    assertEquals ( '' , output )
+    assertEquals ( 'Standard input, line 2 -- Error evaluating Gantfile: Cannot amend the property binding.\n' , error )
   }
   void testAdditionalTarget ( ) {
     final targetName = 'sayHello'
@@ -124,6 +134,7 @@ target ( ${targetName} : '' ) { println ( 'Hello.' ) }
 """
     assertEquals ( 0 , processCmdLineTargets ( targetName ) )
     assertEquals ( resultString ( targetName , 'Hello.\n' ) , output )
+    assertEquals ( '' , error )
   }
   void testAdditionalTargetError ( ) {
     final targetName = 'sayHello'
@@ -132,6 +143,7 @@ includeTargets << gant.targets.Maven
 target ( ${targetName} , '' ) { println ( 'Hello.' ) }
 """
     assertEquals ( -4 , processCmdLineTargets ( targetName ) )
-    assertEquals ( 'Standard input, line 3 -- Error evaluating Gantfile: No such property: sayHello for class: standard_input\n' , output )
+    assertEquals ( '' , output )
+    assertEquals ( 'Standard input, line 3 -- Error evaluating Gantfile: No such property: sayHello for class: standard_input\n' , error )
   }
 }

@@ -33,15 +33,18 @@ setDefaultTarget ( ${something} )
   }
   void testDefault ( ) {
     assertEquals ( 0 , processCmdLineTargets ( ) )
-    assertEquals ( resultString ( something , message + '\n' ) , output ) 
+    assertEquals ( resultString ( something , message + '\n' ) , output )
+    assertEquals ( '' , error )
   }
   void testTargetNotPresent ( ) {
     final targetName = 'blah'
     assertEquals ( -11 , processCmdLineTargets ( targetName ) )
-    assertEquals ( "Target ${targetName} does not exist.\n" , output ) 
+    assertEquals ( '' , output )
+    assertEquals ( "Target ${targetName} does not exist.\n" , error ) 
   }
   void testSomething ( ) {
     assertEquals ( 0 , processCmdLineTargets ( something ) )
     assertEquals ( resultString ( something , message + '\n' ) , output ) 
+    assertEquals ( '' , error )
   }
 }

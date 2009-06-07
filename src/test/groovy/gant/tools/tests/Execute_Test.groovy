@@ -30,6 +30,7 @@ target ( ${targetName} : '' ) { execute.executable ( '${command}' ) }
 """
     assertEquals ( 0 , processCmdLineTargets ( targetName ) )
     assertEquals ( resultString ( targetName , '  [execute] ' + command + '\n1\n' ) , output )
+    assertEquals ( '' , error )
   }
   void testExecutableListOfString ( ) {
     //  Format these correctly and they are both input and expected value.
@@ -40,6 +41,7 @@ target ( ${targetName} : '' ) { execute.executable ( ${command} ) }
 """
     assertEquals ( 0 , processCmdLineTargets ( targetName ) )
     assertEquals ( resultString ( targetName , '  [execute] ' + expected + '\n1\n' ) , output )
+    assertEquals ( '' , error )
   }
   void testShellString ( ) {
     script = """includeTool << gant.tools.Execute
@@ -47,6 +49,7 @@ target ( ${targetName} : '' ) { execute.shell ( 'echo 1' ) }
 """
     assertEquals ( 0 , processCmdLineTargets ( targetName ) )
     assertEquals ( resultString ( targetName , '    [shell] echo 1\n1\n' ) , output )
+    assertEquals ( '' , error )
   }
   void testExecuteReturnCodeCorrect ( ) {
    final command = isWindows ? 'cmd /c echo 1' : 'echo 1'
@@ -55,6 +58,7 @@ target ( ${targetName} : '' ) { assert execute.executable ( '${command}' ) == 0 
 """
     assertEquals ( 0 , processCmdLineTargets ( targetName ) )
     assertEquals ( resultString ( targetName , '  [execute] ' + command + '\n1\n' ) , output )
+    assertEquals ( '' , error )
   }
   void testExecuteReturnCodeError ( ) {
     //  TODO:  Find out what can be done in Windows to check this.
@@ -64,6 +68,7 @@ target ( ${targetName} : '' ) { assert execute.executable ( 'false' ) == 1 }
 """
       assertEquals ( 0 , processCmdLineTargets ( targetName ) )
       assertEquals ( resultString ( targetName , '  [execute] false\n' ) , output )
+      assertEquals ( '' , error )
     }
   }
   void testParameterizedUsage ( ) {
@@ -72,5 +77,6 @@ target ( ${targetName} : '' ) { execute.shell ( 'echo 1' ) }
 """
     assertEquals ( 0 , processCmdLineTargets ( targetName ) )
     assertEquals ( resultString ( targetName , '    [shell] echo 1\n1\n' ) , output )
+    assertEquals ( '' , error )
   }
 }

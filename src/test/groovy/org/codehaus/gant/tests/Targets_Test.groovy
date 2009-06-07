@@ -27,21 +27,25 @@ final class Targets_Test extends GantTestCase {
     script = "target ( ${targetName} : '' ) { print ( '${ok}' ) }"
     assertEquals ( 0 , processCmdLineTargets ( targetName ) )
     assertEquals ( result , output )
+    assertEquals ( '' , error )
   }
   void testWithDescription ( ) {
     script = "target ( ${targetName} : 'Blah blah' ) { print ( '${ok}' ) }"
     assertEquals ( 0 , processCmdLineTargets ( targetName ) )
     assertEquals ( result , output )
+    assertEquals ( '' , error )
   }
   void testEmptyMap ( ) {
     script = "target ( [ : ] ) { print ( '${ok}' ) }"
     assertEquals ( -4 , processCmdLineTargets ( targetName ) )
-    assertEquals ( 'Standard input, line 1 -- Error evaluating Gantfile: Target specified without a name.\n' , output )
+    assertEquals ( '' , output )
+    assertEquals ( 'Standard input, line 1 -- Error evaluating Gantfile: Target specified without a name.\n' , error )
   }
   void testMultipleEntries ( ) {
     script = "target ( fred : '' , debbie : '' ) { print ( '${ok}' ) }"
     assertEquals ( -4 , processCmdLineTargets ( targetName ) )
-    assertEquals ( 'Standard input, line 1 -- Error evaluating Gantfile: Target specified without a name.\n' , output )
+    assertEquals ( '' , output )
+    assertEquals ( 'Standard input, line 1 -- Error evaluating Gantfile: Target specified without a name.\n' , error )
   }
   void testOverwriting ( ) {
     //
@@ -52,9 +56,9 @@ final class Targets_Test extends GantTestCase {
 target ( ${targetName} : '' ) { println ( 'Hello 1' ) }
 target ( ${targetName} : '' ) { println ( 'Hello 2' ) }
 """
-    System.err.println ( 'testOverwriting: This test is wrong -- it shows that target overwriting is supported.' )
     assertEquals ( 0 , processCmdLineTargets ( targetName ) )
     assertEquals ( resultString ( targetName , 'Hello 2\n' ) , output )
+    assertEquals ( '' , error )
   }
   void testForbidRedefinitionOfTarget ( ) {
     script = """
@@ -62,34 +66,40 @@ target ( ${targetName} : '' ) { }
 target = 10
 """
     assertEquals ( -4 , processCmdLineTargets ( targetName ) )
-    assertEquals ( 'Standard input, line 3 -- Error evaluating Gantfile: Cannot redefine symbol target\n' , output )
+    assertEquals ( '' , output )
+    assertEquals ( 'Standard input, line 3 -- Error evaluating Gantfile: Cannot redefine symbol target\n' , error )
   }
   void testStringParameter ( ) {
     script = "target ( '${targetName}' ) { print ( '${ok}' ) }"
     assertEquals ( -4 , processCmdLineTargets ( targetName ) )
-    assertTrue ( output.startsWith ( 'Standard input, line 1 -- Error evaluating Gantfile: No signature of method: org.codehaus.gant.GantBinding$_initializeGantBinding_closure' ) )
+    assertEquals ( '' , output )
+    assertTrue ( error.startsWith ( 'Standard input, line 1 -- Error evaluating Gantfile: No signature of method: org.codehaus.gant.GantBinding$_initializeGantBinding_closure' ) )
   }
   void testStringSequenceParameter ( ) {
     script = "target ( '${targetName}' , 'description' ) { print ( '${ok}' ) }"
     assertEquals ( -4 , processCmdLineTargets ( targetName ) )
-    assertTrue ( output.startsWith ( 'Standard input, line 1 -- Error evaluating Gantfile: No signature of method: org.codehaus.gant.GantBinding$_initializeGantBinding_closure' ) )
+    assertEquals ( '' , output )
+    assertTrue ( error.startsWith ( 'Standard input, line 1 -- Error evaluating Gantfile: No signature of method: org.codehaus.gant.GantBinding$_initializeGantBinding_closure' ) )
   }
   void testMissingTargetInScriptExplicitTarget ( ) {
     script = "setDefaultTarget ( ${targetName} )"
     assertEquals ( -4 , processCmdLineTargets ( targetName ) )
-    assertEquals ( "Standard input, line 1 -- Error evaluating Gantfile: No such property: ${targetName} for class: standard_input\n" , output )
+    assertEquals ( '' , output )
+    assertEquals ( "Standard input, line 1 -- Error evaluating Gantfile: No such property: ${targetName} for class: standard_input\n" , error )
   }
   void testMissingTargetInScriptDefaultTarget ( ) {
     script = "setDefaultTarget ( ${targetName} )"
     assertEquals ( -4 , processCmdLineTargets ( ) )
-    assertEquals ( "Standard input, line 1 -- Error evaluating Gantfile: No such property: ${targetName} for class: standard_input\n" , output )
+    assertEquals ( '' , output )
+    assertEquals ( "Standard input, line 1 -- Error evaluating Gantfile: No such property: ${targetName} for class: standard_input\n" , error )
   }
   void testFaultyScript ( ) {
     script = 'XXXXX : YYYYY ->'
     assertEquals ( -2 , processCmdLineTargets ( ) )
+    assertEquals ( '' , output )
     assertEquals ( '''Error evaluating Gantfile: startup failed, standard_input: 1: unexpected token: -> @ line 1, column 15.
 1 error
-''' , output )
+''' , error )
   }
 
   //  Tests resulting from GANT-45.
@@ -102,12 +112,14 @@ setDefaultTarget ( ${targetName} )
   void test_GANT_45_MessageBugDefaultTarget ( ) {
     script = testScript
     assertEquals ( -12 , processCmdLineTargets ( ) )
-    assertEquals ( targetName + ':\n' + expectedOutput , output )
+    assertEquals ( targetName + ':\n' , output )
+    assertEquals ( expectedOutput , error )
   }
   void test_GANT_45_MessageBugExplicitTarget ( ) {
     script = testScript
     assertEquals ( -11 , processCmdLineTargets ( targetName ) )
-    assertEquals ( targetName + ':\n' + expectedOutput , output )
+    assertEquals ( targetName + ':\n' , output )
+    assertEquals ( expectedOutput , error )
   }
 
   //  Test relating to GStrings as target names
@@ -119,6 +131,7 @@ target ( "\${name}" : '' ) { println ( "\${name}" ) }
 """
     assertEquals ( 0 , processCmdLineTargets ( targetName ) )
     assertEquals ( resultString ( targetName , targetName + '\n' ) , output )
+    assertEquals ( '' , error )
   }
 
   //  Tests resulting from GANT-55 -- GString as a parameter to depends call causes problems.
@@ -147,6 +160,7 @@ target ( "\${tag}${compileTag}" : '' ) {
     */
     assertEquals ( 0 , processCmdLineTargets ( "${targetName}${compileTag}" ) ) // NB parameter must be a String!
     assertEquals ( expectedGant55Result , output )
+    assertEquals ( '' , error )
   }
   void test_GANT_55_usingStringKeys ( ) {
     script = """
@@ -158,22 +172,25 @@ target ( '${targetName}${compileTag}' : '' ) {
 """
     assertEquals ( 0 , processCmdLineTargets ( targetName + compileTag ) )
     assertEquals ( expectedGant55Result , output )
+    assertEquals ( '' , error )
   }
 
   //  Tests to ensure the patch of GANT-56 doesn't do nasty things.  A couple of tests from earlier change
   //  their purpose.
 
   void test_GANT_56 ( ) {
-    script = '''
-targetName = 'bar'
+    script = """
+targetName = '${targetName}'
 targetDescription = 'Some description or other'
 target ( name : targetName , description : targetDescription ) {
   assert it.name == targetName
   assert it.description == targetDescription
 }
 setDefaultTarget ( targetName )
-'''
+"""
     assertEquals ( 0 , processCmdLineTargets ( ) )
+    assertEquals ( resultString ( targetName , '' ) , output )
+    assertEquals ( '' , error )
   }
 
   void test_nameAsATargetNameImpliesExplicitDefinitionStyle ( ) {
@@ -188,6 +205,7 @@ setDefaultTarget ( targetName )
 """
     assertEquals ( 0 , processCmdLineTargets ( ) )
     assertEquals ( resultString ( bar , '' ) , output )
+    assertEquals ( '' , error )
   }
 
   //  Phil Swenson asked for the name of the target being completed to be available -- see the email on the Gant
@@ -208,11 +226,13 @@ target ( ${two} : '' ) {
     script = initiatingTargetScript
     assertEquals ( 0 , processCmdLineTargets ( two ) )
     assertEquals ( resultString ( two , resultString ( one , two + '\n' ) + two + '\n' ) , output )
+    assertEquals ( '' , error )
   }
   void testEachInitiatingTargetOfASequenceAvailableToScript ( ) {
     script = initiatingTargetScript
     assertEquals ( 0 , processCmdLineTargets ( [ one , two ] ) )
     assertEquals ( resultString ( one , one + '\n' ) + resultString ( two , resultString ( one , two + '\n' ) + two + '\n' ) , output )
+    assertEquals ( '' , error )
   }
   
 }

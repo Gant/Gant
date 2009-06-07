@@ -159,14 +159,14 @@ public class GantBinding extends Binding implements Cloneable {
         owner.setVariable ( targetName + '_description' , targetDescription )  //  For backward compatibility.
       } )
     super.setVariable ( 'task' , { Map<String, String> map , Closure closure ->
-        owner.binding.ant.project.log ( 'task has now been removed from Gant, please update your Gant files to use target instead of task.' , Project.MSG_ERR )
+        owner.ant.project.log ( 'task has now been removed from Gant, please update your Gant files to use target instead of task.' , Project.MSG_ERR )
         System.exit ( -99 ) ;
       } )
     super.setVariable ( 'targetDescriptions' , new TreeMap ( ) )
     super.setVariable ( 'message' , { String tag , Object message ->
         def padding = 9 - tag.length ( )
         if ( padding < 0 ) { padding = 0 }
-        println ( "           ".substring ( 0 , padding ) + '[' + tag + '] ' + message )
+        owner.ant.project.log ( "           ".substring ( 0 , padding ) + '[' + tag + '] ' + message )
       } )
     super.setVariable ( 'setDefaultTarget' , { defaultTarget -> // Deal with Closure or String arguments.
          switch ( defaultTarget.class ) {

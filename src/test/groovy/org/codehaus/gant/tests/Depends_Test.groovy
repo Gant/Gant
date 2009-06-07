@@ -40,7 +40,8 @@ target ( ${targetName} : '' ) { ${caseA} ( ) ; ${caseB} ( ) ; ${caseC} ( ) }
                                   resultString ( caseA , resultString ( outputFunction , outputMessage + '\n' ) )
                                   + resultString ( caseB , resultString ( outputFunction , outputMessage + '\n' ) )
                                   + resultString ( caseC , resultString ( outputFunction , outputMessage + '\n' ) )
-                                  ) , output ) 
+                                  ) , output )
+    assertEquals ( '' , error )
   }
   void testMixed ( ) {
     script = """
@@ -56,6 +57,7 @@ target ( ${targetName} : '' ) { ${caseA} ( ) ; ${caseB} ( ) ; ${caseC} ( ) }
                                   + resultString ( caseB , resultString ( outputFunction , outputMessage + '\n' ) )
                                   + resultString ( caseC , '' )
                                   ) , output ) 
+    assertEquals ( '' , error )
   }
   void testAll ( ) {
     script = """
@@ -71,6 +73,7 @@ target ( ${targetName} : '' ) { ${caseA} ( ) ; ${caseB} ( ) ; ${caseC} ( ) }
                                   + resultString ( caseB , '' )
                                   + resultString ( caseC , '' )
                                   ) , output ) 
+    assertEquals ( '' , error )
   }
   void testMultiple ( ) {
     script = """
@@ -86,6 +89,7 @@ target ( ${targetName} : '' ) { depends ( ${caseA} , ${caseB} , ${caseC} ) }
                                   + resultString ( caseB , '' )
                                   + resultString ( caseC , '' )
                                   ) , output ) 
+    assertEquals ( '' , error )
   }
   void testList ( ) {
     script = """
@@ -101,6 +105,7 @@ target ( ${targetName} : '' ) { depends ( [ ${caseA} , ${caseB} , ${caseC} ] ) }
                                   + resultString ( caseB , '' )
                                   + resultString ( caseC , '' )
                                   ) , output )
+    assertEquals ( '' , error )
   }
   void testNotClosure ( ) {
     script = """
@@ -108,7 +113,8 @@ datum = 1
 target ( ${targetName} : '' ) { depends ( datum ) }
 """
     assertEquals ( -13 , processCmdLineTargets ( targetName ) )
-    assertEquals ( targetName + ':\njava.lang.RuntimeException: depends called with an argument (1) that is not a known target or list of targets.\n' , output )
+    assertEquals ( targetName + ':\n' , output )
+    assertEquals ( 'java.lang.RuntimeException: depends called with an argument (1) that is not a known target or list of targets.\n' , error )
   }
   void testNotListClosure ( ) {
     script = """
@@ -116,7 +122,8 @@ datum = 1
 target ( ${targetName} : '' ) { depends ( [ datum ] ) }
 """
     assertEquals ( -13 , processCmdLineTargets ( targetName ) )
-    assertEquals ( targetName + ':\njava.lang.RuntimeException: depends called with an argument (1) that is not a known target or list of targets.\n' , output )
+    assertEquals ( targetName + ':\n' , output )
+    assertEquals ( 'java.lang.RuntimeException: depends called with an argument (1) that is not a known target or list of targets.\n' , error )
   }
   void testOutOfOrder ( ) {
     script = """
@@ -132,6 +139,7 @@ target ( ${outputFunction} : '' ) { println ( '${outputMessage}' ) }
                                   + resultString ( caseB , '' )
                                   + resultString ( caseC , '' )
                                   ) , output )
+    assertEquals ( '' , error )
   }
   void testOutOfOrderList ( ) {
     script = """
@@ -147,6 +155,7 @@ target ( ${outputFunction} : '' ) { println ( '${outputMessage}' ) }
                                   + resultString ( caseB , '' )
                                   + resultString ( caseC , '' )
                                   ) , output )
+    assertEquals ( '' , error )
   }
   void testSameTargetAndFileName ( ) {
     //  Having a target of the same name as the script being compiled is fine until the target name is used in
@@ -157,7 +166,7 @@ target ( standard_input , '' ) { println ( '${outputMessage}' ) }
 target ( ${targetName} , '' ) { depends ( standard_input ) }
 """
     assertEquals ( -4 , processCmdLineTargets ( targetName ) )
-    assertTrue ( output.startsWith ( 'Standard input, line 2 -- Error evaluating Gantfile: No signature of method: ' ) )
+    assertTrue ( error.startsWith ( 'Standard input, line 2 -- Error evaluating Gantfile: No signature of method: ' ) )
   }
   void testStringParameter ( ) {
     script = """
@@ -166,6 +175,7 @@ target ( ${targetName} : '' ) { depends ( '${caseA}' ) }
 """
     assertEquals ( 0 , processCmdLineTargets ( targetName ) )
     assertEquals ( resultString ( targetName , resultString ( caseA , outputMessage + '\n' ) ) , output )
+    assertEquals ( '' , error )
   }
   void testStringListParameter ( ) {
     script = """
@@ -178,6 +188,7 @@ target ( ${targetName} : '' ) { depends ( [ '${caseA}' , '${caseB}' ] ) }
                                   resultString ( caseA , outputMessage + '\n' )
                                   + resultString ( caseB , outputMessage + '\n' )
                                   ) , output )
+    assertEquals ( '' , error )
   }
   void testMixedListParameter ( ) {
     script = """
@@ -190,6 +201,7 @@ target ( ${targetName} : '' ) { depends ( [ ${caseA} , '${caseB}' ] ) }
                                   resultString ( caseA , outputMessage + '\n' )
                                   + resultString ( caseB , outputMessage + '\n' )
                                   ) , output )
+    assertEquals ( '' , error )
   }
   void testCircularDependency ( ) {
     //  Should this actually fail? cf. GANT-9.  Current view is that it is fine as is.
@@ -206,6 +218,7 @@ target ( C : '' ) { depends ( A )  ; println ( 'C' ) }
                                                                 + 'C\n' )
                                                  + 'B\n' )
                                   + 'A\n' ) , output )
+    assertEquals ( '' , error )
   }
   void testMultipleIndependentTargets ( ) {
     script = """
@@ -214,6 +227,7 @@ target ( ${caseB} : '' ) { println ( '${caseB}' ) }
 """
     assertEquals ( 0 , processCmdLineTargets ( [ caseA , caseB ] ) )
     assertEquals ( resultString ( caseA , caseA + '\n' ) + resultString ( caseB , caseB + '\n' ) , output )
+    assertEquals ( '' , error )
   }
   void testEmbeddedDepend ( ) {
     script = """
@@ -222,6 +236,7 @@ target ( ${targetName} : '' ) { (0..3).each { depends ( ${caseA} ) } }
 """
     assertEquals ( 0 , processCmdLineTargets ( targetName ) )
     assertEquals ( resultString ( targetName , resultString ( caseA , outputMessage + '\n' ) ) , output )
+    assertEquals ( '' , error )
   }
   //  cf. GANT-26
   void testMultipleDependentTargets ( ) {
@@ -234,5 +249,6 @@ target ( ${caseB} : '' ) { println ( '${caseB}' ) }
 """
     assertEquals ( 0 , processCmdLineTargets ( [ caseA , caseB ] ) )
     assertEquals ( resultString ( caseA , resultString ( caseB , caseB + '\n' ) + caseA + '\n' ) + resultString ( caseB , caseB + '\n' ) , output )
+    assertEquals ( '' , error )
   }
 }

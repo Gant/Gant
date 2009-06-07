@@ -28,6 +28,8 @@ normally or duie to an exception.  cf.  GANT-81.
 setDefaultTarget used to generate a target called default which was problematic if a script defined a target
 of that name.  The default target processing has been changed to avoid this.
 
+Error messages now appear on standard error, previously they appeared on standard out along with other forms
+of output.
 
 
 1.6.1 ( r10179 )
