@@ -537,22 +537,22 @@ final class Gant {
     outputBuildTime = function == 'dispatch'
     try { return processTargets ( function , targets ) }
     catch ( TargetExecutionException tee ) {
-      if ( verbosity > GantState.NORMAL ) { binding.ant.project.log ( tee.message , tee , Project.ERR ) }
+      if ( verbosity > GantState.NORMAL ) { binding.ant.project.log ( tee.message , tee , Project.MSG_ERR ) }
       else { binding.ant.project.log ( tee.message , Project.MSG_ERR ) }
       return -13
     }
     catch ( MissingTargetException mte ) {
-      if ( verbosity > GantState.NORMAL ) { binding.ant.project.log ( mte.message , mte , Project.ERR ) }
+      if ( verbosity > GantState.NORMAL ) { binding.ant.project.log ( mte.message , mte , Project.MSG_ERR ) }
       else { binding.ant.project.log ( mte.message , Project.MSG_ERR ) }
       return defaultReturnCode
     }
     catch ( TargetMissingPropertyException tmpe ) {
-      if ( verbosity > GantState.NORMAL ) { binding.ant.project.log ( constructMessageFrom ( tmpe ) , tmpe , Project.ERR ) }
+      if ( verbosity > GantState.NORMAL ) { binding.ant.project.log ( constructMessageFrom ( tmpe ) , tmpe , Project.MSG_ERR ) }
       else { binding.ant.project.log ( constructMessageFrom ( tmpe ) , Project.MSG_ERR ) }
       return defaultReturnCode
     }
     catch ( Exception e ) {
-      if ( verbosity > GantState.NORMAL ) { binding.ant.project.log ( constructMessageFrom ( e ) , e , Project.ERR ) }
+      if ( verbosity > GantState.NORMAL ) { binding.ant.project.log ( constructMessageFrom ( e ) , e , Project.MSG_ERR ) }
       else { binding.ant.project.log ( constructMessageFrom ( e ) , Project.MSG_ERR ) }
       return -4
     }
@@ -568,7 +568,7 @@ final class Gant {
   protected Integer processTargets ( String function , List targets ) {
     // Configure the build based on this instance's settings.
     if ( dryRun ) { GantState.dryRun = true }
-    if ( verbosity != GantState.verbosity ) { GantState.verbosity = verbosity ; binding.logger.setMessageOutputLevel ( verbosity ) }
+    if ( verbosity != GantState.verbosity ) { GantState.verbosity = verbosity ; binding.ant.logger.setMessageOutputLevel ( verbosity ) }
     binding.cacheEnabled = useCache
     binding.gantLib = gantLib
     if ( script == null ) { throw new RuntimeException ( "No script has been loaded!" ) }

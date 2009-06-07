@@ -23,9 +23,25 @@ package  org.codehaus.gant.tests.bugs
 import org.codehaus.gant.tests.GantTestCase
 
 class Assorted_Test extends GantTestCase {
+  private final targetName = 'targetName'
+
+  void test_GANT_29_ensureCaseChangeWorks ( ) {
+    final result = 'some string or other'
+    script = """
+import org.codehaus.gant.tests.bugs.subPackage.GANT_29_SampleTool
+includeTool << GANT_29_SampleTool
+target ( ${targetName} : '' ) {
+  gANT_29_SampleTool.name = '${result}'
+  println ( gANT_29_SampleTool.name )
+}
+setDefaultTarget ( ${targetName} )
+"""
+    assertEquals ( 0 , processCmdLineTargets ( targetName ) )
+    assertEquals ( resultString ( targetName , result + '\n' ) , output )
+    assertEquals ( '' , error )
+  }
 
   void test_GANT_32_singleFileFailsCorrectly ( ) {
-    final targetName = 'test'
     script = """
 target ( ${targetName} : '' ) { foo }
 def foo { badvariable }
@@ -37,7 +53,6 @@ def foo { badvariable }
 ''' , error )
   }
   void test_GANT_32_multipleFilesFailsCorrectly ( ) {
-    final targetName = 'test'
     final file = File.createTempFile ( 'gant-' , '-GANT_32.groovy' )
     file.write ( """target ( ${targetName} : '' ) { foo }
 def foo { badvariable }
@@ -78,7 +93,6 @@ target ( 'default' : '' ) {
     //  org.codehaus.groovy.runtime.HandleMetaClass exists since it is running against Groovy 1.5.6 rather
     //  than 1.6 or later.
     //
-    final targetName = 'test'
     script = """
 import groovy.xml.MarkupBuilder
 target ( ${targetName} : '' ) {
@@ -142,7 +156,6 @@ target ( 'default' , '' ) { }
   }
 
   void test_GANT_63_exceptionFailsCorrectly ( ) {
-    final targetName = 'main'
     script = """
 target ( ${targetName} : '' ) {
   def f = new File ( 'blahblahblahblahblah' )
@@ -150,7 +163,7 @@ target ( ${targetName} : '' ) {
   f.eachDir { println ( it ) }
   println ( 'after' )
 }
-setDefaultTarget ( main )
+setDefaultTarget ( ${targetName} )
 """
     assertEquals ( -13 , processCmdLineTargets ( ) )
     assertEquals ( "${targetName}:\nbefore\n" , output )
@@ -162,7 +175,6 @@ setDefaultTarget ( main )
     //  Use a preexisting directory as the source directory and make sure the build directory doesn't exist!
     final sourceDirectory = 'src/test/groovy/org/codehaus/gant/tests/bugs'
     final destinationDirectory = 'destinationDirectoryOfSomeObscureNameThatDoesntExist'
-    final targetName = 'compile'
     script = """
 sourceDirectory = '${sourceDirectory}'
 destinationDirectory = '${destinationDirectory}'
