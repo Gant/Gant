@@ -1,6 +1,6 @@
 //  Gant -- A Groovy way of scripting Ant tasks.
 //
-//  Copyright © 2008 Russel Winder
+//  Copyright © 2008-9 Russel Winder
 //
 //  Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in
 //  compliance with the License. You may obtain a copy of the License at
@@ -13,6 +13,8 @@
 //  License.
 
 import org.codehaus.gant.ant.tests.Gant_Test
+
+ant.property ( file : 'build.properties' )
 
 //// This build file has to work in two contexts.  If GROOVY_HOME is set in the environment then the jars
 //// from that installation of Groovy should be used so as to ensure testing in the right context.  If the
@@ -39,7 +41,7 @@ target ( gantTaskdefVerifyError : 'Check that a taskdef works.' ) {
   //  Paths are relative to the directory in which this file resides.
   def artifact = 'urn:maven-artifact-ant'
   typedef ( resource : 'org/apache/maven/artifact/ant/antlib.xml' , uri : artifact ) {
-    classpath { fileset ( dir : '../../../../../../../../jarfiles' , includes : 'maven-ant-tasks-*.jar' ) }
+    classpath { fileset ( dir : toplevelDirectory + '/jarfiles' , includes : 'maven-ant-tasks-*.jar' ) }
   }
   def dependencyClasspathId = 'dependencyClasspath'
   "${artifact}:dependencies" ( pathId : dependencyClasspathId ) {

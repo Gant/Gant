@@ -69,7 +69,8 @@ public class Gant_Test extends TestCase {
     super.setUp ( ) ;
     project = new Project ( ) ;
     project.init ( ) ;
-    ProjectHelper.getProjectHelper ( ).parse ( project , antFile ) ;
+    //ProjectHelper.getProjectHelper ( ).parse ( project , antFile ) ;
+    ProjectHelper.configureProject ( project , antFile ) ;
     returnValue = "" ;
   }
 
@@ -211,7 +212,7 @@ public class Gant_Test extends TestCase {
     final StringBuilder sb = new StringBuilder ( ) ;
     sb.append ( "Buildfile: " ) ;
     sb.append ( path ).append ( separator ) ;
-    sb.append ( "gantTest.xml\n\n-initializeWithGroovyHome:\n\n-initializeNoGroovyHome:\n\ngantTestDefaultFileDefaultTarget:\n" ) ;
+    sb.append ( "gantTest.xml\n\n-initializeWithGroovyHome:\n\n-initializeNoGroovyHome:\n\n-defineGantTask:\n\ngantTestDefaultFileDefaultTarget:\n" ) ;
     return sb.toString ( ) ;
   }
   private String trimTimeFromSuccessfulBuild ( final String message ) {
@@ -232,7 +233,7 @@ public class Gant_Test extends TestCase {
   //
   //  TODO: The includeTag is needed because of an error -- it should be removed and the [groovy] tag always present.
   //
-  private String createMessageStart ( final String target , final String taskName ) {
+  private String createMessageStart ( final String target , final String taskName , final boolean extraClassPathDefinition ) {
     final StringBuilder sb = new StringBuilder ( ) ;
     sb.append ( "Buildfile: " ) ;
     sb.append ( path ).append ( separator ) ;
@@ -241,6 +242,7 @@ public class Gant_Test extends TestCase {
     sb.append ( "\n\n-initializeWithGroovyHome:\n\n-initializeNoGroovyHome:\n\n-define" ) ;
     sb.append ( taskName ) ;
     sb.append ( "Task:\n\n" ) ;
+    if ( extraClassPathDefinition ) { sb.append ( "-defineClasspath:\n\n" ) ; }
     sb.append ( target ) ;
     sb.append ( ":\n" ) ;
     return sb.toString ( ) ;
@@ -248,7 +250,7 @@ public class Gant_Test extends TestCase {
   public void testBasedirInSubdirDefaultProjectForGant ( ) {
     final String target = "defaultProject" ;
     final StringBuilder sb = new StringBuilder ( ) ;
-    sb.append ( createMessageStart ( target , "Groovy" ) ) ;
+    sb.append ( createMessageStart ( target , "Groovy" , true ) ) ;
     sb.append ( "   [groovy] basedir::groovy basedir=" ) ;
     sb.append ( absolutePath ) ;
     sb.append ( "\n   [groovy] default:\n   [groovy] \n   [groovy] basedir::gant basedir=" ) ;
@@ -266,7 +268,7 @@ public class Gant_Test extends TestCase {
   public void testBasedirInSubdirExplicitProjectForGant ( ) {
     final String target = "explicitProject" ;
     final StringBuilder sb = new StringBuilder ( ) ;
-    sb.append ( createMessageStart ( target , "Groovy" ) ) ;
+    sb.append ( createMessageStart ( target , "Groovy" , true ) ) ;
     sb.append ( "   [groovy] basedir::groovy basedir=" ) ;
     sb.append ( absolutePath ) ;
     //
@@ -284,7 +286,7 @@ public class Gant_Test extends TestCase {
   public void testBasedirInSubdirGantTask ( ) {
     final String target = "gantTask" ;
     final StringBuilder sb = new StringBuilder ( ) ;
-    sb.append ( createMessageStart ( target , "Gant" ) ) ;
+    sb.append ( createMessageStart ( target , "Gant" , false ) ) ;
     sb.append ( "     [gant] basedir::gant basedir=" ) ;
     sb.append ( absolutePath ) ;
     sb.append ( "\n\nBUILD SUCCESSFUL\n\n" ) ;
