@@ -69,7 +69,6 @@ public class Gant_Test extends TestCase {
     super.setUp ( ) ;
     project = new Project ( ) ;
     project.init ( ) ;
-    //ProjectHelper.getProjectHelper ( ).parse ( project , antFile ) ;
     ProjectHelper.configureProject ( project , antFile ) ;
     returnValue = "" ;
   }
@@ -148,7 +147,8 @@ public class Gant_Test extends TestCase {
     }
   }
   /*
-   *  Run Ant in a separate process.  Return the string that results.
+   *  Run Ant in a separate process.  Return the standard output and the standard error that results as a
+   *  List<String> with two items, item 0 is stnadard output and item 1 is standard error.
    *
    *  <p>This method assumes that either the environment variable ANT_HOME is set to a complete Ant
    *  installation or that the command ant (ant.bat on Windows) is in the path.</p>
@@ -161,7 +161,7 @@ public class Gant_Test extends TestCase {
    *  @param expectedReturnCode the return code that the Ant execution should return.
    *  @param withClasspath whether the Ant execution should use the full classpathso as to find all the classes.
    */
-  private String runAnt ( final String xmlFile , final String target , final int expectedReturnCode , final boolean withClasspath ) {
+  private List<String> runAnt ( final String xmlFile , final String target , final int expectedReturnCode , final boolean withClasspath ) {
     final List<String> command = new ArrayList<String> ( ) ;
     final String antHomeString = System.getenv ( "ANT_HOME" ) ;
     String antCommand ;
@@ -197,13 +197,19 @@ public class Gant_Test extends TestCase {
       catch ( final InterruptedException ignore ) { fail ( "Got an InterruptedException waiting for the output gobbler to terminate." ) ; }
       try { errorGobbler.join ( ) ;}
       catch ( final InterruptedException ignore ) { fail ( "Got an InterruptedException waiting for the error gobbler to terminate." ) ; }
-      System.err.println ( errorStringBuilder ) ;
-      return outputStringBuilder.toString ( ) ;
+      final List<String> returnValue = new ArrayList<String> ( ) ;
+      returnValue.add ( outputStringBuilder.toString ( ) ) ;
+      returnValue.add ( errorStringBuilder.toString ( ) ) ;
+      return returnValue ;
     }
     catch ( final IOException ignore ) { fail ( "Got an IOException from starting the process." ) ; }
     //  Keep the compiler happy, it doesn't realize that execution cannot get here -- i.e. that fail is a non-returning function.
     return null ;
   }
+  /**
+   *  The output due to the targets in commonBits.xml.
+   */
+  private final String commonTargetsList = "-initializeWithGroovyHome:\n\n-initializeNoGroovyHome:\n\n-defineGantTask:\n\n" ;
   /*
    *  Tests stemming from GANT-19 and relating to ensuring the right classpath when loading the Groovyc Ant
    *  task.
@@ -212,18 +218,26 @@ public class Gant_Test extends TestCase {
     final StringBuilder sb = new StringBuilder ( ) ;
     sb.append ( "Buildfile: " ) ;
     sb.append ( path ).append ( separator ) ;
-    sb.append ( "gantTest.xml\n\n-initializeWithGroovyHome:\n\n-initializeNoGroovyHome:\n\n-defineGantTask:\n\ngantTestDefaultFileDefaultTarget:\n" ) ;
+    sb.append ( "gantTest.xml\n\n" ) ;
+    sb.append ( commonTargetsList ) ;
+    sb.append ( "gantTestDefaultFileDefaultTarget:\n" ) ;
     return sb.toString ( ) ;
   }
   private String trimTimeFromSuccessfulBuild ( final String message ) {
     return message.replaceFirst ( "Total time: [0-9]*.*" , "" ) ;
   }
   public void testRunningAntFromShellFailsNoClasspath ( ) {
+    final List<String> result = runAnt ( antFile.getPath ( ) , null , ( isWindows ? 0 : 1 ) , false ) ;
+    assert result.size ( ) == 2 ;
     //  On Windows the ant.bat file always returns zero :-(
-    assertEquals ( createBaseMessage ( ) , runAnt ( antFile.getPath ( ) , null , ( isWindows ? 0 : 1 ) , false ) ) ;
+    assertEquals ( createBaseMessage ( ) , result.get ( 0 ) ) ;
+    assertTrue ( result.get ( 1 ).startsWith ( "\nBUILD FAILED\norg.codehaus.groovy.control.MultipleCompilationErrorsException: startup failed, build: 15: unable to resolve class org.codehaus.gant.ant.tests.Gant_Test\n @ line 15, column 1.\n1 error\n" ) ) ;
   }
   public void testRunningAntFromShellSuccessful ( ) {
-    assertEquals ( createBaseMessage ( ) + "\nBUILD SUCCESSFUL\n\n", trimTimeFromSuccessfulBuild ( runAnt ( antFile.getPath ( ) , null , 0 , true ) ) ) ;
+    final List<String> result = runAnt ( antFile.getPath ( ) , null , 0 , true ) ;
+    assert result.size ( ) == 2 ;
+    assertEquals ( createBaseMessage ( ) + "\nBUILD SUCCESSFUL\n\n", trimTimeFromSuccessfulBuild ( result.get ( 0 ) ) ) ;
+    assertEquals ( "" , result.get ( 1 ) ) ;
   }
   /*
    *  The following tests are based on the code presented in email exchanges on the Groovy developer list by
@@ -263,7 +277,10 @@ public class Gant_Test extends TestCase {
     //
     sb.append ( System.getProperty ( "user.dir" ) ) ;
     sb.append ( "\n   [groovy] ------ default\n   [groovy] \n\nBUILD SUCCESSFUL\n\n" ) ;
-    assertEquals ( sb.toString ( ) , trimTimeFromSuccessfulBuild ( runAnt ( basedirAntFilePath , target , 0 , false ) ) ) ;
+    final List<String> result = runAnt ( basedirAntFilePath , target , 0 , false ) ;
+    assert result.size ( ) == 2 ;
+    assertEquals ( sb.toString ( ) , trimTimeFromSuccessfulBuild ( result.get ( 0 ) ) ) ;
+    assertEquals ( "" , result.get ( 1 ) ) ;
   }
   public void testBasedirInSubdirExplicitProjectForGant ( ) {
     final String target = "explicitProject" ;
@@ -281,7 +298,10 @@ public class Gant_Test extends TestCase {
     sb.append ( "\ndefault:\nbasedir::gant basedir=" ) ;
     sb.append ( absolutePath ) ;
     sb.append ( "\n------ default\n\nBUILD SUCCESSFUL\n\n" ) ;
-    assertEquals ( sb.toString ( ) , trimTimeFromSuccessfulBuild ( runAnt ( basedirAntFilePath , target , 0 , false ) ) ) ;
+    final List<String> result = runAnt ( basedirAntFilePath , target , 0 , false ) ;
+    assert result.size ( ) == 2 ;
+    assertEquals ( sb.toString ( ) , trimTimeFromSuccessfulBuild ( result.get ( 0 ) ) ) ;
+    assertEquals ( "" , result.get ( 1 ) ) ;
   }
   public void testBasedirInSubdirGantTask ( ) {
     final String target = "gantTask" ;
@@ -290,6 +310,27 @@ public class Gant_Test extends TestCase {
     sb.append ( "     [gant] basedir::gant basedir=" ) ;
     sb.append ( absolutePath ) ;
     sb.append ( "\n\nBUILD SUCCESSFUL\n\n" ) ;
-    assertEquals ( sb.toString ( ) , trimTimeFromSuccessfulBuild ( runAnt ( basedirAntFilePath , target , 0 , false ) ) ) ;
+    final List<String> result = runAnt ( basedirAntFilePath , target , 0 , false ) ;
+    assert result.size ( ) == 2 ;
+    assertEquals ( sb.toString ( ) , trimTimeFromSuccessfulBuild ( result.get ( 0 ) ) ) ;
+    assertEquals ( "" , result.get ( 1 ) ) ;
+  }
+  //  Test out the GANT-80 issues.
+  public void test_GANT_80 ( ) {
+    final String message = "Hello World." ; //  Must be the same string as in GANT_80.gant 
+    final String antFilePath = path + separator + "GANT_80.xml" ;
+    final StringBuilder sb = new StringBuilder ( ) ;
+    sb.append ( "Buildfile: " ) ;
+    sb.append ( antFilePath ) ;
+    sb.append ( "\n\n" ) ;
+    sb.append ( commonTargetsList ) ;
+    //  TODO:  Why does the [echo] get stripped off the second of these?
+    sb.append ( "default:\n     [gant] Hello World.\n     [gant] Hello World.\n\nBUILD SUCCESSFUL\n\n" ) ;
+    final List<String> result = runAnt ( antFilePath , null , 0 , false ) ;
+    assert result.size ( ) == 2 ;
+    assertEquals ( sb.toString ( ) , trimTimeFromSuccessfulBuild ( result.get ( 0 ) ) ) ;
+    //  TODO:  Fix this error, the wrong output results.
+    //assertEquals ( "Hello World.\n" , result.get ( 1 ) ) ;
+    assertEquals ( "" , result.get ( 1 ) ) ;
   }
 }

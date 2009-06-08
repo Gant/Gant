@@ -18,7 +18,7 @@ License.
 Author : Russel Winder <russel.winder@concertant.com>
 -->
 
-<project name="Gant Ant Task Test" default="gantTestDefaultFileDefaultTarget" xmlns:artifact="urn:maven-artifact-ant" basedir=".">
+<project name="Gant Ant Task Test" default="gantTestDefaultFileDefaultTarget" basedir=".">
 
   <import file="commonBits.xml"/>
 

@@ -20,7 +20,7 @@ Author : Russel Winder <russel.winder@concertant.com>
 This test results from emails by Chris Miles on the Groovy Developer email list.  cf. GANT-50.
 -->
 
-<project name="Basedir_Tests" xmlns:artifact="urn:maven-artifact-ant" basedir="." >
+<project name="Basedir_Tests" basedir="." >
 
   <echo>basedir::ant basedir=${basedir}</echo>
 

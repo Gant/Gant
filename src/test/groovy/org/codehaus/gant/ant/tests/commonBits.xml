@@ -16,8 +16,6 @@ implied. See the License for the specific language governing permissions and lim
 License.
   
 Author : Russel Winder <russel.winder@concertant.com>
-
-This test results from emails by Chris Miles on the Groovy Developer email list.  cf. GANT-50.
 -->
 
 <project name="Common Ant File Bits for Gant Ant Task Test" xmlns:artifact="urn:maven-artifact-ant" basedir="." >
@@ -30,7 +28,7 @@ This test results from emails by Chris Miles on the Groovy Developer email list.
   <property environment="environment"/>
 
   <property name="gantClassesDirectory" value="${toplevelDirectory}/target_gant/classes"/>
-
+  
   <condition property="groovyHomeIsSet">
     <isset property="environment.GROOVY_HOME"/>
   </condition>
@@ -41,6 +39,7 @@ This test results from emails by Chris Miles on the Groovy Developer email list.
       <fileset dir="${environment.GROOVY_HOME}/lib" includes="commons-cli*.jar"/>
       <fileset dir="${environment.GROOVY_HOME}/lib" includes="asm*.jar"/>
       <fileset dir="${environment.GROOVY_HOME}/lib" includes="antlr*.jar"/>
+      <fileset dir="${environment.GROOVY_HOME}/lib" includes="junit*.jar"/>
     </path>
   </target>
 
@@ -58,6 +57,16 @@ This test results from emails by Chris Miles on the Groovy Developer email list.
   <target name="-defineGroovyTask">
     <taskdef name="groovy" classname="org.codehaus.groovy.ant.Groovy" classpathref="groovyJarsId" />
   </target>
+
+  <!--
+      The executing Gant script needs to be able to access the Gant_Test class in order to return the value
+      tested.  This target can only complete successfully if the classes are put on the class path by giving
+      a parameter to the Ant invocation.  So for example:
+
+          ant -f gantTest.xml -lib ../../../../../../../../target_gant/test-classes:$GROOVY_HOME/lib/junit-4.6.jar
+
+      note that the JUnit jar has to be added as well.
+  -->
 
   <target name="-defineGantTask">
     <taskdef name="gant" classname="org.codehaus.gant.ant.Gant">
