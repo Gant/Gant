@@ -75,8 +75,8 @@ final class Maven {
    *  @param map The <code>Map</code> of initialization parameters.
    */
    Maven ( GantBinding binding , Map map ) {
-    properties.binding = binding
-    properties.binding.maven = this
+     properties.binding = binding
+     properties.binding.maven = this
      map.each { key , value -> owner.setProperty ( key , value ) }
      initialize ( )
    }

@@ -34,33 +34,30 @@ includeTargets << gant.targets.Maven
     assertEquals ( '' , error )
   }
   void testCompileTargetInDirectoryOtherThanTheCurrentBuildDirectory ( ) {
-    //  This tests assumes the existence and accessibility of some source code in src/main.  Rather than
-    //  construct something, we just run this test only when the directory exists.  In effect it is being
-    //  assumed that the tests are run from the project directory.  Given this is the norm, it isn't such a
-    //  bad decision.
-    if ( ( new File ( 'src/main' ) ).isDirectory ( ) ) {
-      final name = new File ( 'target_forMavenTest' )
-      final gantBuilder = new GantBuilder ( )
-      gantBuilder.logger.setMessageOutputLevel ( GantState.SILENT )
-      //  Ensure the target directory does not exist to protect against a failed test run leaving a version
-      //  in place -- which causes the test to fail inappropriately.
-      if ( name.exists ( ) ) {
-        if ( name.isDirectory ( ) ) { gantBuilder.delete ( dir : name.name , quiet : 'true' ) }
-        else { antBuilder.delete ( file : name.name , quiet : 'true' ) }
-      }
-      script = """
+    final mavenTargetSetTestDirectory = new File ( 'mavenTargetsSetTest' )
+    final sourceDirectory = new File ( mavenTargetSetTestDirectory , 'src' )
+    final javaFileDirectory = new File ( sourceDirectory , 'main/java' )
+    final targetDirectory = new File ( mavenTargetSetTestDirectory , 'target' )
+    final compiledClassesDirectory = new File ( targetDirectory , 'classes' )
+    final root = 'hello'
+    final gantBuilder = new GantBuilder ( )
+    gantBuilder.logger.setMessageOutputLevel ( GantState.SILENT )
+    gantBuilder.delete ( dir : mavenTargetSetTestDirectory.path )
+    gantBuilder.mkdir ( dir : javaFileDirectory.path )
+    ( new File ( javaFileDirectory , root + '.java' ) ).write ( "class ${root} { }" )
+    final targetName = 'compile'
+    script = """
 includeTargets ** gant.targets.Maven * [
-    targetPath : '${name.absolutePath}'
+    sourcePath : '${sourceDirectory.path}' ,
+    targetPath : '${targetDirectory.path}'
 ]
 """
-      assertEquals ( 0 , processCmdLineTargets ( 'compile' ) )
-      assertTrue ( output.startsWith ( 'compile:\ninitialize:\n' + exitMarker + 'initialize\n    [mkdir] Created dir:' ) )
-      assertTrue ( output.contains ( '  [groovyc] Compiling' ) )
-      assertTrue ( name.isDirectory ( ) )
-      assertEquals ( '' , error )
-      gantBuilder.delete ( dir : name.name )
-      assertFalse ( name.exists ( ) )
-    }
+    assertEquals ( 0 , processCmdLineTargets ( targetName ) )
+    assertEquals ( resultString ( targetName , resultString ( 'initialize' , '' ) + "    [mkdir] Created dir: ${compiledClassesDirectory.absolutePath}\n    [javac] Compiling 1 source file to ${compiledClassesDirectory.absolutePath}\n" ) , output )
+    assertTrue ( ( new File ( compiledClassesDirectory , root + '.class' ) ).isFile ( ) )
+    assertEquals ( '' , error )
+    gantBuilder.delete ( dir : mavenTargetSetTestDirectory.path )
+    assertFalse ( mavenTargetSetTestDirectory.exists ( ) )
   }
   void testPackageNoGroupIdLeftShift ( ) {
     final targetName = 'package'
