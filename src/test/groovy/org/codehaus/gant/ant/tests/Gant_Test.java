@@ -197,10 +197,10 @@ public class Gant_Test extends TestCase {
       catch ( final InterruptedException ignore ) { fail ( "Got an InterruptedException waiting for the output gobbler to terminate." ) ; }
       try { errorGobbler.join ( ) ;}
       catch ( final InterruptedException ignore ) { fail ( "Got an InterruptedException waiting for the error gobbler to terminate." ) ; }
-      final List<String> returnValue = new ArrayList<String> ( ) ;
-      returnValue.add ( outputStringBuilder.toString ( ) ) ;
-      returnValue.add ( errorStringBuilder.toString ( ) ) ;
-      return returnValue ;
+      final List<String> returnList = new ArrayList<String> ( ) ;
+      returnList.add ( outputStringBuilder.toString ( ) ) ;
+      returnList.add ( errorStringBuilder.toString ( ) ) ;
+      return returnList ;
     }
     catch ( final IOException ignore ) { fail ( "Got an IOException from starting the process." ) ; }
     //  Keep the compiler happy, it doesn't realize that execution cannot get here -- i.e. that fail is a non-returning function.
