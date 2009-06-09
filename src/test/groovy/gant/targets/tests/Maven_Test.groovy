@@ -14,6 +14,9 @@
 
 package gant.targets.tests
 
+import org.codehaus.gant.GantBuilder
+import org.codehaus.gant.GantState
+
 import org.codehaus.gant.tests.GantTestCase
 
 /**
@@ -31,26 +34,33 @@ includeTargets << gant.targets.Maven
     assertEquals ( '' , error )
   }
   void testCompileTargetInDirectoryOtherThanTheCurrentBuildDirectory ( ) {
-    final antBuilder = new AntBuilder ( )
-    //  Ensure the directory does not exist to protect against a failed test run leaving a version
-    //  in place -- which causes the test to fail inappropriately.
-    final name = new File ( 'target_forMavenTest' )
-    if ( name.exists ( ) ) {
-      if ( name.isDirectory ( ) ) { antBuilder.delete ( dir : name.name , quiet : 'true' ) }
-      else { antBuilder.delete ( file : name.name , quiet : 'true' ) }
-    }
-    script = """
+    //  This tests assumes the existence and accessibility of some source code in src/main.  Rather than
+    //  construct something, we just run this test only when the directory exists.  In effect it is being
+    //  assumed that the tests are run from the project directory.  Given this is the norm, it isn't such a
+    //  bad decision.
+    if ( ( new File ( 'src/main' ) ).isDirectory ( ) ) {
+      final name = new File ( 'target_forMavenTest' )
+      final gantBuilder = new GantBuilder ( )
+      gantBuilder.logger.setMessageOutputLevel ( GantState.SILENT )
+      //  Ensure the target directory does not exist to protect against a failed test run leaving a version
+      //  in place -- which causes the test to fail inappropriately.
+      if ( name.exists ( ) ) {
+        if ( name.isDirectory ( ) ) { gantBuilder.delete ( dir : name.name , quiet : 'true' ) }
+        else { antBuilder.delete ( file : name.name , quiet : 'true' ) }
+      }
+      script = """
 includeTargets ** gant.targets.Maven * [
-    targetPath : '${name.name}'
+    targetPath : '${name.absolutePath}'
 ]
 """
-    assertEquals ( 0 , processCmdLineTargets ( 'compile' ) )
-    assertTrue ( output.startsWith ( 'compile:\ninitialize:\n' + exitMarker + 'initialize\n    [mkdir] Created dir:' ) )
-    assertTrue ( output.contains ( '  [groovyc] Compiling' ) )
-    assertTrue ( name.isDirectory ( ) )
-    assertEquals ( '' , error )
-    antBuilder.delete ( dir : name.name )
-    assertFalse ( name.exists ( ) )
+      assertEquals ( 0 , processCmdLineTargets ( 'compile' ) )
+      assertTrue ( output.startsWith ( 'compile:\ninitialize:\n' + exitMarker + 'initialize\n    [mkdir] Created dir:' ) )
+      assertTrue ( output.contains ( '  [groovyc] Compiling' ) )
+      assertTrue ( name.isDirectory ( ) )
+      assertEquals ( '' , error )
+      gantBuilder.delete ( dir : name.name )
+      assertFalse ( name.exists ( ) )
+    }
   }
   void testPackageNoGroupIdLeftShift ( ) {
     final targetName = 'package'

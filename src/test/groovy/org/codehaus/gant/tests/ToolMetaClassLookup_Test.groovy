@@ -14,6 +14,9 @@
 
 package org.codehaus.gant.tests
 
+import org.codehaus.gant.GantBuilder
+import org.codehaus.gant.GantState
+
 /**
  *  A test to ensure that the target listing works. 
  *
@@ -21,16 +24,24 @@ package org.codehaus.gant.tests
  */
 final class ToolMetaClassLookup_Test extends GantTestCase {
   private final something = 'something'
+  private final subdirectory = new File ( 'aSubdirectoryOfTheCurrentOneThatIsUnlikelyToExist' )
+  private final gantBuilder = new GantBuilder ( ) ; {
+    gantBuilder.logger.setMessageOutputLevel ( GantState.SILENT )
+  }
   private final message = 'yes'
   void setUp ( ) {
     super.setUp ( )
+    if ( subdirectory.exists ( ) ) { fail ( 'The name "' + directory.name + '" is in use.' ) }
+    gantBuilder.mkdir ( dir : subdirectory.name )
     def command = ( isWindows ? 'cmd /c echo ' : 'echo ' ) + message
     script = """
 includeTool << gant.tools.Subdirectories
-target ( ${something} : '' ) { subdirectories.runSubprocess ( '${command}' , new File ( 'src' ) ) }
+target ( ${something} : '' ) { subdirectories.runSubprocess ( '${command}' , new File ( '${subdirectory.name}' ) ) }
 setDefaultTarget ( ${something} )
 """
   }
+  void tearDown ( ) { gantBuilder.delete ( dir : subdirectory.name , quiet : 'true' ) }
+
   void testDefault ( ) {
     assertEquals ( 0 , processCmdLineTargets ( ) )
     assertEquals ( resultString ( something , message + '\n' ) , output )
