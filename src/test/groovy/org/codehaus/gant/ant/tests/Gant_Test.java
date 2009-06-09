@@ -231,10 +231,9 @@ public class Gant_Test extends TestCase {
     final List<String> result = runAnt ( antFile.getPath ( ) , null , ( isWindows ? 0 : 1 ) , false ) ;
     assert result.size ( ) == 2 ;
     assertEquals ( createBaseMessage ( ) , result.get ( 0 ) ) ;
-
-    assertEquals ( "" , result.get ( 1 ) ) ;
-
-    assertTrue ( result.get ( 1 ).startsWith ( "\nBUILD FAILED\norg.codehaus.groovy.control.MultipleCompilationErrorsException: startup failed, build: 15: unable to resolve class org.codehaus.gant.ant.tests.Gant_Test\n @ line 15, column 1.\n1 error\n" ) ) ;
+    final String errorResult = result.get ( 1 ) ;
+    assertTrue ( errorResult.startsWith ( "\nBUILD FAILED\n" ) ) ;
+    assertTrue ( errorResult.contains ( "org.codehaus.groovy.control.MultipleCompilationErrorsException: startup failed, build: 15: unable to resolve class org.codehaus.gant.ant.tests.Gant_Test\n @ line 15, column 1.\n1 error\n" ) ) ;
   }
   public void testRunningAntFromShellSuccessful ( ) {
     final List<String> result = runAnt ( antFile.getPath ( ) , null , 0 , true ) ;
