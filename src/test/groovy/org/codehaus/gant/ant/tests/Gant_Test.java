@@ -227,9 +227,9 @@ public class Gant_Test extends TestCase {
     return message.replaceFirst ( "Total time: [0-9]*.*" , "" ) ;
   }
   public void testRunningAntFromShellFailsNoClasspath ( ) {
+    //  On Windows the ant.bat file always returns zero :-(
     final List<String> result = runAnt ( antFile.getPath ( ) , null , ( isWindows ? 0 : 1 ) , false ) ;
     assert result.size ( ) == 2 ;
-    //  On Windows the ant.bat file always returns zero :-(
     assertEquals ( createBaseMessage ( ) , result.get ( 0 ) ) ;
     assertTrue ( result.get ( 1 ).startsWith ( "\nBUILD FAILED\norg.codehaus.groovy.control.MultipleCompilationErrorsException: startup failed, build: 15: unable to resolve class org.codehaus.gant.ant.tests.Gant_Test\n @ line 15, column 1.\n1 error\n" ) ) ;
   }
@@ -317,7 +317,7 @@ public class Gant_Test extends TestCase {
   }
   //  Test out the GANT-80 issues.
   public void test_GANT_80 ( ) {
-    final String message = "Hello World." ; //  Must be the same string as in GANT_80.gant 
+    final String message = "Hello World." ; //  Must be the same string as in GANT_80.gant
     final String antFilePath = path + separator + "GANT_80.xml" ;
     final StringBuilder sb = new StringBuilder ( ) ;
     sb.append ( "Buildfile: " ) ;
