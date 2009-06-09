@@ -16,6 +16,9 @@ import org.codehaus.gant.ant.tests.Gant_Test
 
 ant.property ( file : 'build.properties' )
 
+ant.property ( file : toplevelDirectory + '/local.build.properties' )
+ant.property ( file : toplevelDirectory + '/build.properties' )
+
 //// This build file has to work in two contexts.  If GROOVY_HOME is set in the environment then the jars
 //// from that installation of Groovy should be used so as to ensure testing in the right context.  If the
 //// environment does not have a GROOVY_HOME set then grab some specific versions to make things work.
@@ -24,7 +27,7 @@ target ( test : 'A test target in the default file.' ) { Gant_Test.returnValue =
 
 target ( blah : 'Another target in the default file.' ) { Gant_Test.returnValue = Gant_Test.returnValue + blah_description }
 
-////  MUST ensure that the same dependecies as in gantTest.xml and ${toplevelDirectory}/build.xml
+////  MUST ensure that the same dependencies as in gantTest.xml and ${toplevelDirectory}/build.xml
 
 target ( gantTaskdefVerifyError : 'Check that a taskdef works.' ) {
   final groovyHome = System.getenv ( ).'GROOVY_HOME'
