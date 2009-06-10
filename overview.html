@@ -6,23 +6,25 @@
 
   <body>
     <p>
-      Gant is a Groovy-based build framework.  It can replace the use of Ant and Maven.
+      Gant is a Groovy-based framework for scripting Ant tasks.
     </p>
     <p>
       Gant is a lightweight wrapper around Groovy's <code>AntBuilder</code> that allows Ant tasks to be
-      scripted using Groovy rather than having to specify the build systems using XML.
+      scripted using Groovy.  This means it can be used as a replacement for Ant:  instead of specifying
+      things using XML, they are specified with Groovy.
     </p>
     <p>
       A Gant file is a specification of a set of targets plus other bits and pieces of Groovy code.  Thus a
-      Gant build specification is of a set of targets just as an Ant build specification is.  Each
-      target creates a closure in the binding so that it can be called as a function from other targets.
-      This means that dependencies between targets are programmed as function calls.
+      Gant specification is of a set of targets just as an Ant specification is.  Each target creates a
+      closure in the binding so that it can be called as a function from other targets.  This means that
+      dependencies between targets are programmed as function calls.
     </p>
     <p>
-      Gant has a number of predefined objects, for example <code>Ant</code> and <code>includeTargets</code>.
-      <code>ant</code> refers to a pre-constructed <code>GantBuilder</code> object.
-      <code>includeTargets</code> is the object that controls the inclusion of ready-made targets, for
-      example <code>gant.targets.Clean</code>.
+      Gant has a number of predefined objects, for example <code>ant</code>, <code>includeTargets</code>
+      and <code>includeTool</code>. <code>ant</code> refers to a pre-constructed <code>GantBuilder</code>
+      object. <code>includeTargets</code> is the object that controls the inclusion of ready-made targets,
+      for example <code>gant.targets.Clean</code>.  <code>includeTool</code> is the object that controls the
+      inclusion of ready-made tools, for example <code>gant.tools.Execute</code>.
     </p>
     <p>
       Here is an example Gant script:
@@ -53,6 +55,6 @@ target ( otherStuff : 'Other stuff' ) {
       can in Ant, leading to simpler target structures.
     <hr>
     <address><a href="mailto:russel.winder@concertant.com">Russel Winder</a></address>
-    Last modified: 2008-06-15T13:00:00+01:00
+    Last modified: 2009-06-10T20:16:00+01:00
   </body>
 </html>
