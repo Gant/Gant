@@ -29,6 +29,8 @@ import org.apache.tools.ant.BuildException ;
 import org.apache.tools.ant.Project ;
 import org.apache.tools.ant.ProjectHelper ;
 
+import org.codehaus.groovy.control.MultipleCompilationErrorsException ;
+
 /**
  *  Unit tests for the Gant Ant task.  In order to test things appropriately this test must be initiated
  *  without any of the Groovy, Gant or related jars in the class path.  Also of course it must be a JUnit
@@ -233,7 +235,8 @@ public class Gant_Test extends TestCase {
     assertEquals ( createBaseMessage ( ) , result.get ( 0 ) ) ;
     final String errorResult = result.get ( 1 ) ;
     assertTrue ( errorResult.startsWith ( "\nBUILD FAILED\n" ) ) ;
-    assertTrue ( errorResult.contains ( "org.codehaus.groovy.control.MultipleCompilationErrorsException: startup failed, build: 15: unable to resolve class org.codehaus.gant.ant.tests.Gant_Test\n @ line 15, column 1.\n1 error\n" ) ) ;
+    assertTrue ( errorResult.contains ( "org.codehaus.groovy.control.MultipleCompilationErrorsException: startup failed" ) ) ;
+    assertTrue ( errorResult.contains ( "build: 15: unable to resolve class org.codehaus.gant.ant.tests.Gant_Test\n @ line 15, column 1.\n1 error\n" ) ) ;
   }
   public void testRunningAntFromShellSuccessful ( ) {
     final List<String> result = runAnt ( antFile.getPath ( ) , null , 0 , true ) ;

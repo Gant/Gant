@@ -48,7 +48,7 @@ def foo { badvariable }
 """
     assertEquals ( -2 , processCmdLineTargets( targetName ) )
     assertEquals ( '' , output )
-    assertEquals ( '''Error evaluating Gantfile: startup failed, standard_input: 3: unexpected token: foo @ line 3, column 5.
+    assertEquals ( 'Error evaluating Gantfile: startup failed' + ( ( groovyMinorVersion > 6 ) ? ':\n' : ', ' ) + '''standard_input: 3: unexpected token: foo @ line 3, column 5.
 1 error
 ''' , error )
   }
@@ -61,7 +61,7 @@ def foo { badvariable }
     try { assertEquals ( -4 , processCmdLineTargets ( targetName ) ) }
     finally { file.delete ( ) }
     assertEquals ( '' , output )
-    assertTrue ( error.startsWith ( 'Standard input, line 1 -- Error evaluating Gantfile: org.codehaus.groovy.control.MultipleCompilationErrorsException: startup failed, ' ) )
+    assertTrue ( error.startsWith ( 'Standard input, line 1 -- Error evaluating Gantfile: org.codehaus.groovy.control.MultipleCompilationErrorsException: startup failed' + ( ( groovyMinorVersion > 6 ) ? ':\n' : ', ' ) ) )
     assertTrue ( error.endsWith ( '''GANT_32.groovy: 2: unexpected token: foo @ line 2, column 5.
    def foo { badvariable }
        ^
