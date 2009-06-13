@@ -1,0 +1,4 @@
+version = @GANT_BUNDLE_VERSION@
+-nouses = true
+Export-Package = *;version=${version}
+Import-Package = org.codehaus.groovy , org.apache.tools.ant , org.apache.commons.cli , *;resolution:=optional
