@@ -282,7 +282,7 @@ public class Gant_Test extends TestCase {
     //
     sb.append ( System.getProperty ( "user.dir" ) ) ;
     sb.append ( "\n   [groovy] ------ default\n   [groovy] \n\nBUILD SUCCESSFUL\n\n" ) ;
-    final List<String> result = runAnt ( basedirAntFilePath , target , 0 , false ) ;
+    final List<String> result = runAnt ( basedirAntFilePath , target , 0 , true ) ;
     assert result.size ( ) == 2 ;
     assertEquals ( sb.toString ( ) , trimTimeFromSuccessfulBuild ( result.get ( 0 ) ) ) ;
     assertEquals ( "" , result.get ( 1 ) ) ;
@@ -303,7 +303,7 @@ public class Gant_Test extends TestCase {
     sb.append ( "\ndefault:\nbasedir::gant basedir=" ) ;
     sb.append ( absolutePath ) ;
     sb.append ( "\n------ default\n\nBUILD SUCCESSFUL\n\n" ) ;
-    final List<String> result = runAnt ( basedirAntFilePath , target , 0 , false ) ;
+    final List<String> result = runAnt ( basedirAntFilePath , target , 0 , true ) ;
     assert result.size ( ) == 2 ;
     assertEquals ( sb.toString ( ) , trimTimeFromSuccessfulBuild ( result.get ( 0 ) ) ) ;
     assertEquals ( "" , result.get ( 1 ) ) ;
@@ -315,7 +315,7 @@ public class Gant_Test extends TestCase {
     sb.append ( "     [gant] basedir::gant basedir=" ) ;
     sb.append ( absolutePath ) ;
     sb.append ( "\n\nBUILD SUCCESSFUL\n\n" ) ;
-    final List<String> result = runAnt ( basedirAntFilePath , target , 0 , false ) ;
+    final List<String> result = runAnt ( basedirAntFilePath , target , 0 , true ) ;
     assert result.size ( ) == 2 ;
     assertEquals ( sb.toString ( ) , trimTimeFromSuccessfulBuild ( result.get ( 0 ) ) ) ;
     assertEquals ( "" , result.get ( 1 ) ) ;
@@ -331,7 +331,7 @@ public class Gant_Test extends TestCase {
     sb.append ( commonTargetsList ) ;
     //  TODO:  Why does the [echo] get stripped off the second of these?
     sb.append ( "default:\n     [gant] Hello World.\n     [gant] Hello World.\n\nBUILD SUCCESSFUL\n\n" ) ;
-    final List<String> result = runAnt ( antFilePath , null , 0 , false ) ;
+    final List<String> result = runAnt ( antFilePath , null , 0 , true ) ;
     assert result.size ( ) == 2 ;
     assertEquals ( sb.toString ( ) , trimTimeFromSuccessfulBuild ( result.get ( 0 ) ) ) ;
     //  TODO:  Fix this error, the wrong output results.
