@@ -588,6 +588,29 @@ final class Gant {
     unit.compile ( )
   }
   /**
+   *  Render the time interval for printing.
+   */
+  private static String renderTimeInterval ( Number seconds ) {
+    def buffer = new StringBuffer ( )
+    def render = { int value , String units ->
+                   buffer.append ( value + ' ' + units )
+                   if ( value > 1 ) { buffer.append ( 's' ) }
+                   buffer.append ( ' ' )
+    }
+    if ( seconds > 60 ) {
+      int minutes = seconds / 60
+      seconds -= minutes * 60
+      if ( minutes > 60 ) {
+        int hours = minutes / 60
+        minutes -= hours * 60
+        render ( hours , 'hour' )
+      }
+      render ( minutes , 'minute' )
+    }
+    buffer.append ( String.format ( '%.2f' , seconds ) + ' seconds' )
+    return buffer.toString ( )
+  }
+  /**
    *  The entry point for command line invocation.
    */
   public static void main ( String[] args ) {
@@ -597,8 +620,8 @@ final class Gant {
     if ( outputBuildTime ) {
       def elapseTime = ( System.nanoTime ( ) - startTime ) / 1e9
       def project = gant.binding.ant.project
-      project.log ( '\nBUILD ' + ( returnValue == 0 ? 'SUCCESSFUL' : 'FAILED' ) , GantState.WARNINGS_AND_ERRORS )
-      project.log ( 'Total time: ' + String.format ( '%.2f' , elapseTime ) + ' seconds' , GantState.WARNINGS_AND_ERRORS )
+      project.log ( '\nBUILD ' + ( returnValue == 0 ? 'SUCCESSFUL' : 'FAILED' ) )
+      project.log ( 'Total time: ' + renderTimeInterval ( elapseTime ) )
     }
     System.exit ( returnValue )
   }
