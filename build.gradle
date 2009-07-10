@@ -18,18 +18,18 @@ ant.property ( file : 'local.build.properties' )
 ant.property ( file : 'build.properties' )
 
 groovyHome = System.getenv ( ).'GROOVY_HOME'
-if ( ! groovyHome ) { groovyHome = '/usr/share/gant' }
-def groovyVersionPatternString = /^groovy-(all-)?([0-9].*)\.jar/
-def items = ( new File ( groovyHome + '/lib' ) ).listFiles ( [ accept : { File dir , String name -> return ( name =~ groovyVersionPatternString ).find ( ) } ] as FilenameFilter )
-if ( items ) {
+if ( groovyHome ) {
+  def groovyVersionPatternString = /^groovy-(all-)?([0-9].*)\.jar/
+  def items = ( new File ( groovyHome + '/lib' ) ).listFiles ( [ accept : { File dir , String name -> return ( name =~ groovyVersionPatternString ).find ( ) } ] as FilenameFilter )
+  assert items 
   groovyVersion = ( items[0].name =~ groovyVersionPatternString )[0][2]
   assert groovyVersion
 }
-else { throw new RuntimeException ( "Cannot determine the version of Groovy being used." ) }
+else {
+  groovyVersion = ant.antProject.properties.groovyStandaloneVersion
+}
 
-//groovyVersion = ant.antProject.properties.groovy16Version
-
-println ( "Using Groovy version " + groovyVersion + " from " + groovyHome )
+println ( "Using Groovy version " + groovyVersion )
 
 type = 'jar'
 group = 'org.codehaus.gant'
@@ -71,68 +71,71 @@ test.doLast {
   groovyAntTaskTestVersionPropertyFile.delete ( )
 }
 
-//  The Java plugin clean task isn't flexible as as 2009-01-09 (Gradle version 0.5.2) so to remove the extra
-//  detritus we have to have use one of the hooks.  For no reason choose doLast rather than doFirst.
-
 clean.doLast {
   ant.delete { fileset ( dir : '.' , includes : '**/*~, cobertura.ser, texput.log' ) }
   ant.delete ( dir :  'target_forMavenTest' )
 }
 
-//  The javadoc task in the java and groovy plugins is not up to anything as yet since the parameters appear
-//  not to be setable.
+def packageTitle = 'Gant ' + version
+def copyrightString = 'Copyright &#169; 1997&#8211;2009  The Codehaus.  All Rights Reserved.'
 
-/*
 javadoc {
-    title = "Gant API ${version}"
-    bottom = 'Copyright &#169; 2006&#8211;9 Russel Winder.  All rights reserved.'
+  dependsOn ( 'compile' )
+  options.subPackages ( 'gant' , 'org.codehaus.gant' )
+  options.overview ( 'overview.html' )
+  options.showAll ( )
+  options.encoding ( 'UTF-8' )
+  options.setUse ( true )
+  options.author ( true )
+  options.version ( true )
+  options.windowTitle ( packageTitle )
+  options.docTitle ( packageTitle )
+  options.footer ( copyrightString )
 }
-*/
+javadoc.doFirst {
+    javadoc.title = packageTitle
+    javadoc.options.docTitle = javadoc.title
+}
 
-createTask ( 'documentation' , dependsOn : 'compile' ) {
+groovydoc {
+  dependsOn ( 'compile' )
+  //options.subPackages ( 'gant' , 'org.codehaus.gant' )
+  //options.overview ( 'overview.html' )
+  //options.showAll ( )
+  //options.encoding ( 'UTF-8' )
+  //options.setUse ( true )
+  ////options.author ( true )
+  ////options.version ( true )
+  //options.windowTitle ( packageTitle )
+  //options.docTitle ( packageTitle )
+  //options.footer ( copyrightString )
+}
+
+task myGroovyDoc ( dependsOn : 'compile' , description : 'Create the GroovyDoc API documentation.' ) << {
   def javadocDirPath = 'build/' + javadocDirName
+  def packageIncludeSpec = 'gant.*,org.codehaus.gant.*'
   ant.delete ( dir : javadocDirPath , quiet : 'true' )
   ant.mkdir ( dir : javadocDirPath )
-  def packageTitle = "Gant (${version})"
-  def packageIncludeSpec = 'gant.*,org.codehaus.gant.*'
-  def copyrightString = 'Copyright &#169; 1997&#8211;2009  The Codehaus.  All Rights Reserved.'
   def sourceDirectory = groovySrcDirs[0]
-  ant.javadoc (
-               sourcepath : sourceDirectory ,
-               destdir : javadocDirPath ,
-               packagenames :  packageIncludeSpec ,
-               overview : 'overview.html' ,
-               'private' : 'yes' ,
-               encoding : 'UTF-8' ,
-               use : 'true' ,
-               author : 'true' ,
-               version : 'true' ,
-               windowtitle : packageTitle ,
-               doctitle : packageTitle ,
-               header : packageTitle ,
-               footer : copyrightString ,
-               source : sourceCompatibility
-               ) {
-    classpath {
-      pathelement ( location : classesDir )
-      //      path ( refid : classpathId )
-    }
-  }
   ant.groovydoc (
-             sourcepath : sourceDirectory ,
-             destdir : groovyApiDocumentationDirectory ,
-             packagenames : packageIncludeSpec ,
+             sourcePath : sourceDirectory ,
+             destDir : groovyApiDocumentationDirectory ,
+             packageNames : packageIncludeSpec ,
              overview : 'overview.html' ,
              'private' : 'true' ,
              use : 'true' ,
              //author : 'true' ,
              //version : 'true' ,
-             windowtitle : packageTitle ,
-             doctitle : packageTitle ,
+             windowTitle : packageTitle ,
+             docTitle : packageTitle ,
              header : packageTitle ,
              footer : copyrightString,
              //source : sourceCompatibility
              )
 }
 
+task documentation ( dependsOn: [ 'javadoc' , 'myGroovyDoc' ] , description : 'Create the API documentation.' )
+
 usePlugin ( 'maven' )
+
+defaultTasks ( 'test' )
