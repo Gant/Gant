@@ -11,10 +11,10 @@
             <name>Gant_Trunk_Mainline</name>
             <minimum-ant-version>1.6.5</minimum-ant-version>
             <source-roots>
-                <root id="src.dir"/>
+                <root id="src.groovy.dir"/>
             </source-roots>
             <test-roots>
-                <root id="test.src.dir"/>
+                <root id="test.groovy.dir"/>
             </test-roots>
         </data>
     </configuration>
