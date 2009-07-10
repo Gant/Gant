@@ -26,14 +26,14 @@ This test results from emails by Chris Miles on the Groovy Developer email list.
 
   <import file="commonBits.xml"/>
   
-  <target name="-defineClasspath" depends="-initializeWithGroovyHome,-initializeNoGroovyHome">
+  <target name="-defineClasspath" depends="-initialize">
     <path id="classpathId">
       <pathelement location="${gantClassesDirectory}"/>
       <path refid="groovyJarsId"/>
     </path>
   </target>
   
-  <target name="defaultProject" depends="-initializeWithGroovyHome,-initializeNoGroovyHome,-defineGroovyTask,-defineClasspath"> 
+  <target name="defaultProject" depends="-defineGroovyTask,-defineClasspath"> 
     <groovy classpathref="classpathId">
       println ( "basedir::groovy basedir=${ant.project.properties.basedir}" )
       def gant = new gant.Gant ( )
@@ -42,7 +42,7 @@ This test results from emails by Chris Miles on the Groovy Developer email list.
     </groovy>
   </target>
   
-  <target name="explicitProject" depends="-initializeWithGroovyHome,-initializeNoGroovyHome,-defineGroovyTask,-defineClasspath">
+  <target name="explicitProject" depends="-defineGroovyTask,-defineClasspath">
     <groovy classpathref="classpathId">
       println ( "basedir::groovy basedir=${ant.project.properties.basedir}" )
       def gant = new gant.Gant ( ant.project )
@@ -51,7 +51,7 @@ This test results from emails by Chris Miles on the Groovy Developer email list.
     </groovy>
   </target>
   
-  <target name="gantTask" depends="-initializeWithGroovyHome,-initializeNoGroovyHome,-defineGantTask">
+  <target name="gantTask" depends="-defineGantTask">
     <gant file="basedir.gant"/>
   </target>
   

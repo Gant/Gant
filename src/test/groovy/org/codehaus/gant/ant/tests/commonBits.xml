@@ -27,7 +27,8 @@ Author : Russel Winder <russel.winder@concertant.com>
 
   <property environment="environment"/>
 
-  <property name="gantClassesDirectory" value="${toplevelDirectory}/target_gant/classes"/>
+  <property name="targetDirectory" value="${toplevelDirectory}/target_gant"/>
+  <property name="gantClassesDirectory" value="${targetDirectory}/classes"/>
   
   <condition property="groovyHomeIsSet">
     <isset property="environment.GROOVY_HOME"/>
@@ -54,7 +55,9 @@ Author : Russel Winder <russel.winder@concertant.com>
     </artifact:dependencies>
   </target>
 
-  <target name="-defineGroovyTask">
+  <target name="-initialize" depends="-initializeWithGroovyHome,-initializeNoGroovyHome"/>
+
+  <target name="-defineGroovyTask" depends="-initialize">
     <taskdef name="groovy" classname="org.codehaus.groovy.ant.Groovy" classpathref="groovyJarsId" />
   </target>
 
@@ -68,7 +71,7 @@ Author : Russel Winder <russel.winder@concertant.com>
       note that the JUnit jar has to be added as well.
   -->
 
-  <target name="-defineGantTask">
+  <target name="-defineGantTask" depends="-initialize">
     <taskdef name="gant" classname="org.codehaus.gant.ant.Gant">
       <classpath>
         <pathelement location="${gantClassesDirectory}"/>

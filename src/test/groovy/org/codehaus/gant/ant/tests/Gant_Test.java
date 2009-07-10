@@ -211,7 +211,7 @@ public class Gant_Test extends TestCase {
   /**
    *  The output due to the targets in commonBits.xml.
    */
-  private final String commonTargetsList = "-initializeWithGroovyHome:\n\n-initializeNoGroovyHome:\n\n-defineGantTask:\n\n" ;
+  private final String commonTargetsList = "-initializeWithGroovyHome:\n\n-initializeNoGroovyHome:\n\n-initialize:\n\n-defineGantTask:\n\n" ;
   /*
    *  Tests stemming from GANT-19 and relating to ensuring the right classpath when loading the Groovyc Ant
    *  task.
@@ -258,7 +258,7 @@ public class Gant_Test extends TestCase {
     sb.append ( path ).append ( separator ) ;
     sb.append ( "basedir.xml\n     [echo] basedir::ant basedir=" ) ;
     sb.append ( absolutePath ) ;
-    sb.append ( "\n\n-initializeWithGroovyHome:\n\n-initializeNoGroovyHome:\n\n-define" ) ;
+    sb.append ( "\n\n-initializeWithGroovyHome:\n\n-initializeNoGroovyHome:\n\n-initialize:\n\n-define" ) ;
     sb.append ( taskName ) ;
     sb.append ( "Task:\n\n" ) ;
     if ( extraClassPathDefinition ) { sb.append ( "-defineClasspath:\n\n" ) ; }
@@ -320,7 +320,9 @@ public class Gant_Test extends TestCase {
     assertEquals ( sb.toString ( ) , trimTimeFromSuccessfulBuild ( result.get ( 0 ) ) ) ;
     assertEquals ( "" , result.get ( 1 ) ) ;
   }
+  //
   //  Test out the GANT-80 issues.
+  //
   public void test_GANT_80 ( ) {
     final String message = "Hello World." ; //  Must be the same string as in GANT_80.gant
     final String antFilePath = path + separator + "GANT_80.xml" ;
@@ -338,4 +340,45 @@ public class Gant_Test extends TestCase {
     //assertEquals ( "Hello World.\n" , result.get ( 1 ) ) ;
     assertEquals ( "" , result.get ( 1 ) ) ;
   }
+  //
+  //  Ensure that errors are handled correctly by checking one error return case.
+  //
+  public void testGantTaskErrorReturn ( ) {
+    final File file = new File ( path , "testErrorCodeReturns.xml" ) ;
+    final String target = "usingGantAntTask" ;
+    final StringBuilder sb = new StringBuilder ( ) ;
+    sb.append ( "Buildfile: " ) ;
+    sb.append ( file.getPath ( ) ) ;
+    sb.append ( "\n\n" ) ;
+    sb.append ( commonTargetsList ) ;
+    sb.append ( target ) ;
+    sb.append ( ":\n" ) ;
+    final List<String> result = runAnt ( file.getPath ( ) , target , 1 , true ) ;
+    assert result.size ( ) == 2 ;
+    assertEquals ( sb.toString ( ) , trimTimeFromSuccessfulBuild ( result.get ( 0 ) ) ) ;
+    final String errorResult = result.get(1) ;
+    assertTrue ( errorResult.startsWith ( "\nBUILD FAILED\n" ) ) ;
+    assertTrue ( errorResult.contains ( file.getPath ( ) ) ) ;
+    assertTrue ( errorResult.contains ( "Gantfile does not exist." ) ) ;
+  }
+  /*
+   *  For the moment comment this out because there is no guarantee of a Gant installation.
+   *
+   *  TODO:  Find out how to set up a Gant installtionso this can be tested.
+   *
+  public void testExecOfGantScriptReturnErrorCode ( ) {
+    final File file = new File ( path , "testErrorCodeReturns.xml" ) ;
+    final String target = "usingExec" ;
+    final StringBuilder sb = new StringBuilder ( ) ;
+    sb.append ( "Buildfile: " ) ;
+    sb.append ( file.getPath ( ) ) ;
+    sb.append ( "\n\n" ) ;
+    sb.append ( target ) ;
+    sb.append ( ":\n     [exec] Cannot open file  nonexistentGantFile.gant\n     [echo] ErrorLevel: 253\n\nBUILD SUCCESSFUL\n\n" ) ;
+    final List<String> result = runAnt ( file.getPath ( ) , target , 0 , true ) ;
+    assert result.size ( ) == 2 ;
+    assertEquals ( sb.toString ( ) , trimTimeFromSuccessfulBuild ( result.get ( 0 ) ) ) ;
+    assertEquals ( "     [exec] Result: 253\n" , result.get ( 1 ) ) ;
+  }
+  */
 }

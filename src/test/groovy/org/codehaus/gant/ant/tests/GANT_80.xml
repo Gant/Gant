@@ -22,7 +22,7 @@ Author : Russel Winder <russel.winder@concertant.com>
 
   <import file="commonBits.xml"/>
 
-  <target name="default" depends="-initializeWithGroovyHome,-initializeNoGroovyHome,-defineGantTask">
+  <target name="default" depends="-defineGantTask">
     <gant file="GANT_80.gant"/>
   </target>
 

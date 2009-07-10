@@ -22,40 +22,40 @@ Author : Russel Winder <russel.winder@concertant.com>
 
   <import file="commonBits.xml"/>
 
-  <target name="gantTestDefaultFileDefaultTarget" depends="-initializeWithGroovyHome,-initializeNoGroovyHome,-defineGantTask">
+  <target name="gantTestDefaultFileDefaultTarget" depends="-defineGantTask">
     <gant/>
   </target>
  
-  <target name="gantTestDefaultFileNamedTarget" depends="-initializeWithGroovyHome,-initializeNoGroovyHome,-defineGantTask">
+  <target name="gantTestDefaultFileNamedTarget" depends="-defineGantTask">
     <gant target="blah"/>
   </target>
 
- <target name="gantTestNamedFileDefaultTarget" depends="-initializeWithGroovyHome,-initializeNoGroovyHome,-defineGantTask">
+ <target name="gantTestNamedFileDefaultTarget" depends="-defineGantTask">
     <gant file="build.gant"/>
   </target>
  
-  <target name="gantTestNamedFileNamedTarget" depends="-initializeWithGroovyHome,-initializeNoGroovyHome,-defineGantTask">
+  <target name="gantTestNamedFileNamedTarget" depends="-defineGantTask">
     <gant file="build.gant" target="blah"/>
   </target>
 
   <!--  Ensure there is no file of the name used in the Gant Ant task here. -->
-  <target name="missingGantfile" depends="-initializeWithGroovyHome,-initializeNoGroovyHome,-defineGantTask">
+  <target name="missingGantfile" depends="-defineGantTask">
     <gant file="blahBlahBlahBlah.blah"/>
   </target>
 
   <!--  Ensure there is no target called blahBlahBlahBlah. -->
-  <target name="gantTaskdefVerifyError" depends="-initializeWithGroovyHome,-initializeNoGroovyHome,-defineGantTask">
+  <target name="gantTaskdefVerifyError" depends="-defineGantTask">
     <gant file="build.gant" target="gantTaskdefVerifyError"/>
   </target>
 
-  <target name="gantWithParametersAsNestedTags" depends="-initializeWithGroovyHome,-initializeNoGroovyHome,-defineGantTask">
+  <target name="gantWithParametersAsNestedTags" depends="-defineGantTask">
     <gant file="build.gant" target="gantParameters">
       <definition name="flob" value="adob"/>
       <definition name="burble"/>
     </gant>
   </target>
 
-  <target name="gantWithMultipleTargets" depends="-initializeWithGroovyHome,-initializeNoGroovyHome,-defineGantTask">
+  <target name="gantWithMultipleTargets" depends="-defineGantTask">
     <gant>
       <gantTarget value="test"/>
       <gantTarget value="blah"/>
