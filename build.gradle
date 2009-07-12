@@ -17,10 +17,14 @@
 ant.property ( file : 'local.build.properties' )
 ant.property ( file : 'build.properties' )
 
+//  If the user has GROOVY_HOME set then use that Groovy rather than the one speficied in the properties
+//  files.  However we have to fiddle to find the version number.  Even then we still have to go out to the 
+
 groovyHome = System.getenv ( ).'GROOVY_HOME'
 if ( groovyHome ) {
+  groovyLib = new File ( groovyHome , 'lib' )
   def groovyVersionPatternString = /^groovy-(all-)?([0-9].*)\.jar/
-  def items = ( new File ( groovyHome + '/lib' ) ).listFiles ( [ accept : { File dir , String name -> return ( name =~ groovyVersionPatternString ).find ( ) } ] as FilenameFilter )
+  def items = groovyLib.listFiles ( [ accept : { File dir , String name -> return ( name =~ groovyVersionPatternString ).find ( ) } ] as FilenameFilter )
   assert items 
   groovyVersion = ( items[0].name =~ groovyVersionPatternString )[0][2]
   assert groovyVersion
@@ -43,11 +47,22 @@ usePlugin ( 'groovy' )
 sourceCompatibility = 5
 targetCompatibility = 5
 
+manifest.mainAttributes (
+                         'Built-By' : System.properties.'user.name' ,
+                         'Extension-Name' : artifact ,
+                         'Specification-Title' : 'Gant: scripting Ant tasks with Groovy.' ,
+                         'Specification-Version' : version ,
+                         'Specification-Vendor' : 'The Codehaus' ,
+                         'Implementation-Title' : 'Gant: Scripting Ant tasks with Groovy.' ,
+                         'Implementation-Version' : version , 
+                         'Implementation-Vendor' : 'The Codehaus'
+                         )
+
 repositories {
-  mavenRepo ( name : 'Local' , urls : 'file:///home/users/russel/.m2/repository' )
+  if ( groovyHome ) { flatDir ( name : 'groovyInstallation' , dirs : [ new File ( groovyHome , 'embeddable' ) , groovyLib ] ) }
   mavenCentral ( )
 }
-  
+
 dependencies {
   groovy ( 'org.codehaus.groovy:groovy-all:' + groovyVersion )
   compile (
@@ -137,5 +152,11 @@ task myGroovyDoc ( dependsOn : 'compile' , description : 'Create the GroovyDoc A
 task documentation ( dependsOn: [ 'javadoc' , 'myGroovyDoc' ] , description : 'Create the API documentation.' )
 
 usePlugin ( 'maven' )
+
+uploadArchives {
+  repositories.mavenDeployer {
+    repository ( url : 'http://repository.codehaus.org' )
+  }
+}
 
 defaultTasks ( 'test' )
