@@ -25,7 +25,7 @@ import org.apache.tools.ant.BuildListener
  */
 public class BuildListener_Test extends GantTestCase {
   void testBuildListeners ( ) {
-    TestBuildListener listener = new TestBuildListener ( )
+    DummyBuildListener listener = new DummyBuildListener ( )
     gant.addBuildListener ( listener )
     script = '''
 target ( main : "The main target." ) { doMore ( ) }
@@ -53,7 +53,7 @@ setDefaultTarget main
   }
 }
 
-class TestBuildListener implements BuildListener {
+class DummyBuildListener implements BuildListener {
   def targetStarts = [ ]
   def targetEnds = [ ]
   def buildStarts = [ ]
