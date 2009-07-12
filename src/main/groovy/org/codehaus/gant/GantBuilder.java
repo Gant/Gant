@@ -99,7 +99,7 @@ public class GantBuilder extends AntBuilder {
   @SuppressWarnings ( "unchecked" )
   public BuildLogger getLogger ( ) {
     final List<? extends BuildListener> listeners = getProject ( ).getBuildListeners ( ) ; // Unchecked conversion here.
-    assert listeners.size ( ) == 1 ;
+    assert listeners.size ( ) > 0 ;
     return (BuildLogger) listeners.get ( 0 ) ;
   }
 }
