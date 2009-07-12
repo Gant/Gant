@@ -3,7 +3,7 @@
 <!--
   Gant - A Groovy build framework based on scripting Ant tasks.
 
-  Copyright © 2007-8 Russel Winder.
+  Copyright © 2007-9 Russel Winder.
 
   Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in
   compliance with the License.  You may obtain a copy of the License at
@@ -46,7 +46,7 @@
   </organization>
   
   <prerequisites>
-    <maven>2.0.5</maven>
+    <maven>2.0.10</maven>
   </prerequisites>
 
   <issueManagement>
@@ -142,7 +142,6 @@
       <version>@commonsCliVersion@</version>
       <scope>compile</scope>
     </dependency>
-   <!-- For the Gant Ant task only. -->
     <dependency>
       <groupId>org.apache.ant</groupId>
       <artifactId>ant</artifactId>
@@ -162,6 +161,13 @@
       <artifactId>ivy</artifactId>
       <version>@ivyVersion@</version>
       <scope>runtime</scope>
+    </dependency>
+    <!-- For running the tests. -->
+    <dependency>
+      <groupId>junit</groupId>
+      <artifactId>junit</artifactId>
+      <version>4.6</version>
+      <scope>test</scope>
     </dependency>
   </dependencies>
 
