@@ -40,6 +40,12 @@
   <url>http://gant.codehaus.org/</url>
   <inceptionYear>2006</inceptionYear>
 
+  <!--modules>
+    <module>groovy1.5</module>
+    <module>groovy1.6</module>
+    <module>groovy1.7</module>
+  </modules-->
+
   <organization>
     <name>Russel Winder</name>
     <url>http://www.russel.org.uk</url>
@@ -181,24 +187,28 @@
             <target>1.5</target>
           </configuration>
         </plugin>
+        <plugin>
+          <groupId>org.codehaus.groovy.maven</groupId>
+          <artifactId>gmaven-plugin</artifactId>
+          <executions>
+            <execution>
+              <goals>
+                <goal>generateStubs</goal>
+                <goal>compile</goal>
+                <goal>generateTestStubs</goal>
+                <goal>testCompile</goal>
+              </goals>
+            </execution>
+          </executions>
+        </plugin>
       </plugins>
     </pluginManagement>
     <plugins>
       <plugin>
         <groupId>org.codehaus.groovy.maven</groupId>
         <artifactId>gmaven-plugin</artifactId>
-        <executions>
-          <execution>
-            <goals>
-              <goal>generateStubs</goal>
-              <goal>compile</goal>
-              <goal>generateTestStubs</goal>
-              <goal>testCompile</goal>
-            </goals>
-          </execution>
-        </executions>
-      </plugin>
-      <plugin>
+        </plugin>
+        <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-clean-plugin</artifactId>
         <configuration>
