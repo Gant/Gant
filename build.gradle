@@ -35,61 +35,86 @@ else {
 
 println ( "Using Groovy version " + groovyVersion )
 
-type = 'jar'
-group = 'org.codehaus.gant'
-artifact = 'gant'
+allprojects {
+  
+  group = 'org.codehaus.gant'
+  artifact = 'gant'
 
-version = ant.antProject.properties.gantVersion
-archivesBaseName = artifact
-
-usePlugin ( 'groovy' )
-
-sourceCompatibility = 5
-targetCompatibility = 5
-
-manifest.mainAttributes (
-                         'Built-By' : System.properties.'user.name' ,
-                         'Extension-Name' : artifact ,
-                         'Specification-Title' : 'Gant: scripting Ant tasks with Groovy.' ,
-                         'Specification-Version' : version ,
-                         'Specification-Vendor' : 'The Codehaus' ,
-                         'Implementation-Title' : 'Gant: Scripting Ant tasks with Groovy.' ,
-                         'Implementation-Version' : version , 
-                         'Implementation-Vendor' : 'The Codehaus'
-                         )
-
-repositories {
-  if ( groovyHome ) { flatDir ( name : 'groovyInstallation' , dirs : [ new File ( groovyHome , 'embeddable' ) , groovyLib ] ) }
-  mavenCentral ( )
-}
-
-dependencies {
-  groovy ( 'org.codehaus.groovy:groovy-all:' + groovyVersion )
-  compile (
+  version = ant.antProject.properties.gantVersion
+  
+  usePlugin ( 'groovy' )
+  // usePlugin ( 'osgi' )
+  
+  sourceCompatibility = 5
+  targetCompatibility = 5
+  
+  manifest.mainAttributes (
+                           'Built-By' : System.properties.'user.name' ,
+                           'Extension-Name' : artifact ,
+                           'Specification-Title' : 'Gant: scripting Ant tasks with Groovy.' ,
+                           'Specification-Version' : version ,
+                           'Specification-Vendor' : 'The Codehaus' ,
+                           'Implementation-Title' : 'Gant: Scripting Ant tasks with Groovy.' ,
+                           'Implementation-Version' : version , 
+                           'Implementation-Vendor' : 'The Codehaus'
+                           )
+  
+  repositories {
+    if ( groovyHome ) { flatDir ( name : 'groovyInstallation' , dirs : [ new File ( groovyHome , 'embeddable' ) , groovyLib ] ) }
+    mavenCentral ( )
+  }
+  
+  dependencies {
+    compile (
              'commons-cli:commons-cli:' + ant.antProject.properties.commonsCliVersion ,
              'org.apache.ant:ant:' + ant.antProject.properties.antVersion
-           )
-  testCompile (
+             )
+    testCompile (
                  'junit:junit:' + ant.antProject.properties.junitVersion
-                  )
-  testRuntime (
+                 )
+    testRuntime (
                  'org.apache.ivy:ivy:' + ant.antProject.properties.ivyVersion
                  )
+  }
+  
+  test.doFirst {
+    groovyAntTaskTestVersionPropertyFile = new File ( ant.antProject.properties.groovyAntTaskTestVersionPropertyFileName )
+    groovyAntTaskTestVersionPropertyFile.write ( 'groovyAntTaskTestVersion = ' + groovyVersion )
+  }
+  
+  test.doLast {
+    groovyAntTaskTestVersionPropertyFile.delete ( )
+  }
+  
+  clean.doLast {
+    ant.delete { fileset ( dir : '.' , includes : '**/*~, cobertura.ser, texput.log' ) }
+    ant.delete ( dir :  'target_forMavenTest' )
+  }
+
 }
 
-test.doFirst {
-  groovyAntTaskTestVersionPropertyFile = new File ( ant.antProject.properties.groovyAntTaskTestVersionPropertyFileName )
-  groovyAntTaskTestVersionPropertyFile.write ( 'groovyAntTaskTestVersion = ' + groovyVersion )
+project ( ':groovy1.5' ) {
+  archivesBaseName = artifact + '_groovy1.5'
+  dependencies {
+    groovy ( 'org.codehaus.groovy:groovy-all:' + ant.antProject.properties.groovy15Version )
+  }
 }
 
-test.doLast {
-  groovyAntTaskTestVersionPropertyFile.delete ( )
+project ( ':groovy1.6' ) {
+  archivesBaseName = artifact + '_groovy1.6'
+  dependencies {
+    groovy ( 'org.codehaus.groovy:groovy-all:' + ant.antProject.properties.groovy16Version )
+  }
 }
 
-clean.doLast {
-  ant.delete { fileset ( dir : '.' , includes : '**/*~, cobertura.ser, texput.log' ) }
-  ant.delete ( dir :  'target_forMavenTest' )
+project ( ':groovy1.7' ) {
+  archivesBaseName = artifact + '_groovy1.7'
+  dependencies {
+    groovy ( 'org.codehaus.groovy:groovy-all:' + ant.antProject.properties.groovy17Version )
+  }
 }
+
+
 
 def packageTitle = 'Gant ' + version
 def copyrightString = 'Copyright &#169; 1997&#8211;2009  The Codehaus.  All Rights Reserved.'
