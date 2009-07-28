@@ -168,6 +168,10 @@ final serverJarsDirectory = 'jars'
 
 final serverUploadProducts = [ : ]
 
+//  This is the path to the Gant jar currently being processed.  It is set when the jar has been successfully created.
+
+currentGantJarPath = null
+
 //  --------------------------------------------------------------------------------------------------------
 //
 //  Various support Closures.
@@ -196,12 +200,39 @@ final performCompile = { classpathId ->
   ant.mkdir ( dir : buildClassesDirectory )
   ant.taskdef ( name : 'groovyc' , classname : 'org.codehaus.groovy.ant.Groovyc' , classpathref : classpathId )
     ant.groovyc ( srcdir : sourceDirectory , destdir : buildClassesDirectory , fork : 'true' , failonerror : 'true' , includeantruntime : 'false' ) {
-    classpath {
-      pathelement ( location : buildClassesDirectory )
-      path ( refid : classpathId )
-    }
+    classpath { path ( refid : classpathId ) }
     javac ( source : sourceCompatibility , target : targetCompatibility , debug : 'on' )
   }
+}
+
+final makeManifest = { ->
+  ant.mkdir ( dir : buildMetadataDirectory )
+  ant.copy ( todir : buildMetadataDirectory ,  file : 'LICENCE.txt' )
+  ant.manifest ( file : buildMetadataDirectory + '/MANIFEST.MF' ) {
+    attribute ( name : 'Built-By' , value : System.properties.'user.name' )
+    attribute ( name : 'Extension-Name' , value : 'gant' )
+    attribute ( name : 'Specification-Title' , value : 'Gant: scripting Ant tasks with Groovy.' )
+    attribute ( name : 'Specification-Version' , value : gantVersion )
+    attribute ( name : 'Specification-Vendor' , value : 'The Codehaus' )
+    attribute ( name : 'Implementation-Title' , value : 'Gant: Scripting Ant tasks with Groovy.' )
+    attribute ( name : 'Implementation-Version' , value : gantVersion ) 
+    attribute ( name : 'Implementation-Vendor' , value : 'The Codehaus' )
+  }
+}
+    
+final performPackage =  { jarPath ->
+  currentGantJarPath = null                        
+  makeManifest ( )
+  try {                          
+    def tempfile = File.createTempFile ( 'gant_compile' , '.jar' ) 
+    ant.jar ( destfile : tempfile.path , basedir : buildClassesDirectory , manifest : buildMetadataDirectory + '/MANIFEST.MF' )
+    ant.taskdef ( resource : 'aQute/bnd/ant/taskdef.properties' , classpath : 'lib/bnd-0.0.337.jar' )
+    ant.bndwrap ( output : jarPath , jars : tempfile.path )
+    currentGantJarPath = jarPath
+  }
+  finally {
+    tempfile.delete ( )
+  }                      
 }
 
 final performCompileTests = { classpathId ->
@@ -210,7 +241,7 @@ final performCompileTests = { classpathId ->
     ant.taskdef ( name : 'groovyc' , classname : 'org.codehaus.groovy.ant.Groovyc' , classpathref : classpathId )
     ant.groovyc ( srcdir : testsDirectory , destdir : buildTestClassesDirectory , fork : 'true' , failonerror : 'true' , includeantruntime : 'false' ) {
       classpath {
-        pathelement ( location : buildClassesDirectory )
+        pathelement ( location : currentGantJarPath )
         path ( refid : classpathId )
       }
       javac ( source : sourceCompatibility , target : targetCompatibility , debug : 'on' )
@@ -252,7 +283,7 @@ final performTests =  { classpathId ->
         else { batchtest ( todir : buildTestReportsDirectory ) { fileset ( dir : buildTestClassesDirectory , includes : '**/*_Test.class' , excludes : '**/ant/tests/*' ) } }
         classpath {
           path ( refid : testClasspathId )
-          pathelement ( location : buildClassesDirectory )
+          pathelement ( location : currentGantJarPath )
         }
       }
     }
@@ -274,26 +305,6 @@ final performTests =  { classpathId ->
   //  MissingPropertyException in the case that the property doesn't exist whereas accessing it through the
   //  fully qualified name generates a null return.
   ant.project.properties.testsFailed == null
-}
-
-final makeManifest = { ->
-  ant.mkdir ( dir : buildMetadataDirectory )
-  ant.copy ( todir : buildMetadataDirectory ,  file : 'LICENCE.txt' )
-  ant.manifest ( file : buildMetadataDirectory + '/MANIFEST.MF' ) {
-    attribute ( name : 'Built-By' , value : System.properties.'user.name' )
-    attribute ( name : 'Extension-Name' , value : 'gant' )
-    attribute ( name : 'Specification-Title' , value : 'Gant: scripting Ant tasks with Groovy.' )
-    attribute ( name : 'Specification-Version' , value : gantVersion )
-    attribute ( name : 'Specification-Vendor' , value : 'The Codehaus' )
-    attribute ( name : 'Implementation-Title' , value : 'Gant: Scripting Ant tasks with Groovy.' )
-    attribute ( name : 'Implementation-Version' , value : gantVersion ) 
-    attribute ( name : 'Implementation-Vendor' , value : 'The Codehaus' )
-  }
-}
-
-final performPackage =  { jarPath ->
-  makeManifest ( )
-  ant.jar ( destfile : jarPath , basedir : buildClassesDirectory , manifest : buildMetadataDirectory + '/MANIFEST.MF' )
 }
 
 final setInstallationDirectory = { path ->
@@ -428,7 +439,7 @@ final doDocumentation = { ->
                source : sourceCompatibility
                ) {
     classpath {
-      pathelement ( location : buildClassesDirectory )
+      pathelement ( location : currentGantJarPath )
       path ( refid : classpathId )
     }
   }
@@ -528,8 +539,13 @@ target ( compile : 'Compile everything needed for a Groovy installation dependen
   performCompile ( compileJarSetPathId )
 }
 
-target ( compileTests : 'Compile all the tests for a Groovy installation dependent build of Gant.' ) {
+target ( 'package' : 'Create the jar file for a Groovy installation dependent build of Gant.' ) {
   depends ( compile )
+  performPackage ( buildDirectory + "/gant-${gantVersion}.jar" )
+}
+
+target ( compileTests : 'Compile all the tests for a Groovy installation dependent build of Gant.' ) {
+  depends ( 'package' )
   if ( ! skipTests ) { performCompileTests ( testJarSetPathId ) }
 }
 
@@ -553,18 +569,13 @@ target ( coberturaTest : 'Test a Groovy installation dependent build of Gant usi
   depends ( test )
 }
 
-target ( 'package' : 'Create the jar file for a Groovy installation dependent build of Gant.' ) {
-  depends ( test )
-  performPackage ( buildDirectory + "/gant-${gantVersion}.jar" )
-}
-
 target ( documentation : 'Create the API documentation of Gant.' ) {
   depends ( compile )
   doDocumentation ( )
 }
 
 target ( install : "Install a Groovy installation dependent build of Gant." ) {
-  depends ( 'package' )
+  depends ( test )
   prepareInstallDirectory ( installDirectory , 'gant-' + gantVersion + '.jar' , ( groovyHomeEnvironment ? 'compileJarSet' : 'compileJars' ) , groovyHomeEnvironment == null , null )
 }
 
