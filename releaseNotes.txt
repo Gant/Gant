@@ -29,7 +29,12 @@ setDefaultTarget used to generate a target called default which was problematic 
 of that name.  The default target processing has been changed to avoid this.
 
 Error messages now appear on standard error, previously they appeared on standard out along with other forms
-of output.
+of output.  cf. GANT-77.
+
+Gant now provides output about the targets being processed so is a little more "Ant-like" -- but note there
+are significant differences, Gant outputs information about starting and completing a target.  cf. GANT-77, GANT-80.
+
+Gant jar is now OSGi compliant.  cf. GANT-83.
 
 
 1.6.1 ( r10179 )
