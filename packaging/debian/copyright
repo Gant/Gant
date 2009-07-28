@@ -1,0 +1,17 @@
+This package was debianized by Varun Hiremath <varun@debian.org> on
+Wed, 12 Dec 2007 14:21:59 +0530
+
+It was downloaded from http://gant.codehaus.org/
+
+Upstream Authors: Russel Winder <russel.winder@concertant.com>
+
+Copyright: © 2006-2008 Russel Winder <russel.winder@concertant.com>
+
+License:
+   Licensed under the Apache License, Version 2.0
+   
+   On Debian systems, full text of the Apache 2.0 license can be found
+   at `/usr/share/common-licenses/Apache-2.0'.
+
+The Debian packaging is (C) 2007, Varun Hiremath <varun@debian.org> and
+is licensed under the GPL, see `/usr/share/common-licenses/GPL'.
