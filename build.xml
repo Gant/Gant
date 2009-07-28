@@ -66,6 +66,9 @@ Author : Russel Winder <russel.winder@concertant.com>
   <property name="buildMetadataDirectory" value="${buildClassesDirectory}/META-INF"/>
 
   <property name="mavenAntTaskJarName" value="maven-ant-tasks-${mavenVersion}.jar"/>
+  <property name="gantJarName" value="gant-${gantVersion}.jar"/>
+
+  <property name="gantJarPath" value="${buildDirectory}/${gantJarName}"/>
 
   <condition property="installDirectoryIsSet">
     <isset property="installDirectory"/>
@@ -150,18 +153,33 @@ Author : Russel Winder <russel.winder@concertant.com>
     <mkdir dir="${buildClassesDirectory}"/>
     <groovyc srcdir="${sourceDirectory}" destdir="${buildClassesDirectory}" fork="true" failonerror="true" includeantruntime="false">
       <classpath>
-        <pathelement location="${buildClassesDirectory}"/>
         <path refid="compileJarSetPathId"/>
       </classpath>
       <javac source="5" target="5" debug="on" encoding="UTF-8"/>
     </groovyc>
   </target>
 
-  <target name="-compileTests" depends="-compile" unless="skipTestsIsSet">
+  <target name="-package" depends="-compile" unless="testsFailed">
+    <mkdir dir="${buildMetadataDirectory}"/>
+    <copy todir="${buildMetadataDirectory}" file="LICENCE.txt"/>
+    <manifest file="${buildMetadataDirectory}/MANIFEST.MF">
+      <attribute name="Built-By" value="${user.name}"/>
+      <attribute name="Extension-Name" value="gant"/>
+      <attribute name="Specification-Title" value="Gant: scripting Ant tasks with Groovy."/>
+      <attribute name="Specification-Version" value="${gantVersion}"/>
+      <attribute name="Specification-Vendor" value="The Codehaus"/>
+      <attribute name="Implementation-Title" value="Gant: Scripting Ant tasks with Groovy."/>
+      <attribute name="Implementation-Version" value="${gantVersion}"/> 
+      <attribute name="Implementation-Vendor" value="The Codehaus"/>
+    </manifest>
+    <jar destfile="${gantJarPath}" basedir="${buildClassesDirectory}" manifest="${buildMetadataDirectory}/MANIFEST.MF"/>
+  </target>
+
+  <target name="-compileTests" depends="-package" unless="skipTestsIsSet">
     <mkdir dir="${buildTestClassesDirectory}"/>
     <groovyc srcdir="${testsDirectory}" destdir="${buildTestClassesDirectory}" fork="true" failonerror="true" includeantruntime="false">
       <classpath>
-        <pathelement location="${buildClassesDirectory}"/>
+        <pathelement location="${gantJarPath}"/>
         <path refid="testJarSetPathId"/>
       </classpath>
       <javac source="5" target="5" debug="on" encoding="UTF-8"/>
@@ -191,7 +209,7 @@ Author : Russel Winder <russel.winder@concertant.com>
       </batchtest>
       <classpath>
         <path refid="testClasspathPathId"/>
-        <pathelement location="${buildClassesDirectory}"/>
+        <pathelement location="${gantJarPath}"/>
       </classpath>
     </junit>
     <junit printsummary="yes" fork="true" forkmode="once" failureproperty="testsFailed" includeantruntime="false">
@@ -205,22 +223,6 @@ Author : Russel Winder <russel.winder@concertant.com>
       </classpath>
     </junit>
     <delete file="groovyAntTaskTestVersion.properties"/>
-  </target>
-
-  <target name="-package" depends="-compile,-test" unless="testsFailed">
-    <mkdir dir="${buildMetadataDirectory}"/>
-    <copy todir="${buildMetadataDirectory}" file="LICENCE.txt"/>
-    <manifest file="${buildMetadataDirectory}/MANIFEST.MF">
-      <attribute name="Built-By" value="${user.name}"/>
-      <attribute name="Extension-Name" value="gant"/>
-      <attribute name="Specification-Title" value="Gant: scripting Ant tasks with Groovy."/>
-      <attribute name="Specification-Version" value="${gantVersion}"/>
-      <attribute name="Specification-Vendor" value="The Codehaus"/>
-      <attribute name="Implementation-Title" value="Gant: Scripting Ant tasks with Groovy."/>
-      <attribute name="Implementation-Version" value="${gantVersion}"/> 
-      <attribute name="Implementation-Vendor" value="The Codehaus"/>
-    </manifest>
-    <jar destfile="${buildDirectory}/gant-${gantVersion}.jar" basedir="${buildClassesDirectory}" manifest="${buildMetadataDirectory}/MANIFEST.MF"/>
   </target>
 
   <target name="-installStandalone" if="installStandalone" unless="testsFailed">
@@ -281,11 +283,11 @@ Author : Russel Winder <russel.winder@concertant.com>
 
   <target name="compile" depends="-commandLineDependencies,-compile" description="Compile everything needed for a bootstrap build of Gant."/>
   
+  <target name="package" depends="-commandLineDependencies,-package" description="Create the jar file for a bootstrap build of Gant."/>
+  
   <target name="compileTests" depends="-commandLineDependencies,-compileTests" description="Compile all the tests for a bootstrap build of Gant."/>
   
   <target name="test" depends="-commandLineDependencies,-test" description="Test a boostrap build of Gant."/>
-  
-  <target name="package" depends="-commandLineDependencies,-package" description="Create the jar file for a bootstrap build of Gant."/>
   
   <target name="install" depends="-commandLineDependencies,-install,-notInstallable" description="Package and then install a boostrap build of Gant.  Install destination must be set in the file local.build.properties."/>
   
@@ -311,7 +313,7 @@ Author : Russel Winder <russel.winder@concertant.com>
        leading to a problem in one of the Gant Ant task tests.
   -->
 
-  <target name="-ciBuild" depends="clean,-initializeNoGroovyHome,-package"/>
+  <target name="-ciBuild" depends="clean,-initializeNoGroovyHome,-test"/>
  
   <target name="cruiseControlBuild" depends="-ciBuild"/>
 

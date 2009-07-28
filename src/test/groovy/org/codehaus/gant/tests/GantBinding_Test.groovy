@@ -209,9 +209,7 @@ target ( 'default' : '' ) { println ( 'This should never be printed.' ) }
   void testAttemptToAlterReadOnlyBindingEntriesCausesException_initiatimgTarget ( ) { undertakeTestingOfAReadOnlyEntryInBinding ( 'initiatingTarget' ) }
   void testAttemptToAlterReadOnlyBindingEntriesCausesException_targets ( ) { undertakeTestingOfAReadOnlyEntryInBinding ( 'targets' ) }
 
-  //  GANT-75 called for adding the properties gant.file and gant.version.  Unfortunately, the version
-  //  should always be null during testing as there is no jar, and no manifest.  Perhaps this means the way
-  //  the tests are run should change so that a jar and not the directory of compiled files is used?
+  //  GANT-75 called for adding the properties gant.file and gant.version.
 
   void testGantFilePropertyIsAccessble ( ) {
     script = "target ( ${targetName} : '' ) { println ( binding.'gant.file' ) }"
@@ -220,10 +218,9 @@ target ( 'default' : '' ) { println ( 'This should never be printed.' ) }
     assertEquals ( '' , error )
   }
   void testGantVersionPropertyIsAccessible ( ) {
-    // TODO: Need to find a way of testing the actual version being correct instead of null.
     script = "target ( ${targetName} : '' ) { println ( binding.'gant.version' ) }"
     assertEquals ( 0 , processTargets ( targetName ) )
-    assertEquals ( resultString ( targetName , 'null\n' ) , output )
+    assertEquals ( resultString ( targetName , gant.binding.'gant.version' + '\n' ) , output )
     assertEquals ( '' , error )
   }
 }

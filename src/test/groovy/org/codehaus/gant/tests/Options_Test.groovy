@@ -23,9 +23,7 @@ final class Options_Test extends GantTestCase {
   private final targetName = 'printDefinitions'
   void testVersion ( ) {
     assertEquals ( 0 , gant.processArgs ( [ '-V' ] as String[] ) )
-    //  It appears that during test, the manifest version number is not actually found so we get <unknown>
-    //  returned as the version number.
-    assertEquals ( 'Gant version <unknown>' , output.trim ( ) )
+    assertEquals ( 'Gant version ' + gant.binding.'gant.version' , output.trim ( ) )
   }
   void testDefinitions ( ) {
     script = """
