@@ -39,6 +39,7 @@ import org.codehaus.groovy.control.MultipleCompilationErrorsException ;
  *  @author Russel Winder
  */
 public class Gant_Test extends TestCase {
+  private final String endOfTargetMarker = "------ " ;
   private final String separator = System.getProperty ( "file.separator" ) ;
   private final boolean isWindows = System.getProperty ( "os.name" ).startsWith ( "Windows" ) ;
   private final String path ; {
@@ -140,7 +141,7 @@ public class Gant_Test extends TestCase {
       try {
         final BufferedReader br = new BufferedReader ( new InputStreamReader ( is ) ) ;
         while ( true ) {
-          final String line = br.readLine ( ) ;  //  Could throw an IOException hence the try block.
+          final String line = br.readLine ( ) ;  //  Can throw an IOException hence the try block.
           if ( line == null ) { break ; }
           sb.append ( line ).append ( '\n' ) ;
         }
@@ -150,7 +151,7 @@ public class Gant_Test extends TestCase {
   }
   /*
    *  Run Ant in a separate process.  Return the standard output and the standard error that results as a
-   *  List<String> with two items, item 0 is stnadard output and item 1 is standard error.
+   *  List<String> with two items, item 0 is standard output and item 1 is standard error.
    *
    *  <p>This method assumes that either the environment variable ANT_HOME is set to a complete Ant
    *  installation or that the command ant (ant.bat on Windows) is in the path.</p>
@@ -161,7 +162,7 @@ public class Gant_Test extends TestCase {
    *  @param xmlFile the path to the XML file that Ant is to use.
    *  @param target the target to run, pass "" or null for the default target.
    *  @param expectedReturnCode the return code that the Ant execution should return.
-   *  @param withClasspath whether the Ant execution should use the full classpathso as to find all the classes.
+   *  @param withClasspath whether the Ant execution should use the full classpath so as to find all the classes.
    */
   private List<String> runAnt ( final String xmlFile , final String target , final int expectedReturnCode , final boolean withClasspath ) {
     final List<String> command = new ArrayList<String> ( ) ;
@@ -241,7 +242,7 @@ public class Gant_Test extends TestCase {
   public void testRunningAntFromShellSuccessful ( ) {
     final List<String> result = runAnt ( antFile.getPath ( ) , null , 0 , true ) ;
     assert result.size ( ) == 2 ;
-    assertEquals ( createBaseMessage ( ) + "\nBUILD SUCCESSFUL\n\n", trimTimeFromSuccessfulBuild ( result.get ( 0 ) ) ) ;
+    assertEquals ( createBaseMessage ( ) + "test:\n" + endOfTargetMarker + "test\n\nBUILD SUCCESSFUL\n\n", trimTimeFromSuccessfulBuild ( result.get ( 0 ) ) ) ;
     assertEquals ( "" , result.get ( 1 ) ) ;
   }
   /*
@@ -249,9 +250,7 @@ public class Gant_Test extends TestCase {
    *  Chris Miles.  cf.  GANT-50.  This assumes that the tests are run from a directory other than this one.
    */
   private final String basedirAntFilePath = path + separator + "basedir.xml" ;
-  //
-  //  TODO: The includeTag is needed because of an error -- it should be removed and the [groovy] tag always present.
-  //
+
   private String createMessageStart ( final String target , final String taskName , final boolean extraClassPathDefinition ) {
     final StringBuilder sb = new StringBuilder ( ) ;
     sb.append ( "Buildfile: " ) ;
@@ -281,7 +280,7 @@ public class Gant_Test extends TestCase {
     //  TODO : Should this be sb.append ( absolutePath ) ?  cf. GANT-50.
     //
     sb.append ( System.getProperty ( "user.dir" ) ) ;
-    sb.append ( "\n   [groovy] ------ default\n   [groovy] \n\nBUILD SUCCESSFUL\n\n" ) ;
+    sb.append ( "\n   [groovy] " + endOfTargetMarker + "default\n   [groovy] \n\nBUILD SUCCESSFUL\n\n" ) ;
     final List<String> result = runAnt ( basedirAntFilePath , target , 0 , true ) ;
     assert result.size ( ) == 2 ;
     assertEquals ( sb.toString ( ) , trimTimeFromSuccessfulBuild ( result.get ( 0 ) ) ) ;
@@ -296,13 +295,11 @@ public class Gant_Test extends TestCase {
     //
     //  In this case the instantiated Gant object is connected directly to the Project object instantiated
     //  by Ant and so uses the same basedir.  However it seems that the output (and error) stream are not
-    //  routed through the bit of Ant that prefixes the output with the current task name.
-    //
-    //  TODO : Sort out whether Is it correct that [groovy] is not printed out at the start of this?  cf. GANT-50.
+    //  routed through the bit of Ant that prefixes the output with the current task name. :-(
     //
     sb.append ( "\ndefault:\nbasedir::gant basedir=" ) ;
     sb.append ( absolutePath ) ;
-    sb.append ( "\n------ default\n\nBUILD SUCCESSFUL\n\n" ) ;
+    sb.append ( "\n" + endOfTargetMarker + "default\n\nBUILD SUCCESSFUL\n\n" ) ;
     final List<String> result = runAnt ( basedirAntFilePath , target , 0 , true ) ;
     assert result.size ( ) == 2 ;
     assertEquals ( sb.toString ( ) , trimTimeFromSuccessfulBuild ( result.get ( 0 ) ) ) ;
@@ -312,32 +309,28 @@ public class Gant_Test extends TestCase {
     final String target = "gantTask" ;
     final StringBuilder sb = new StringBuilder ( ) ;
     sb.append ( createMessageStart ( target , "Gant" , false ) ) ;
-    sb.append ( "     [gant] basedir::gant basedir=" ) ;
+    sb.append ( "default:\n     [gant] basedir::gant basedir=" ) ;
     sb.append ( absolutePath ) ;
-    sb.append ( "\n\nBUILD SUCCESSFUL\n\n" ) ;
+    sb.append ( "\n" + endOfTargetMarker + "default\n\nBUILD SUCCESSFUL\n\n" ) ;
     final List<String> result = runAnt ( basedirAntFilePath , target , 0 , true ) ;
     assert result.size ( ) == 2 ;
     assertEquals ( sb.toString ( ) , trimTimeFromSuccessfulBuild ( result.get ( 0 ) ) ) ;
     assertEquals ( "" , result.get ( 1 ) ) ;
   }
   //
-  //  Test out the GANT-80 issues.
+  //  Test the GANT-80 issues.
   //
   public void test_GANT_80 ( ) {
-    final String message = "Hello World." ; //  Must be the same string as in GANT_80.gant
     final String antFilePath = path + separator + "GANT_80.xml" ;
     final StringBuilder sb = new StringBuilder ( ) ;
     sb.append ( "Buildfile: " ) ;
     sb.append ( antFilePath ) ;
     sb.append ( "\n\n" ) ;
     sb.append ( commonTargetsList ) ;
-    //  TODO:  Why does the [echo] get stripped off the second of these?
-    sb.append ( "default:\n     [gant] Hello World.\n     [gant] Hello World.\n\nBUILD SUCCESSFUL\n\n" ) ;
+    sb.append ( "default:\ndefault:\n     [gant] From println.\n     [gant] On standard error.\n     [echo] From ant.echo.\n" + endOfTargetMarker + "default\n\nBUILD SUCCESSFUL\n\n" ) ;
     final List<String> result = runAnt ( antFilePath , null , 0 , true ) ;
     assert result.size ( ) == 2 ;
     assertEquals ( sb.toString ( ) , trimTimeFromSuccessfulBuild ( result.get ( 0 ) ) ) ;
-    //  TODO:  Fix this error, the wrong output results.
-    //assertEquals ( "Hello World.\n" , result.get ( 1 ) ) ;
     assertEquals ( "" , result.get ( 1 ) ) ;
   }
   //
@@ -364,7 +357,7 @@ public class Gant_Test extends TestCase {
   /*
    *  For the moment comment this out because there is no guarantee of a Gant installation.
    *
-   *  TODO:  Find out how to set up a Gant installtionso this can be tested.
+   *  TODO:  Find out how to set up a Gant installation so this can be tested.
    *
   public void testExecOfGantScriptReturnErrorCode ( ) {
     final File file = new File ( path , "testErrorCodeReturns.xml" ) ;

@@ -13,8 +13,7 @@
 //  License.
 
 target ( 'default' : '' ) {
-  final message = 'Hello World.'
-  println ( message )
-  System.err.println ( message )
-  //echo ( message : message )
+  println ( 'From println.' ) //  This works fine.
+  System.err.println ( 'On standard error.' ) //  TODO:  Why does this output not appear on standard out?
+  echo ( message : 'From ant.echo.' ) //  TODO:  This fails to put any output anywhere.
 }

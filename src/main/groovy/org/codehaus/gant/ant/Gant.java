@@ -23,6 +23,8 @@ import java.util.List ;
 import java.util.Map ;
 
 import org.apache.tools.ant.BuildException ;
+import org.apache.tools.ant.BuildListener ;
+import org.apache.tools.ant.DefaultLogger ;
 import org.apache.tools.ant.Project ;
 import org.apache.tools.ant.Task ;
 
@@ -130,18 +132,37 @@ public class Gant extends Task {
    */
   @Override public void execute ( ) throws BuildException {
     //
-    //  To address the issues raised in GANT-50, we need to ensure that the org.apache.tools.ant.Project
-    //  instance used by Gant is the one that initiated this task.  This means creating a new GantBinding
-    //  with a specially prepared GantBuilder in order to create a suitable gant.Gant object.
+    //  At first it might seem approrpiate to use the Project object from the calling Ant instance as the
+    //  Project object used by the AntBuilder object and hence GantBuilder object associated with the Gant
+    //  instance we are going to create here.  However, if we just use that Project object directly then
+    //  there are problems with proper annotation of the lines of output, so it isn't really an option.
+    //  Therefore create a new Project instance and set the things appropriately from the original Project
+    //  object.
     //
-    //  NB  As this class is called Gant, we have to use fully qualified name to get to the other Gant class.
+    //  Issues driving things here are GANT-50 and GANT-80.  GANT-50 is about having the correct base
+    //  directory for operations, GANT-80 is about ensuring that all output generation actually generated
+    //  observable output.
     //
-    //  There seem to be various incomprehensible issues in attempting to use the original Project object so
-    //  create a new one and set the basedir appropriately.
+    //  NB As this class is called Gant, we have to use fully qualified name to get to the Gant main class.
     //
+    final Project antProject =  getOwningTarget ( ).getProject ( ) ;
     final Project newProject = new Project ( ) ;
     newProject.init ( ) ;
-    newProject.setBaseDir ( getOwningTarget ( ).getProject ( ).getBaseDir ( ) ) ;
+    //
+    //  Deal with GANT-80 by getting all the the loggers from the Ant instance Project object and adding
+    //  them to the new Project Object.
+    //
+    for ( final Object o : antProject.getBuildListeners ( ) ) {
+      final BuildListener listener = (BuildListener) o ;
+      if ( listener instanceof DefaultLogger ) {
+        newProject.addBuildListener ( listener ) ;
+      }
+    }
+    //
+    //  Deal with GANT-50 by getting the base directory from the Ant instance Project object and use it for
+    //  the new Project object.
+    //
+    newProject.setBaseDir ( antProject.getBaseDir ( ) ) ;
     final File gantFile = new File ( newProject.getBaseDir ( ) , file ) ;
     if ( ! gantFile.exists ( ) ) { throw new BuildException ( "Gantfile does not exist." , getLocation ( ) ) ; }
     final GantBuilder ant = new GantBuilder ( newProject ) ;
