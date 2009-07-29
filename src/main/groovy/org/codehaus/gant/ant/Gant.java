@@ -148,20 +148,16 @@ public class Gant extends Task {
     final Project antProject =  getOwningTarget ( ).getProject ( ) ;
     final Project newProject = new Project ( ) ;
     newProject.init ( ) ;
-    //
     //  Deal with GANT-80 by getting all the the loggers from the Ant instance Project object and adding
     //  them to the new Project Object.
-    //
     for ( final Object o : antProject.getBuildListeners ( ) ) {
       final BuildListener listener = (BuildListener) o ;
       if ( listener instanceof DefaultLogger ) {
         newProject.addBuildListener ( listener ) ;
       }
     }
-    //
     //  Deal with GANT-50 by getting the base directory from the Ant instance Project object and use it for
     //  the new Project object.
-    //
     newProject.setBaseDir ( antProject.getBaseDir ( ) ) ;
     final File gantFile = new File ( newProject.getBaseDir ( ) , file ) ;
     if ( ! gantFile.exists ( ) ) { throw new BuildException ( "Gantfile does not exist." , getLocation ( ) ) ; }
