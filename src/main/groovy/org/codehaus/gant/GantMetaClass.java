@@ -133,6 +133,10 @@ public class GantMetaClass extends DelegatingMetaClass {
       }
       catch ( final MissingMethodException mme ) {
         /*
+         *  This was originally part of Yoel Spotts proposal of the GANT-10 fix, but it seems superfluous.
+         *
+         *  TODO:  Remove this after the release.
+         *
         if ( binding.getVariable ( methodName ) != null ) {
           //  Let Script handle this if the name is in the binding.
           throw mme ;
