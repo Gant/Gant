@@ -132,6 +132,12 @@ public class GantMetaClass extends DelegatingMetaClass {
         catch ( final MissingPropertyException mpe ) { /* Purposefully empty */ }
       }
       catch ( final MissingMethodException mme ) {
+        /*
+        if ( binding.getVariable ( methodName ) != null ) {
+          //  Let Script handle this if the name is in the binding.
+          throw mme ;
+        }
+        */
         try { returnObject = ( (GantBuilder) ( binding.getVariable ( "ant" ) ) ).invokeMethod ( methodName , arguments ) ; }
         catch ( final BuildException be ) {
           //  This BuildException could be a real exception due to a failed execution of a found Ant task

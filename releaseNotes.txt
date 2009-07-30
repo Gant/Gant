@@ -36,6 +36,8 @@ are significant differences, Gant outputs information about starting and complet
 
 Gant jar is now OSGi compliant.  cf. GANT-83.
 
+Should now never need the ant. when calling Ant tasks. cf. GANT-10.
+
 
 1.6.1 ( r10179 )
 ----------------

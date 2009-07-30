@@ -23,6 +23,7 @@ import org.apache.tools.ant.Project
 
 import org.codehaus.gant.GantBinding
 import org.codehaus.gant.GantEvent
+import org.codehaus.gant.GantMetaClass
 import org.codehaus.gant.GantState
 
 import org.codehaus.groovy.control.CompilationUnit
@@ -533,6 +534,7 @@ final class Gant {
     try { loadScript ( buildSource ) }
     catch ( FileNotFoundException fnfe ) { binding.ant.project.log ( 'Cannot open file ' + buildSource.name , Project.MSG_ERR ) ; return -3 }
     catch ( Exception e ) { binding.ant.project.log ( constructMessageFrom ( e ) , Project.MSG_ERR ) ; return -2 }
+    script.metaClass = new GantMetaClass ( script.metaClass , binding )
     def defaultReturnCode = targets?.size ( ) > 0 ? -11 : -12
     outputBuildTime = function == 'dispatch'
     try { return processTargets ( function , targets ) }

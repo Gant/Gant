@@ -73,7 +73,7 @@ target = 10
     script = "target ( '${targetName}' ) { print ( '${ok}' ) }"
     assertEquals ( -4 , processCmdLineTargets ( targetName ) )
     assertEquals ( '' , output )
-    assertTrue ( error.startsWith ( 'Standard input, line 1 -- Error evaluating Gantfile: No signature of method: org.codehaus.gant.GantBinding$_initializeGantBinding_closure' ) )
+    assertTrue ( error.contains ( 'Standard input, line 1 -- Error evaluating Gantfile: No signature of method: org.codehaus.gant.GantBinding$_initializeGantBinding_closure' ) )
   }
   void testStringSequenceParameter ( ) {
     script = "target ( '${targetName}' , 'description' ) { print ( '${ok}' ) }"

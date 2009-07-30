@@ -97,6 +97,7 @@ target ( ${targetName} : '' ) { ( 0..<${replicationCount} ).each closure }
 closure = { echo ( message : '${message}' ) }
 target ( ${targetName} : '' ) { ( 0..<${replicationCount} ).each closure }
 """
-    assertEquals ( -13 , processCmdLineTargets ( targetName ) )
+    assertEquals ( 0 , processCmdLineTargets ( targetName ) )
+    assertEquals ( resultReplicated , output )
   }
 }

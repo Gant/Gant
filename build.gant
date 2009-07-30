@@ -18,8 +18,8 @@ final zipExtension = '.zip'
 final tarExtension = '.tar'
 final tgzExtension = '.tgz'
 
-ant.property ( file : 'local.build.properties' )
-ant.property ( file : 'build.properties' )
+property ( file : 'local.build.properties' )
+property ( file : 'build.properties' )
 
 carryOn = true
 [ 'gantVersion' ,
@@ -189,7 +189,7 @@ final getDependency = { root , dependencies ->
   final filesetId = root + 'FilesetId'
   binding.setVariable ( pathId , pathId )
   binding.setVariable ( filesetId , filesetId )
-  ant."${antlibXMLns}:dependencies" ( pathId : pathId , filesetId : filesetId ) {
+  "${antlibXMLns}:dependencies" ( pathId : pathId , filesetId : filesetId ) {
     if ( dependencies instanceof List ) { for ( item in dependencies ) { dependency ( item ) } }
     else { dependency ( dependencies ) }
     remoteRepositories.each { List item -> remoteRepository ( id : item[0] , url : item[1] ) }
@@ -197,18 +197,18 @@ final getDependency = { root , dependencies ->
 }
 
 final performCompile = { classpathId ->
-  ant.mkdir ( dir : buildClassesDirectory )
-  ant.taskdef ( name : 'groovyc' , classname : 'org.codehaus.groovy.ant.Groovyc' , classpathref : classpathId )
-    ant.groovyc ( srcdir : sourceDirectory , destdir : buildClassesDirectory , fork : 'true' , failonerror : 'true' , includeantruntime : 'false' ) {
+  mkdir ( dir : buildClassesDirectory )
+  taskdef ( name : 'groovyc' , classname : 'org.codehaus.groovy.ant.Groovyc' , classpathref : classpathId )
+  groovyc ( srcdir : sourceDirectory , destdir : buildClassesDirectory , fork : 'true' , failonerror : 'true' , includeantruntime : 'false' ) {
     classpath { path ( refid : classpathId ) }
     javac ( source : sourceCompatibility , target : targetCompatibility , debug : 'on' )
   }
 }
 
 final makeManifest = { ->
-  ant.mkdir ( dir : buildMetadataDirectory )
-  ant.copy ( todir : buildMetadataDirectory ,  file : 'LICENCE.txt' )
-  ant.manifest ( file : buildMetadataDirectory + '/MANIFEST.MF' ) {
+  mkdir ( dir : buildMetadataDirectory )
+  copy ( todir : buildMetadataDirectory ,  file : 'LICENCE.txt' )
+  manifest ( file : buildMetadataDirectory + '/MANIFEST.MF' ) {
     attribute ( name : 'Built-By' , value : System.properties.'user.name' )
     attribute ( name : 'Extension-Name' , value : 'gant' )
     attribute ( name : 'Specification-Title' , value : 'Gant: scripting Ant tasks with Groovy.' )
@@ -225,9 +225,9 @@ final performPackage =  { jarPath ->
   makeManifest ( )
   try {                          
     def tempfile = File.createTempFile ( 'gant_compile' , '.jar' ) 
-    ant.jar ( destfile : tempfile.path , basedir : buildClassesDirectory , manifest : buildMetadataDirectory + '/MANIFEST.MF' )
-    ant.taskdef ( resource : 'aQute/bnd/ant/taskdef.properties' , classpath : 'lib/bnd-0.0.337.jar' )
-    ant.bndwrap ( output : jarPath , jars : tempfile.path )
+    jar ( destfile : tempfile.path , basedir : buildClassesDirectory , manifest : buildMetadataDirectory + '/MANIFEST.MF' )
+    taskdef ( resource : 'aQute/bnd/ant/taskdef.properties' , classpath : 'lib/bnd-0.0.337.jar' )
+    bndwrap ( output : jarPath , jars : tempfile.path )
     currentGantJarPath = jarPath
   }
   finally {
@@ -237,9 +237,9 @@ final performPackage =  { jarPath ->
 
 final performCompileTests = { classpathId ->
   if ( ! skipTests ) {                              
-    ant.mkdir ( dir : buildTestClassesDirectory )
-    ant.taskdef ( name : 'groovyc' , classname : 'org.codehaus.groovy.ant.Groovyc' , classpathref : classpathId )
-    ant.groovyc ( srcdir : testsDirectory , destdir : buildTestClassesDirectory , fork : 'true' , failonerror : 'true' , includeantruntime : 'false' ) {
+    mkdir ( dir : buildTestClassesDirectory )
+    taskdef ( name : 'groovyc' , classname : 'org.codehaus.groovy.ant.Groovyc' , classpathref : classpathId )
+    groovyc ( srcdir : testsDirectory , destdir : buildTestClassesDirectory , fork : 'true' , failonerror : 'true' , includeantruntime : 'false' ) {
       classpath {
         pathelement ( location : currentGantJarPath )
         path ( refid : classpathId )
@@ -251,18 +251,18 @@ final performCompileTests = { classpathId ->
 
 final performTests =  { classpathId ->
   if ( ! skipTests ) {
-    ant.mkdir ( dir : buildTestReportsDirectory )
-    ant.mkdir ( dir : buildTestReportsHTMLDirectory )
+    mkdir ( dir : buildTestReportsDirectory )
+    mkdir ( dir : buildTestReportsHTMLDirectory )
     if ( usingCobertura ) {
-      ant.mkdir ( dir : buildCoberturaClassesDirectory )
-      ant.mkdir ( dir : buildCoberturaReportsDirectory )
+      mkdir ( dir : buildCoberturaClassesDirectory )
+      mkdir ( dir : buildCoberturaReportsDirectory )
       getDependency ( 'coberturaJar' , [ groupId : 'net.sourceforge.cobertura' , artifactId : 'cobertura' , version : '1.9' ] )
-      ant.taskdef ( resource : 'tasks.properties' , classpathref : 'coberturaJarPathId' )
-      ant.'cobertura-instrument' ( todir : buildCoberturaClassesDirectory ) { fileset ( dir : buildClassesDirectory ) }
+      taskdef ( resource : 'tasks.properties' , classpathref : 'coberturaJarPathId' )
+      'cobertura-instrument' ( todir : buildCoberturaClassesDirectory ) { fileset ( dir : buildClassesDirectory ) }
     }
     getDependency ( 'ivyJar' , [ groupId : 'org.apache.ivy' , artifactId : 'ivy' , version : ivyVersion ] )
     def testClasspathId = 'testClasspathId'
-    ant.path ( id : testClasspathId ) {
+    path ( id : testClasspathId ) {
       if ( usingCobertura ) {
         // MUST appear in classpath before the uninstrumented classes.
         pathelement ( location : buildCoberturaClassesDirectory )
@@ -275,11 +275,11 @@ final performTests =  { classpathId ->
     }
     // Forkmode should be once for speed but perTest for safety.
     if ( ! ( testCase ==~ 'org.codehaus.gant.ant.tests.*_Test' ) ) {                        
-      ant.junit ( printsummary : 'yes' , failureproperty : 'testsFailed' , fork : 'true' , forkmode : 'once' , includeantruntime : 'false' ) {
+      junit ( printsummary : 'yes' , failureproperty : 'testsFailed' , fork : 'true' , forkmode : 'once' , includeantruntime : 'false' ) {
         // jvmarg ( line : '-Xdebug -Xrunjdwp:transport=dt_socket,server=y,suspend=y,address=5005' )
         formatter ( type : 'plain' )
         formatter ( type : 'xml' ) // Must have XML output for the continuous integration builds.
-        if ( testCase != null) { ant.test ( name : testCase , todir : buildTestReportsDirectory ) }
+        if ( testCase != null) { test ( name : testCase , todir : buildTestReportsDirectory ) }
         else { batchtest ( todir : buildTestReportsDirectory ) { fileset ( dir : buildTestClassesDirectory , includes : '**/*_Test.class' , excludes : '**/ant/tests/*' ) } }
         classpath {
           path ( refid : testClasspathId )
@@ -288,18 +288,18 @@ final performTests =  { classpathId ->
       }
     }
     if ( ( testCase == null ) || ( testCase ==~ 'org.codehaus.gant.ant.tests.*_Test' ) ) {                        
-      ant.junit ( printsummary : 'yes' , failureproperty : 'testsFailed' , fork : 'true' , forkmode : 'once' , includeantruntime : 'false' ) {
+      junit ( printsummary : 'yes' , failureproperty : 'testsFailed' , fork : 'true' , forkmode : 'once' , includeantruntime : 'false' ) {
         formatter ( type : 'plain' )
         formatter ( type : 'xml' ) // Must have XML output for the continuous integration builds.
         batchtest ( todir : buildTestReportsDirectory ) { fileset ( dir : buildTestClassesDirectory , includes : '**/ant/tests/*_Test.class' ) }
         classpath { path ( refid : testClasspathId ) }
       }
     }
-    ant.junitreport ( todir : buildTestReportsDirectory ) {
+    junitreport ( todir : buildTestReportsDirectory ) {
       fileset ( dir : buildTestReportsDirectory , includes : 'TEST-*.xml' )
       report ( todir : buildTestReportsHTMLDirectory )
     }
-    if ( usingCobertura ) { ant.'cobertura-report' ( srcdir : sourceDirectory , destdir : buildCoberturaReportsDirectory ) }
+    if ( usingCobertura ) { 'cobertura-report' ( srcdir : sourceDirectory , destdir : buildCoberturaReportsDirectory ) }
   }
   //  Do not use the mapping of Ant properties to binding values here since that generates a
   //  MissingPropertyException in the case that the property doesn't exist whereas accessing it through the
@@ -321,21 +321,21 @@ final prepareInstallDirectory = { path , gantJarName , pathIdRoots , isStandalon
   def groovyJarName = null
   if ( item != null ) { groovyJarName = ( isStandalone ? 'groovy-all-' : 'groovy-' ) + item.version + '.jar' }
   else {
-    ant.pathconvert ( property : 'groovyJarName' ) {
-      ant.path ( refid : groovyJarPathId )
+    pathconvert ( property : 'groovyJarName' ) {
+      path ( refid : groovyJarPathId )
       mapper ( type : 'flatten' )
     }
   }
-  ant.copy ( todir : installationBinDirectory ) {
+  copy ( todir : installationBinDirectory ) {
     fileset ( dir : scriptsDirectory + ( isStandalone ? '/bin_standalone' : '/bin_requiresGroovy' ) )
     fileset ( dir : scriptsDirectory + '/bin' )
     filterset { filter ( token : 'GANT_VERSION' , value : gantVersion ) }
     filterset { filter ( token : 'GROOVYJAR' , value : groovyJarName ) }
   }
-  ant.chmod ( perm : 'a+x' ) { fileset ( dir : installationBinDirectory , includes : 'gant*' ) }
-  ant.copy ( todir : installationDirectory ) { fileset ( dir : scriptsDirectory , includes : 'conf/gant-starter.conf' ) }
+  chmod ( perm : 'a+x' ) { fileset ( dir : installationBinDirectory , includes : 'gant*' ) }
+  copy ( todir : installationDirectory ) { fileset ( dir : scriptsDirectory , includes : 'conf/gant-starter.conf' ) }
   getDependency ( 'ivyJar' , [ groupId : 'org.apache.ivy' , artifactId : 'ivy' , version : ivyVersion ] )
-  ant.copy ( todir : installationDirectory + '/lib' ) {
+  copy ( todir : installationDirectory + '/lib' ) {
     fileset ( dir : buildDirectory , includes : gantJarName ) 
     fileset ( dir : jarfilesDirectory , includes : mavenAntTaskJarName )
     fileset ( refid : ivyJarFilesetId )
@@ -350,8 +350,8 @@ final prepareInstallDirectory = { path , gantJarName , pathIdRoots , isStandalon
 final prepareZipFromTarAndRegisterForUpload = { String root , Closure closure ->
   path = buildDirectory + System.properties.'file.separator' + root
   closure ( )
-  ant.zip ( destfile : path + zipExtension ) { tarfileset ( src : path + tarExtension ) }
-  ant.gzip ( src : path + tarExtension , destfile : path + tgzExtension )
+  zip ( destfile : path + zipExtension ) { tarfileset ( src : path + tarExtension ) }
+  gzip ( src : path + tarExtension , destfile : path + tgzExtension )
   serverUploadProducts [ path + tgzExtension ] = serverDistributionsDirectory + '/' +  root + tgzExtension
   serverUploadProducts [ path + zipExtension ] = serverDistributionsDirectory + '/' +  root + zipExtension
 }
@@ -361,7 +361,7 @@ final preparePom = { String version ->
   //  tokens with the values for this JAR.
   def classifier = 'groovy' + version.split ( "[\\.-]" ) [ 0..1 ].join ( '.' )
   def targetPOM = classifier + '.pom'
-  ant.copy ( tofile : targetPOM , file : 'pom.xml.in' ) {
+  copy ( tofile : targetPOM , file : 'pom.xml.in' ) {
     filterset {
       filter ( token : 'artifactId' , value : 'gant_' + classifier )
       filter ( token : 'gantVersion' , value : gantVersion )
@@ -372,7 +372,7 @@ final preparePom = { String version ->
       filter ( token : 'ivyVersion' , value : ivyVersion )
     }
   }
-  ant."${antlibXMLns}:pom" ( file : targetPOM , id : targetPOM )
+  "${antlibXMLns}:pom" ( file : targetPOM , id : targetPOM )
   return targetPOM
 }
 
@@ -390,10 +390,10 @@ final doWithAllGroovyVersions = { Closure c ->
                                   [ groupId : 'junit' , artifactId : 'junit' , version : junitVersion ]
                                   ] )
     //  Remove the compilation products of the last compilation so as not to affect this one!
-    ant.delete ( dir : buildClassesDirectory )
-    ant.delete ( dir : buildTestClassesDirectory )
-    ant.delete ( dir : buildFilteredScriptsDirectory )
-    ant.delete ( dir : buildInstallDirectory )
+    delete ( dir : buildClassesDirectory )
+    delete ( dir : buildTestClassesDirectory )
+    delete ( dir : buildFilteredScriptsDirectory )
+    delete ( dir : buildInstallDirectory )
     performCompile ( pathId )
     def jarPath = buildDirectory + '/' + gantPrefix + '_groovy-' + item.version + '.jar'
     performPackage ( jarPath )
@@ -405,7 +405,7 @@ final doWithAllGroovyVersions = { Closure c ->
 }
 
 final doDocumentation = { ->
-  ant.taskdef ( name : 'groovydoc' , classname : 'org.codehaus.groovy.ant.Groovydoc' )
+  taskdef ( name : 'groovydoc' , classname : 'org.codehaus.groovy.ant.Groovydoc' )
   def javaApiDocumentationDirectory = apiDocumentationDirectory + '/java'
   def groovyApiDocumentationDirectory = apiDocumentationDirectory + '/groovy'
   def classpathIdRoot = 'javaDoc'
@@ -415,14 +415,14 @@ final doDocumentation = { ->
                                      [ groupId : 'org.apache.ant' , artifactId : 'ant' , version : antVersion  ] ,
                                      [ groupId : 'commons-cli' , artifactId : 'commons-cli' , version : commonsCliVersion ]
                                      ] )
-  ant.mkdir ( dir : javaApiDocumentationDirectory )
-  ant.mkdir ( dir : groovyApiDocumentationDirectory )
+  mkdir ( dir : javaApiDocumentationDirectory )
+  mkdir ( dir : groovyApiDocumentationDirectory )
   def packageTitle = "Gant (${gantVersion})"
   def packageIncludeSpec = 'gant.*,org.codehaus.gant.*'
   //  Don't assume that &copy; and &ndash; are understood by the browser -- even though they are in the HTML
   //  4.0 specification.  Copyright symbol is &copy; or &#169;.  N-dash symbol is &ndash; or &#8211;
   def copyrightString = 'Copyright &#169; 2006&#8211;9 The Codehaus.  All rights reserved.'
-  ant.javadoc (
+  javadoc (
                sourcepath : sourceDirectory ,
                destdir : javaApiDocumentationDirectory ,
                packagenames : packageIncludeSpec,
@@ -443,7 +443,7 @@ final doDocumentation = { ->
       path ( refid : classpathId )
     }
   }
-  ant.groovydoc (
+  groovydoc (
              sourcepath : sourceDirectory ,
              destdir : groovyApiDocumentationDirectory ,
              packagenames : packageIncludeSpec ,
@@ -495,8 +495,8 @@ target ( initializeNonDistribution : '' ) {
     //  TODO : Need to find out which version is actually being used -- this is currently a bug.
     //----------------------------------------------------------------------------------------------
     groovyVersion = groovy17Version
-    ant.path ( id : groovyJarPathId ) { fileset ( dir : groovyHome + '/lib' , includes : 'groovy-*.jar' ) }
-    ant.path ( id : compileJarSetPathId ) {
+    path ( id : groovyJarPathId ) { fileset ( dir : groovyHome + '/lib' , includes : 'groovy-*.jar' ) }
+    path ( id : compileJarSetPathId ) {
       path ( refid : groovyJarPathId )
       fileset ( dir : groovyHome + '/lib' , includes : 'commons-cli*.jar' )
       //  The ASM and Antlr jars are just transitive dependencies of the Groovy jar, the Ant and Commons CLI
@@ -504,7 +504,7 @@ target ( initializeNonDistribution : '' ) {
       fileset ( dir : groovyHome + '/lib' , includes : 'asm*.jar' )
       fileset ( dir : groovyHome + '/lib' , includes : 'ant*.jar' )  // Intentionally includes Ant and Antlr jars.
     } 
-    ant.path ( id : testJarSetPathId ) {
+    path ( id : testJarSetPathId ) {
       path ( refid : compileJarSetPathId )
       fileset ( dir : groovyHome + '/lib' , includes : 'junit*.jar' )
     }
@@ -518,7 +518,7 @@ target ( initializeNonDistribution : '' ) {
     getDependency ( compileJarsNotGroovyPathIdRoot , [
                                                       [ groupId : 'commons-cli' , artifactId : 'commons-cli' , version : commonsCliVersion ] ,
                                                       ] )
-    ant.path ( id : compileJarSetPathId ) {
+    path ( id : compileJarSetPathId ) {
       path ( refid : groovyJarPathId )
       path ( refid : compileJarsNotGroovyPathId )
     }
@@ -527,7 +527,7 @@ target ( initializeNonDistribution : '' ) {
     getDependency ( testAntJarSetPathIdRoot , [
                                                [ groupId : 'org.apache.ant' , artifactId : 'ant-junit' , version : antVersion ] ,
                                                ] )
-    ant.path ( id : testJarSetPathId ) {
+    path ( id : testJarSetPathId ) {
       path ( refid : compileJarSetPathId )
       path ( refid : testAntJarSetPathId )
     }
@@ -596,7 +596,7 @@ target ( mavenInstall : "Install Gant artifacts into local Maven cache." ) {
     if ( label != 'standalone' ) {
       def targetPOM = preparePom ( item.version )
       "${antlibXMLns}:install" ( file : jarPath ) { pom ( refid : targetPOM ) }
-      ant.delete ( file : targetPOM )
+      delete ( file : targetPOM )
     }
   }
 }
@@ -607,8 +607,8 @@ target ( mavenDeploy : "Deploys the Gant artifacts to the appropriate Maven repo
     // Skip the standalone artifact since Maven artefacts always depend on the artifacts rather than packaging them.
     if ( label != 'standalone' ) {
       def targetPOM = preparePom ( item.version )
-      ant."${antlibXMLns}:deploy" ( file : jarPath ) { pom ( refid : targetPOM ) }
-      ant.delete ( file : targetPOM )
+      "${antlibXMLns}:deploy" ( file : jarPath ) { pom ( refid : targetPOM ) }
+      delete ( file : targetPOM )
     }
   }
 }
