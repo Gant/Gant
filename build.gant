@@ -668,7 +668,7 @@ target ( uploadDistribution : 'Upload a complete distribution.' ) {
     return
   }
   //  Slide has been retired by the Apache Foundation in favour of Jackrabbit, but we use Slide anyway.
-  "${antlibXMLns}:dependencies" ( pathId :  'slidePathId' ) {
+  ant."${antlibXMLns}:dependencies" ( pathId :  'slidePathId' ) {
     //dependency ( groupId : 'org.apache.jackrabbit' , artifactId : 'jackrabbit-webdav' , version : '1.3.3' )
     dependency ( groupId : 'slide' , artifactId : 'slide-webdavlib' , version : '2.1' )
   }
