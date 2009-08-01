@@ -348,12 +348,13 @@ final prepareInstallDirectory = { path , gantJarName , pathIdRoots , isStandalon
 }
 
 final prepareZipFromTarAndRegisterForUpload = { String root , Closure closure ->
-  path = buildDirectory + System.properties.'file.separator' + root
+  //  Have to put this in the binding :-(
+  rootPath = buildDirectory + System.properties.'file.separator' + root
   closure ( )
-  zip ( destfile : path + zipExtension ) { tarfileset ( src : path + tarExtension ) }
-  gzip ( src : path + tarExtension , destfile : path + tgzExtension )
-  serverUploadProducts [ path + tgzExtension ] = serverDistributionsDirectory + '/' +  root + tgzExtension
-  serverUploadProducts [ path + zipExtension ] = serverDistributionsDirectory + '/' +  root + zipExtension
+  zip ( destfile : rootPath + zipExtension ) { tarfileset ( src : rootPath + tarExtension ) }
+  gzip ( src : rootPath + tarExtension , destfile : rootPath + tgzExtension )
+  serverUploadProducts [ rootPath + tgzExtension ] = serverDistributionsDirectory + '/' +  root + tgzExtension
+  serverUploadProducts [ rootPath + zipExtension ] = serverDistributionsDirectory + '/' +  root + zipExtension
 }
 
 final preparePom = { String version ->
@@ -630,8 +631,8 @@ target ( distribution : 'Create the distributions of Gant.' ) {
     serverUploadProducts [ jarPath ] = serverJarsDirectory + '/' + jarName
     prepareInstallDirectory ( buildInstallDirectory , jarName , pathIdRoot , isStandalone , item )
     prepareZipFromTarAndRegisterForUpload ( discriminator ) {
-      //  NB Rely on Closures not being closures:  path is only resolved when the Closure is executed.
-      tar ( destfile :  path + tarExtension ) {
+      //  NB Rely on Closures not being closures:  rootPath is only resolved when the Closure is executed.
+      tar ( destfile :  rootPath + tarExtension ) {
         tarfileset ( dir : buildInstallDirectory , mode : '755' , prefix : gantPrefix ) { include ( name : 'bin/*' ) }
         tarfileset ( dir : buildInstallDirectory , prefix : gantPrefix ) {
           include ( name : '**' )
@@ -643,8 +644,8 @@ target ( distribution : 'Create the distributions of Gant.' ) {
   }
   //  Create the source distribution.
   prepareZipFromTarAndRegisterForUpload ( 'gant_src-' + gantVersion ) {
-    //  NB Rely on Closures not being closures:  path is only resolved when the Closure is executed.
-    tar ( destfile :  path + tarExtension ) {
+    //  NB Rely on Closures not being closures:  rootPath is only resolved when the Closure is executed.
+    tar ( destfile :  rootPath + tarExtension ) {
       tarfileset ( dir : '.' , includes : distributionTopLevelFiles.join ( ',' ) , prefix : gantPrefix )
       distributionDirectories.each { directory -> tarfileset ( dir : directory , prefix : gantPrefix + System.properties.'file.separator' + directory ) }
     }
@@ -652,8 +653,8 @@ target ( distribution : 'Create the distributions of Gant.' ) {
   // Create the API documentation distribution.
   doDocumentation ( )
   prepareZipFromTarAndRegisterForUpload (  'gant_doc-' + gantVersion ) {
-    //  NB Rely on Closures not being closures:  path is only resolved when the Closure is executed.
-    tar ( destfile :  path + tarExtension ) {
+    //  NB Rely on Closures not being closures:  rootPath is only resolved when the Closure is executed.
+    tar ( destfile :  rootPath + tarExtension ) {
       tarfileset ( dir : documentationDirectory , prefix : gantPrefix + System.properties.'file.separator' + 'doc' )
     }
   }
@@ -668,15 +669,14 @@ target ( uploadDistribution : 'Upload a complete distribution.' ) {
     return
   }
   //  Slide has been retired by the Apache Foundation in favour of Jackrabbit, but we use Slide anyway.
-  ant."${antlibXMLns}:dependencies" ( pathId :  'slidePathId' ) {
+  "${antlibXMLns}:dependencies" ( pathId :  'slidePathId' ) {
     //dependency ( groupId : 'org.apache.jackrabbit' , artifactId : 'jackrabbit-webdav' , version : '1.3.3' )
     dependency ( groupId : 'slide' , artifactId : 'slide-webdavlib' , version : '2.1' )
   }
   //  Is there a way of extracting the username and password information from the Maven Ant Task?  For the
   //  moment simply read the ~/.m2/settings.xml file.
   def loader = getClass ( ).getClassLoader ( )
-  def path = path ( refid : 'slidePathId' )
-  ( path.list ( ) as List ).each { location -> loader.addURL ( new URL ( 'file://' + location ) ) }
+  ( path ( refid : 'slidePathId' ).list ( ) as List ).each { location -> loader.addURL ( new URL ( 'file://' + location ) ) }
   def settings =  ( new XmlSlurper ( ) ).parse ( System.properties.'user.home' + '/.m2/settings.xml' ).servers.server.find { item -> item.id == 'codehaus.org' }
   def credentials =  loader.loadClass ( 'org.apache.commons.httpclient.UsernamePasswordCredentials' ).getConstructor ( String , String ).newInstance ( settings.username.toString ( ) , settings.password.toString ( ) )
   //  Have to put resource in the binding so that the Closures can access it.
