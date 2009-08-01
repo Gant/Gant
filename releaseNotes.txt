@@ -1,5 +1,5 @@
-1.7.0 ( rXXXXX )
-----------------
+1.7.0
+-----
 
 Added the binding variable initiatingTarget which is set by the Gant infrastructure just prior to processing
 each target, it allows the Gant script to know what the initiating target is.
@@ -9,7 +9,7 @@ being processed) to the binding to allow the script to process these data.
 
 Upgrade to using Groovy 1.5.8 instead of 1.5.7 as the Groovy 1.5.x version.
 
-Upgrade to using Groovy 1.6.3 instead of 1.6.0 as the Groovy 1.6.x version.
+Upgrade to using Groovy 1.6.4 instead of 1.6.0 as the Groovy 1.6.x version.
 
 Amend the way symbolic links are processed in the launch scripts on Mac OS X to correct various faults.
 
