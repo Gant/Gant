@@ -94,7 +94,7 @@ abstract class AbstractInclude {
    *  @param keywordParameter The <code>Map</code> of parameters to the constructor.
    *  @return The includer object to allow for ** * operator chaining.
    */
-  public abstract multiply ( Map<?,?> keywordParameters )
+  public abstract multiply ( Map<String,String> keywordParameters )
   /**
    *  Create an instance of a class included using the << operator.
    *
