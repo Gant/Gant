@@ -39,7 +39,7 @@ final class AntFile {
    *  @param binding The <code>GantBinding</code> to bind to.
    *  @param map The <code>Map</code> of initialization parameters.
    */
-  AntFile ( final GantBinding binding , final Map map ) {
+  AntFile ( final GantBinding binding , final Map<String,String> map ) {
     this.binding = binding
     includeTargets ( map.filename )
   }
@@ -49,7 +49,7 @@ final class AntFile {
    *
    *  @param fileNameList the list of path to the Ant XML file.  
    */
-  void includeTargets ( final List fileNameList ) {
+  void includeTargets ( final List<String> fileNameList ) {
     for ( fileName in fileNameList ) { includeTargets ( fileName ) }
   }
   /**

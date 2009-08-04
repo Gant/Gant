@@ -25,14 +25,14 @@ import org.codehaus.gant.GantBinding
  */
 final class Clean {
   private GantBinding binding
-  private performPatternAction ( final List l ) {
+  private performPatternAction ( final List<String> l ) {
     if ( l.size ( ) > 0 ) {
       binding.ant.delete ( quiet : 'false' ) {
         binding.ant.fileset ( dir : '.' , includes : l.flatten ( ).join ( ',' ) , defaultexcludes : 'false' )
       }
     }
   }
-  private performDirectoryAction ( final List l ) {
+  private performDirectoryAction ( final List<String> l ) {
     l.flatten ( ).each { item -> binding.ant.delete ( dir : item , quiet : 'false' ) }
   }
   /**
@@ -63,7 +63,7 @@ final class Clean {
    *  @param binding The <code>GantBinding</code> to bind to.
    *  @param map The <code>Map</code> of initialization parameters.
    */
-  Clean ( final GantBinding binding , final Map map ) {
+  Clean ( final GantBinding binding , final Map<String,String> map ) {
     this ( binding )
     map.each { key , value ->
       if ( [ 'cleanPattern' , 'cleanDirectory' , 'clobberPattern' , 'clobberDirectory' ].contains ( key ) ) {

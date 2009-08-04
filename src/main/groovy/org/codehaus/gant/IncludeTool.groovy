@@ -35,7 +35,7 @@ class IncludeTool extends AbstractInclude {
    *  @param theClass The <code>Class</code> to load and instantiate. 
    *  @return The includer object to allow for << chaining.
    */
-  def leftShift ( Class theClass ) {
+  def leftShift ( Class<?> theClass ) {
     def className = theClass.name
     if ( ! ( className in loadedClasses ) ) {
       def index = className.lastIndexOf ( '.' ) + 1
@@ -89,7 +89,7 @@ class IncludeTool extends AbstractInclude {
    *  @param keywordParameter The <code>Map</code> of parameters to the constructor. 
    *  @return The includer object to allow for ** * operator chaining.
    */
-  def multiply ( Map keywordParameters ) {
+  def multiply ( Map<String,String> keywordParameters ) {
     if ( pendingClass != null ) {
       def className = pendingClass.name
       if ( ! ( className in loadedClasses ) ) {

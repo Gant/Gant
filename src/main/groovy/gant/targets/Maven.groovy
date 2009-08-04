@@ -24,7 +24,7 @@ import org.codehaus.gant.GantState
  */
 final class Maven {
   private final readOnlyKeys = [ 'binding' , 'compileDependenciesClasspathId' , 'testDependenciesClasspathId', 'antlibXMLns' , 'mavenPOMId' ]
-  private final Map properties = [
+  private final Map<String,String> properties = [
                                   groupId : '' ,
                                   artifactId : '' ,
                                   version : '' ,
@@ -74,7 +74,7 @@ final class Maven {
    *  @param binding The <code>GantBinding</code> to bind to.
    *  @param map The <code>Map</code> of initialization parameters.
    */
-   Maven ( GantBinding binding , Map map ) {
+   Maven ( GantBinding binding , Map<String,String> map ) {
      properties.binding = binding
      properties.binding.maven = this
      map.each { key , value -> owner.setProperty ( key , value ) }

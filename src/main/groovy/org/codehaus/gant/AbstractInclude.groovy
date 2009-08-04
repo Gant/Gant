@@ -29,13 +29,13 @@ abstract class AbstractInclude {
   /**
    *  The list of loaded classes.
    */
-  protected final List loadedClasses = [ ]
+  protected final List<Class<?>> loadedClasses = [ ]
   /**
    *  When using the ** * operator there is a need to not instantiate the class immediately so information
    *  has to be buffered.  This variable  holds a reference to the class ready for instantiation once all the
    *  constructor parameters are known.
    */
-  protected Class pendingClass = null
+  protected Class<?> pendingClass = null
   /**
    *  Constructor.
    *
@@ -48,7 +48,7 @@ abstract class AbstractInclude {
    *  @param theClass The <code>Class</code> to load and instantiate.
    *  @return The includer object to allow for << chaining.
    */
-  public abstract leftShift ( Class theClass )
+  public abstract leftShift ( Class<?> theClass )
   /**
    *  Implementation of the << operator taking a <code>File</code> parameter.
    *
@@ -69,7 +69,7 @@ abstract class AbstractInclude {
    *  @param l The <code>List</code> of things to load (, compile) and instantiate.
    *  @return The includer object to allow for << chaining.
    */
-  public leftShift ( final List l ) { l.each { item -> this << item } ; this }
+  public leftShift ( final List<?> l ) { l.each { item -> this << item } ; this }
   /**
    *  Implementation of the << operator taking a <code>Object</code> parameter.  This always throws an
    *  exception, it is here to avoid using a type other than <code>Class</code>, <code>File</code>,
@@ -86,7 +86,7 @@ abstract class AbstractInclude {
    *  @param theClass The <code>Class</code> to load and instantiate.
    *  @return The includer object to allow for * operator.
    */
-  public power ( final Class theClass ) { pendingClass = theClass ; this }
+  public power ( final Class<?> theClass ) { pendingClass = theClass ; this }
   /**
    *  Implementation of the * operator taking a <code>Map</code> parameter.  This operator only makes
    *  sense immediately after a ** operator, since only then is there a <code>Class</code> to instantiate.
@@ -94,14 +94,14 @@ abstract class AbstractInclude {
    *  @param keywordParameter The <code>Map</code> of parameters to the constructor.
    *  @return The includer object to allow for ** * operator chaining.
    */
-  public abstract multiply ( Map keywordParameters )
+  public abstract multiply ( Map<?,?> keywordParameters )
   /**
    *  Create an instance of a class included using the << operator.
    *
    *  @param theClass The <code>Class</code> to instantiate.
    *  @throws NoSuchMethodException if the required constructor cannot be found.
    */
-  protected createInstance ( Class theClass ) {
+  protected createInstance ( Class<?> theClass ) {
     if ( Script.isAssignableFrom ( theClass ) ) {
       // We need to ensure that the script runs so that it populates the binding.
       def script = theClass.newInstance ( )
@@ -122,7 +122,7 @@ abstract class AbstractInclude {
    *  @param keywordParameter The <code>Map</code> containing the parameters for construction.
    *  @throws NoSuchMethodException if the required constructor cannot be found.
    */
-  protected createInstance ( Class theClass , Map keywordParameters ) {
+  protected createInstance ( Class<?> theClass , Map<?,?> keywordParameters ) {
     try { return theClass.getConstructor ( GantBinding , Map ).newInstance ( [ binding , keywordParameters ] as Object[] ) }
     catch ( NoSuchMethodException nsme ) { throw new RuntimeException ( 'Could not initialize ' + theClass.name , nsme ) }
   }

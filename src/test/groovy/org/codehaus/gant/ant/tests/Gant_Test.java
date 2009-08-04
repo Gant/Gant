@@ -29,8 +29,6 @@ import org.apache.tools.ant.BuildException ;
 import org.apache.tools.ant.Project ;
 import org.apache.tools.ant.ProjectHelper ;
 
-import org.codehaus.groovy.control.MultipleCompilationErrorsException ;
-
 /**
  *  Unit tests for the Gant Ant task.  In order to test things appropriately this test must be initiated
  *  without any of the Groovy, Gant or related jars in the class path.  Also of course it must be a JUnit

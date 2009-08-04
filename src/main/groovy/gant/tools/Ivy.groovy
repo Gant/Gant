@@ -44,7 +44,7 @@ final class Ivy {
    *  @param binding The <code>GantBinding</code> to bind to.
    *  @param map The <code>Map</code> of parameters for intialization.
    */
-  Ivy ( final GantBinding binding , final Map map ) {
+  Ivy ( final GantBinding binding , final Map<String,String> map ) {
     this.binding = binding
     if ( map.containsKey ( 'ivyJarPath' ) ) {
       final classpathId = 'ivy.class.path'

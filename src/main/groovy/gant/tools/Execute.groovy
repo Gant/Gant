@@ -36,7 +36,7 @@ final class Execute {
    *  @param binding The <code>GantBinding</code> to bind to.
    *  @param map The <code>Map</code> of initialization parameters.  Currently ignored.
     */
-  Execute ( final GantBinding binding , final Map map ) { this.binding = binding ; }
+  Execute ( final GantBinding binding , final Map<String,String> map ) { this.binding = binding ; }
  /**
    *  Handle the output and error streams from the already initializaed and started process to ensure the
    *  buffers are never filled, and block waiting termination of the process.
@@ -67,7 +67,7 @@ final class Execute {
    *  @param command the command as a single <code>String</code>.
    *  @return the return code of the process.
    */
-  def executable ( final Map keywordParameters = [:] , final String command ) {
+  def executable ( final Map<String,String> keywordParameters = [:] , final String command ) {
     manageProcess ( command.execute ( ) ,
                     (Closure) ( keywordParameters['errProcessing'] ?: { System.err.println ( it ) } ) ,
                     (Closure) ( keywordParameters['outProcessing'] ?: { println ( it ) } ) ,
@@ -84,7 +84,7 @@ final class Execute {
    *  @param command the command as a  list of <code>String</code>s.
    *  @return the return code of the process.
    */
-  def executable ( final Map keywordParameters = [:] , final List command ) {
+  def executable ( final Map<String,String> keywordParameters = [:] , final List<String> command ) {
     manageProcess ( command.execute ( ) ,
                     (Closure) ( keywordParameters['errProcessing'] ?: { System.err.println ( it ) } ) ,
                     (Closure) ( keywordParameters['outProcessing'] ?: { println ( it ) } ) ,
@@ -101,7 +101,7 @@ final class Execute {
    *  @param command the command as a single <code>String</code>.
    *  @return the return code of the process.
    */
-  def shell ( final Map keywordParameters = [:] , final String command ) {
+  def shell ( final Map<String,String> keywordParameters = [:] , final String command ) {
     final String osName = System.getProperty ( "os.name" )
     final boolean isWindows = ( osName.length ( ) > 6 ) ? osName.substring ( 0 , 7 ).equals ( "Windows" ) : false
     final commandArray = isWindows ? [ 'cmd' , '/c' , command ] : [ 'sh' , '-c' , command ]

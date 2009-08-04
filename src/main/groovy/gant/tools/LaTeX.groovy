@@ -74,7 +74,7 @@ class LaTeX {
    *  @param binding The <code>GantBinding</code> to bind to.
    *  @param map The <code>Map</code> of initialization parameters.
    */
-  public LaTeX ( final GantBinding binding , final Map map ) {
+  public LaTeX ( final GantBinding binding , final Map<String,String> map ) {
     this.binding = binding
     executor = new Execute ( binding )
     map.each { key , value -> addOption ( key , value ) }
@@ -118,7 +118,7 @@ class LaTeX {
    *
    *  @param keywordOptions The collection of options to add.
    */
-  public void addOptions ( Map keywordOptions ) { keywordOptions.each { key , value -> addOption ( key , value ) } }
+  public void addOptions ( Map<String,String> keywordOptions ) { keywordOptions.each { key , value -> addOption ( key , value ) } }
   /**
    *  Perform the LaTeX source compilation.  The source will be processed enough times to ensure that BibTeX
    *  and Makeindex requirements are completed.
@@ -182,7 +182,7 @@ class LaTeX {
    *
    *  @param arguments a <code>Map</code> of options to add to the build environment.
    */
-  public void generatePDF ( Map arguments ) {
+  public void generatePDF ( Map<String,String> arguments ) {
     arguments.each { key , value -> environment[ key ] = value }
     environment.latexCommand = 'pdflatex'
     executeLaTeX ( )
@@ -192,7 +192,7 @@ class LaTeX {
    *
    *  @param arguments a <code>Map</code> of options to add to the build environment.
    */
-  public void generatePS ( Map arguments ) {
+  public void generatePS ( Map<String,String> arguments ) {
     arguments.each { key , value -> environment[ key ] = value }
     environment.latexCommand = 'latex'
     executeLaTeX ( )

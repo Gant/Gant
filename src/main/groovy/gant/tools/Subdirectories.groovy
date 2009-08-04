@@ -37,7 +37,7 @@ final class Subdirectories {
    *  @param binding The <code>GantBinding</code> to bind to.
    *  @param map The <code>Map</code> of initialization parameters.
    */
-  Subdirectories ( final GantBinding binding , final Map map ) { this.binding = binding ; }
+  Subdirectories ( final GantBinding binding , final Map<String,String> map ) { this.binding = binding ; }
   /**
    *  Run a shell command in a named directory.
    *

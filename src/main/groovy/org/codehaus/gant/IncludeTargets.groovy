@@ -34,7 +34,7 @@ class IncludeTargets extends AbstractInclude {
    *  @param theClass The <code>Class</code> to load and instantiate. 
    *  @return The includer object to allow for << chaining.
    */
-  def leftShift ( final Class theClass ) {
+  def leftShift ( final Class<?> theClass ) {
     def className = theClass.name
     if ( ! ( className in loadedClasses ) ) {
       createInstance ( theClass )
@@ -77,7 +77,7 @@ class IncludeTargets extends AbstractInclude {
    *  @param keywordParameter The <code>Map</code> of parameters to the constructor. 
    *  @return The includer object to allow for ** * operator chaining.
    */
-  def multiply ( final Map keywordParameters ) {
+  def multiply ( final Map<String,String> keywordParameters ) {
     if ( pendingClass != null ) {
       def className = pendingClass.name
       if ( ! ( className in loadedClasses ) ) {

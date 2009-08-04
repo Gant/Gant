@@ -33,7 +33,7 @@ public class GantBinding extends Binding implements Cloneable {
   /**
    * A List of BuildListener instances that Gant sends events to.
    */
-  private List buildListeners = [ ]
+  private List<BuildListener> buildListeners = [ ]
   /**
    *  Default constructor.
    */
@@ -253,7 +253,7 @@ public class GantBinding extends Binding implements Cloneable {
   /**
    *  Getter for the list of build listeners.  Used in {@code gant.Gant.withBuildListeners}.
    */
-  List getBuildListeners ( ) { buildListeners }
+  List<BuildListener> getBuildListeners ( ) { buildListeners }
 }
 
 /**
