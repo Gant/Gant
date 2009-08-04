@@ -15,7 +15,6 @@
 package org.codehaus.gant.ant ;
 
 import java.io.File ;
-import java.io.PrintStream ;
 
 import java.util.ArrayList ;
 import java.util.HashMap ;
@@ -30,7 +29,6 @@ import org.apache.tools.ant.Task ;
 
 import org.codehaus.gant.GantBinding ;
 import org.codehaus.gant.GantBuilder ;
-import org.codehaus.gant.GantState ;
 
 /**
  *  Execute a Gant script.

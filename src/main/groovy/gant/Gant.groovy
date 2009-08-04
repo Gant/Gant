@@ -153,7 +153,7 @@ final class Gant {
   /**
    *  A list of strings containing the locations of Gant modules.
    */
-  List gantLib = [ ]
+  List<String> gantLib = [ ]
   /**
    *  The script that will be run when { @link #processTargets ( ) } is called. It is initialised when a
    *  script is loaded. Note that it has a dynamic type because the script may be loaded from a different
@@ -359,7 +359,7 @@ final class Gant {
    *  @param targets The <code>List</code> (of <code>String</code>s) that is the list of targets to achieve.
    *  @return The return code.
    */
-  private Integer dispatch ( List targets ) {
+  private Integer dispatch ( List<String> targets ) {
     Integer returnCode = 0
     final attemptFinalize = { ->
       final finalizeTarget = owner.binding.getVariable ( 'finalizeTarget' )
@@ -563,11 +563,11 @@ final class Gant {
   }
   public Integer processTargets ( ) { processTargets ( 'dispatch' , [ ] ) }
   public Integer processTargets ( String s ) { processTargets ( 'dispatch' , [ s ] ) }
-  public Integer processTargets ( List l ) { processTargets ( 'dispatch' , l ) }
+  public Integer processTargets ( List<String> l ) { processTargets ( 'dispatch' , l ) }
   /**
    *  Process the targets, but first execute the build script so all the targets and other code are available.
    */
-  protected Integer processTargets ( String function , List targets ) {
+  protected Integer processTargets ( String function , List<String> targets ) {
     // Configure the build based on this instance's settings.
     if ( dryRun ) { GantState.dryRun = true }
     if ( verbosity != GantState.verbosity ) { GantState.verbosity = verbosity ; binding.ant.logger.setMessageOutputLevel ( verbosity ) }
