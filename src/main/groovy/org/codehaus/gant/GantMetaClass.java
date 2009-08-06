@@ -116,7 +116,7 @@ public class GantMetaClass extends DelegatingMetaClass {
     Object returnObject = null ;
     if ( methodName.equals ( "depends" ) ) {
       for ( final Object argument : arguments ) {
-        if ( argument instanceof List ) {
+        if ( argument instanceof List<?> ) {
           for ( final Object item : (List<?>) argument ) { returnObject = processArgument ( item ) ; }
         }
         else { returnObject = processArgument ( argument ) ; }
