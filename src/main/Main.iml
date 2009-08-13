@@ -14,8 +14,7 @@
       <sourceFolder url="file://$MODULE_DIR$/groovy" isTestSource="false" />
     </content>
     <orderEntry type="sourceFolder" forTests="false" />
-    <orderEntry type="library" name="GANT" level="application" />
-    <orderEntry type="library" name="GROOVY" level="application" />
+    <orderEntry type="library" name="Groovy" level="application" />
     <orderEntry type="inheritedJdk" />
   </component>
   <component name="copyright">
