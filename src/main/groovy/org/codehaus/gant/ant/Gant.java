@@ -130,7 +130,7 @@ public class Gant extends Task {
    */
   @Override public void execute ( ) throws BuildException {
     //
-    //  At first it might seem approrpiate to use the Project object from the calling Ant instance as the
+    //  At first it might seem appropriate to use the Project object from the calling Ant instance as the
     //  Project object used by the AntBuilder object and hence GantBuilder object associated with the Gant
     //  instance we are going to create here.  However, if we just use that Project object directly then
     //  there are problems with proper annotation of the lines of output, so it isn't really an option.
