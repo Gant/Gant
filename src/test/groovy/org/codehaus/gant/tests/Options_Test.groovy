@@ -22,8 +22,13 @@ package org.codehaus.gant.tests
 final class Options_Test extends GantTestCase {
   private final targetName = 'printDefinitions'
   void testVersion ( ) {
+    //  Gant gets its idea of version number from the manifest in the jar.  This means the tests have
+  	//  to run against the jar to get a non-null version number -- running the tests against the compiled
+  	//  classes will always give null as the version number.  The Gant and Ant builds perform the
+  	//  packaging then run the tests, the Gradle, Maven, Eclipse, and IntelliJ IDEA tests occur before the
+  	//  packaging.  To avoid getting a test fail with these fiddle with the expectations.
     assertEquals ( 0 , gant.processArgs ( [ '-V' ] as String[] ) )
-    assertEquals ( 'Gant version ' + gant.binding.'gant.version' , output.trim ( ) )
+    assertEquals ( 'Gant version ' + ( gant.binding.'gant.version' == null ? '<unknown>' : gant.binding.'gant.version' ) , output.trim ( ) )
   }
   void testDefinitions ( ) {
     script = """
