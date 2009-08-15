@@ -41,7 +41,7 @@
     <dependency>
       <groupId>org.codehaus.groovy</groupId>
       <artifactId>groovy-all</artifactId>
-      <version>1.7-beta-1-SNAPSHOT</version>
+      <version>1.7-beta-1</version>
       <scope>compile</scope>
     </dependency>
   </dependencies>
