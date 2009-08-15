@@ -98,21 +98,27 @@ def groovy15Version = ant.project.properties.groovy15Version
 def groovy16Version = ant.project.properties.groovy16Version
 def groovy17Version = ant.project.properties.groovy17Version
 
-project ( ':groovy1.5' ) {
+project ( ':gant_groovy1.5' ) {
+  group = 'org.codehaus.gant'
+  version = '1.7.0-SNAPSHOT'
   archivesBaseName = artifact + '_groovy1.5'
   dependencies {
     groovy ( 'org.codehaus.groovy:groovy-all:' + groovy15Version )
   }
 }
 
-project ( ':groovy1.6' ) {
+project ( ':gant_groovy1.6' ) {
+  group = 'org.codehaus.gant'
+  version = '1.7.0-SNAPSHOT'
   archivesBaseName = artifact + '_groovy1.6'
   dependencies {
     groovy ( 'org.codehaus.groovy:groovy-all:' + groovy16Version )
   }
 }
 
-project ( ':groovy1.7' ) {
+project ( ':gant_groovy1.7' ) {
+  group = 'org.codehaus.gant'
+  version = '1.7.0-SNAPSHOT'
   archivesBaseName = artifact + '_groovy1.7'
   dependencies {
     groovy ( 'org.codehaus.groovy:groovy-all:' + groovy17Version )
