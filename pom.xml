@@ -27,7 +27,7 @@
 
   <groupId>org.codehaus.gant</groupId>
   <artifactId>gant</artifactId>
-  <packaging>jar</packaging>
+  <packaging>pom</packaging>
   <name>Gant</name>
   <version>1.7.0-SNAPSHOT</version>
   <description>
@@ -40,11 +40,11 @@
   <url>http://gant.codehaus.org/</url>
   <inceptionYear>2006</inceptionYear>
 
-  <!--modules>
+  <modules>
     <module>groovy1.5</module>
     <module>groovy1.6</module>
     <module>groovy1.7</module>
-  </modules-->
+  </modules>
 
   <organization>
     <name>Russel Winder</name>
@@ -204,10 +204,6 @@
       </plugins>
     </pluginManagement>
     <plugins>
-      <plugin>
-        <groupId>org.codehaus.groovy.maven</groupId>
-        <artifactId>gmaven-plugin</artifactId>
-        </plugin>
         <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-clean-plugin</artifactId>
