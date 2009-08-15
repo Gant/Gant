@@ -17,29 +17,20 @@
 ant.property ( file : 'local.build.properties' )
 ant.property ( file : 'build.properties' )
 
-//  If the user has GROOVY_HOME set then use that Groovy rather than the one speficied in the properties
-//  files.  However we have to fiddle to find the version number.  Even then we still have to go out to the 
+def gant_group =  'org.codehaus.gant'
+def gant_artifact = 'gant'
+def gant_version = ant.antProject.properties.gantVersion
 
-groovyHome = System.getenv ( ).'GROOVY_HOME'
-if ( groovyHome ) {
-  groovyLib = new File ( groovyHome , 'lib' )
-  def groovyVersionPatternString = /^groovy-(all-)?([0-9].*)\.jar/
-  def items = groovyLib.listFiles ( [ accept : { File dir , String name -> return ( name =~ groovyVersionPatternString ).find ( ) } ] as FilenameFilter )
-  assert items 
-  groovyVersion = ( items[0].name =~ groovyVersionPatternString )[0][2]
-  assert groovyVersion
-}
-else {
-  groovyVersion = ant.antProject.properties.groovyStandaloneVersion
-}
+ //  For some reason the ant variable is not available in the subprojects closure :-(
 
-allprojects {
-  
-  group = 'org.codehaus.gant'
-  artifact = 'gant'
+def commonsCliVersion = ant.antProject.properties.commonsCliVersion
+def antVersion = ant.antProject.properties.antVersion
+def junitVersion = ant.antProject.properties.junitVersion
+def ivyVersion = ant.antProject.properties.ivyVersion
+def groovyAntTaskTestVersionPropertyFileName = ant.antProject.properties.groovyAntTaskTestVersionPropertyFileName
 
-  version = ant.antProject.properties.gantVersion
-  
+subprojects {
+
   usePlugin ( 'groovy' )
   // usePlugin ( 'osgi' )
   
@@ -48,36 +39,34 @@ allprojects {
   
   manifest.mainAttributes (
                            'Built-By' : System.properties.'user.name' ,
-                           'Extension-Name' : artifact ,
+                           'Extension-Name' : gant_artifact ,
                            'Specification-Title' : 'Gant: scripting Ant tasks with Groovy.' ,
-                           'Specification-Version' : version ,
+                           'Specification-Version' : gant_version ,
                            'Specification-Vendor' : 'The Codehaus' ,
                            'Implementation-Title' : 'Gant: Scripting Ant tasks with Groovy.' ,
-                           'Implementation-Version' : version , 
+                           'Implementation-Version' : gant_version , 
                            'Implementation-Vendor' : 'The Codehaus'
                            )
   
   repositories {
-    if ( groovyHome ) { flatDir ( name : 'groovyInstallation' , dirs : [ new File ( groovyHome , 'embeddable' ) , groovyLib ] ) }
     mavenCentral ( )
   }
   
   dependencies {
     compile (
-             'commons-cli:commons-cli:' + ant.antProject.properties.commonsCliVersion ,
-             'org.apache.ant:ant:' + ant.antProject.properties.antVersion
+             'commons-cli:commons-cli:' + commonsCliVersion ,
+             'org.apache.ant:ant:' + antVersion
              )
     testCompile (
-                 'junit:junit:' + ant.antProject.properties.junitVersion
+                 'junit:junit:' + junitVersion
                  )
     testRuntime (
-                 'org.apache.ivy:ivy:' + ant.antProject.properties.ivyVersion
+                 'org.apache.ivy:ivy:' + ivyVersion
                  )
   }
   
   test.doFirst {
-    groovyAntTaskTestVersionPropertyFile = new File ( ant.antProject.properties.groovyAntTaskTestVersionPropertyFileName )
-    groovyAntTaskTestVersionPropertyFile.write ( 'groovyAntTaskTestVersion = ' + groovyVersion )
+    groovyAntTaskTestVersionPropertyFile = new File ( groovyAntTaskTestVersionPropertyFileName )
   }
   
   test.doLast {
@@ -89,108 +78,122 @@ allprojects {
     ant.delete ( dir :  'target_forMavenTest' )
   }
 
-}
+  def packageTitle = 'Gant ' + version
+  def copyrightString = 'Copyright &#169; 1997&#8211;2009  The Codehaus.  All Rights Reserved.'
 
-//  For some reason, ant.project.properties.groovy15Version inside the project specification evaluates to
-//  null.  Must be a lookup problem.  Solve it by capturing the value.
-
-def groovy15Version = ant.project.properties.groovy15Version
-def groovy16Version = ant.project.properties.groovy16Version
-def groovy17Version = ant.project.properties.groovy17Version
-
-project ( ':gant_groovy1.5' ) {
-  group = 'org.codehaus.gant'
-  version = '1.7.0-SNAPSHOT'
-  archivesBaseName = artifact + '_groovy1.5'
-  dependencies {
-    groovy ( 'org.codehaus.groovy:groovy-all:' + groovy15Version )
+  javadoc {
+    dependsOn ( 'compile' )
+    options.subPackages ( 'gant' , 'org.codehaus.gant' )
+    options.overview ( 'overview.html' )
+    options.showAll ( )
+    options.encoding ( 'UTF-8' )
+    options.setUse ( true )
+    options.author ( true )
+    options.version ( true )
+    options.windowTitle ( packageTitle )
+    options.docTitle ( packageTitle )
+    options.footer ( copyrightString )
   }
-}
-
-project ( ':gant_groovy1.6' ) {
-  group = 'org.codehaus.gant'
-  version = '1.7.0-SNAPSHOT'
-  archivesBaseName = artifact + '_groovy1.6'
-  dependencies {
-    groovy ( 'org.codehaus.groovy:groovy-all:' + groovy16Version )
-  }
-}
-
-project ( ':gant_groovy1.7' ) {
-  group = 'org.codehaus.gant'
-  version = '1.7.0-SNAPSHOT'
-  archivesBaseName = artifact + '_groovy1.7'
-  dependencies {
-    groovy ( 'org.codehaus.groovy:groovy-all:' + groovy17Version )
-  }
-}
-
-def packageTitle = 'Gant ' + version
-def copyrightString = 'Copyright &#169; 1997&#8211;2009  The Codehaus.  All Rights Reserved.'
-
-javadoc {
-  dependsOn ( 'compile' )
-  options.subPackages ( 'gant' , 'org.codehaus.gant' )
-  options.overview ( 'overview.html' )
-  options.showAll ( )
-  options.encoding ( 'UTF-8' )
-  options.setUse ( true )
-  options.author ( true )
-  options.version ( true )
-  options.windowTitle ( packageTitle )
-  options.docTitle ( packageTitle )
-  options.footer ( copyrightString )
-}
-javadoc.doFirst {
+  javadoc.doFirst {
     javadoc.title = packageTitle
     javadoc.options.docTitle = javadoc.title
+  }
+  
+  groovydoc {
+    dependsOn ( 'compile' )
+    //options.subPackages ( 'gant' , 'org.codehaus.gant' )
+    //options.overview ( 'overview.html' )
+    //options.showAll ( )
+    //options.encoding ( 'UTF-8' )
+    //options.setUse ( true )
+    ////options.author ( true )
+    ////options.version ( true )
+    //options.windowTitle ( packageTitle )
+    //options.docTitle ( packageTitle )
+    //options.footer ( copyrightString )
+  }
+  
+  task myGroovyDoc ( dependsOn : 'compile' , description : 'Create the GroovyDoc API documentation.' ) << {
+    def javadocDirPath = 'build/' + javadocDirName
+    def packageIncludeSpec = 'gant.*,org.codehaus.gant.*'
+    ant.delete ( dir : javadocDirPath , quiet : 'true' )
+    ant.mkdir ( dir : javadocDirPath )
+    def sourceDirectory = groovySrcDirs[0]
+    ant.groovydoc (
+                   sourcePath : sourceDirectory ,
+                   destDir : groovyApiDocumentationDirectory ,
+                   packageNames : packageIncludeSpec ,
+                   overview : 'overview.html' ,
+                   'private' : 'true' ,
+                   use : 'true' ,
+                   //author : 'true' ,
+                   //version : 'true' ,
+                   windowTitle : packageTitle ,
+                   docTitle : packageTitle ,
+                   header : packageTitle ,
+                   footer : copyrightString,
+                   //source : sourceCompatibility
+                   )
+  }
+  
+  task documentation ( dependsOn: [ 'javadoc' , 'myGroovyDoc' ] , description : 'Create the API documentation.' )
+  
+  usePlugin ( 'maven' )
+  
+  uploadArchives {
+    repositories.mavenDeployer {
+      repository ( url : 'http://repository.codehaus.org' )
+    }
+  }
+  
+  defaultTasks ( 'test' ) 
 }
 
-groovydoc {
-  dependsOn ( 'compile' )
-  //options.subPackages ( 'gant' , 'org.codehaus.gant' )
-  //options.overview ( 'overview.html' )
-  //options.showAll ( )
-  //options.encoding ( 'UTF-8' )
-  //options.setUse ( true )
-  ////options.author ( true )
-  ////options.version ( true )
-  //options.windowTitle ( packageTitle )
-  //options.docTitle ( packageTitle )
-  //options.footer ( copyrightString )
-}
+project ( ':gant' ) {
+  //  If the user has GROOVY_HOME set then use that Groovy rather than the one speficied in the properties
+  //  files.  However we have to fiddle to find the version number.  Even then we still have to go out to the 
 
-task myGroovyDoc ( dependsOn : 'compile' , description : 'Create the GroovyDoc API documentation.' ) << {
-  def javadocDirPath = 'build/' + javadocDirName
-  def packageIncludeSpec = 'gant.*,org.codehaus.gant.*'
-  ant.delete ( dir : javadocDirPath , quiet : 'true' )
-  ant.mkdir ( dir : javadocDirPath )
-  def sourceDirectory = groovySrcDirs[0]
-  ant.groovydoc (
-             sourcePath : sourceDirectory ,
-             destDir : groovyApiDocumentationDirectory ,
-             packageNames : packageIncludeSpec ,
-             overview : 'overview.html' ,
-             'private' : 'true' ,
-             use : 'true' ,
-             //author : 'true' ,
-             //version : 'true' ,
-             windowTitle : packageTitle ,
-             docTitle : packageTitle ,
-             header : packageTitle ,
-             footer : copyrightString,
-             //source : sourceCompatibility
-             )
-}
-
-task documentation ( dependsOn: [ 'javadoc' , 'myGroovyDoc' ] , description : 'Create the API documentation.' )
-
-usePlugin ( 'maven' )
-
-uploadArchives {
-  repositories.mavenDeployer {
-    repository ( url : 'http://repository.codehaus.org' )
+  def groovyHome = System.getenv ( ).'GROOVY_HOME'
+  def groovyLib = null
+  if ( groovyHome ) {
+    groovyLib = new File ( groovyHome , 'lib' )
+    def groovyVersionPatternString = /^groovy-(all-)?([0-9].*)\.jar/
+    def items = groovyLib.listFiles ( [ accept : { File dir , String name -> return ( name =~ groovyVersionPatternString ).find ( ) } ] as FilenameFilter )
+    assert items 
+    groovyVersion = ( items[0].name =~ groovyVersionPatternString )[0][2]
+    assert groovyVersion
+  }
+  else {
+    groovyVersion = ant.antProject.properties.groovyStandaloneVersion
+  }
+  println ( 'Using groovy version ' + groovyVersion )
+  group = gant_group
+  version = gant_version
+  archivesBaseName = gant_artifact
+  repositories {
+    flatDir ( name : 'groovyInstallation' , dirs : [ new File ( groovyHome , 'embeddable' ) , groovyLib ] )
+  }
+  dependencies {
+    groovy ( 'org.codehaus.groovy:groovy-all:' + groovyVersion )
+  }
+  test.doFirst {
+    groovyAntTaskTestVersionPropertyFile.write ( 'groovyAntTaskTestVersion = ' + groovyVersion )
   }
 }
 
-defaultTasks ( 'test' )
+[ [ '1.5' , ant.project.properties.groovy15Version ] ,
+  [ '1.6' , ant.project.properties.groovy16Version ] ,
+  [ '1.7' , ant.project.properties.groovy17Version ] ].each { item ->
+  project ( ':gant_groovy' + item[0] ) {
+    group = gant_group
+    version = gant_version
+    archivesBaseName = gant_artifact + '_groovy' + item[0]
+    dependencies {
+      groovy ( 'org.codehaus.groovy:groovy-all:' + item[1] )
+    }
+    test.doFirst {
+      groovyAntTaskTestVersionPropertyFile.write ( 'groovyAntTaskTestVersion = ' + item[1] )
+    }
+  }
+}
+
