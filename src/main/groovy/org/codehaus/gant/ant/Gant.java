@@ -154,9 +154,9 @@ public class Gant extends Task {
       if ( ! ( listener instanceof AntClassLoader ) ) { newProject.addBuildListener ( listener ) ; }
     }
     //  Deal with GANT-50 by getting the base directory from the Ant instance Project object and use it for
-    //  the new Project object.
+    //  the new Project object.  GANT-93 leads to change in the way the Gant file is extracted.
     newProject.setBaseDir ( antProject.getBaseDir ( ) ) ;
-    final File gantFile = new File ( newProject.getBaseDir ( ) , file ) ;
+    final File gantFile = newProject.resolveFile( file ) ;
     if ( ! gantFile.exists ( ) ) { throw new BuildException ( "Gantfile does not exist." , getLocation ( ) ) ; }
     final GantBuilder ant = new GantBuilder ( newProject ) ;
     final Map<String,String> environmentParameter = new HashMap<String,String> ( ) ;
