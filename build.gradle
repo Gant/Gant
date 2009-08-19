@@ -110,14 +110,14 @@ subprojects {
   }
   
   task myGroovyDoc ( dependsOn : 'compile' , description : 'Create the GroovyDoc API documentation.' ) << {
-    def javadocDirPath = 'build/' + javadocDirName
+    def groovydocDirPath = 'build/' + groovydocDirName
     def packageIncludeSpec = 'gant.*,org.codehaus.gant.*'
-    ant.delete ( dir : javadocDirPath , quiet : 'true' )
-    ant.mkdir ( dir : javadocDirPath )
+    ant.delete ( dir : groovydocDirPath , quiet : 'true' )
+    ant.mkdir ( dir : groovydocDirPath )
     def sourceDirectory = groovySrcDirs[0]
     ant.groovydoc (
                    sourcePath : sourceDirectory ,
-                   destDir : groovyApiDocumentationDirectory ,
+                   destDir : groovydocDirName ,
                    packageNames : packageIncludeSpec ,
                    overview : 'overview.html' ,
                    'private' : 'true' ,
@@ -132,7 +132,7 @@ subprojects {
                    )
   }
   
-  task documentation ( dependsOn: [ 'javadoc' , 'myGroovyDoc' ] , description : 'Create the API documentation.' )
+  task documentation ( dependsOn: [ 'javadoc' , 'groovydoc' ] , description : 'Create the API documentation.' )
   
   usePlugin ( 'maven' )
   
