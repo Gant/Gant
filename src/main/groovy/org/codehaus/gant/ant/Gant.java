@@ -21,9 +21,9 @@ import java.util.HashMap ;
 import java.util.List ;
 import java.util.Map ;
 
+import org.apache.tools.ant.AntClassLoader ;
 import org.apache.tools.ant.BuildException ;
 import org.apache.tools.ant.BuildListener ;
-import org.apache.tools.ant.DefaultLogger ;
 import org.apache.tools.ant.Project ;
 import org.apache.tools.ant.Task ;
 
@@ -147,12 +147,11 @@ public class Gant extends Task {
     final Project newProject = new Project ( ) ;
     newProject.init ( ) ;
     //  Deal with GANT-80 by getting all the the loggers from the Ant instance Project object and adding
-    //  them to the new Project Object.
+    //  them to the new Project Object.  This was followed up by GANT-91 so the code was amended to copying
+    //  over all listeners except the class loader if present.
     for ( final Object o : antProject.getBuildListeners ( ) ) {
       final BuildListener listener = (BuildListener) o ;
-      if ( listener instanceof DefaultLogger ) {
-        newProject.addBuildListener ( listener ) ;
-      }
+      if ( ! ( listener instanceof AntClassLoader ) ) { newProject.addBuildListener ( listener ) ; }
     }
     //  Deal with GANT-50 by getting the base directory from the Ant instance Project object and use it for
     //  the new Project object.
