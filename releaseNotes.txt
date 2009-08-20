@@ -1,6 +1,9 @@
 1.8.0
 -----
 
+Upgrade to using JUnit 4.7, in line with Groovy 1.7.x
+.
+
 1.7.1
 -----
 
