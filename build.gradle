@@ -17,11 +17,14 @@
 ant.property ( file : 'local.build.properties' )
 ant.property ( file : 'build.properties' )
 
-group =  'org.codehaus.gant'
 artifact = 'gant'
 version = ant.antProject.properties.gantVersion
 
- //  For some reason the ant variable is not available in the subprojects closure :-(
+allprojects {
+  group =  'org.codehaus.gant'
+}  
+
+//  For some reason the ant variable is not available in the subprojects closure :-(
 
 def commonsCliVersion = ant.antProject.properties.commonsCliVersion
 def antVersion = ant.antProject.properties.antVersion
