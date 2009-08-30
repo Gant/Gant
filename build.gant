@@ -279,7 +279,10 @@ final performTests =  { classpathId ->
         // jvmarg ( line : '-Xdebug -Xrunjdwp:transport=dt_socket,server=y,suspend=y,address=5005' )
         formatter ( type : 'plain' )
         formatter ( type : 'xml' ) // Must have XML output for the continuous integration builds.
-        if ( testCase != null) { test ( name : testCase , todir : buildTestReportsDirectory ) }
+        if ( testCase != null) {
+          // Cannot not use the ant. here since that leads to a recursion -- whihc is infinite.
+          ant.test ( name : testCase , todir : buildTestReportsDirectory )
+        }
         else { batchtest ( todir : buildTestReportsDirectory ) { fileset ( dir : buildTestClassesDirectory , includes : '**/*_Test.class' , excludes : '**/ant/tests/*' ) } }
         classpath {
           path ( refid : testClasspathId )
