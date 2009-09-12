@@ -235,7 +235,7 @@ public class Gant_Test extends TestCase {
     final String errorResult = result.get ( 1 ) ;
     assertTrue ( errorResult.startsWith ( "\nBUILD FAILED\n" ) ) ;
     assertTrue ( errorResult.contains ( "org.codehaus.groovy.control.MultipleCompilationErrorsException: startup failed" ) ) ;
-    assertTrue ( errorResult.contains ( "build: 15: unable to resolve class org.codehaus.gant.ant.tests.Gant_Test\n @ line 15, column 1.\n1 error\n" ) ) ;
+    assertTrue ( errorResult.contains ( "build: 15: unable to resolve class org.codehaus.gant.ant.tests.Gant_Test\n @ line 15, column 1.\n" ) ) ;
   }
   public void testRunningAntFromShellSuccessful ( ) {
     final List<String> result = runAnt ( antFile.getPath ( ) , null , 0 , true ) ;
