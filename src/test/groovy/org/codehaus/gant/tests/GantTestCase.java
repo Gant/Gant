@@ -38,20 +38,51 @@ import org.codehaus.groovy.runtime.InvokerHelper ;
  */
 public abstract class GantTestCase extends GroovyTestCase {
   public static final String exitMarker = "------ " ;
+  //
+  //  Groovy version numbering is complicated:
+  //
+  //  For released versions the number is x.y.z where x is the major number, y is the minor number, and z is
+  //  the bugfix number -- with all of them being integers.
+  //
+  //  For released pre-release versions the number depends on the state of the release.  Early on the
+  //  numbers are x.y-beta-z.  Later on they are x.y-rc-z.
+  //
+  //  For branches from the main repository, the number is related to the branch.  Basically add -SNAPSHOT
+  //  to the number with z being one higher than the last release.  So checkouts of maintenance branches
+  //  will have x.y.z-SNAPSHOT, while from trunk numbers will be like x.y-beta-z-SNAPSHOT.
+  //
+  public enum ReleaseType { RELEASED, RELEASED_SNAPSHOT, BETA, BETA_SNAPSHOT, RC, RC_SNAPSHOT } ;
   public static final int groovyMajorVersion ;
   public static final int groovyMinorVersion ;
   public static final int groovyBugFixVersion ;
+  public static final ReleaseType releaseType ;
   static {
-    //  Groovy numbering is x.y.z where x is the major number and is always an integer, y is the minor
-    //  number and is always an integer, and a is the bugfix number and is an integer for releases and an
-    //  alphanumeric string for pre-release snapshots.
-    final String[] version =  InvokerHelper.getVersion ( ).split ( "[.-]" , 3 ) ;
+    final String[] version =  InvokerHelper.getVersion ( ).split ( "[.-]" ) ;
+    switch ( version.length ) {
+     case 3 :
+       groovyBugFixVersion =  Integer.parseInt ( version[2] ) ;
+       releaseType = ReleaseType.RELEASED ;
+       break ;
+     case 4 :
+       if ( version[3].equals ( "SNAPSHOT" ) ) {
+         groovyBugFixVersion =  Integer.parseInt ( version[2] ) ;
+         releaseType = ReleaseType.RELEASED_SNAPSHOT ;
+       }
+       else {
+         groovyBugFixVersion =  Integer.parseInt ( version[3] ) ;
+         releaseType = version[2].equals ( "RC" ) ? ReleaseType.RC : ReleaseType.BETA ;
+       }
+       break ;
+     case 5 :
+        groovyBugFixVersion =  Integer.parseInt ( version[3] ) ;
+        releaseType = version[2].equals ( "RC" ) ? ReleaseType.RC_SNAPSHOT : ReleaseType.BETA_SNAPSHOT ;
+        assert version[4] == "SNAPSHOT" ;
+       break ;
+     default :
+       throw new RuntimeException ( "Groovy version number is not well-formed." ) ;
+    }
     groovyMajorVersion = Integer.parseInt ( version[0] ) ;
     groovyMinorVersion = Integer.parseInt ( version[1] ) ;
-    int bugFixNumber = 0 ;
-    try { bugFixNumber = Integer.parseInt ( version[2] ) ; }
-    catch ( NumberFormatException nfe ) { /* Intentionally left blank */ }
-    groovyBugFixVersion = bugFixNumber ;
   }
   public static final boolean isWindows ;
   static {
