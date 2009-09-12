@@ -23,6 +23,11 @@ final class Hooks_Test extends GantTestCase {
   def targetName = 'trial'
   def flobString = 'flobadob'
   def targetString = 'weed'
+
+   //  __________________________________________________________________________
+   //
+   //  First test replacing the default (pre|post)hook.  This removes the logging.
+
   void testDefinePrehookScalar ( ) {
     script = '''
 def flob = { println ( "''' + flobString + '''" ) }
@@ -30,7 +35,7 @@ target ( name : "''' + targetName + '''" , prehook : flob ) { println ( "''' + t
 '''
     assertEquals ( 0 , processCmdLineTargets ( targetName ) )
     assertEquals ( '' , error )
-    assertEquals ( resultString ( targetName , flobString + '\n' + targetString + '\n' ) , output )
+    assertEquals ( flobString + '\n' + targetString + '\n' + exitMarker + targetName + '\n' , output )
   }
   void testDefinePrehookList ( ) {
     script = '''
@@ -39,25 +44,7 @@ target ( name : "''' + targetName + '''" , prehook : [ flob ] ) { println ( "'''
 '''
     assertEquals ( 0 , processCmdLineTargets ( targetName ) )
     assertEquals ( '' , error )
-    assertEquals ( resultString ( targetName , flobString + '\n' + targetString + '\n' ) , output )
-  }
-  void testPrehookScalarWrongTypeError ( ) {
-    script = '''
-def flob = 1
-target ( name : "''' + targetName + '''" , prehook : flob ) { println ( "''' + targetString + '''" ) }
-'''
-    assertEquals ( 0 , processCmdLineTargets ( targetName ) )
-    assertEquals ( 'Target prehook not a closure or list of closures.\n' , error )
-    assertEquals ( resultString ( targetName , targetString + '\n' ) , output )
-  }
-void testPrehookListWrongTypeError ( ) {
-    script = '''
-def flob = 1
-target ( name : "''' + targetName + '''" , prehook : [ flob ] ) { println ( "''' + targetString + '''" ) }
-'''
-    assertEquals ( 0 , processCmdLineTargets ( targetName ) )
-    assertEquals ( 'Target prehook list item is not a closure.\n' , error )
-    assertEquals ( resultString ( targetName , targetString + '\n' ) , output )
+    assertEquals ( flobString + '\n' + targetString + '\n' + exitMarker + targetName + '\n' , output )
   }
   void testDefinePosthookScalar ( ) {
     script = '''
@@ -66,7 +53,7 @@ target ( name : "''' + targetName + '''" , posthook : flob ) { println ( "''' + 
 '''
     assertEquals ( 0 , processCmdLineTargets ( targetName ) )
     assertEquals ( '' , error )
-    assertEquals ( resultString ( targetName , targetString + '\n' + flobString + '\n' ) , output )
+    assertEquals ( targetName + ':\n' + targetString + '\n' + flobString + '\n' , output )
   }
   void testDefinePosthookList ( ) {
     script = '''
@@ -75,7 +62,71 @@ target ( name : "''' + targetName + '''" , posthook : [ flob ] ) { println ( "''
 '''
     assertEquals ( 0 , processCmdLineTargets ( targetName ) )
     assertEquals ( '' , error )
+    assertEquals ( targetName + ':\n' + targetString + '\n' + flobString + '\n' , output )
+  }
+
+  //  __________________________________________________________________________
+  //
+  //  Now test appending to the (pre|post)hook list.  This preserves the standard logging.
+  
+  void testAppendPrehookScalar ( ) {
+    script = '''
+def flob = { println ( "''' + flobString + '''" ) }
+target ( name : "''' + targetName + '''" , addprehook : flob ) { println ( "''' + targetString + '''" ) }
+'''
+    assertEquals ( 0 , processCmdLineTargets ( targetName ) )
+    assertEquals ( '' , error )
+    assertEquals ( resultString ( targetName , flobString + '\n' + targetString + '\n' ) , output )
+  }
+  void testAppendPrehookList ( ) {
+    script = '''
+def flob = { println ( "''' + flobString + '''" ) }
+target ( name : "''' + targetName + '''" , addprehook : [ flob ] ) { println ( "''' + targetString + '''" ) }
+'''
+    assertEquals ( 0 , processCmdLineTargets ( targetName ) )
+    assertEquals ( '' , error )
+    assertEquals ( resultString ( targetName , flobString + '\n' + targetString + '\n' ) , output )
+  }
+  void testAppendPosthookScalar ( ) {
+    script = '''
+def flob = { println ( "''' + flobString + '''" ) }
+target ( name : "''' + targetName + '''" , addposthook : flob ) { println ( "''' + targetString + '''" ) }
+'''
+    assertEquals ( 0 , processCmdLineTargets ( targetName ) )
+    assertEquals ( '' , error )
     assertEquals ( resultString ( targetName , targetString + '\n' + flobString + '\n' ) , output )
+  }
+  void testAppendPosthookList ( ) {
+    script = '''
+def flob = { println ( "''' + flobString + '''" ) }
+target ( name : "''' + targetName + '''" , addposthook : [ flob ] ) { println ( "''' + targetString + '''" ) }
+'''
+    assertEquals ( 0 , processCmdLineTargets ( targetName ) )
+    assertEquals ( '' , error )
+    assertEquals ( resultString ( targetName , targetString + '\n' + flobString + '\n' ) , output )
+  }
+
+  //  __________________________________________________________________________
+  //
+  //  Try various errors.
+
+  void testPrehookScalarWrongTypeError ( ) {
+    script = '''
+def flob = 1
+target ( name : "''' + targetName + '''" , prehook : flob ) { println ( "''' + targetString + '''" ) }
+'''
+    assertEquals ( 0 , processCmdLineTargets ( targetName ) )
+    assertEquals ( 'Target prehook not a closure or list of closures.\n' , error )
+    assertEquals ( targetString + '\n' + exitMarker + targetName + '\n' , output )
+  }
+void testPrehookListWrongTypeError ( ) {
+    script = '''
+def flob = 1
+target ( name : "''' + targetName + '''" , prehook : [ flob ] ) { println ( "''' + targetString + '''" ) }
+'''
+    assertEquals ( 0 , processCmdLineTargets ( targetName ) )
+    assertEquals ( 'Target prehook list item is not a closure.\n' , error )
+    assertEquals ( targetString + '\n' + exitMarker + targetName + '\n' , output )
   }
   void testPosthookScalarWrongTypeError ( ) {
     script = '''
@@ -84,7 +135,7 @@ target ( name : "''' + targetName + '''" , posthook : flob ) { println ( "''' + 
 '''
     assertEquals ( 0 , processCmdLineTargets ( targetName ) )
     assertEquals ( 'Target posthook not a closure or list of closures.\n' , error )
-    assertEquals ( resultString ( targetName , targetString + '\n' ) , output )
+    assertEquals ( targetName + ':\n' + targetString + '\n' , output )
   }
 void testPosthookListWrongTypeError ( ) {
     script = '''
@@ -93,6 +144,7 @@ target ( name : "''' + targetName + '''" , posthook : [ flob ] ) { println ( "''
 '''
     assertEquals ( 0 , processCmdLineTargets ( targetName ) )
     assertEquals ( 'Target posthook list item is not a closure.\n' , error )
-    assertEquals ( resultString ( targetName , targetString + '\n' ) , output )
+    assertEquals ( targetName + ':\n' + targetString + '\n' , output )
   }
+
 }
