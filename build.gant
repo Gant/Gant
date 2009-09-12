@@ -274,13 +274,13 @@ final performTests =  { classpathId ->
       path ( refid : classpathId )
     }
     // Forkmode should be once for speed but perTest for safety.
-    if ( ( testCase == null ) || ! ( testCase ==~ 'org.codehaus.gant.ant.tests.*_Test' ) ) {                        
+    if ( ! ( testCase ==~ 'org.codehaus.gant.ant.tests.*_Test' ) ) {                        
       junit ( printsummary : 'yes' , failureproperty : 'testsFailed' , fork : 'true' , forkmode : 'once' , includeantruntime : 'false' ) {
         // jvmarg ( line : '-Xdebug -Xrunjdwp:transport=dt_socket,server=y,suspend=y,address=5005' )
         formatter ( type : 'plain' )
         formatter ( type : 'xml' ) // Must have XML output for the continuous integration builds.
         if ( testCase != null) {
-          // Cannot not use the ant. here since that leads to a recursion -- which is tediously infinite.
+          // Cannot not use the ant. here since that leads to a recursion -- whihc is infinite.
           ant.test ( name : testCase , todir : buildTestReportsDirectory )
         }
         else { batchtest ( todir : buildTestReportsDirectory ) { fileset ( dir : buildTestClassesDirectory , includes : '**/*_Test.class' , excludes : '**/ant/tests/*' ) } }

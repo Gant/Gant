@@ -151,7 +151,27 @@ public class GantBinding extends Binding implements Cloneable {
         final targetClosure =  {
           def returnCode = 0
           owner.ant.project.log ( targetName + ':' )
+          if ( map.containsKey ( 'prehook' ) ) {
+            if ( map['prehook'] instanceof Closure ) { map['prehook'].call ( ) }
+            else if ( map['prehook'] instanceof List ) {
+              for ( item in map['prehook'] ) {
+                if ( item instanceof Closure ) { item.call ( ) }
+                else { owner.ant.project.log ( 'Target prehook list item is not a closure.' , Project.MSG_ERR ) }
+              }
+            }
+            else { owner.ant.project.log ( 'Target prehook not a closure or list of closures.' , Project.MSG_ERR ) }
+          }
           withTargetEvent ( targetName , targetDescription ) { returnCode = closure ( targetMap ) }
+          if ( map.containsKey ( 'posthook' ) ) {
+            if ( map['posthook'] instanceof Closure ) { map['posthook'].call ( ) }
+            else if ( map['posthook'] instanceof List ) {
+              for ( item in map['posthook'] ) {
+                if ( item instanceof Closure ) { item.call ( ) }
+                else { owner.ant.project.log ( 'Target posthook list item is not a closure.' , Project.MSG_ERR ) }
+              }
+            }
+            else { owner.ant.project.log ( 'Target posthook not a closure or list of closures.' , Project.MSG_ERR ) }
+          }
           owner.ant.project.log ( '------ ' + targetName )
           returnCode
         }
