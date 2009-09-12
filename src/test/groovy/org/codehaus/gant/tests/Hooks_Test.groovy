@@ -24,6 +24,9 @@ final class Hooks_Test extends GantTestCase {
   def flobString = 'flobadob'
   def targetString = 'weed'
 
+  def listItemNotAClosureErrorMessage ( String item ) { item + ' list item is not a closure.\n' }
+  def notAClosureOrListErrorMessage ( String item ) { item + ' not a closure or list (of closures).\n' }
+
    //  __________________________________________________________________________
    //
    //  First test replacing the default (pre|post)hook.  This removes the logging.
@@ -116,7 +119,7 @@ def flob = 1
 target ( name : "''' + targetName + '''" , prehook : flob ) { println ( "''' + targetString + '''" ) }
 '''
     assertEquals ( 0 , processCmdLineTargets ( targetName ) )
-    assertEquals ( 'Target prehook not a closure or list of closures.\n' , error )
+    assertEquals ( notAClosureOrListErrorMessage ( 'Target prehook' ) , error )
     assertEquals ( targetString + '\n' + exitMarker + targetName + '\n' , output )
   }
 void testPrehookListWrongTypeError ( ) {
@@ -125,7 +128,7 @@ def flob = 1
 target ( name : "''' + targetName + '''" , prehook : [ flob ] ) { println ( "''' + targetString + '''" ) }
 '''
     assertEquals ( 0 , processCmdLineTargets ( targetName ) )
-    assertEquals ( 'Target prehook list item is not a closure.\n' , error )
+    assertEquals ( listItemNotAClosureErrorMessage ( 'Target prehook' ) , error )
     assertEquals ( targetString + '\n' + exitMarker + targetName + '\n' , output )
   }
   void testPosthookScalarWrongTypeError ( ) {
@@ -134,7 +137,7 @@ def flob = 1
 target ( name : "''' + targetName + '''" , posthook : flob ) { println ( "''' + targetString + '''" ) }
 '''
     assertEquals ( 0 , processCmdLineTargets ( targetName ) )
-    assertEquals ( 'Target posthook not a closure or list of closures.\n' , error )
+    assertEquals ( notAClosureOrListErrorMessage ( 'Target posthook' ) , error )
     assertEquals ( targetName + ':\n' + targetString + '\n' , output )
   }
 void testPosthookListWrongTypeError ( ) {
@@ -143,8 +146,74 @@ def flob = 1
 target ( name : "''' + targetName + '''" , posthook : [ flob ] ) { println ( "''' + targetString + '''" ) }
 '''
     assertEquals ( 0 , processCmdLineTargets ( targetName ) )
-    assertEquals ( 'Target posthook list item is not a closure.\n' , error )
+    assertEquals ( listItemNotAClosureErrorMessage ( 'Target posthook' ) , error )
     assertEquals ( targetName + ':\n' + targetString + '\n' , output )
   }
+  
+  //  __________________________________________________________________________
+  //
+  //  Introduce the global hooks.
 
+  void testSetGlobalPreHook ( ) {
+    def extraStuff = 'prehook'
+    script = '''
+globalPreHook = { -> println ( "''' + extraStuff + '''" ) }
+target ( ''' + targetName + ''': '' ) { println ( "''' + targetString + '''" ) }
+'''
+    assertEquals ( 0 , processCmdLineTargets ( targetName ) )
+    assertEquals ( '' , error )
+    assertEquals ( extraStuff + '\n' + resultString ( targetName , targetString + '\n' ) , output )
+  }
+  void testSetGlobalPostHook ( ) {
+    def extraStuff = 'posthook'  
+    script = '''
+globalPostHook = { -> println ( "''' + extraStuff + '''" ) }
+target ( ''' + targetName + ''': '' ) { println ( "''' + targetString + '''" ) }
+'''
+    assertEquals ( 0 , processCmdLineTargets ( targetName ) )
+    assertEquals ( '' , error )
+    assertEquals ( resultString ( targetName , targetString + '\n' ) + extraStuff + '\n' , output )
+  }
+
+  //  __________________________________________________________________________
+  //
+  //  Try various errors.
+
+  void testGlobalPrehookScalarWrongTypeError ( ) {
+    script = '''
+globalPreHook= 1
+target ( ''' + targetName + ''' : '' ) { println ( "''' + targetString + '''" ) }
+'''
+    assertEquals ( 0 , processCmdLineTargets ( targetName ) )
+    assertEquals ( notAClosureOrListErrorMessage ( 'Global prehook' ) , error )
+    assertEquals ( resultString ( targetName , targetString + '\n' ) , output )
+  }
+void testGlobalPrehookListWrongTypeError ( ) {
+    script = '''
+globalPreHook = [ 1 ]
+target ( ''' + targetName + ''' : '' ) { println ( "''' + targetString + '''" ) }
+'''
+    assertEquals ( 0 , processCmdLineTargets ( targetName ) )
+    assertEquals ( listItemNotAClosureErrorMessage ( 'Global prehook' ) , error )
+    assertEquals ( resultString ( targetName , targetString + '\n' ) , output )
+  }
+  void testGlobalPosthookScalarWrongTypeError ( ) {
+    script = '''
+globalPostHook = 1
+target ( ''' + targetName + ''' : '' ) { println ( "''' + targetString + '''" ) }
+'''
+    assertEquals ( 0 , processCmdLineTargets ( targetName ) )
+    assertEquals ( notAClosureOrListErrorMessage ( 'Global posthook' ) , error )
+    assertEquals ( resultString ( targetName , targetString + '\n' ) , output )
+  }
+void testGlobalPosthookListWrongTypeError ( ) {
+    script = '''
+globalPostHook = [ 1 ]
+target ( ''' + targetName + ''' : '' ) { println ( "''' + targetString + '''" ) }
+'''
+    assertEquals ( 0 , processCmdLineTargets ( targetName ) )
+    assertEquals ( listItemNotAClosureErrorMessage ( 'Global posthook' ) , error )
+    assertEquals ( resultString ( targetName ,  targetString + '\n' ) , output )
+  }
+  
 }

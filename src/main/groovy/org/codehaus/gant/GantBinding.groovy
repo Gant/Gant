@@ -110,6 +110,8 @@ public class GantBinding extends Binding implements Cloneable {
     super.setVariable ( 'Ant' , new DeprecatedAntBuilder ( ant ) )
     super.setVariable ( 'includeTargets' , new IncludeTargets ( this ) )
     super.setVariable ( 'includeTool' , new IncludeTool ( this ) )
+    super.setVariable ( 'globalPreHook' , null )
+    super.setVariable ( 'globalPostHook' , null )
     super.setVariable ( 'target' , { Map<String, String> map , Closure closure ->
         def targetName = ''
         def targetDescription = ''
@@ -162,27 +164,23 @@ public class GantBinding extends Binding implements Cloneable {
         }
         final targetClosure =  {
           def returnCode = 0
-          if ( targetMap.containsKey ( 'prehook' ) ) {
-            if ( targetMap.prehook instanceof Closure ) { targetMap.prehook.call ( ) }
-            else if ( targetMap.prehook instanceof List ) {
-              for ( item in targetMap.prehook ) {
-                if ( item instanceof Closure ) { item.call ( ) }
-                else { owner.ant.project.log ( 'Target prehook list item is not a closure.' , Project.MSG_ERR ) }
+          def runHooks = { hook , String label ->
+            if ( hook ) {
+              if ( hook instanceof Closure ) { hook.call ( ) }
+              else if ( hook instanceof List ) {
+                for ( item in hook ) {
+                  if ( item instanceof Closure ) { item.call ( ) }
+                  else { owner.ant.project.log ( label + ' list item is not a closure.' , Project.MSG_ERR ) }
+                }
               }
+              else { owner.ant.project.log ( label + ' not a closure or list (of closures).' , Project.MSG_ERR ) }
             }
-            else { owner.ant.project.log ( 'Target prehook not a closure or list of closures.' , Project.MSG_ERR ) }
           }
+          runHooks ( owner.globalPreHook , 'Global prehook' )
+          runHooks ( targetMap.prehook , 'Target prehook' )
           withTargetEvent ( targetName , targetDescription ) { returnCode = closure ( targetMap ) }
-          if ( targetMap.containsKey ( 'posthook' ) ) {
-            if ( targetMap.posthook instanceof Closure ) { targetMap.posthook.call ( ) }
-            else if ( targetMap.posthook instanceof List ) {
-              for ( item in targetMap.posthook ) {
-                if ( item instanceof Closure ) { item.call ( ) }
-                else { owner.ant.project.log ( 'Target posthook list item is not a closure.' , Project.MSG_ERR ) }
-              }
-            }
-            else { owner.ant.project.log ( 'Target posthook not a closure or list of closures.' , Project.MSG_ERR ) }
-          }
+          runHooks ( targetMap.posthook , 'Target posthook' )
+          runHooks ( owner.globalPostHook , 'Global posthook' )
           returnCode
         }
         owner.setVariable ( (String) targetName , targetClosure )
