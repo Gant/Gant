@@ -97,8 +97,12 @@ target = 10
     script = 'XXXXX : YYYYY ->'
     assertEquals ( -2 , processCmdLineTargets ( ) )
     assertEquals ( '' , output )
-    assertEquals ( 'Error evaluating Gantfile: startup failed' + ( ( groovyMinorVersion > 6 ) ? ':\n' : ', ' ) + '''standard_input: 1: unexpected token: -> @ line 1, column 15.
-1 error
+    assertEquals ( 'Error evaluating Gantfile: startup failed' + ( ( groovyMinorVersion > 6 ) ? ':\n' : ', ' ) + '''standard_input: 1: unexpected token: -> @ line 1, column 15.''' +
+                   ( ( groovyMinorVersion > 6 ) && ! ( ( groovyMinorVersion == 7 ) && ( releaseType == GantTestCase.ReleaseType.BETA ) && ( groovyBugFixVersion < 2 ) ) ? '''
+   XXXXX : YYYYY ->
+                 ^
+
+''' : '\n' ) + '''1 error
 ''' , error )
   }
 

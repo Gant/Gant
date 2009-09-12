@@ -48,8 +48,12 @@ def foo { badvariable }
 """
     assertEquals ( -2 , processCmdLineTargets( targetName ) )
     assertEquals ( '' , output )
-    assertEquals ( 'Error evaluating Gantfile: startup failed' + ( ( groovyMinorVersion > 6 ) ? ':\n' : ', ' ) + '''standard_input: 3: unexpected token: foo @ line 3, column 5.
-1 error
+    assertEquals ( 'Error evaluating Gantfile: startup failed' + ( ( groovyMinorVersion > 6 ) ? ':\n' : ', ' ) + '''standard_input: 3: unexpected token: foo @ line 3, column 5.''' +
+                  ( ( groovyMinorVersion > 6 ) && ! ( ( groovyMinorVersion == 7 ) && ( releaseType == GantTestCase.ReleaseType.BETA ) && ( groovyBugFixVersion < 2 ) ) ? '''
+   def foo { badvariable }
+       ^
+
+''' : '\n' ) + '''1 error
 ''' , error )
   }
   void test_GANT_32_multipleFilesFailsCorrectly ( ) {
