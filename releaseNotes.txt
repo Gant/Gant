@@ -2,7 +2,11 @@
 -----
 
 Upgrade to using JUnit 4.7, in line with Groovy 1.7.x
-.
+
+Added the ability for each target to have a prehook and a posthook.  The hooks can either be a closure or a
+list of closures.  Prehooks are executed before the build listeners are informed and the target body is
+executed.  Posthooks are executed after the target body and the buildlisteners.  cf.  GANT-90, GANT-99 and
+GANT-100.  .
 
 1.7.1
 -----
