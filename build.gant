@@ -201,7 +201,7 @@ final performCompile = { classpathId ->
   taskdef ( name : 'groovyc' , classname : 'org.codehaus.groovy.ant.Groovyc' , classpathref : classpathId )
   groovyc ( srcdir : sourceDirectory , destdir : buildClassesDirectory , fork : 'true' , failonerror : 'true' , includeantruntime : 'false' ) {
     classpath { path ( refid : classpathId ) }
-    javac ( source : sourceCompatibility , target : targetCompatibility , debug : 'on' )
+    javac ( source : sourceCompatibility , target : targetCompatibility , debug : 'on' ) { compilerarg ( value : '-Xlint' ) }
   }
 }
 
@@ -244,7 +244,7 @@ final performCompileTests = { classpathId ->
         pathelement ( location : currentGantJarPath )
         path ( refid : classpathId )
       }
-      javac ( source : sourceCompatibility , target : targetCompatibility , debug : 'on' )
+      javac ( source : sourceCompatibility , target : targetCompatibility , debug : 'on' ) { compilerarg ( value : '-Xlint' ) }
     }
   }
 }
