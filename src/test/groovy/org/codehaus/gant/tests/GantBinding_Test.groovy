@@ -38,21 +38,6 @@ final class GantBinding_Test extends GantTestCase {
     assertTrue ( object.cacheEnabled instanceof Boolean )
     assertTrue ( object.gantLib instanceof List )
   }
-  void testAntReferenceProperlyDeprecated ( ) {
-    final object = new GantBinding ( )
-    assertTrue ( object.Ant instanceof GantBuilder )
-    final message = 'hello.' 
-    script = """
-target ( ${targetName} : '' ) {
-  Ant.echo ( message : '${message}' )
-}
-"""
-    assertEquals ( 0 , processCmdLineTargets ( targetName ) )
-    assertEquals ( resultString ( targetName , """Ant is deprecated, please amend your Gant files to use ant instead of Ant.
-     [echo] ${message}
-""" ) , output )
-    assertEquals ( '' , error )
-  }
   void testGantBindingIsActuallyUsedOutsideTarget ( ) {
     script = """
 assert binding instanceof org.codehaus.gant.GantBinding
