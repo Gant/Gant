@@ -107,7 +107,6 @@ public class GantBinding extends Binding implements Cloneable {
     ant.logger.setMessageOutputLevel ( GantState.SILENT )
     ant.property ( environment : 'environment' )
     ant.logger.setMessageOutputLevel ( GantState.verbosity )
-    super.setVariable ( 'Ant' , new DeprecatedAntBuilder ( ant ) )
     super.setVariable ( 'includeTargets' , new IncludeTargets ( this ) )
     super.setVariable ( 'includeTool' , new IncludeTool ( this ) )
     super.setVariable ( 'globalPreHook' , null )
@@ -282,24 +281,4 @@ public class GantBinding extends Binding implements Cloneable {
    *  Getter for the list of build listeners.  Used in {@code gant.Gant.withBuildListeners}.
    */
   List<BuildListener> getBuildListeners ( ) { buildListeners }
-}
-
-/**
- *  Class to instantiate for processing references to the Ant symbol in the binding.
- *
- *  @author Peter Ledbrook
- */
-class DeprecatedAntBuilder extends GantBuilder {
-  DeprecatedAntBuilder ( GantBuilder b ) { super ( b.project ) }
-  private void outputDeprecationMessage ( ) {
-    super.project.log ( 'Ant is deprecated, please amend your Gant files to use ant instead of Ant.' , Project.MSG_WARN )
-  }
-  def invokeMethod ( String name , args ) {
-    outputDeprecationMessage ( )
-    super.invokeMethod ( name , args )
-  }
-  def getProperty ( String name ) {
-    outputDeprecationMessage ( )
-    super.getProperty ( name )
-  }
 }
