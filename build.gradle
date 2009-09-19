@@ -117,7 +117,7 @@ subprojects {
     def packageIncludeSpec = 'gant.*,org.codehaus.gant.*'
     ant.delete ( dir : groovydocDirPath , quiet : 'true' )
     ant.mkdir ( dir : groovydocDirPath )
-    def sourceDirectory = groovySrcDirs[0]
+    def sourceDirectory = source.main.groovy.srcDirs[0]
     ant.groovydoc (
                    sourcePath : sourceDirectory ,
                    destDir : groovydocDirName ,
@@ -135,7 +135,7 @@ subprojects {
                    )
   }
   
-  task documentation ( dependsOn: [ 'javadoc' , 'groovydoc' ] , description : 'Create the API documentation.' )
+  task documentation ( dependsOn: [ 'javadoc' , 'myGroovyDoc' ] , description : 'Create the API documentation.' )
   
   usePlugin ( 'maven' )
   
@@ -193,4 +193,3 @@ project ( ':gant' ) {
     }
   }
 }
-
