@@ -382,6 +382,7 @@ final preparePom = { String version ->
 
 final doWithAllGroovyVersions = { Closure c ->
   distributionVersions.each { label , item ->
+    ant.project.log ( '\n========  Creating for Groovy ' + item.version + '  ========\n\n' )
     def groovyAntTaskTestVersionPropertyFile = new File ( groovyAntTaskTestVersionPropertyFileName )
     groovyAntTaskTestVersionPropertyFile.write ( 'groovyAntTaskTestVersion = ' + item.version )
     def pathIdRoot = 'classpath' + item.version
