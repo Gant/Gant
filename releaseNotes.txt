@@ -8,7 +8,9 @@ prehook and posthook -- which are the same for all targets.  The hooks can eithe
 closures.  Global prehooks are executed before per-target prehooks, which are executed before the build
 listeners are informed and the target body is executed.  Global posthooks are executed after the per-target
 posthooks which are executed after the target body and the buildlisteners.  The logging of entry and exit to
-each target is implemented as the default per-target prehook/posthook. cf.  GANT-90, GANT-99 and GANT-100.  .
+each target is implemented as the default per-target prehook/posthook. cf.  GANT-90, GANT-99 and GANT-100.
+
+Remove (finally) the name Ant from the binding.  The symbol has been deprecated for ages.
 
 1.7.1
 -----
