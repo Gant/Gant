@@ -1,7 +1,7 @@
 1.8.0
 -----
 
-Upgrade to using JUnit 4.7, in line with Groovy 1.7.x
+Upgrade to using JUnit 4.7, in line with Groovy 1.7.x.
 
 Added the ability for each target to have a per-target prehook and posthook, and for there to be a global
 prehook and posthook -- which are the same for all targets.  The hooks can either be a closure or a list of
@@ -12,10 +12,7 @@ each target is implemented as the default per-target prehook/posthook. cf.  GANT
 
 Remove (finally) the name Ant from the binding.  The symbol has been deprecated for ages.
 
-1.7.1
------
-
-Fixed GANT-91.
+Fixed GANT-91 and GANT-93.
 
 
 1.7.0
