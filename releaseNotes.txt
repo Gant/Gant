@@ -14,6 +14,9 @@ Remove (finally) the name Ant from the binding.  The symbol has been deprecated 
 
 Fixed GANT-91 and GANT-93.
 
+Added nestedJavacCompilerArgs property to the Maven target set to allow for nested compilerarg elements to
+the nested javac element of a groovyc element.
+
 
 1.7.0
 -----
