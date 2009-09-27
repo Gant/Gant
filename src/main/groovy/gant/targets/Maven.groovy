@@ -38,6 +38,7 @@ final class Maven {
                                   metadataPath : '' , // Defaults to standard Maven 2 convention.  Set in constructor since it uses a GString dependent on a value in the map.
                                   javaCompileProperties : [ source : '1.5' , target : '1.5' , debug : 'false' ] ,
                                   groovyCompileProperties : [ : ] ,
+                                  nestedJavacCompilerArgs : [ ] ,
                                   compileClasspath : [ ] ,
                                   testClasspath : [ ] ,
                                   remoteRepositories : [ ] ,
@@ -166,7 +167,9 @@ final class Maven {
       //  Maven 2 hierarchy rules.
       if ( owner.mainSourcePath != owner.default_mainSourcePath ) {
         owner.binding.ant.groovyc ( [ srcdir : owner.mainSourcePath , destdir : owner.mainCompilePath , fork : 'true' ] + owner.groovyCompileProperties ) {
-          javac ( owner.javaCompileProperties )
+          javac ( owner.javaCompileProperties ) {
+            if ( owner.nestedJavacCompilerArgs ) { owner.nestedJavacCompilerArgs.each { arg -> compilerarg ( value : arg ) } }
+          }
           classpath {
             pathelement ( path : owner.compileClasspath.join ( System.properties.'path.separator' ) )
             if ( owner.compileDependencies ) { path ( refid : owner.compileDependenciesClasspathId ) }
@@ -189,7 +192,9 @@ final class Maven {
              break
              case 'groovy' :
              owner.binding.ant.groovyc ( [ srcdir : owner.mainSourcePath + System.properties.'file.separator' + 'groovy' , destdir : owner.mainCompilePath , fork : 'true' ] + owner.groovyCompileProperties ) {
-               javac ( owner.javaCompileProperties )
+               javac ( owner.javaCompileProperties ) {
+                 if ( owner.nestedJavacCompilerArgs ) { owner.nestedJavacCompilerArgs.each { arg -> compilerarg ( value : arg ) } }
+               }
                classpath {
                  pathelement ( path : owner.compileClasspath.join ( System.properties.'path.separator' ) )
                  if ( owner.compileDependencies ) { path ( refid : owner.compileDependenciesClasspathId ) }
@@ -225,7 +230,9 @@ final class Maven {
       if ( owner.testSourcePath != owner.default_testSourcePath ) {
         if ( ( new File ( (String) owner.testSourcePath ) ).isDirectory ( ) ) {
           owner.binding.ant.groovyc ( [ srcdir : owner.testSourcePath , destdir : owner.testCompilePath , fork : 'true' ] + owner.groovyCompileProperties ) {
-            javac ( owner.javaCompileProperties )
+            javac ( owner.javaCompileProperties ) {
+              if ( owner.nestedJavacCompilerArgs ) { owner.nestedJavacCompilerArgs.each { arg -> compilerarg ( value : arg ) } }
+            }
             classpath {
               pathelement ( location : owner.mainCompilePath )
               pathelement ( path : owner.compileClasspath.join ( System.properties.'path.separator' ) )
@@ -256,7 +263,9 @@ final class Maven {
                break
                case 'groovy' :
                owner.binding.ant.groovyc ( [ srcdir : owner.testSourcePath + System.properties.'file.separator' + 'groovy' , destdir : owner.testCompilePath , fork : 'true' ] + owner.groovyCompileProperties ) {
-                 javac ( owner.javaCompileProperties )
+                 javac ( owner.javaCompileProperties ) {
+                   if ( owner.nestedJavacCompilerArgs ) { owner.nestedJavacCompilerArgs.each { arg -> compilerarg ( value : arg ) } }
+                 }
                  classpath {
                    pathelement ( location : owner.mainCompilePath )
                    pathelement ( path : owner.compileClasspath.join ( System.properties.'path.separator' ) )
