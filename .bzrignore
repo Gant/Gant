@@ -10,3 +10,4 @@ build
 dist
 .gradle
 commit.msg
+packaging/AntDebTask/debs
