@@ -143,8 +143,7 @@ final distributionDirectories = [ 'documentation' , 'examples' , '.settings' , s
 
 final distributionVersions = [ : ]
  if ( testSpecialDistributionVersion ) {
-   def theGroovyVersion = '1.6.5-SNAPSHOT'
-   distributionVersions.put ( 'groovy-' + theGroovyVersion , [ groupId : 'org.codehaus.groovy' , artifactId : 'groovy-all' , version : theGroovyVersion ] )
+   distributionVersions.put ( 'groovy-' +  testSpecialDistributionVersion , [ groupId : 'org.codehaus.groovy' , artifactId : 'groovy-all' , version :  testSpecialDistributionVersion ] )
  }
  else {
    [ groovy15Version , groovy16Version , groovy17Version ].each { version ->
@@ -704,7 +703,6 @@ target ( uploadDistribution : 'Upload a complete distribution.' ) {
 
 target ( debDistribution : '' ) {
   distributionVersions = [
-                          ( 'groovy-' + groovyDebianVersion ) :  [ groupId : 'org.codehaus.groovy' , artifactId : 'groovy-all' , version : groovyDebianVersion ] ,
                           standalone : [ groupId : 'org.codehaus.groovy' , artifactId : 'groovy-all' , version : groovyStandaloneVersion ]
                           ]
   distribution ( )
