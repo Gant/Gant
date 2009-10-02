@@ -69,7 +69,15 @@ target ( ${something} : '' ) { ${flob} ( ) }
 target ( '${defaultTarget}' : '' ) { ${something} ( ) }
 """
   //  Source containing just a class and not a complete script must be turned into a script that
-  //  instantiates the class.  Test both correct and errorful behaviour
+  //  instantiates the class.  Test both correct and errorful behaviour.  Actually the errorful behaviour
+  //  causes a null to be returned, so perhaps rather than the evaluate as is we should just use null to
+  //  make things really explicit.  As it is though, we are testing that the evaluate really does return
+  //  null as well, so maybe leave as is.
+   //
+   //  Now to the problem of 2009-10-01: Sometime in the last couple of days, in the run up to the Groovy
+   //  1.6.5 release, a change was made to the way null.class got processed.  Instead of throwing a NPE it
+   //  returns a NullObject.  This of course throwns the whole << overload seraching into new behaviour.
+   //  This is a huge change of semantics, and wholly inappropriate for a bug fix release. :-(((
   private final targetsBuildScriptClass =  "includeTargets <<  groovyShell.evaluate ( '''${targetsScriptText} ; return ${targetsClassName}''' , '${targetsClassName}' )\n" + targetsBuildScriptBase
   private final targetsErrorBuildScriptClass =  "includeTargets <<  groovyShell.evaluate ( '''${targetsScriptText}''' , '${targetsClassName}' )\n" + targetsBuildScriptBase
   private final resultErrorEvaluatingScript = 'Standard input, line 1 -- Error evaluating Gantfile: ' + ( ( ( groovyMinorVersion < 6 ) && ( groovyBugFixVersion < 8 ) ) ? 'null' : "Cannot get property 'class' on null object" ) + '\n'
