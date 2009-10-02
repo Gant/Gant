@@ -480,7 +480,7 @@ includeTool << gant.tools.Execute
 
 target ( reallyClean : 'Ensure all clean operations for the entire tree get actioned.' ) {
   clobber ( )
-  execute.shell ( "cd packaging/debian && gant clobber" ) 
+  execute.shell ( "cd packaging/AntDebTask && gant clobber" ) 
 }
 
 target ( initializeNonDistribution : '' ) {
