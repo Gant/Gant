@@ -28,7 +28,7 @@
   <parent>
     <groupId>org.codehaus.gant</groupId>
     <artifactId>gant</artifactId>
-    <version>1.7.0-SNAPSHOT</version>
+    <version>1.8.0-SNAPSHOT</version>
   </parent>
 
   <groupId>org.codehaus.gant</groupId>
