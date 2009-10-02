@@ -143,9 +143,7 @@ final distributionDirectories = [ 'documentation' , 'examples' , '.settings' , s
 
 final distributionVersions = [ : ]
  if ( testSpecialDistributionVersion ) {
-   //def theGroovyVersion = groovy15Version
-   def theGroovyVersion = groovy16Version
-   //def theGroovyVersion = groovy17Version
+   def theGroovyVersion = '1.6.5-SNAPSHOT'
    distributionVersions.put ( 'groovy-' + theGroovyVersion , [ groupId : 'org.codehaus.groovy' , artifactId : 'groovy-all' , version : theGroovyVersion ] )
  }
  else {
