@@ -35,7 +35,7 @@ def groovyAntTaskTestVersionPropertyFile = new File ( ant.antProject.properties.
 subprojects {
 
   usePlugin ( 'groovy' )
-  // usePlugin ( 'osgi' )
+  usePlugin ( 'osgi' )
   
   sourceCompatibility = 5
   targetCompatibility = 5
@@ -73,16 +73,16 @@ subprojects {
   }
   
   clean.doLast {
-    ant.delete { fileset ( dir : '.' , includes : '**/*~, cobertura.ser, texput.log' ) }
+    ant.delete { fileset ( dir : '.' , includes : '**/*~, texput.log' ) }
     ant.delete ( dir :  'target_forMavenTest' )
   }
 
   def packageTitle = 'Gant ' + version
-  def copyrightString = 'Copyright &#169; 1997&#8211;2009  The Codehaus.  All Rights Reserved.'
+  def copyrightString = 'Copyright &#169; 2006&#8211;9  The Codehaus.  All Rights Reserved.'
 
   javadoc {
-    dependsOn ( 'compile' )
-    options.subPackages ( 'gant' , 'org.codehaus.gant' )
+    //dependsOn ( 'compile' )
+    //options.subPackages ( 'gant' , 'org.codehaus.gant' )
     options.overview ( 'overview.html' )
     options.showAll ( )
     options.encoding ( 'UTF-8' )
@@ -99,7 +99,7 @@ subprojects {
   }
   
   groovydoc {
-    dependsOn ( 'compile' )
+    dependsOn ( 'classes' )
     //options.subPackages ( 'gant' , 'org.codehaus.gant' )
     //options.overview ( 'overview.html' )
     //options.showAll ( )
@@ -112,7 +112,7 @@ subprojects {
     //options.footer ( copyrightString )
   }
   
-  task myGroovyDoc ( dependsOn : 'compile' , description : 'Create the GroovyDoc API documentation.' ) << {
+  task myGroovyDoc ( dependsOn : 'classes' , description : 'Create the GroovyDoc API documentation.' ) << {
     def groovydocDirPath = 'build/' + groovydocDirName
     def packageIncludeSpec = 'gant.*,org.codehaus.gant.*'
     ant.delete ( dir : groovydocDirPath , quiet : 'true' )
@@ -133,6 +133,7 @@ subprojects {
                    footer : copyrightString,
                    //source : sourceCompatibility
                    )
+
   }
   
   task documentation ( dependsOn: [ 'javadoc' , 'myGroovyDoc' ] , description : 'Create the API documentation.' )
@@ -172,7 +173,7 @@ project ( ':gant' ) {
   dependencies {
     groovy ( 'org.codehaus.groovy:groovy-all:' + groovyVersion )
   }
-  compile.doFirst {
+  compileGroovy.doFirst {
     println ( '\tUsing groovy version ' + groovyVersion )
   }
   test.doFirst {
