@@ -1,6 +1,6 @@
 //  Gant -- A Groovy way of scripting Ant tasks.
 //
-//  Copyright © 2007-8 Russel Winder
+//  Copyright © 2007-9 Russel Winder
 //
 //  Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in
 //  compliance with the License. You may obtain a copy of the License at
@@ -16,8 +16,8 @@
 
 //  Sometimes we know the debDistribution target has been completed and so there is no need to do it again.
 
-try { ignoreBuildDeb = Boolean.valueOf ( ignoreBuildDeb ) }
-catch ( Exception e ) { ignoreBuildDeb = false }
+try { ignoreBuildDistribution = Boolean.valueOf ( ignoreBuildDistribution ) }
+catch ( Exception e ) { ignoreBuildDistribution = false }
 
 //  If we are building the debs then we have probably just done a distribution and may want to not bother
 //  with the tests.
@@ -33,8 +33,7 @@ final buildDirectory = rootDirectory + System.properties.'file.separator' + targ
 ant.property ( file : rootDirectory + System.properties.'file.separator' + 'local.build.properties' )
 ant.property ( file : rootDirectory + System.properties.'file.separator' + 'build.properties' )
 
-final requiresGroovyPackageName = 'gant'
-final standalonePackageName = 'gant-standalone'
+final packageName = 'gant-standalone'
 final section = 'devel'
 final priority = 'optional'
 final architecture = 'all'
@@ -51,13 +50,11 @@ final distributionURL = 'https://dav.codehaus.org/dist/gant/'
 ant.taskdef ( resource : 'ant_deb_task.properties' , classpath : [ System.properties.'user.home' , '.groovy' , 'lib' , 'ant-deb.jar' ].join ( System.properties.'file.separator' ) )
 
 final debsDirectory = 'debs'
-final scriptsDirectory = 'scripts'
-final scriptsRequiresGroovyDirectory = scriptsDirectory + '/bin_requiresGroovy'
-final scriptsStandaloneDirectory = scriptsDirectory + '/bin_standalone'
+final binDirectory = 'bin'
 
 includeTargets << gant.targets.Clean
 cleanPattern << '**/*~'
-cleanDirectory << [ debsDirectory , scriptsDirectory ]
+cleanDirectory << [ debsDirectory , binDirectory ]
 
 includeTool << gant.tools.Execute
 
@@ -75,40 +72,15 @@ Homepage: ${homepage}
 """
   
 target ( debFiles : 'Create the deb file of the distribution.' ) {
-  if ( ! ignoreBuildDeb ) { execute.shell ( "cd ${rootDirectory} && gant -DskipTests=${skipTests} debDistribution" ) }
-  mkdir ( dir : scriptsRequiresGroovyDirectory )
-  copy ( tofile : scriptsRequiresGroovyDirectory + '/gant' , file : 'gant.sh' ) {
-    filterset { filter ( token : 'GANT_VERSION' , value : gantVersion ) }
-    filterset { filter ( token : 'GROOVYJAR' , value : 'groovy-' + groovyDebianVersion + '.jar' ) }
-  }
-  mkdir ( dir : scriptsStandaloneDirectory )
-  copy ( tofile : scriptsStandaloneDirectory + '/gant' , file : 'gant_standalone.sh' ) {
+  if ( ! ignoreBuildDistribution ) { execute.shell ( "cd ${rootDirectory} && gant -DskipTests=${skipTests} debDistribution" ) }
+  mkdir ( dir : binDirectory )
+  copy ( tofile : binDirectory + '/gant' , file : 'gant.sh' ) {
     filterset { filter ( token : 'GANT_VERSION' , value : gantVersion ) }
     filterset { filter ( token : 'GROOVYJAR' , value : 'groovy-all-' + groovyStandaloneVersion + '.jar' ) }
   }
   mkdir ( dir : debsDirectory )
-  // Create a deb that depend on a Groovy deb                                                                                 
-  deb ( todir : debsDirectory , 'package' : requiresGroovyPackageName , section : section , priority : priority , architecture : architecture ,
-        depends : "java2-runtime, groovy ( >= ${groovyDebianVersion} ), ant ( >= ${ant.project.properties.antVersion} )",
-        conflicts : standalonePackageName , postinst : 'postinst' , prerm : 'prerm' ) {
-    version ( upstream : gantVersion )
-    maintainer ( name : 'Russel Winder' , email : 'russel.winder@concertant.com' )
-    //homepage ( homepage )
-    description ( synopsis : theSynopsis , theWords.replace ( '''
-.
-''' , '''
-.
-This package depends on the groovy and ant packages.
-.
-''' ) )
-    tarfileset ( file : scriptsRequiresGroovyDirectory + '/gant' , prefix : installPrefixBase + '/bin' , filemode : '755' )
-    tarfileset ( file : [ rootDirectory , 'scripts' , 'conf' , 'gant-starter.conf' ].join ( System.properties.'file.separator' ) , prefix : installPrefixBase + '/conf' )
-    tarfileset ( dir : [ buildDirectory , 'install' , 'lib'].join (  System.properties.'file.separator' ) , includes : 'gant-' + gantVersion+ '*.jar' , prefix : installPrefixBase + '/lib' )
-  }
-  // Create a deb that is standalone requiring no Groovy or Ant installation. 
-  deb ( todir : debsDirectory , 'package' : standalonePackageName , section : section , priority : priority , architecture : architecture ,
-        depends : 'java2-runtime',
-        conflicts : requiresGroovyPackageName , postinst : 'postinst' , prerm : 'prerm' ) {
+  deb ( todir : debsDirectory , 'package' : packageName , section : section , priority : priority , architecture : architecture ,
+        depends : 'java2-runtime', postinst : 'postinst' , prerm : 'prerm' ) {
     version ( upstream : gantVersion )
     maintainer ( name : 'Russel Winder' , email : 'russel.winder@concertant.com' )
     //homepage ( homepage )
@@ -121,7 +93,7 @@ on a separate installation of Groovy -- all the jars needed for Gant to run are
 included in the package.
 .
 ''' ) )
-    tarfileset ( file : scriptsStandaloneDirectory + '/gant' , prefix : installPrefixBase + '/bin' , filemode : '755' )
+    tarfileset ( file : binDirectory + '/gant' , prefix : installPrefixBase + '/bin' , filemode : '755' )
     tarfileset ( file : [ rootDirectory , targetDirectoryName , 'install' , 'bin' , 'startGroovy' ].join ( System.properties.'file.separator' ) , prefix : installPrefixBase + '/bin' )
     tarfileset ( file : [ rootDirectory , targetDirectoryName , 'install' , 'conf' , 'gant-starter.conf' ].join ( System.properties.'file.separator' ) , prefix : installPrefixBase + '/conf' )
     tarfileset ( dir : [ buildDirectory , 'install' , 'lib'].join (  System.properties.'file.separator' ) , includes : '*.jar' , prefix : installPrefixBase + '/lib' )
