@@ -100,16 +100,17 @@ subprojects {
   
   groovydoc {
     dependsOn ( 'classes' )
-    //options.subPackages ( 'gant' , 'org.codehaus.gant' )
-    //options.overview ( 'overview.html' )
-    //options.showAll ( )
-    //options.encoding ( 'UTF-8' )
-    //options.setUse ( true )
-    ////options.author ( true )
-    ////options.version ( true )
-    //options.windowTitle ( packageTitle )
-    //options.docTitle ( packageTitle )
-    //options.footer ( copyrightString )
+    packageNames = [ 'gant.*' , 'org.codehaus.gant.*' ]
+    overview = 'overview.html'
+    includePrivate = false
+    encoding = 'UTF-8'
+    use = true
+    author = 'true'
+    version = 'true'
+    windowTitle = packageTitle
+    docTitle = packageTitle
+    header = packageTitle
+    footer = copyrightString
   }
   
   task myGroovyDoc ( dependsOn : 'classes' , description : 'Create the GroovyDoc API documentation.' ) << {
