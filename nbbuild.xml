@@ -8,7 +8,7 @@
 <!-- You can turn off the Compile on Save (or Deploy on Save) setting -->
 <!-- in the project's Project Properties dialog box.-->
 <project name="Gant_Trunk" default="default" basedir=".">
-    <description>Builds, tests, and runs the project Gant_Trunk_Mainline.</description>
+    <description>Builds, tests, and runs the project Gant_Trunk.</description>
     <import file="nbproject/build-impl.xml"/>
     <!--
 
@@ -59,7 +59,7 @@
 
     An example of overriding the target for project execution could look like this:
 
-        <target name="run" depends="Gant_Trunk_Mainline-impl.jar">
+        <target name="run" depends="Gant_Trunk-impl.jar">
             <exec dir="bin" executable="launcher.exe">
                 <arg file="${dist.jar}"/>
             </exec>
