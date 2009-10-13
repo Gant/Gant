@@ -15,6 +15,7 @@
 //  Author : Russel Winder <russel.winder@concertant.com>
 
 def osgify = true
+def groovyAntTaskTestVersionPropertyFile = new File ( groovyAntTaskTestVersionPropertyFileName )
 
 def forEachProject ( Closure c ) {
   c ( 'gant' )
