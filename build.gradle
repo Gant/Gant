@@ -235,4 +235,10 @@ task wrapper ( type : Wrapper ) {
 
 task clobber ( description : 'Do a really detailed clean.' ) << {
   ant.delete ( dir : 'gant' )
+  [ '1.5' , '1.6' , '1.7' ].each { item ->
+    ant.delete ( dir : 'gant_groovy' + item )
+  }
+  ant.delete {
+    fileset ( dir : '.' , includes : 'texput.log,groovyAntTaskTestVersion.properties,**/*~' )
+  }
 }
