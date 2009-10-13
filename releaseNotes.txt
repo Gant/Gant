@@ -5,6 +5,14 @@ Added the ability to skip the tests when using the Maven target set.  Use -Dskip
 line to stop the tests being compiled and run, otherwise they will be.
 
 
+1.8.1
+-----
+
+Upgrade to Ivy 2.1.0.
+
+Upgrade to Groovy 1.7-beta-2
+
+
 1.8.0
 -----
 
