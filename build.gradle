@@ -16,8 +16,8 @@
 
 import org.apache.tools.ant.filters.ReplaceTokens
 
-def osgify = true
 def groovyAntTaskTestVersionPropertyFile = new File ( groovyAntTaskTestVersionPropertyFileName )
+def osgify = true
 
 def forEachProject ( Closure c ) {
   c ( 'gant' )
@@ -75,7 +75,6 @@ subprojects {
   }
   repositories {
     mavenCentral ( )
-    mavenRepo ( urls : 'file://' + System.properties.'user.home' + '/.m2/repository' )
   }
   dependencies {
     compile (
