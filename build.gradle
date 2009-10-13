@@ -27,6 +27,16 @@ def groovyAntTaskTestVersionPropertyFile = new File ( ant.antProject.properties.
 
 def osgify = true
 
+supportedGroovyVersions = [ '1.5' , '1.6' , '1.7' ]
+supportedGroovyDirectoryRoot = 'gant_groovy'
+
+def forEachProject ( Closure c ) {
+  c ( 'gant' )
+  for ( String s : supportedGroovyVersions ) { c ( supportedGroovyDirectoryRoot + s ) }
+}
+
+forEachProject { item ->  if ( ! ( new File ( item ) ).isDirectory ( ) ) { ant.mkdir ( dir : item ) } }
+
 allprojects {
   group =  'org.codehaus.gant'
   artifact = 'gant'
@@ -34,31 +44,24 @@ allprojects {
 }  
 
 subprojects {
-
   usePlugin ( 'groovy' )
-
   if ( osgify ) { usePlugin ( 'osgi' ) }
-  
+  usePlugin ( 'maven' )
   sourceCompatibility = 5
   targetCompatibility = 5
-
   sourceSets {
     main { groovy { srcDir '../src/main/groovy' } }
     test { groovy { srcDir '../src/test/groovy' } }
   }
-
   //metaInf << files ( '../LICENCE.txt' )
-
   def theVendor = 'The Codehaus'
   def theTitle = 'Gant: Scripting Ant tasks with Groovy.'
-
   if ( osgify ) {
     configure ( jar.osgi ) {
       name = 'Gant'
       instruction 'Bundle-Vendor' , theVendor
       instruction 'Bundle-Description' , theTitle
       instruction 'Bundle-DocURL' , 'http://gant.codehaus.org'
-      
       instruction 'Built-By' , System.properties.'user.name'
       instruction 'Extension-Name' , artifact
       instruction 'Specification-Title' , theTitle
@@ -81,40 +84,26 @@ subprojects {
                              'Implementation-Vendor' : theVendor
                              )
   }
-  
   repositories {
     mavenCentral ( )
+    mavenRepo ( urls : 'file://' + System.properties.'user.home' + '/.m2/repository' )
   }
-  
   dependencies {
     compile (
              'commons-cli:commons-cli:' + commonsCliVersion ,
              'org.apache.ant:ant:' + antVersion
              )
-    testCompile (
-                 'junit:junit:' + junitVersion
-                 )
-    testRuntime (
-                 'org.apache.ivy:ivy:' + ivyVersion
-                 )
+    testCompile ( 'junit:junit:' + junitVersion )
+    testRuntime ( 'org.apache.ivy:ivy:' + ivyVersion )
   }
-  
-  test.doLast {
-    groovyAntTaskTestVersionPropertyFile.delete ( )
-  }
-  
+  test.doLast { groovyAntTaskTestVersionPropertyFile.delete ( ) }
   clean.doLast {
     ant.delete { fileset ( dir : '.' , includes : '**/*~, texput.log' ) }
     ant.delete ( dir :  'target_forMavenTest' )
-    //ant.delete ( dir : '.' )
   }
-
   def packageTitle = 'Gant ' + version
   def copyrightString = 'Copyright &#169; 2006&#8211;9  The Codehaus.  All Rights Reserved.'
-
   javadoc {
-    //dependsOn ( 'compile' )
-    //options.subPackages ( 'gant' , 'org.codehaus.gant' )
     options.overview ( 'overview.html' )
     options.showAll ( )
     options.encoding ( 'UTF-8' )
@@ -129,10 +118,9 @@ subprojects {
     javadoc.title = packageTitle
     javadoc.options.docTitle = javadoc.title
   }
-  
   groovydoc {
-    dependsOn ( 'classes' )
-    packageNames = [ 'gant.*' , 'org.codehaus.gant.*' ]
+    dependsOn ( 'classes' ) // Should not need this. :-(
+    packageNames = [ 'gant.*' , 'org.codehaus.gant.*' ] // Why have to have this when not needed for javadoc?
     overview = 'overview.html'
     includePrivate = false
     encoding = 'UTF-8'
@@ -144,24 +132,18 @@ subprojects {
     header = packageTitle
     footer = copyrightString
   }
-  
   task documentation ( dependsOn: [ 'javadoc' , 'groovydoc' ] , description : 'Create the API documentation.' )
-  
-  usePlugin ( 'maven' )
-  
   uploadArchives {
     repositories.mavenDeployer {
       repository ( url : 'http://repository.codehaus.org' )
     }
   }
-  
   defaultTasks ( 'test' ) 
 }
 
 project ( ':gant' ) {
-  //  If the user has GROOVY_HOME set then use that Groovy rather than the one speficied in the properties
-  //  files.  However we have to fiddle to find the version number. 
-
+  //  If the user has GROOVY_HOME set then use that Groovy rather than the one specified in the properties
+  //  files.  However we have to fiddle to find the version number.
   def groovyHome = System.getenv ( ).'GROOVY_HOME'
   def groovyLib = null
   if ( groovyHome ) {
@@ -172,22 +154,12 @@ project ( ':gant' ) {
     groovyVersion = ( items[0].name =~ groovyVersionPatternString )[0][2]
     assert groovyVersion
   }
-  else {
-    groovyVersion = ant.antProject.properties.groovyStandaloneVersion
-  }
+  else { groovyVersion = ant.antProject.properties.groovyStandaloneVersion }
   archivesBaseName = artifact
-  repositories {
-    flatDir ( name : 'groovyInstallation' , dirs : [ new File ( groovyHome , 'embeddable' ) , groovyLib ] )
-  }
-  dependencies {
-    groovy ( 'org.codehaus.groovy:groovy-all:' + groovyVersion )
-  }
-  compileGroovy.doFirst {
-    println ( '\n\tUsing Groovy version ' + groovyVersion + '\n' )
-  }
-  test.doFirst {
-    groovyAntTaskTestVersionPropertyFile.write ( 'groovyAntTaskTestVersion = ' + groovyVersion )
-  }
+  repositories { flatDir ( name : 'groovyInstallation' , dirs : [ new File ( groovyHome , 'embeddable' ) , groovyLib ] ) }
+  dependencies { groovy ( 'org.codehaus.groovy:groovy-all:' + groovyVersion ) }
+  compileGroovy.doFirst { println ( '\n\tUsing Groovy version ' + groovyVersion + '\n' ) }
+  test.doFirst { groovyAntTaskTestVersionPropertyFile.write ( 'groovyAntTaskTestVersion = ' + groovyVersion ) }
   task installGant ( dependsOn : 'assemble' ) << {
     def installDirectory = gant_installPath
     def installBinDirectory = installDirectory + '/bin'
@@ -206,39 +178,28 @@ project ( ':gant' ) {
       mapper ( type : 'flatten' )
     }
   }
-  task uninstallGant << {
-    ant.delete ( dir : gant_installPath ) 
-  }
+  task uninstallGant << { ant.delete ( dir : gant_installPath ) }
 }
 
-[ [ '1.5' , ant.project.properties.groovy15Version ] ,
-  [ '1.6' , ant.project.properties.groovy16Version ] ,
-  [ '1.7' , ant.project.properties.groovy17Version ] ].each { item ->
-  project ( ':gant_groovy' + item[0] ) {
-    archivesBaseName = artifact + '_groovy' + item[0]
-    dependencies {
-      groovy ( 'org.codehaus.groovy:groovy-all:' + item[1] )
-    }
-    compileGroovy.doFirst {
-      println ( '\n\tUsing Groovy version ' + item[1] + '\n' )
-    }
-    test.doFirst {
-      groovyAntTaskTestVersionPropertyFile.write ( 'groovyAntTaskTestVersion = ' + item[1] )
+forEachProject { archivesBaseName ->
+  if ( archivesBaseName != 'gant' ) {
+    def groovyVersionPropertyName = archivesBaseName.replace ( artifact + '_' , '' ).replace ( '.' , '' ) + 'Version'
+    def groovyVersionNumber = ant.project.properties."${groovyVersionPropertyName}"
+    println ( archivesBaseName + ' , ' + groovyVersionPropertyName + ' , ' + groovyVersionNumber ) 
+    project ( archivesBaseName ) {
+      dependencies { groovy ( 'org.codehaus.groovy:groovy-all:' + groovyVersionNumber ) }
+      compileGroovy.doFirst { println ( '\n\tUsing Groovy version ' + groovyVersionNumber + '\n' ) }
+      test.doFirst { groovyAntTaskTestVersionPropertyFile.write ( 'groovyAntTaskTestVersion = ' + groovyVersionNumber ) }
     }
   }
 }
 
 task wrapper ( type : Wrapper ) {
-    gradleVersion = '0.8'
+    gradleVersion = '0.9'
     jarPath = 'wrapper'
 }
 
 task clobber ( description : 'Do a really detailed clean.' ) << {
-  ant.delete ( dir : 'gant' )
-  [ '1.5' , '1.6' , '1.7' ].each { item ->
-    ant.delete ( dir : 'gant_groovy' + item )
-  }
-  ant.delete {
-    fileset ( dir : '.' , includes : 'texput.log,groovyAntTaskTestVersion.properties,**/*~' )
-  }
+  forEachProject { item -> ant.delete ( dir : item ) }
+  ant.delete { fileset ( dir : '.' , includes : 'texput.log,groovyAntTaskTestVersion.properties,**/*~' ) }
 }
