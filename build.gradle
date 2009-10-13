@@ -14,6 +14,8 @@
 //
 //  Author : Russel Winder <russel.winder@concertant.com>
 
+import org.apache.tools.ant.filters.ReplaceTokens
+
 def osgify = true
 def groovyAntTaskTestVersionPropertyFile = new File ( groovyAntTaskTestVersionPropertyFileName )
 
@@ -148,24 +150,25 @@ project ( ':gant' ) {
   compileGroovy.doFirst { println ( '\n\tUsing Groovy version ' + groovyVersion + '\n' ) }
   test.doFirst { groovyAntTaskTestVersionPropertyFile.write ( 'groovyAntTaskTestVersion = ' + groovyVersion ) }
   task installGant ( dependsOn : 'assemble' ) << {
-    def installDirectory = gant_installPath
+    def installDirectory = evaluate ( '"' + ( gant_installPath ?: '/usr/share/gant' ) + '"' )
     def installBinDirectory = installDirectory + '/bin'
     def scriptsDirectory = '../scripts'
-    ant.copy ( todir : installBinDirectory ) {
-      fileset ( dir :  scriptsDirectory + '/bin_requiresGroovy' )
-      fileset ( dir : scriptsDirectory + '/bin' )
-      filterset { filter ( token : 'GANT_VERSION' , value : gantVersion ) }
-      filterset { filter ( token : 'GROOVYJAR' , value : 'groovy-' + groovyVersion + '.jar' ) }
+    copy {
+      into ( installBinDirectory )
+      from ( [ scriptsDirectory + '/bin' , scriptsDirectory + '/bin_requiresGroovy' ] )
+      filter ( ReplaceTokens , tokens : [ GROOVYJAR : 'groovy-' + groovyVersion + '.jar' ] )
     }
     ant.chmod ( perm : 'a+x' ) { fileset ( dir : installBinDirectory , includes : 'gant*' ) }
-    ant.copy ( todir : installDirectory ) { fileset ( dir : scriptsDirectory , includes : 'conf/gant-starter.conf' ) }
-    ant.copy ( todir : installDirectory + '/lib' ) {
-      fileset ( dir : 'build/libs' , includes : '*' ) 
-      fileset ( dir : '../jarfiles' , includes : '*' )
-      mapper ( type : 'flatten' )
+    copy {
+      into ( installDirectory + '/conf' )
+      from ( scriptsDirectory + '/conf/gant-starter.conf' )
+    }
+    copy {
+      into ( installDirectory + '/lib' )
+      from ( [ 'build/libs' , '../jarfiles' ] )
     }
   }
-  task uninstallGant << { ant.delete ( dir : gant_installPath ) }
+  task uninstallGant << { ant.delete ( dir : evaluate ( /"${gant_installPath}"/ ) ) }
 }
 
 forEachProject { archivesBaseName ->
