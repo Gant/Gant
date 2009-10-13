@@ -9,3 +9,7 @@ build
 dist
 commit.msg
 packaging/AntDebTask/debs
+gant
+gant_groovy1.5
+gant_groovy1.6
+gant_groovy1.7
