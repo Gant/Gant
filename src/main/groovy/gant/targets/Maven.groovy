@@ -23,6 +23,8 @@ import org.codehaus.gant.GantState
  *  @author Russel Winder <russel.winder@concertant.com>
  */
 final class Maven {
+  private final defaultJUnitVersion = '4.7'
+  private final defaultTestNGVersion = '5.10'
   private final readOnlyKeys = [ 'binding' , 'compileDependenciesClasspathId' , 'testDependenciesClasspathId', 'antlibXMLns' , 'mavenPOMId' ]
   private final Map<String,String> properties = [
                                   groupId : '' ,
@@ -45,7 +47,7 @@ final class Maven {
                                   compileDependencies : [ ] ,
                                   testDependencies : [ ] ,
                                   testFramework : 'junit' ,
-                                  testFrameworkVersion : '3.8.2' ,
+                                  testFrameworkVersion : defaultJUnitVersion ,
                                   testFrameworkClassifier : 'jdk15' ,
                                   packaging : 'jar' ,
                                   deployURL : '' ,
@@ -54,8 +56,8 @@ final class Maven {
                                   manifest : [ : ] ,
                                   manifestIncludes :  [ ] ,
                                   ( readOnlyKeys[0] ) : null ,
-                                  ( readOnlyKeys[1] ) :  'compile.dependency.classpath' ,
-                                  ( readOnlyKeys[2] ) :  'test.dependency.classpath' ,
+                                  ( readOnlyKeys[1] ) : 'compile.dependency.classpath' ,
+                                  ( readOnlyKeys[2] ) : 'test.dependency.classpath' ,
                                   ( readOnlyKeys[3] ) : 'antlib:org.apache.maven.artifact.ant' ,
                                   ( readOnlyKeys[4] ) : 'maven.pom'
                                   ]
@@ -106,7 +108,7 @@ final class Maven {
         //
         //  Need to find a better way of working with the JUnit and TestNG version numbers.  There is to much "magic" here.
         //
-        if ( owner.testFrameworkVersion == '3.8.2' ) { owner.testFrameworkVersion = '5.8' }
+        if ( owner.testFrameworkVersion == defaultJUnitVersion ) { owner.testFrameworkVersion = defaultTestNGVersion }
         owner.testDependencies.each { dependency -> if ( dependency.artifactId == 'testng' ) { testngInstalled = true } }
         if ( ! testngInstalled ) {
           owner.testDependencies << [
@@ -226,103 +228,113 @@ final class Maven {
     */
     properties.binding.target.call ( 'test-compile' : "Compile the test source code in ${properties.testSourcePath} to ${properties.testCompilePath}." ) {
       depends ( owner.binding.compile )
-      owner.binding.ant.mkdir ( dir : owner.testCompilePath  )
-      if ( owner.testSourcePath != owner.default_testSourcePath ) {
-        if ( ( new File ( (String) owner.testSourcePath ) ).isDirectory ( ) ) {
-          owner.binding.ant.groovyc ( [ srcdir : owner.testSourcePath , destdir : owner.testCompilePath , fork : 'true' ] + owner.groovyCompileProperties ) {
-            javac ( owner.javaCompileProperties ) {
-              if ( owner.nestedJavacCompilerArgs ) { owner.nestedJavacCompilerArgs.each { arg -> compilerarg ( value : arg ) } }
-            }
-            classpath {
-              pathelement ( location : owner.mainCompilePath )
-              pathelement ( path : owner.compileClasspath.join ( System.properties.'path.separator' ) )
-              pathelement ( path : owner.testClasspath.join ( System.properties.'path.separator' ) )
-              if ( owner.compileDependencies ) { path ( refid : owner.compileDependenciesClasspathId ) }
-              if ( owner.testDependencies ) { path ( refid : owner.testDependenciesClasspathId ) }
-            }
-          }
-        }
-      }
-      else {
-        if ( ( new File ( (String) owner.testSourcePath ) ).isDirectory ( ) ) {
-          try {
-            new File ( (String) owner.default_testSourcePath ).eachDir { directory ->
-              switch ( directory.name ) {
-               case 'java' :
-               //  Need to use the joint Groovy compiler here to deal with the case where Groovy files are in the
-               //  Java hierarchy.
-               owner.binding.ant.javac ( [ srcdir : owner.testSourcePath + System.properties.'file.separator' + 'java' , destdir : owner.testCompilePath , fork : 'true' ] + owner.javaCompileProperties ) {
-                 classpath {
-                   pathelement ( location : owner.mainCompilePath )
-                   pathelement ( path : owner.compileClasspath.join ( System.properties.'path.separator' ) )
-                   pathelement ( path : owner.testClasspath.join ( System.properties.'path.separator' ) )
-                   if ( owner.compileDependencies ) { path ( refid : owner.compileDependenciesClasspathId ) }
-                   if ( owner.testDependencies ) { path ( refid : owner.testDependenciesClasspathId ) }
-                 }
-               }
-               break
-               case 'groovy' :
-               owner.binding.ant.groovyc ( [ srcdir : owner.testSourcePath + System.properties.'file.separator' + 'groovy' , destdir : owner.testCompilePath , fork : 'true' ] + owner.groovyCompileProperties ) {
-                 javac ( owner.javaCompileProperties ) {
-                   if ( owner.nestedJavacCompilerArgs ) { owner.nestedJavacCompilerArgs.each { arg -> compilerarg ( value : arg ) } }
-                 }
-                 classpath {
-                   pathelement ( location : owner.mainCompilePath )
-                   pathelement ( path : owner.compileClasspath.join ( System.properties.'path.separator' ) )
-                   pathelement ( path : owner.testClasspath.join ( System.properties.'path.separator' ) )
-                   if ( owner.compileDependencies ) { path ( refid : owner.compileDependenciesClasspathId ) }
-                   if ( owner.testDependencies ) { path ( refid : owner.testDependenciesClasspathId ) }
-                 }
-               }
-               break
+      def doTest = true
+      try { doTest = ! ( owner.binding.skipTest == 'true' ) }
+      catch ( MissingPropertyException mpe ) { /* Intentionally blank */ }
+      if ( doTest ) {
+        owner.binding.ant.mkdir ( dir : owner.testCompilePath  )
+        if ( owner.testSourcePath != owner.default_testSourcePath ) {
+          if ( ( new File ( (String) owner.testSourcePath ) ).isDirectory ( ) ) {
+            owner.binding.ant.groovyc ( [ srcdir : owner.testSourcePath , destdir : owner.testCompilePath , fork : 'true' ] + owner.groovyCompileProperties ) {
+              javac ( owner.javaCompileProperties ) {
+                if ( owner.nestedJavacCompilerArgs ) { owner.nestedJavacCompilerArgs.each { arg -> compilerarg ( value : arg ) } }
+              }
+              classpath {
+                pathelement ( location : owner.mainCompilePath )
+                pathelement ( path : owner.compileClasspath.join ( System.properties.'path.separator' ) )
+                pathelement ( path : owner.testClasspath.join ( System.properties.'path.separator' ) )
+                if ( owner.compileDependencies ) { path ( refid : owner.compileDependenciesClasspathId ) }
+                if ( owner.testDependencies ) { path ( refid : owner.testDependenciesClasspathId ) }
               }
             }
           }
-          catch ( FileNotFoundException fnfe ) { throw new RuntimeException ( 'Error: ' + owner.testSourcePath + ' does not exist.' , fnfe ) }
+        }
+        else {
+          if ( ( new File ( (String) owner.testSourcePath ) ).isDirectory ( ) ) {
+            try {
+              new File ( (String) owner.default_testSourcePath ).eachDir { directory ->
+                switch ( directory.name ) {
+                 case 'java' :
+                  //  Need to use the joint Groovy compiler here to deal with the case where Groovy files are in the
+                  //  Java hierarchy.
+                  owner.binding.ant.javac ( [ srcdir : owner.testSourcePath + System.properties.'file.separator' + 'java' , destdir : owner.testCompilePath , fork : 'true' ] + owner.javaCompileProperties ) {
+                    classpath {
+                      pathelement ( location : owner.mainCompilePath )
+                      pathelement ( path : owner.compileClasspath.join ( System.properties.'path.separator' ) )
+                      pathelement ( path : owner.testClasspath.join ( System.properties.'path.separator' ) )
+                      if ( owner.compileDependencies ) { path ( refid : owner.compileDependenciesClasspathId ) }
+                      if ( owner.testDependencies ) { path ( refid : owner.testDependenciesClasspathId ) }
+                    }
+                  }
+                  break
+                 case 'groovy' :
+                  owner.binding.ant.groovyc ( [ srcdir : owner.testSourcePath + System.properties.'file.separator' + 'groovy' , destdir : owner.testCompilePath , fork : 'true' ] + owner.groovyCompileProperties ) {
+                    javac ( owner.javaCompileProperties ) {
+                      if ( owner.nestedJavacCompilerArgs ) { owner.nestedJavacCompilerArgs.each { arg -> compilerarg ( value : arg ) } }
+                    }
+                    classpath {
+                      pathelement ( location : owner.mainCompilePath )
+                      pathelement ( path : owner.compileClasspath.join ( System.properties.'path.separator' ) )
+                      pathelement ( path : owner.testClasspath.join ( System.properties.'path.separator' ) )
+                      if ( owner.compileDependencies ) { path ( refid : owner.compileDependenciesClasspathId ) }
+                      if ( owner.testDependencies ) { path ( refid : owner.testDependenciesClasspathId ) }
+                    }
+                  }
+                  break
+                }
+              }
+            }
+            catch ( FileNotFoundException fnfe ) { throw new RuntimeException ( 'Error: ' + owner.testSourcePath + ' does not exist.' , fnfe ) }
+          }
         }
       }
     }
     properties.binding.target.call ( test : "Run the tests using the ${properties.testFramework} unit testing framework." ) {
       depends ( owner.binding.'test-compile' )
-      switch ( owner.testFramework ) {
-       case 'testng' :
-       owner.binding.ant.taskdef ( resource : 'testngtasks' ) { classpath { path ( refid : owner.testDependenciesClasspathId ) } }
-       owner.binding.ant.testng ( outputdir : owner.testReportPath ) {
-         classpath {
-           pathelement ( location : owner.mainCompilePath )
-           pathelement ( location : owner.testCompilePath )
-           pathelement ( path : owner.compileClasspath.join ( System.properties.'path.separator' ) )
-           pathelement ( path : owner.testClasspath.join ( System.properties.'path.separator' ) )
-           if ( owner.compileDependencies ) { path ( refid : owner.compileDependenciesClasspathId ) }
-           if ( owner.testDependencies ) { path ( refid : owner.testDependenciesClasspathId ) }
-         }
-         classfileset ( dir : owner.testCompilePath )
-       }
-       break
-       case 'junit' :
-       default :
-       owner.binding.ant.mkdir ( dir : owner.testReportPath )
-       owner.binding.ant.junit ( printsummary : 'yes' , failureproperty : 'testsFailed' , fork : 'true' , forkmode : 'once' ) {
-         classpath {
-           pathelement ( location : owner.mainCompilePath )
-           pathelement ( location : owner.testCompilePath )
-           pathelement ( path : owner.compileClasspath.join ( System.properties.'path.separator' ) )
-           pathelement ( path : owner.testClasspath.join ( System.properties.'path.separator' ) )
-           if ( owner.compileDependencies ) { path ( refid : owner.compileDependenciesClasspathId ) }
-           if ( owner.testDependencies ) { path ( refid : owner.testDependenciesClasspathId ) }
-         }
-         formatter ( type : 'plain' )
-         formatter ( type : 'xml' )
-         sysproperty ( key : 'groovy.home' , value : System.properties.'groovy.home' )
-         batchtest ( todir : owner.testReportPath ) { fileset ( dir : owner.testCompilePath , includes : '**/*Test.class' ) }
-       }
-       break
-      }
-      try {
-        // owner.binding.ant.project.properties.testsFailed may not exist, hence the MissingPropertyException capture.
-        if ( ! owner.binding.testFailIgnore && owner.binding.ant.project.properties.testsFailed ) { throw new RuntimeException ( 'Tests failed, execution terminating.' ) }
-      }
+      def doTest = true
+      try { doTest = ! ( owner.binding.skipTest == 'true' ) }
       catch ( MissingPropertyException mpe ) { /* Intentionally blank */ }
+      if ( doTest ) {
+        switch ( owner.testFramework ) {
+         case 'testng' :
+          owner.binding.ant.taskdef ( resource : 'testngtasks' ) { classpath { path ( refid : owner.testDependenciesClasspathId ) } }
+          owner.binding.ant.testng ( outputdir : owner.testReportPath ) {
+            classpath {
+              pathelement ( location : owner.mainCompilePath )
+              pathelement ( location : owner.testCompilePath )
+              pathelement ( path : owner.compileClasspath.join ( System.properties.'path.separator' ) )
+              pathelement ( path : owner.testClasspath.join ( System.properties.'path.separator' ) )
+              if ( owner.compileDependencies ) { path ( refid : owner.compileDependenciesClasspathId ) }
+              if ( owner.testDependencies ) { path ( refid : owner.testDependenciesClasspathId ) }
+            }
+            classfileset ( dir : owner.testCompilePath )
+          }
+          break
+         case 'junit' :
+         default :
+          owner.binding.ant.mkdir ( dir : owner.testReportPath )
+          owner.binding.ant.junit ( printsummary : 'yes' , failureproperty : 'testsFailed' , fork : 'true' , forkmode : 'once' ) {
+            classpath {
+              pathelement ( location : owner.mainCompilePath )
+              pathelement ( location : owner.testCompilePath )
+              pathelement ( path : owner.compileClasspath.join ( System.properties.'path.separator' ) )
+              pathelement ( path : owner.testClasspath.join ( System.properties.'path.separator' ) )
+              if ( owner.compileDependencies ) { path ( refid : owner.compileDependenciesClasspathId ) }
+              if ( owner.testDependencies ) { path ( refid : owner.testDependenciesClasspathId ) }
+            }
+            formatter ( type : 'plain' )
+            formatter ( type : 'xml' )
+            sysproperty ( key : 'groovy.home' , value : System.properties.'groovy.home' )
+            batchtest ( todir : owner.testReportPath ) { fileset ( dir : owner.testCompilePath , includes : '**/*Test.class' ) }
+          }
+          break
+        }
+        try {
+          // owner.binding.ant.project.properties.testsFailed may not exist, hence the MissingPropertyException capture.
+          if ( ! owner.binding.testFailIgnore && owner.binding.ant.project.properties.testsFailed ) { throw new RuntimeException ( 'Tests failed, execution terminating.' ) }
+        }
+        catch ( MissingPropertyException mpe ) { /* Intentionally blank */ }
+      }
     }
     properties.binding.target.call ( 'package' : "Package the artefact as a ${properties.packaging} in ${properties.mainCompilePath}." ) {
       [ 'groupId' , 'artifactId' , 'version' ].each { item ->

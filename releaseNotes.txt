@@ -1,3 +1,10 @@
+1.9.0
+-----
+
+Added the ability to skip the tests when using the Maven target set.  Use -DskipTest=true on the command
+line to stop the tests being compiled and run, otherwise they will be.
+
+
 1.8.0
 -----
 
