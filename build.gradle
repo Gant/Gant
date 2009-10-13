@@ -14,25 +14,11 @@
 //
 //  Author : Russel Winder <russel.winder@concertant.com>
 
-ant.property ( file : 'build.properties' )
-
-//  For some reason the ant variable is not available in the allprojects and subprojects closure :-(
-
-def gantVersion = ant.antProject.properties.gantVersion
-def commonsCliVersion = ant.antProject.properties.commonsCliVersion
-def antVersion = ant.antProject.properties.antVersion
-def junitVersion = ant.antProject.properties.junitVersion
-def ivyVersion = ant.antProject.properties.ivyVersion
-def groovyAntTaskTestVersionPropertyFile = new File ( ant.antProject.properties.groovyAntTaskTestVersionPropertyFileName )
-
 def osgify = true
-
-supportedGroovyVersions = [ '1.5' , '1.6' , '1.7' ]
-supportedGroovyDirectoryRoot = 'gant_groovy'
 
 def forEachProject ( Closure c ) {
   c ( 'gant' )
-  for ( String s : supportedGroovyVersions ) { c ( supportedGroovyDirectoryRoot + s ) }
+  for ( String s : [ '1.5' , '1.6' , '1.7' ] ) { c ( 'gant_groovy' + s ) }
 }
 
 forEachProject { item ->  if ( ! ( new File ( item ) ).isDirectory ( ) ) { ant.mkdir ( dir : item ) } }
@@ -154,7 +140,7 @@ project ( ':gant' ) {
     groovyVersion = ( items[0].name =~ groovyVersionPatternString )[0][2]
     assert groovyVersion
   }
-  else { groovyVersion = ant.antProject.properties.groovyStandaloneVersion }
+  else { groovyVersion = groovyStandaloneVersion }
   archivesBaseName = artifact
   repositories { flatDir ( name : 'groovyInstallation' , dirs : [ new File ( groovyHome , 'embeddable' ) , groovyLib ] ) }
   dependencies { groovy ( 'org.codehaus.groovy:groovy-all:' + groovyVersion ) }
@@ -183,9 +169,7 @@ project ( ':gant' ) {
 
 forEachProject { archivesBaseName ->
   if ( archivesBaseName != 'gant' ) {
-    def groovyVersionPropertyName = archivesBaseName.replace ( artifact + '_' , '' ).replace ( '.' , '' ) + 'Version'
-    def groovyVersionNumber = ant.project.properties."${groovyVersionPropertyName}"
-    println ( archivesBaseName + ' , ' + groovyVersionPropertyName + ' , ' + groovyVersionNumber ) 
+    def groovyVersionNumber = getProperty ( archivesBaseName.replace ( artifact + '_' , '' ).replace ( '.' , '' ) + 'Version' )
     project ( archivesBaseName ) {
       dependencies { groovy ( 'org.codehaus.groovy:groovy-all:' + groovyVersionNumber ) }
       compileGroovy.doFirst { println ( '\n\tUsing Groovy version ' + groovyVersionNumber + '\n' ) }
