@@ -21,9 +21,7 @@ Author : Russel Winder <russel.winder@concertant.com>
 <project name="Common Ant File Bits for Gant Ant Task Test" xmlns:artifact="urn:maven-artifact-ant" basedir="." >
 
   <property file="build.properties"/>
-
-  <property file="${toplevelDirectory}/local.build.properties"/>
-  <property file="${toplevelDirectory}/build.properties"/>
+  <property file="${toplevelDirectory}/gradle.properties"/>
 
   <property environment="environment"/>
 
