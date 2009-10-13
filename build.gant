@@ -19,7 +19,7 @@ final tarExtension = '.tar'
 final tgzExtension = '.tgz'
 
 property ( file : 'local.build.properties' )
-property ( file : 'build.properties' )
+property ( file : 'gradle.properties' )
 
 carryOn = true
 [ 'gantVersion' ,

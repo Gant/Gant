@@ -47,7 +47,7 @@ Author : Russel Winder <russel.winder@concertant.com>
   -->
 
   <property file="local.build.properties"/>
-  <property file="build.properties"/>
+  <property file="gradle.properties"/>
 
   <property name="groovyVersion" value="${groovy16Version}"/>
 
