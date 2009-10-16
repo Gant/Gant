@@ -133,7 +133,7 @@ subprojects {
   uploadArchives {
     repositories.mavenDeployer {
       uniqueVersion = false
-      configuration = configurations.deployerJars
+      //configuration = configurations.deployerJars
       repository ( url : 'https://dav.codehaus.org/repository/gant' )
       snapshotRepository ( url : 'https://dav.codehaus.org/snapshots.repository/gant' )
     }
@@ -182,6 +182,8 @@ project ( ':gant' ) {
   task uninstallGant << { ant.delete ( dir : evaluate ( /"${gant_installPath}"/ ) ) }
 }
 
+ciBuildTasks = [ ]
+
 forEachProject { archivesBaseName ->
   if ( archivesBaseName != 'gant' ) {
     def groovyVersionNumber = getProperty ( archivesBaseName.replace ( artifact + '_' , '' ).replace ( '.' , '' ) + 'Version' )
@@ -190,6 +192,7 @@ forEachProject { archivesBaseName ->
       compileGroovy.doFirst { println ( '\n\tUsing Groovy version ' + groovyVersionNumber + '\n' ) }
       test.doFirst { groovyAntTaskTestVersionPropertyFile.write ( 'groovyAntTaskTestVersion = ' + groovyVersionNumber ) }
     }
+    ciBuildTasks << archivesBaseName + ':build'
   }
 }
 
@@ -202,3 +205,6 @@ task clobber ( description : 'Do a really detailed clean.' ) << {
   forEachProject { item -> ant.delete ( dir : item ) }
   ant.delete { fileset ( dir : '.' , includes : 'texput.log,groovyAntTaskTestVersion.properties,**/*~' ) }
 }
+
+
+task ciBuild ( description : 'Run the build on a CI server.' , dependsOn : ciBuildTasks )
