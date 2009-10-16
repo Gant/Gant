@@ -153,10 +153,10 @@ project ( ':gant' ) {
     assert items 
     groovyVersion = ( items[0].name =~ groovyVersionPatternString )[0][2]
     assert groovyVersion
+    repositories { flatDir ( name : 'groovyInstallation' , dirs : [ new File ( groovyHome , 'embeddable' ) , groovyLib ] ) }
   }
   else { groovyVersion = groovyStandaloneVersion }
   archivesBaseName = artifact
-  repositories { flatDir ( name : 'groovyInstallation' , dirs : [ new File ( groovyHome , 'embeddable' ) , groovyLib ] ) }
   dependencies { groovy ( 'org.codehaus.groovy:groovy-all:' + groovyVersion ) }
   compileGroovy.doFirst { println ( '\n\tUsing Groovy version ' + groovyVersion + '\n' ) }
   test.doFirst { groovyAntTaskTestVersionPropertyFile.write ( 'groovyAntTaskTestVersion = ' + groovyVersion ) }
@@ -206,5 +206,4 @@ task clobber ( description : 'Do a really detailed clean.' ) << {
   ant.delete { fileset ( dir : '.' , includes : 'texput.log,groovyAntTaskTestVersion.properties,**/*~' ) }
 }
 
-
-task ciBuild ( description : 'Run the build on a CI server.' , dependsOn : ciBuildTasks )
+task ciBuild ( description : 'Run just the builds that use Groovy from the Maven repository.  Used mainly on CI servers.' , dependsOn : ciBuildTasks )
