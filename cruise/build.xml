@@ -20,11 +20,19 @@
     </exec>
   </target>
 
-  <target name="delegate">
+  <!-- target name="delegate">
     <echo message="*** Starting the gant specific build parts ***"/>
     <ant dir=".." antfile="build.xml" target="cruiseControlBuild">
       <property name="buildnumber" value="${label}"/>
     </ant>
+    <echo message="*** gant build successfully ended          ***"/>
+  </target-->
+
+  <target name="delegate">
+    <echo message="*** Starting the gant specific build parts ***"/>
+    <exec dir=".." executable="sh">
+      <arg value="ciBuild"/>
+    </exec>
     <echo message="*** gant build successfully ended          ***"/>
   </target>
   
