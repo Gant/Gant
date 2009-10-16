@@ -19,6 +19,13 @@ import org.apache.tools.ant.filters.ReplaceTokens
 def groovyAntTaskTestVersionPropertyFile = new File ( groovyAntTaskTestVersionPropertyFileName )
 def osgify = true
 
+ //  Organize the build using subprojects.  There is a subproject gant which is for the build using the
+ //  locally installed Groovy and then there is one for each version of Groovy obtained from the Maven
+ //  repository that is supported.  This function eases doing the iteration over all the subprojects.  NB
+ //  Gradle requires the directories for each of the subprojects to exist.  There is an assumption that each
+ //  subproject has its own source, etc.  This build slightly perverts the general approach by using exactly
+ //  the same source for each subproject, the only difference is the version of Groovy used for compilation.
+
 def forEachProject ( Closure c ) {
   c ( 'gant' )
   for ( String s : [ '1.5' , '1.6' , '1.7' ] ) { c ( 'gant_groovy' + s ) }
@@ -42,6 +49,9 @@ subprojects {
     main { groovy { srcDir '../src/main/groovy' } }
     test { groovy { srcDir '../src/test/groovy' } }
   }
+  //
+  //  TODO:  Find out why including the licence file as metadata fails to work. ################
+  //
   //metaInf << files ( '../LICENCE.txt' )
   def theVendor = 'The Codehaus'
   def theTitle = 'Gant: Scripting Ant tasks with Groovy.'
@@ -73,9 +83,7 @@ subprojects {
                              'Implementation-Vendor' : theVendor
                              )
   }
-  repositories {
-    mavenCentral ( )
-  }
+  repositories { mavenCentral ( ) }
   dependencies {
     compile (
              'commons-cli:commons-cli:' + commonsCliVersion ,
@@ -84,6 +92,7 @@ subprojects {
     testCompile ( 'junit:junit:' + junitVersion )
     testRuntime ( 'org.apache.ivy:ivy:' + ivyVersion )
   }
+  compileGroovy.options.compilerArgs = ['-Xlint']
   test.doLast { groovyAntTaskTestVersionPropertyFile.delete ( ) }
   clean.doLast {
     ant.delete { fileset ( dir : '.' , includes : '**/*~, texput.log' ) }
@@ -123,7 +132,10 @@ subprojects {
   task documentation ( dependsOn: [ 'javadoc' , 'groovydoc' ] , description : 'Create the API documentation.' )
   uploadArchives {
     repositories.mavenDeployer {
-      repository ( url : 'http://repository.codehaus.org' )
+      uniqueVersion = false
+      configuration = configurations.deployerJars
+      repository ( url : 'https://dav.codehaus.org/repository/gant' )
+      snapshotRepository ( url : 'https://dav.codehaus.org/snapshots.repository/gant' )
     }
   }
   defaultTasks ( 'test' ) 
