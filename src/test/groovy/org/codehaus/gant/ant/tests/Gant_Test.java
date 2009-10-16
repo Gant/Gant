@@ -40,6 +40,7 @@ public class Gant_Test extends TestCase {
   private final String endOfTargetMarker = "------ " ;
   private final String separator = System.getProperty ( "file.separator" ) ;
   private final boolean isWindows = System.getProperty ( "os.name" ).startsWith ( "Windows" ) ;
+  private final String locationPrefix = ( true ? ".." + separator : "" ) ;
   private final String path ; {
     final StringBuilder sb = new StringBuilder ( ) ;
     sb.append ( "src" ) ;
@@ -59,8 +60,13 @@ public class Gant_Test extends TestCase {
     sb.append ( "tests" ) ;
     path = sb.toString ( ) ;
   }
-  private final String absolutePath =  System.getProperty ( "user.dir" )  + separator + path ;
-  private final File antFile = new File ( path , "gantTest.xml" ) ;
+  private final String absolutePath ;
+  private final File antFile ; {
+    try { absolutePath =  ( new File ( locationPrefix + path ) ).getCanonicalPath ( ) ; }
+    catch ( final IOException ioe ) { throw new RuntimeException ( "Canonical path calculation failure." , ioe ) ; }
+    antFile =  new File ( absolutePath , "gantTest.xml" ) ;
+  }  
+
   private Project project ;
 
   //  This variable is assigned in the Gant script hence the public static.
@@ -218,7 +224,7 @@ public class Gant_Test extends TestCase {
   private String createBaseMessage ( ) {
     final StringBuilder sb = new StringBuilder ( ) ;
     sb.append ( "Buildfile: " ) ;
-    sb.append ( path ).append ( separator ) ;
+    sb.append ( absolutePath ).append ( separator ) ;
     sb.append ( "gantTest.xml\n\n" ) ;
     sb.append ( commonTargetsList ) ;
     sb.append ( "gantTestDefaultFileDefaultTarget:\n" ) ;
@@ -247,12 +253,12 @@ public class Gant_Test extends TestCase {
    *  The following tests are based on the code presented in email exchanges on the Groovy developer list by
    *  Chris Miles.  cf.  GANT-50.  This assumes that the tests are run from a directory other than this one.
    */
-  private final String basedirAntFilePath = path + separator + "basedir.xml" ;
+  private final String basedirAntFilePath = locationPrefix + path + separator + "basedir.xml" ;
 
   private String createMessageStart ( final String target , final String taskName , final boolean extraClassPathDefinition ) {
     final StringBuilder sb = new StringBuilder ( ) ;
     sb.append ( "Buildfile: " ) ;
-    sb.append ( path ).append ( separator ) ;
+    sb.append ( locationPrefix ).append ( path ).append ( separator ) ;
     sb.append ( "basedir.xml\n     [echo] basedir::ant basedir=" ) ;
     sb.append ( absolutePath ) ;
     sb.append ( "\n\n-initializeWithGroovyHome:\n\n-initializeNoGroovyHome:\n\n-initialize:\n\n-define" ) ;
@@ -319,7 +325,7 @@ public class Gant_Test extends TestCase {
   //  Test the GANT-80 issues.
   //
   public void test_GANT_80 ( ) {
-    final String antFilePath = path + separator + "GANT_80.xml" ;
+    final String antFilePath = absolutePath + separator + "GANT_80.xml" ;
     final StringBuilder sb = new StringBuilder ( ) ;
     sb.append ( "Buildfile: " ) ;
     sb.append ( antFilePath ) ;
@@ -335,7 +341,7 @@ public class Gant_Test extends TestCase {
   //  Ensure that errors are handled correctly by checking one error return case.
   //
   public void testGantTaskErrorReturn ( ) {
-    final File file = new File ( path , "testErrorCodeReturns.xml" ) ;
+    final File file = new File ( absolutePath , "testErrorCodeReturns.xml" ) ;
     final String target = "usingGantAntTask" ;
     final StringBuilder sb = new StringBuilder ( ) ;
     sb.append ( "Buildfile: " ) ;
