@@ -64,7 +64,7 @@ Author : Russel Winder <russel.winder@concertant.com>
       tested.  This target can only complete successfully if the classes are put on the class path by giving
       a parameter to the Ant invocation.  So for example:
 
-          ant -f gantTest.xml -lib ../../../../../../../../target_gant/test-classes:$GROOVY_HOME/lib/junit-4.6.jar
+          ant -f gantTest.xml -lib ../../../../../../../../target_gant/test-classes:$GROOVY_HOME/lib/junit-4.7.jar
 
       note that the JUnit jar has to be added as well.
   -->
