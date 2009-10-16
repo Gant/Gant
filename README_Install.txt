@@ -19,8 +19,8 @@ There are a number of distinct distributions:
 
           1.  Requires a separate Groovy installation.  There are builds:
                 a.  compiled against Groovy 1.5.8;
-                b.  compiled against Groovy 1.6.3; and
-                c.  compiled against Groovy Trunk (1.7-beta-1-SNAPSHOT).
+                b.  compiled against Groovy 1.6.5; and
+                c.  compiled against Groovy 1.7-beta-2.
 
             2.  Self-contained, includes all dependent jars.
 
@@ -34,36 +34,32 @@ $GANT_HOME/bin/gant.bat on Windows is the mechanism for launching a Gant run.
 Using a Bazaar Branch or a Checkout of the Subversion Repository
 ----------------------------------------------------------------
 
-You first need to get a source tree.  If you want to use a Bazaar branch as
-your source (Bazaar is the VCS used for the master source of Gant) then:
+You first need to get a source tree.  Bazaar is the version control system
+used for developing Gant.  The master branch is held in a Subversion
+repository at Codehaus, but there is also a mirror held at Launchpad so you
+can do either:
 
-    bzr branch lp:gant
+        bzr branch http://svn.codehaus.org/gant/gant/trunk Gant_Trunk
 
-this is a mirror of the master Bazaar branch, as indeed is the Subversion
-repository at Codehaus).  The alternative is to get the Subversion repository
-using one of the following:
+or
 
-   bzr branch http://svn.codehaus.org/gant/gant/trunk Gant_Trunk
-   svn co http://svn.codehaus.org/gant/gant/trunk Gant_Trunk
-   git clone http://svn.codehaus.org/gant/gant/trunk Gant_Trunk
+        bzr branch lp:gant
 
-Once you have a Gant source tree, you will need to create a file called
-local.build.properties at the top level of that tree containing a definition
-of the property installDirectory.  This property defines the directory of the
-installation (NB not the parent).  An example definition:
+to get a branch.  (If you are going to actively develop Gant, you almost
+certainly want to have a shared repository in which this mirror branch is kept
+so that you can then make feature branches.)
 
-  installDirectory = ${user.home}/lib/JavaPackages/gant-${gantVersion}
+Gradle is used as the build system for Gant, so you will need to set the
+gant_installPath property in ~/.gradle/gradle.properties so you can install
+Gant.  So for example:
 
-Having created local.build.properties with the installDirectory property
-definition, to install Gant for the first time, you need to either:
+       gant_installPath = ${System.properties.'user.home'}/lib/JavaPackages/gant-trunk
 
--- install Gant from a distribution as above and then type "gant install";
-    or
+Then you type:
 
--- type "ant install" -- assuming you have Ant installed.
+     ./gradlew installGant
 
-To install a new build of Gant where one is installed already, you can simply
-type "gant install".
+and all the necessary magic happens.
 
 Contact
 -------
