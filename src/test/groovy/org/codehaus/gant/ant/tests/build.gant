@@ -17,7 +17,7 @@ import org.codehaus.gant.ant.tests.Gant_Test
 ant.property ( file : 'build.properties' )
 
 ant.property ( file : toplevelDirectory + '/local.build.properties' )
-ant.property ( file : toplevelDirectory + '/build.properties' )
+ant.property ( file : toplevelDirectory + '/gradle.properties' )
 
 //// This build file has to work in two contexts.  If GROOVY_HOME is set in the environment then the jars
 //// from that installation of Groovy should be used so as to ensure testing in the right context.  If the
