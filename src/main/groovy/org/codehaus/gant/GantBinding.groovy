@@ -111,6 +111,10 @@ public class GantBinding extends Binding implements Cloneable {
     super.setVariable ( 'includeTool' , new IncludeTool ( this ) )
     super.setVariable ( 'globalPreHook' , null )
     super.setVariable ( 'globalPostHook' , null )
+    super.setVariable ( 'terminateHook' , { int returnValue , String elapseTime ->
+        owner.ant.project.log ( '\nBUILD ' + ( returnValue == 0 ? 'SUCCESSFUL' : 'FAILED' ) )
+        owner.ant.project.log ( 'Total time: ' + elapseTime )
+      } )
     super.setVariable ( 'target' , { Map<String, String> map , Closure closure ->
         def targetName = ''
         def targetDescription = ''

@@ -620,10 +620,10 @@ final class Gant {
     def gant = new Gant ( )
     def returnValue = gant.processArgs ( args )
     if ( outputBuildTime ) {
-      def elapseTime = ( System.nanoTime ( ) - startTime ) / 1e9
-      def project = gant.binding.ant.project
-      project.log ( '\nBUILD ' + ( returnValue == 0 ? 'SUCCESSFUL' : 'FAILED' ) )
-      project.log ( 'Total time: ' + renderTimeInterval ( elapseTime ) )
+      def terminateHook = gant.binding.getVariable ( 'terminateHook' )
+      if ( ( terminateHook != null ) && ( terminateHook instanceof Closure ) ) {
+        terminateHook.call ( returnValue , renderTimeInterval ( ( System.nanoTime ( ) - startTime ) / 1e9 ) )
+      }
     }
     System.exit ( returnValue )
   }
