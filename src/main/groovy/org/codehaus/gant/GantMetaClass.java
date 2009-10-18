@@ -177,6 +177,8 @@ public class GantMetaClass extends DelegatingMetaClass {
   //  groovy.lang.GroovyObject have not been marked up for Java 5 generics.  Because there is a problem that
   //  blah(Class<?>) does not override blah(Class) -- at least according to Eclipse -- leave the Class type
   //  without a type parameter and suffer the compilation warning.
+  //
+  //  TODO : Class -> Class<?> when the Eclipse plugin and the Groovy code base allow.
   //////////////////////////////////////////////////////////////////////////////////////////////////////////
   /**
    *  Invoke a method on the given receiver for the specified arguments. The sender is the class that
