@@ -4,6 +4,9 @@
 Added the ability to skip the tests when using the Maven target set.  Use -DskipTest=true on the command
 line to stop the tests being compiled and run, otherwise they will be.
 
+Change the way in which the final message is output when Gant is executed from the command line from being
+hardwired to being the execution of a hook, terminateHook.  cf. GANT-104.
+
 
 1.8.1
 -----
