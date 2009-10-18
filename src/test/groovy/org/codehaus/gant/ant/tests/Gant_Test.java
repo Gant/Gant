@@ -40,7 +40,7 @@ public class Gant_Test extends TestCase {
   private final String endOfTargetMarker = "------ " ;
   private final String separator = System.getProperty ( "file.separator" ) ;
   private final boolean isWindows = System.getProperty ( "os.name" ).startsWith ( "Windows" ) ;
-  private final String locationPrefix = ( true ? ".." + separator : "" ) ;
+  private final String locationPrefix = ( "Gradle".equals ( System.getProperty ( "buildFrameworkIdentifier" ) ) ? ".." + separator : "" ) ;
   private final String path ; {
     final StringBuilder sb = new StringBuilder ( ) ;
     sb.append ( "src" ) ;
@@ -65,10 +65,8 @@ public class Gant_Test extends TestCase {
     try { absolutePath =  ( new File ( locationPrefix + path ) ).getCanonicalPath ( ) ; }
     catch ( final IOException ioe ) { throw new RuntimeException ( "Canonical path calculation failure." , ioe ) ; }
     antFile =  new File ( absolutePath , "gantTest.xml" ) ;
-  }  
-
+  }
   private Project project ;
-
   //  This variable is assigned in the Gant script hence the public static.
   public static String returnValue ;
 
@@ -287,6 +285,7 @@ public class Gant_Test extends TestCase {
     //  TODO : Should this be sb.append ( absolutePath ) ?  cf. GANT-50.
     //
     sb.append ( System.getProperty ( "user.dir" ) ) ;
+    //sb.append ( absolutePath ) ;
     sb.append ( "\n   [groovy] " + endOfTargetMarker + "default\n   [groovy] \n\nBUILD SUCCESSFUL\n\n" ) ;
     final List<String> result = runAnt ( basedirAntFilePath , target , 0 , true ) ;
     assert result.size ( ) == 2 ;

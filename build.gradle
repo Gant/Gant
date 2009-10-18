@@ -93,7 +93,19 @@ subprojects {
     testRuntime ( 'org.apache.ivy:ivy:' + ivyVersion )
   }
   compileGroovy.options.compilerArgs = ['-Xlint']
-  test.doLast { groovyAntTaskTestVersionPropertyFile.delete ( ) }
+  test {
+    //
+    //  The Gant Ant task integration test (which is still a unit test :-( has to know the absolute
+    //  locations of certain files.  Because Gradle uses a multi-project build there is an extra level
+    //  complexity in paths compared to Eclipse, IntelliJ IDEA or Gant builds because the multi-project
+    //  builds happen in subdirectories.  org.codehaus.gant.ant.tests.Gant_Test has a decision to make, it
+    //  needs to know whether this is a Gradle build or not.  Use a property.
+    //
+    //  This seems like an ugly way of setting properties in the forked test JVM.
+    //
+    options.fork ( jvmArgs: [ "-DbuildFrameworkIdentifier=Gradle" ]  )
+    doLast { groovyAntTaskTestVersionPropertyFile.delete ( ) }
+  }
   clean.doLast {
     ant.delete { fileset ( dir : '.' , includes : '**/*~, texput.log' ) }
     ant.delete ( dir :  'target_forMavenTest' )
@@ -132,7 +144,7 @@ subprojects {
   task documentation ( dependsOn: [ 'javadoc' , 'groovydoc' ] , description : 'Create the API documentation.' )
   uploadArchives {
     repositories.mavenDeployer {
-      uniqueVersion = false
+      //uniqueVersion = false
       //configuration = configurations.deployerJars
       repository ( url : 'https://dav.codehaus.org/repository/gant' )
       snapshotRepository ( url : 'https://dav.codehaus.org/snapshots.repository/gant' )
