@@ -132,21 +132,11 @@ public class GantMetaClass extends DelegatingMetaClass {
         catch ( final MissingPropertyException mpe ) { /* Purposefully empty */ }
       }
       catch ( final MissingMethodException mme ) {
-        /*
-         *  This was originally part of Yoel Spotts proposal of the GANT-10 fix, but it seems superfluous.
-         *
-         *  TODO:  Remove this after the release.
-         *
-        if ( binding.getVariable ( methodName ) != null ) {
-          //  Let Script handle this if the name is in the binding.
-          throw mme ;
-        }
-        */
         try { returnObject = ( (GantBuilder) ( binding.getVariable ( "ant" ) ) ).invokeMethod ( methodName , arguments ) ; }
         catch ( final BuildException be ) {
           //  This BuildException could be a real exception due to a failed execution of a found Ant task
           //  (in which case it should be propagated), or it could be due to a failed name lookup (in which
-          //  case the MissingMethodException should be propogated).  The big problem is distinguishing the
+          //  case the MissingMethodException should be propagated).  The big problem is distinguishing the
           //  various uses of Build Exception here -- for now use string search of the exception message to
           //  distinguish the cases.  NB GANT-49 and GANT-68 are the main conflicting issues here :-(
           if ( be.getMessage ( ).startsWith ( "Problem: failed to create task or type" ) ) { throw mme ; }
