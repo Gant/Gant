@@ -31,8 +31,8 @@ just an efficiency.
 The script $GANT_HOME/bin/gant for systems with a Posix shell, or
 $GANT_HOME/bin/gant.bat on Windows is the mechanism for launching a Gant run.
 
-Using a Bazaar Branch or a Checkout of the Subversion Repository
-----------------------------------------------------------------
+Using a Bazaar Branch
+---------------------
 
 You first need to get a source tree.  Bazaar is the version control system
 used for developing Gant.  The master branch is held in a Subversion
@@ -43,11 +43,11 @@ can do either:
 
 or
 
-        bzr branch lp:gant
+        bzr branch lp:gant Gant_Trunk
 
 to get a branch.  (If you are going to actively develop Gant, you almost
 certainly want to have a shared repository in which this mirror branch is kept
-so that you can then make feature branches.)
+so that you can then make feature branches from it.)
 
 Gradle is used as the build system for Gant, so you will need to set the
 gant_installPath property in ~/.gradle/gradle.properties so you can install
@@ -57,9 +57,11 @@ Gant.  So for example:
 
 Then you type:
 
-     ./gradlew installGant
+     ./gradlew gant:install
 
-and all the necessary magic happens.
+and all the necessary magic happens.  You probably want to set the GROOVY_HOME
+environment variable to point at the Groovy installation that the Gant
+installation is to work with.
 
 Contact
 -------
