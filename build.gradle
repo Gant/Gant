@@ -21,14 +21,18 @@ def osgify = true
 
  //  Organize the build using subprojects.  There is a subproject gant which is for the build using the
  //  locally installed Groovy and then there is one for each version of Groovy obtained from the Maven
- //  repository that is supported.  This function eases doing the iteration over all the subprojects.  NB
+ //  repository that is supported.  These functions ease doing the iteration over all the subprojects.  NB
  //  Gradle requires the directories for each of the subprojects to exist.  There is an assumption that each
  //  subproject has its own source, etc.  This build slightly perverts the general approach by using exactly
  //  the same source for each subproject, the only difference is the version of Groovy used for compilation.
 
+def forEachArtifact ( Closure c ) {
+  for ( String s : [ '1.5' , '1.6' , '1.7' ] ) { c ( 'gant_groovy' + s ) }
+}
+  
 def forEachProject ( Closure c ) {
   c ( 'gant' )
-  for ( String s : [ '1.5' , '1.6' , '1.7' ] ) { c ( 'gant_groovy' + s ) }
+  forEachArtifact ( c )
 }
 
 forEachProject { item ->  if ( ! ( new File ( item ) ).isDirectory ( ) ) { ant.mkdir ( dir : item ) } }
@@ -42,7 +46,6 @@ allprojects {
 subprojects {
   usePlugin ( 'groovy' )
   if ( osgify ) { usePlugin ( 'osgi' ) }
-  usePlugin ( 'maven' )
   sourceCompatibility = 5
   targetCompatibility = 5
   sourceSets {
@@ -140,15 +143,7 @@ subprojects {
     footer = copyrightString
   }
   task documentation ( dependsOn: [ 'javadoc' , 'groovydoc' ] , description : 'Create the API documentation.' )
-  uploadArchives {
-    repositories.mavenDeployer {
-      //uniqueVersion = false
-      //configuration = configurations.deployerJars
-      repository ( url : 'https://dav.codehaus.org/repository/gant' )
-      snapshotRepository ( url : 'https://dav.codehaus.org/snapshots.repository/gant' )
-    }
-  }
-  defaultTasks ( 'test' ) 
+  defaultTasks ( 'build' ) 
 }
 
 project ( ':gant' ) {
@@ -164,13 +159,17 @@ project ( ':gant' ) {
     groovyVersion = ( items[0].name =~ groovyVersionPatternString )[0][2]
     assert groovyVersion
     repositories { flatDir ( name : 'groovyInstallation' , dirs : [ new File ( groovyHome , 'embeddable' ) , groovyLib ] ) }
+    println ( "# :gant -- using Groovy version ${groovyVersion} from ${groovyHome}." )
   }
-  else { groovyVersion = groovyStandaloneVersion }
+  else {
+    groovyVersion = groovyStandaloneVersion
+    println ( "# :gant -- assuming Groovy version ${groovyVersion} is to be used." )
+  }
   archivesBaseName = artifact
   dependencies { groovy ( 'org.codehaus.groovy:groovy-all:' + groovyVersion ) }
   compileGroovy.doFirst { println ( '\n\tUsing Groovy version ' + groovyVersion + '\n' ) }
   test.doFirst { groovyAntTaskTestVersionPropertyFile.write ( 'groovyAntTaskTestVersion = ' + groovyVersion ) }
-  task installGant ( dependsOn : 'assemble' ) << {
+  task install ( dependsOn : 'assemble' ) << {
     def installDirectory = evaluate ( '"' + ( gant_installPath ?: '/usr/share/gant' ) + '"' )
     def installBinDirectory = installDirectory + '/bin'
     def scriptsDirectory = '../scripts'
@@ -189,22 +188,31 @@ project ( ':gant' ) {
       from ( [ 'build/libs' , '../jarfiles' ] )
     }
   }
-  task uninstallGant << { ant.delete ( dir : evaluate ( /"${gant_installPath}"/ ) ) }
+  task uninstall << { ant.delete ( dir : evaluate ( /"${gant_installPath}"/ ) ) }
 }
 
 ciBuildTasks = [ ]
 
-forEachProject { archivesBaseName ->
-  if ( archivesBaseName != 'gant' ) {
-    def groovyVersionNumber = getProperty ( archivesBaseName.replace ( artifact + '_' , '' ).replace ( '.' , '' ) + 'Version' )
-    project ( archivesBaseName ) {
-      dependencies { groovy ( 'org.codehaus.groovy:groovy-all:' + groovyVersionNumber ) }
-      compileGroovy.doFirst { println ( '\n\tUsing Groovy version ' + groovyVersionNumber + '\n' ) }
-      test.doFirst { groovyAntTaskTestVersionPropertyFile.write ( 'groovyAntTaskTestVersion = ' + groovyVersionNumber ) }
+forEachArtifact { archivesBaseName ->
+  def groovyVersionNumber = getProperty ( archivesBaseName.replace ( artifact + '_' , '' ).replace ( '.' , '' ) + 'Version' )
+  project ( archivesBaseName ) {
+    usePlugin ( 'maven' )
+    dependencies { groovy ( 'org.codehaus.groovy:groovy-all:' + groovyVersionNumber ) }
+    compileGroovy.doFirst { println ( '\n\tUsing Groovy version ' + groovyVersionNumber + '\n' ) }
+    test.doFirst { groovyAntTaskTestVersionPropertyFile.write ( 'groovyAntTaskTestVersion = ' + groovyVersionNumber ) }
+    uploadArchives {
+      repositories.mavenDeployer {
+        //uniqueVersion = false
+        //configuration = configurations.deployerJars
+        repository ( url : 'https://dav.codehaus.org/repository/gant' )
+        snapshotRepository ( url : 'https://dav.codehaus.org/snapshots.repository/gant' )
+      }
     }
-    ciBuildTasks << archivesBaseName + ':build'
   }
+  ciBuildTasks << archivesBaseName + ':build'
 }
+
+task ciBuild ( description : 'Run just the builds that use Groovy from the Maven repository.  Used mainly on CI servers.' , dependsOn : ciBuildTasks )
 
 task wrapper ( type : Wrapper ) {
     gradleVersion = '0.9'
@@ -216,4 +224,3 @@ task clobber ( description : 'Do a really detailed clean.' ) << {
   ant.delete { fileset ( dir : '.' , includes : 'texput.log,groovyAntTaskTestVersion.properties,**/*~' ) }
 }
 
-task ciBuild ( description : 'Run just the builds that use Groovy from the Maven repository.  Used mainly on CI servers.' , dependsOn : ciBuildTasks )
