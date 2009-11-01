@@ -101,9 +101,7 @@ subprojects {
     //  builds happen in subdirectories.  org.codehaus.gant.ant.tests.Gant_Test has a decision to make, it
     //  needs to know whether this is a Gradle build or not.  Use a property.
     //
-    //  This seems like an ugly way of setting properties in the forked test JVM.
-    //
-    options.fork ( jvmArgs: [ "-DbuildFrameworkIdentifier=Gradle" ]  )
+    options.systemProperties['buildFrameworkIdentifier'] = 'Gradle'
     doLast { groovyAntTaskTestVersionPropertyFile.delete ( ) }
   }
   clean.doLast {
