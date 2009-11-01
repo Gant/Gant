@@ -52,10 +52,7 @@ subprojects {
     main { groovy { srcDir '../src/main/groovy' } }
     test { groovy { srcDir '../src/test/groovy' } }
   }
-  //
-  //  TODO:  Find out why including the licence file as metadata fails to work. ################
-  //
-  //metaInf << files ( '../LICENCE.txt' )
+  metaInf << fileTree ( dir : '..' ).matching { include 'LICENCE.txt' }
   def theVendor = 'The Codehaus'
   def theTitle = 'Gant: Scripting Ant tasks with Groovy.'
   if ( osgify ) {
