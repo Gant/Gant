@@ -202,8 +202,7 @@ public class Gant extends Task {
    */
   //  Russel Winder rehacked the code provided by Eric Van Dewoestine.
   private void addAlmostAll ( final Project newProject , final Project oldProject ) {
-    @SuppressWarnings ( "unchecked" )
-     final Hashtable<String,String> properties = oldProject.getProperties ( ) ;
+    @SuppressWarnings ( "unchecked" ) final Hashtable<String,String> properties = oldProject.getProperties ( ) ;
     final Enumeration<String> e = properties.keys ( ) ;
     while ( e.hasMoreElements ( ) ) {
       final String key = e.nextElement ( ) ;

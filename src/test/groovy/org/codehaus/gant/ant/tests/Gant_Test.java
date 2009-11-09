@@ -387,8 +387,7 @@ public class Gant_Test extends TestCase {
 
   public void testInheritAll ( ) {
     List<String> result = runAnt ( antFile.getPath ( ) , "gantTestInheritAll" , 0 , true ) ;
-    @SuppressWarnings("unchecked")
-     List<String> output = (List<String>) StringUtils.lineSplit ( result.get ( 0 ) ) ;
+    @SuppressWarnings("unchecked") List<String> output = StringUtils.lineSplit ( result.get ( 0 ) ) ;
     assertEquals ( "     [echo] ${gant.test.inheritAll}" , output.get ( 12 ) ) ;
     assertEquals ( "     [echo] ${gant.test.inheritAll}" , output.get ( 15 ) ) ;
     assertEquals ( "     [echo] gantInheritAllWorks" , output.get ( 18 ) ) ;

@@ -60,7 +60,6 @@ public class GantBuilder extends AntBuilder {
    *  @param arguments The parameters to the method call.
    *  @return The value returned by the method call or null if no value is returned.
    */
-  @SuppressWarnings ( "unchecked" )
   @Override public Object invokeMethod ( final String name , final Object arguments ) {
     if ( GantState.dryRun ) {
       if ( GantState.verbosity > GantState.SILENT ) {
@@ -70,9 +69,13 @@ public class GantBuilder extends AntBuilder {
         sb.append ( "         ".substring ( 0 , padding ) + '[' + name + "] ") ;
         final Object[] args = (Object[]) arguments ;
         if ( args[0] instanceof Map ) {
-          // NB IntelliJ IDEA complains that (Map) is not a proper cast but using the cast (Map<?,?>) here
+          //
+          // IntelliJ IDEA complains that (Map) is not a proper cast but using the cast (Map<?,?>) here
           // causes a type check error.
-          final Iterator<Map.Entry<?,?>> i = ( (Map) args[0] ).entrySet ( ).iterator ( ) ; // Unchecked conversion here.
+          //
+          //  TODO : Fix this.
+          //
+          @SuppressWarnings ( "unchecked" ) final Iterator<Map.Entry<?,?>> i = ( (Map) args[0] ).entrySet ( ).iterator ( ) ;
           while ( i.hasNext ( ) ) {
             final Map.Entry<?,?> e = i.next ( ) ;
             sb.append ( e.getKey ( ) + " : '" + e.getValue ( ) + '\'' ) ;
@@ -94,9 +97,8 @@ public class GantBuilder extends AntBuilder {
    *
    *  @return The <code>BuildLogger</code>.
    */
-  @SuppressWarnings ( "unchecked" )
   public BuildLogger getLogger ( ) {
-    final List<? extends BuildListener> listeners = getProject ( ).getBuildListeners ( ) ; // Unchecked conversion here.
+    @SuppressWarnings ( "unchecked" ) final List<? extends BuildListener> listeners = getProject ( ).getBuildListeners ( ) ;
     assert listeners.size ( ) > 0 ;
     return (BuildLogger) listeners.get ( 0 ) ;
   }
