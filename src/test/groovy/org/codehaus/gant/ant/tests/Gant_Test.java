@@ -29,6 +29,8 @@ import org.apache.tools.ant.BuildException ;
 import org.apache.tools.ant.Project ;
 import org.apache.tools.ant.ProjectHelper ;
 
+import org.apache.tools.ant.util.StringUtils ;
+
 /**
  *  Unit tests for the Gant Ant task.  In order to test things appropriately this test must be initiated
  *  without any of the Groovy, Gant or related jars in the class path.  Also of course it must be a JUnit
@@ -380,4 +382,15 @@ public class Gant_Test extends TestCase {
     assertEquals ( "     [exec] Result: 253\n" , result.get ( 1 ) ) ;
   }
   */
+
+  //  For dealing with GANT-110 -- thanks to Eric Van Dewoestine for providing this.
+
+  public void testInheritAll ( ) {
+    List<String> result = runAnt ( antFile.getPath ( ) , "gantTestInheritAll" , 0 , true ) ;
+    @SuppressWarnings("unchecked")
+     List<String> output = (List<String>) StringUtils.lineSplit ( result.get ( 0 ) ) ;
+    assertEquals ( "     [echo] ${gant.test.inheritAll}" , output.get ( 12 ) ) ;
+    assertEquals ( "     [echo] ${gant.test.inheritAll}" , output.get ( 15 ) ) ;
+    assertEquals ( "     [echo] gantInheritAllWorks" , output.get ( 18 ) ) ;
+  }
 }

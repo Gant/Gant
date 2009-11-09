@@ -17,13 +17,16 @@ package org.codehaus.gant.ant ;
 import java.io.File ;
 
 import java.util.ArrayList ;
+import java.util.Enumeration;
 import java.util.HashMap ;
+import java.util.Hashtable;
 import java.util.List ;
 import java.util.Map ;
 
 import org.apache.tools.ant.AntClassLoader ;
 import org.apache.tools.ant.BuildException ;
 import org.apache.tools.ant.BuildListener ;
+import org.apache.tools.ant.MagicNames ;
 import org.apache.tools.ant.Project ;
 import org.apache.tools.ant.Task ;
 
@@ -61,6 +64,10 @@ public class Gant extends Task {
    *  if the basedir is not set.
    */
   private String file = "build.gant" ;
+  /**
+   *  Flag determining whether properties are inherited from the parent project.
+   */
+  private boolean inheritAll = false ;
   /**
    *  A class representing a nested definition tag.
    */
@@ -126,6 +133,12 @@ public class Gant extends Task {
     return definition ;
   }
   /**
+   *  If true, pass all properties to the new Ant project.
+   *
+   *  @param value if true pass all properties to the new Ant project.
+   */
+  public void setInheritAll ( final boolean value ) { inheritAll = value ; }
+  /**
    * Load the file and then execute it.
    */
   @Override public void execute ( ) throws BuildException {
@@ -156,6 +169,8 @@ public class Gant extends Task {
     //  Deal with GANT-50 by getting the base directory from the Ant instance Project object and use it for
     //  the new Project object.  GANT-93 leads to change in the way the Gant file is extracted.
     newProject.setBaseDir ( antProject.getBaseDir ( ) ) ;
+    //  Deal with GANT-110 by using the strategy proposed by Eric Van Dewoestine.
+    if ( inheritAll ){ addAlmostAll ( newProject , antProject ) ; }
     final File gantFile = newProject.resolveFile( file ) ;
     if ( ! gantFile.exists ( ) ) { throw new BuildException ( "Gantfile does not exist." , getLocation ( ) ) ; }
     final GantBuilder ant = new GantBuilder ( newProject ) ;
@@ -176,5 +191,25 @@ public class Gant extends Task {
     for ( final GantTarget g : targets ) { targetsAsStrings.add ( g.getValue ( ) ) ; }
     final int returnCode =  gant.processTargets ( targetsAsStrings ) ;
     if ( returnCode != 0 ) { throw new BuildException ( "Gant execution failed with return code " + returnCode + '.' , getLocation ( ) ) ; }
+  }
+  /**
+   *  Copy all properties from the given project to the new project -- omitting those that have already been
+   *  set in the new project as well as properties named basedir or ant.file. Inspired by the {@code
+   *  org.apache.tools.ant.taskdefs.Ant} source.
+   *
+   *  @param newProject the {@code Project} to copy into.
+   *  @param oldProject the {@code Project} to copy properties from.
+   */
+  //  Russel Winder rehacked the code provided by Eric Van Dewoestine.
+  private void addAlmostAll ( final Project newProject , final Project oldProject ) {
+    @SuppressWarnings ( "unchecked" )
+     final Hashtable<String,String> properties = oldProject.getProperties ( ) ;
+    final Enumeration<String> e = properties.keys ( ) ;
+    while ( e.hasMoreElements ( ) ) {
+      final String key = e.nextElement ( ) ;
+      if ( ! ( MagicNames.PROJECT_BASEDIR.equals ( key ) || MagicNames.ANT_FILE.equals ( key ) ) ) {
+        if ( newProject.getProperty ( key ) == null ) { newProject.setNewProperty ( key , properties.get ( key ) ) ; }
+      }
+    }
   }
 }

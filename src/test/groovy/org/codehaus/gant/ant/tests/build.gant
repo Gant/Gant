@@ -59,4 +59,10 @@ target ( gantParameters : '' ) {
   Gant_Test.returnValue = 'gant' + ( flob ? ' -Dflob=' + flob : '' ) + ( burble ? ' -Dburble' : '' ) + ' gantParameters' 
 }
 
+//  For dealing with GANT-110 -- thanks to Eric Van Dewoestine for providing this.
+
+target ( gantInheritAll : 'Check that a inheritAll works.' ) {
+  echo ( message : '${gant.test.inheritAll}' )
+}
+
 setDefaultTarget ( test )

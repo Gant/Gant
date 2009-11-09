@@ -62,4 +62,13 @@ Author : Russel Winder <russel.winder@concertant.com>
     </gant>
   </target>
 
+  <!-- For GANT-110.  Thanks to Eric Van Dewoestine for providing this. -->
+
+  <target name="gantTestInheritAll" depends="-defineGantTask">
+    <property name="gant.test.inheritAll" value="gantInheritAllWorks"/>
+    <gant file="build.gant" target="gantInheritAll"/>
+    <gant file="build.gant" target="gantInheritAll" inheritAll="false"/>
+    <gant file="build.gant" target="gantInheritAll" inheritAll="true"/>
+  </target>
+  
 </project>
