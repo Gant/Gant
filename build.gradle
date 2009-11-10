@@ -166,8 +166,8 @@ project ( ':gant' ) {
   dependencies { groovy ( 'org.codehaus.groovy:groovy-all:' + groovyVersion ) }
   compileGroovy.doFirst { println ( '\n\tUsing Groovy version ' + groovyVersion + '\n' ) }
   test.doFirst { groovyAntTaskTestVersionPropertyFile.write ( 'groovyAntTaskTestVersion = ' + groovyVersion ) }
-  task install ( dependsOn : 'assemble' ) << {
-    def installDirectory = evaluate ( '"' + ( gant_installPath ?: '/usr/share/gant' ) + '"' )
+  def  installDirectory = evaluate ( '"' + ( gant_installPath ?: '/usr/share/gant' ) + '"' )
+  task install ( dependsOn : 'assemble' , description : "Install Gant (compiled against Groovy ${groovyVersion}) to ${installDirectory}." ) << {
     def installBinDirectory = installDirectory + '/bin'
     def scriptsDirectory = '../scripts'
     copy {
@@ -185,7 +185,7 @@ project ( ':gant' ) {
       from ( [ 'build/libs' , '../jarfiles' ] )
     }
   }
-  task uninstall << { ant.delete ( dir : evaluate ( /"${gant_installPath}"/ ) ) }
+  task uninstall ( description : "Delete ${installDirectory} so as to remove the Gant installation." ) << { ant.delete ( dir : installDirectory ) }
 }
 
 ciBuildTasks = [ ]
