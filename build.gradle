@@ -166,7 +166,9 @@ project ( ':gant' ) {
   dependencies { groovy ( 'org.codehaus.groovy:groovy-all:' + groovyVersion ) }
   compileGroovy.doFirst { println ( '\n\tUsing Groovy version ' + groovyVersion + '\n' ) }
   test.doFirst { groovyAntTaskTestVersionPropertyFile.write ( 'groovyAntTaskTestVersion = ' + groovyVersion ) }
-  def  installDirectory = evaluate ( '"' + ( gant_installPath ?: '/usr/share/gant' ) + '"' )
+  def  installDirectory = '/usr/share/gant'
+  try { installDirectory = gant_installPath }
+  catch ( MissingPropertyException mpe ) { /* Intentionally left blank. */ }
   task install ( dependsOn : 'assemble' , description : "Install Gant (compiled against Groovy ${groovyVersion}) to ${installDirectory}." ) << {
     def installBinDirectory = installDirectory + '/bin'
     def scriptsDirectory = '../scripts'
