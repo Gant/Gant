@@ -9,6 +9,9 @@ hardwired to being the execution of a hook, terminateHook.  cf. GANT-104.
 
 Altered the Gant Ant task so as to provide an inheritAll attribute.  cf. GANT-110.
 
+Switched GantException from extending RuntimeException to extending org.apache.tools.ant.BuildException so
+as to allow better consistency with use of Gant from Ant.  cf. GANT-111.
+
 
 1.8.1
 -----

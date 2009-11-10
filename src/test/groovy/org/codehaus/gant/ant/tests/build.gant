@@ -65,4 +65,10 @@ target ( gantInheritAll : 'Check that a inheritAll works.' ) {
   echo ( message : '${gant.test.inheritAll}' )
 }
 
+//  For dealing with GANT-111 -- thanks to Eric Van Dewoestine for providing this.
+
+target ( testFail : '' ){
+  fail ( message : 'test fail message' )
+}
+
 setDefaultTarget ( test )

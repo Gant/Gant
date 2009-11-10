@@ -392,4 +392,13 @@ public class Gant_Test extends TestCase {
     assertEquals ( "     [echo] ${gant.test.inheritAll}" , output.get ( 15 ) ) ;
     assertEquals ( "     [echo] gantInheritAllWorks" , output.get ( 18 ) ) ;
   }
+
+  //  For dealing with GANT-111 -- thanks to Eric Van Dewoestine for providing this.
+
+  public void testGantTaskFaile ( ) {
+    final List<String> result = runAnt ( antFile.getPath ( ) , "gantTestFail" , 1 , true ) ;
+    assert result.size ( ) == 2 ;
+    assertEquals ( "\nBUILD FAILED\n: test fail message\n\n\n" , trimTimeFromSuccessfulBuild ( result.get ( 1 ) ) ) ;
+  }
+  
 }

@@ -14,12 +14,19 @@
 
 package gant
 
+//  Peter's original extended RuntimeException.  GANT-111 introduced the problem that this cauises problems
+//  for usage with Ant tasks -- where the exception really needs to be a descendent of
+//  org.apache.tools.ant.BuildException.  Making this change should not affect stand alone activity.  Thanks
+//  to Eric Van Dewoestine for providing this change.
+
+import org.apache.tools.ant.BuildException
+
 /**
  *  Generic Gant exception.
  *
  *  @author Peter Ledbrook 
  */
-class GantException extends RuntimeException {
+class GantException extends /*RuntimeException*/ BuildException {
   public GantException ( ) { super( ) }
   public GantException ( String msg ) { super ( msg ) }
   public GantException ( Exception e ) { super ( e ) }
