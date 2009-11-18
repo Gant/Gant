@@ -222,4 +222,3 @@ task clobber ( description : 'Do a really detailed clean.' ) << {
   forEachProject { item -> ant.delete ( dir : item ) }
   ant.delete { fileset ( dir : '.' , includes : 'texput.log,groovyAntTaskTestVersion.properties,**/*~' ) }
 }
-
