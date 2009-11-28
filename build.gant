@@ -25,7 +25,7 @@ carryOn = true
 [ 'gantVersion' ,
   'groovy15Version' , 'groovy16Version' , 'groovy17Version' ,
   'groovyStandaloneVersion' ,
-  'junitVersion' , 'commonsCliVersion' , 'ivyVersion' , 'antVersion' , 'mavenVersion' ,
+  'junitVersion' , 'commonsCliVersion' , 'ivyVersion' , 'antVersion' , 'mavenAntTaskVersion' ,
   'groovyAntTaskTestVersionPropertyFileName' ,
   ].each { name ->
     try { binding.getVariable ( name ) }
@@ -103,7 +103,7 @@ final targetCompatibility = '5'
 //  Labels for supporting use of the Maven Ant task.  NB Installing Gant installs the Maven and Ivy Ant
 //  tasks jars into the Groovy library.
 
-final mavenAntTaskJarName = 'maven-ant-tasks-' + mavenVersion + '.jar'
+final mavenAntTaskJarName = 'maven-ant-tasks-' + mavenAntTaskVersion + '.jar'
 
 final antlibXMLns = 'antlib:org.apache.maven.artifact.ant'
 final mavenPOMId = 'maven.pom'
@@ -380,7 +380,7 @@ final preparePom = { String version ->
       filter ( token : 'groovyVersion' , value : version )
       filter ( token : 'commonsCliVersion' , value : commonsCliVersion )
       filter ( token : 'antVersion' , value : antVersion )
-      filter ( token : 'mavenVersion' , value : mavenVersion )
+      filter ( token : 'mavenAntTaskVersion' , value : mavenAntTaskVersion )
       filter ( token : 'ivyVersion' , value : ivyVersion )
     }
   }

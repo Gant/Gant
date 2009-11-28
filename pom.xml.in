@@ -152,7 +152,7 @@
     <dependency>
       <groupId>org.apache.maven</groupId>
       <artifactId>maven-ant-tasks</artifactId>
-      <version>@mavenVersion@</version>
+      <version>@mavenAntTaskVersion@</version>
       <scope>runtime</scope>
     </dependency>
     <!-- For the Ivy tool only. -->
