@@ -51,6 +51,9 @@ public abstract class GantTestCase extends GroovyTestCase {
   //  to the number with z being one higher than the last release.  So checkouts of maintenance branches
   //  will have x.y.z-SNAPSHOT, while from trunk numbers will be like x.y-beta-z-SNAPSHOT.
   //
+  //  From 2009-11-27, trunk now gives a number 1.8.0-beta-1-SNAPSHOT which adds further complexity to the
+  //  parsing :-(
+  //
   public enum ReleaseType { RELEASED, RELEASED_SNAPSHOT, BETA, BETA_SNAPSHOT, RC, RC_SNAPSHOT } ;
   public static final int groovyMajorVersion ;
   public static final int groovyMinorVersion ;
@@ -70,16 +73,26 @@ public abstract class GantTestCase extends GroovyTestCase {
        }
        else {
          groovyBugFixVersion =  Integer.parseInt ( version[3] ) ;
-         releaseType = version[2].equals ( "RC" ) ? ReleaseType.RC : ReleaseType.BETA ;
+         final String discriminator = version[2] ;
+         releaseType = ( discriminator.equals ( "RC" ) || discriminator.equals ( "rc" ) ) ? ReleaseType.RC : ReleaseType.BETA ;
        }
        break ;
-     case 5 :
-        groovyBugFixVersion =  Integer.parseInt ( version[3] ) ;
-        releaseType = version[2].equals ( "RC" ) ? ReleaseType.RC_SNAPSHOT : ReleaseType.BETA_SNAPSHOT ;
-        assert version[4] == "SNAPSHOT" ;
+     case 5 : {
+       groovyBugFixVersion =  Integer.parseInt ( version[3] ) ;
+       final String discriminator = version[2] ;
+       releaseType = ( discriminator.equals ( "RC" ) || discriminator.equals ( "rc" ) ) ? ReleaseType.RC_SNAPSHOT : ReleaseType.BETA_SNAPSHOT ;
+       assert version[4] == "SNAPSHOT" ;
        break ;
+     }
+     case 6 : {    
+       groovyBugFixVersion =  Integer.parseInt ( version[4] ) ;
+       final String discriminator = version[3] ;
+       releaseType = ( discriminator.equals ( "RC" ) || discriminator.equals ( "rc" ) ) ? ReleaseType.RC_SNAPSHOT : ReleaseType.BETA_SNAPSHOT ;
+       assert version[5] == "SNAPSHOT" ;
+       break ;
+     }
      default :
-       throw new RuntimeException ( "Groovy version number is not well-formed." ) ;
+      throw new RuntimeException ( "Groovy version number is not well-formed." ) ;
     }
     groovyMajorVersion = Integer.parseInt ( version[0] ) ;
     groovyMinorVersion = Integer.parseInt ( version[1] ) ;

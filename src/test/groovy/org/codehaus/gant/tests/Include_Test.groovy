@@ -555,7 +555,7 @@ target ( ${something} : '' ) { }
 """
     assertEquals ( -4 , processCmdLineTargets ( something ) )
     assertEquals ( '' , output )
-    assertEquals ( 'Standard input, line 2 -- Error evaluating Gantfile: No signature of method: org.codehaus.gant.IncludeTargets.multiply() is applicable for argument types: (java.lang.Class) values: ' + ( ( groovyMinorVersion < 6 ) ? '{class gant.targets.Clean}' : '[class gant.targets.Clean]' ) + '\n' , error )
+    assertEquals ( 'Standard input, line 2 -- Error evaluating Gantfile: No signature of method: org.codehaus.gant.IncludeTargets.multiply() is applicable for argument types: (java.lang.Class) values: ' + ( ( groovyMinorVersion < 6 ) ? '{class gant.targets.Clean}' : ( groovyMinorVersion < 8 ) ? '[class gant.targets.Clean]' : '[class gant.targets.Clean]\nPossible solutions: multiply(java.util.Map), multiply(java.util.Map)' ) + '\n' , error )
   }
   void testErrorNullPower ( ) {
     script = """
