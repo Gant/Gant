@@ -27,12 +27,12 @@ carryOn = true
   'groovyStandaloneVersion' ,
   'junitVersion' , 'commonsCliVersion' , 'ivyVersion' , 'antVersion' , 'mavenAntTaskVersion' ,
   'groovyAntTaskTestVersionPropertyFileName' ,
-  ].each { name ->
-    try { binding.getVariable ( name ) }
-    catch ( MissingPropertyException mpe ) {
-      ant.project.log ( "${name} is not defined." )
-      carryOn = false
-    }
+].each { name ->
+  try { binding.getVariable ( name ) }
+  catch ( MissingPropertyException mpe ) {
+    ant.project.log ( "${name} is not defined." )
+    carryOn = false
+  }
 }
 if ( ! carryOn ) {
   ant.project.log ( 'A required property is not set, so terminating.' )
@@ -108,20 +108,20 @@ final mavenAntTaskJarName = 'maven-ant-tasks-' + mavenAntTaskVersion + '.jar'
 final antlibXMLns = 'antlib:org.apache.maven.artifact.ant'
 final mavenPOMId = 'maven.pom'
 final remoteRepositories = [
-                            [ 'codehausSnapshot' , 'http://snapshots.repository.codehaus.org' ] ,
-                            [ 'codehausMain' , 'http://repository.codehaus.org' ] ,
-                            [ 'mavenCentral' , 'http://repo1.maven.org/maven2' ] ,
-                            ]
+  [ 'codehausSnapshot' , 'http://snapshots.repository.codehaus.org' ] ,
+  [ 'codehausMain' , 'http://repository.codehaus.org' ] ,
+  [ 'mavenCentral' , 'http://repo1.maven.org/maven2' ] ,
+]
 
 //  List of files from the top-level directory to put into the distribution files.
 
 final distributionTopLevelFiles = [
-                                   'build.gant' , 'buildMaven.gant' , 'build.properties' , 'build.xml' ,
-                                   '.classpath' , '.project' ,
-                                   'LICENCE.txt' ,
-                                   'README_Distribution.txt' , 'README_Install.txt' ,
-                                   'releaseNotes.txt'
-                                   ]
+  'build.gant' , 'buildMaven.gant' , 'build.properties' , 'build.xml' ,
+  '.classpath' , '.project' ,
+  'LICENCE.txt' ,
+  'README_Distribution.txt' , 'README_Install.txt' ,
+  'releaseNotes.txt'
+]
 
 //  List of directories to put in wholesale into the distribution files.
 
@@ -396,12 +396,12 @@ final doWithAllGroovyVersions = { Closure c ->
     def pathIdRoot = 'classpath' + item.version
     def pathId = pathIdRoot + 'PathId'
     getDependency ( pathIdRoot , [
-                                  [ groupId : item.groupId , artifactId : item.artifactId , version : item.version ] ,
-                                  [ groupId : 'org.apache.ant' , artifactId : 'ant' , version : antVersion  ] ,
-                                  [ groupId : 'org.apache.ant' , artifactId : 'ant-junit' , version : antVersion ] ,
-                                  [ groupId : 'commons-cli' , artifactId : 'commons-cli' , version : commonsCliVersion ] ,
-                                  [ groupId : 'junit' , artifactId : 'junit' , version : junitVersion ]
-                                  ] )
+                      [ groupId : item.groupId , artifactId : item.artifactId , version : item.version ] ,
+                      [ groupId : 'org.apache.ant' , artifactId : 'ant' , version : antVersion  ] ,
+                      [ groupId : 'org.apache.ant' , artifactId : 'ant-junit' , version : antVersion ] ,
+                      [ groupId : 'commons-cli' , artifactId : 'commons-cli' , version : commonsCliVersion ] ,
+                      [ groupId : 'junit' , artifactId : 'junit' , version : junitVersion ]
+                    ] )
     //  Remove the compilation products of the last compilation so as not to affect this one!
     delete ( dir : buildClassesDirectory )
     delete ( dir : buildTestClassesDirectory )
@@ -424,10 +424,10 @@ final doDocumentation = { ->
   def classpathIdRoot = 'javaDoc'
   def classpathId = classpathIdRoot + 'PathId'
   getDependency ( classpathIdRoot , [
-                                     [ groupId : 'org.codehaus.groovy' , artifactId : 'groovy-all' , version : groovyStandaloneVersion ] ,
-                                     [ groupId : 'org.apache.ant' , artifactId : 'ant' , version : antVersion  ] ,
-                                     [ groupId : 'commons-cli' , artifactId : 'commons-cli' , version : commonsCliVersion ]
-                                     ] )
+                    [ groupId : 'org.codehaus.groovy' , artifactId : 'groovy-all' , version : groovyStandaloneVersion ] ,
+                    [ groupId : 'org.apache.ant' , artifactId : 'ant' , version : antVersion  ] ,
+                    [ groupId : 'commons-cli' , artifactId : 'commons-cli' , version : commonsCliVersion ]
+                  ] )
   mkdir ( dir : javaApiDocumentationDirectory )
   mkdir ( dir : groovyApiDocumentationDirectory )
   def packageTitle = "Gant (${gantVersion})"
@@ -436,42 +436,42 @@ final doDocumentation = { ->
   //  4.0 specification.  Copyright symbol is &copy; or &#169;.  N-dash symbol is &ndash; or &#8211;
   def copyrightString = 'Copyright &#169; 2006&#8211;9 The Codehaus.  All rights reserved.'
   javadoc (
-           sourcepath : sourceDirectory ,
-           destdir : javaApiDocumentationDirectory ,
-           packagenames : packageIncludeSpec,
-           overview : 'overview.html' ,
-           private : 'true' ,
-           encoding : 'UTF-8' ,
-           use : 'true' ,
-           author : 'true' ,
-           version : 'true' ,
-           windowtitle : packageTitle ,
-           doctitle : packageTitle ,
-           header : packageTitle ,
-           footer : copyrightString ,
-           source : sourceCompatibility
-           ) {
+    sourcepath : sourceDirectory ,
+    destdir : javaApiDocumentationDirectory ,
+    packagenames : packageIncludeSpec,
+    overview : 'overview.html' ,
+    private : 'true' ,
+    encoding : 'UTF-8' ,
+    use : 'true' ,
+    author : 'true' ,
+    version : 'true' ,
+    windowtitle : packageTitle ,
+    doctitle : packageTitle ,
+    header : packageTitle ,
+    footer : copyrightString ,
+    source : sourceCompatibility
+  ) {
     classpath {
       pathelement ( location : currentGantJarPath )
       path ( refid : classpathId )
     }
   }
   groovydoc (
-             sourcepath : sourceDirectory ,
-             destdir : groovyApiDocumentationDirectory ,
-             packagenames : packageIncludeSpec ,
-             overview : 'overview.html' ,
-             private : 'true' ,
-             //encoding : 'UTF-8' ,
-             use : 'true' ,
-             //author : 'true' ,
-             //version : 'true' ,
-             windowtitle : packageTitle ,
-             doctitle : packageTitle ,
-             header : packageTitle ,
-             footer : copyrightString ,
-             //source : sourceCompatibility
-             )
+    sourcepath : sourceDirectory ,
+    destdir : groovyApiDocumentationDirectory ,
+    packagenames : packageIncludeSpec ,
+    overview : 'overview.html' ,
+    private : 'true' ,
+    //encoding : 'UTF-8' ,
+    use : 'true' ,
+    //author : 'true' ,
+    //version : 'true' ,
+    windowtitle : packageTitle ,
+    doctitle : packageTitle ,
+    header : packageTitle ,
+    footer : copyrightString ,
+    //source : sourceCompatibility
+  )
 }
 
 //  --------------------------------------------------------------------------------------------------------
@@ -529,8 +529,8 @@ target ( initializeNonDistribution : '' ) {
     def compileJarsNotGroovyPathIdRoot = 'compileJarsNotGroovy'
     compileJarsNotGroovyPathId = compileJarsNotGroovyPathIdRoot + 'PathId'
     getDependency ( compileJarsNotGroovyPathIdRoot , [
-                                                      [ groupId : 'commons-cli' , artifactId : 'commons-cli' , version : commonsCliVersion ] ,
-                                                      ] )
+                      [ groupId : 'commons-cli' , artifactId : 'commons-cli' , version : commonsCliVersion ] ,
+                    ] )
     path ( id : compileJarSetPathId ) {
       path ( refid : groovyJarPathId )
       path ( refid : compileJarsNotGroovyPathId )
@@ -538,8 +538,8 @@ target ( initializeNonDistribution : '' ) {
     def testAntJarSetPathIdRoot = 'testAntJarSet'
     testAntJarSetPathId = testAntJarSetPathIdRoot + 'PathId'
     getDependency ( testAntJarSetPathIdRoot , [
-                                               [ groupId : 'org.apache.ant' , artifactId : 'ant-junit' , version : antVersion ] ,
-                                               ] )
+                      [ groupId : 'org.apache.ant' , artifactId : 'ant-junit' , version : antVersion ] ,
+                    ] )
     path ( id : testJarSetPathId ) {
       path ( refid : compileJarSetPathId )
       path ( refid : testAntJarSetPathId )
@@ -714,8 +714,8 @@ target ( uploadDistribution : 'Upload a complete distribution.' ) {
 
 target ( debDistribution : '' ) {
   distributionVersions = [
-                          standalone : [ groupId : 'org.codehaus.groovy' , artifactId : 'groovy-all' , version : groovyStandaloneVersion ]
-                          ]
+    standalone : [ groupId : 'org.codehaus.groovy' , artifactId : 'groovy-all' , version : groovyStandaloneVersion ]
+  ]
   distribution ( )
 }
 
