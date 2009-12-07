@@ -25,7 +25,7 @@ carryOn = true
 [ 'gantVersion' ,
   'groovy15Version' , 'groovy16Version' , 'groovy17Version' ,
   'groovyStandaloneVersion' ,
-  'junitVersion' , 'commonsCliVersion' , 'ivyVersion' , 'antVersion' , 'mavenAntTaskVersion' ,
+  'junitVersion' , 'commonsCliVersion' , 'ivyVersion' , 'antVersion' , 'mavenAntTaskVersion' , 'bndVersion' , 'coberturaVersion' ,
   'groovyAntTaskTestVersionPropertyFileName' ,
 ].each { name ->
   try { binding.getVariable ( name ) }
@@ -224,7 +224,7 @@ final performPackage =  { jarPath ->
   try {                          
     tempfile = File.createTempFile ( 'gant_compile' , '.jar' ) 
     jar ( destfile : tempfile.path , basedir : buildClassesDirectory , manifest : buildMetadataDirectory + '/MANIFEST.MF' )
-    getDependency ( 'bndJar' , [ groupId : 'biz.aQute' , artifactId : 'bnd' , version : '0.0.380' ] )
+    getDependency ( 'bndJar' , [ groupId : 'biz.aQute' , artifactId : 'bnd' , version : bndVersion ] )
     taskdef ( resource : 'aQute/bnd/ant/taskdef.properties' , classpathref : 'bndJarPathId' )
     bndwrap ( output : jarPath , jars : tempfile.path )
     currentGantJarPath = jarPath
@@ -255,7 +255,7 @@ final performTests =  { classpathId ->
     if ( usingCobertura ) {
       mkdir ( dir : buildCoberturaClassesDirectory )
       mkdir ( dir : buildCoberturaReportsDirectory )
-      getDependency ( 'coberturaJar' , [ groupId : 'net.sourceforge.cobertura' , artifactId : 'cobertura' , version : '1.9' ] )
+      getDependency ( 'coberturaJar' , [ groupId : 'net.sourceforge.cobertura' , artifactId : 'cobertura' , version : coberturaVersion ] )
       taskdef ( resource : 'tasks.properties' , classpathref : 'coberturaJarPathId' )
       'cobertura-instrument' ( todir : buildCoberturaClassesDirectory ) { fileset ( dir : buildClassesDirectory ) }
     }
