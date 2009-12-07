@@ -220,10 +220,12 @@ final makeManifest = { ->
 final performPackage =  { jarPath ->
   currentGantJarPath = null                        
   makeManifest ( )
+  def tempfile
   try {                          
-    def tempfile = File.createTempFile ( 'gant_compile' , '.jar' ) 
+    tempfile = File.createTempFile ( 'gant_compile' , '.jar' ) 
     jar ( destfile : tempfile.path , basedir : buildClassesDirectory , manifest : buildMetadataDirectory + '/MANIFEST.MF' )
-    taskdef ( resource : 'aQute/bnd/ant/taskdef.properties' , classpath : 'lib/bnd-0.0.337.jar' )
+    getDependency ( 'bndJar' , [ groupId : 'biz.aQute' , artifactId : 'bnd' , version : '0.0.380' ] )
+    taskdef ( resource : 'aQute/bnd/ant/taskdef.properties' , classpathref : 'bndJarPathId' )
     bndwrap ( output : jarPath , jars : tempfile.path )
     currentGantJarPath = jarPath
   }
