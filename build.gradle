@@ -83,7 +83,10 @@ subprojects {
                              'Implementation-Vendor' : theVendor
                              )
   }
-  repositories { mavenCentral ( ) }
+  repositories {
+    mavenCentral ( )
+    mavenRepo ( urls : 'http://repository.codehaus.org/' )
+  }
   dependencies {
     compile (
              'commons-cli:commons-cli:' + commonsCliVersion ,
