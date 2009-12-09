@@ -83,6 +83,7 @@ subprojects {
                              'Implementation-Vendor' : theVendor
                              )
   }
+  configurations { deployJars }
   repositories {
     mavenCentral ( )
     mavenRepo ( urls : 'http://repository.codehaus.org/' )
@@ -94,6 +95,7 @@ subprojects {
              )
     testCompile ( 'junit:junit:' + junitVersion )
     testRuntime ( 'org.apache.ivy:ivy:' + ivyVersion )
+    deployJars ( 'org.apache.maven.wagon:wagon-webdav:1.0-beta-2' )
   }
   compileGroovy.options.compilerArgs = ['-Xlint']
   test {
@@ -204,8 +206,8 @@ forEachArtifact { archivesBaseName ->
     test.doFirst { groovyAntTaskTestVersionPropertyFile.write ( 'groovyAntTaskTestVersion = ' + groovyVersionNumber ) }
     uploadArchives {
       repositories.mavenDeployer {
-        //uniqueVersion = false
-        //configuration = configurations.deployerJars
+        uniqueVersion = false
+        configuration = configurations.deployJars
         repository ( url : 'https://dav.codehaus.org/repository/gant' )
         snapshotRepository ( url : 'https://dav.codehaus.org/snapshots.repository/gant' )
       }
