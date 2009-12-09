@@ -30,8 +30,8 @@ final targetDirectoryName = 'target_gant'
 final rootDirectory = '..' + System.properties.'file.separator' + '..'
 final buildDirectory = rootDirectory + System.properties.'file.separator' + targetDirectoryName
 
-ant.property ( file : rootDirectory + System.properties.'file.separator' + 'local.build.properties' )
-ant.property ( file : rootDirectory + System.properties.'file.separator' + 'build.properties' )
+property ( file : rootDirectory + System.properties.'file.separator' + 'local.build.properties' )
+property ( file : rootDirectory + System.properties.'file.separator' + 'gradle.properties' )
 
 final packageName = 'gant-standalone'
 final section = 'devel'
@@ -74,7 +74,8 @@ Homepage: ${homepage}
 target ( debFiles : 'Create the deb file of the distribution.' ) {
   if ( ! ignoreBuildDistribution ) { execute.shell ( "cd ${rootDirectory} && gant -DskipTests=${skipTests} debDistribution" ) }
   mkdir ( dir : binDirectory )
-  copy ( tofile : binDirectory + '/gant' , file : 'gant.sh' ) {
+  //  Why is the ant. necessary here ???
+  ant.copy ( tofile : binDirectory + '/gant' , file : 'gant.sh' ) {
     filterset { filter ( token : 'GANT_VERSION' , value : gantVersion ) }
     filterset { filter ( token : 'GROOVYJAR' , value : 'groovy-all-' + groovyStandaloneVersion + '.jar' ) }
   }
