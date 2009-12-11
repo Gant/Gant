@@ -22,13 +22,13 @@ import java.io.ByteArrayInputStream ;
 import java.io.ByteArrayOutputStream ;
 import java.io.PrintStream ;
 
+import java.lang.reflect.Method ;
+
 import groovy.util.GroovyTestCase ;
 
 import gant.Gant ;
 
 import org.codehaus.gant.GantState ;
-
-import org.codehaus.groovy.runtime.InvokerHelper ;
 
 /**
  *  A Gant test case: Adds the required input stream manipulation features to avoid replication of code.
@@ -60,7 +60,32 @@ public abstract class GantTestCase extends GroovyTestCase {
   public static final int groovyBugFixVersion ;
   public static final ReleaseType releaseType ;
   static {
-    final String[] version =  InvokerHelper.getVersion ( ).split ( "[.-]" ) ;
+    //
+    //  Originally we had:
+    //
+    //    final String[] version =  org.codehaus.groovy.runtime.InvokerHelper.getVersion ( ).split ( "[.-]" ) ;
+    //
+    //  but in Groovy 1.8 this method has been deprecated.  The method that must be called now is:
+    //
+    //    final String[] version =  groovy.lang.GroovySystem.getVersion ( ).split ( "[.-]" ) ;
+    //
+    //  which has actually been available since Groovy 1.6.  However, whilst the class
+    //  java.lang.GroovyStsrem exists in Groovy 1.5, the method does not in that version of Groovy.  We must
+    //  therefore use reflection to discover whether getVersion exists in the GroovySystem class and do the
+    //  right thing whatever situation pertains.
+    //
+    String[] version ;
+    try {
+      final Class<?> theClass = Class.forName ( "groovy.lang.GroovySystem" ) ;
+      final String methodName = "getVersion" ;
+      Method method ;
+      try { method = theClass.getMethod ( methodName ) ; }
+      catch ( final Exception e ) { method =  Class.forName ( "org.codehaus.groovy.runtime.InvokerHelper" ).getMethod ( methodName ) ; }
+      version = ( (String) ( method.invoke ( null ) ) ).split ( "[.-]" ) ;
+    }
+    catch ( final Exception e ) { throw new RuntimeException ( "Stuff", e ) ; }
+    //
+    //
     switch ( version.length ) {
      case 3 :
        groovyBugFixVersion =  Integer.parseInt ( version[2] ) ;
