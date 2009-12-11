@@ -48,9 +48,15 @@ subprojects {
   if ( osgify ) { usePlugin ( 'osgi' ) }
   sourceCompatibility = 5
   targetCompatibility = 5
+  configurations {
+    deployJars
+ }
   sourceSets {
+    //  NB All the subprojects are actually using the same source code and this is in a different place so
+    //  the location of the source must be specified explicitly.
     main { groovy { srcDir '../src/main/groovy' } }
     test { groovy { srcDir '../src/test/groovy' } }
+    integTest { groovy { srcDir '../src/integTest/groovy' } }  
   }
   metaInf << fileTree ( dir : '..' ).matching { include 'LICENCE.txt' }
   def theVendor = 'The Codehaus'
@@ -83,7 +89,6 @@ subprojects {
                              'Implementation-Vendor' : theVendor
                              )
   }
-  configurations { deployJars }
   repositories {
     mavenCentral ( )
     mavenRepo ( urls : 'http://repository.codehaus.org/' )
@@ -113,6 +118,11 @@ subprojects {
     ant.delete { fileset ( dir : '.' , includes : '**/*~, texput.log' ) }
     ant.delete ( dir :  'target_forMavenTest' )
   }
+  task integTest {
+    dependsOn ( 'assemble' )
+  }
+  //task integTest ( type : AntTest , description : 'Run the integration tests.' ) {
+  //}
   def packageTitle = 'Gant ' + version
   def copyrightString = 'Copyright &#169; 2006&#8211;9  The Codehaus.  All Rights Reserved.'
   javadoc {
