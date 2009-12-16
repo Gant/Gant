@@ -112,7 +112,7 @@ target = 10
 target ( ${targetName} : '' ) { println ( home ) }
 setDefaultTarget ( ${targetName} )
 """
-  final expectedOutput = ( ( ( groovyMinorVersion < 6 ) && ( groovyBugFixVersion < 8 ) ) ? '' : 'Standard input, line 2 -- ' ) + 'Error evaluating Gantfile: No such property: home for class: standard_input\n'
+  final expectedOutput = 'Standard input, line 2 -- Error evaluating Gantfile: No such property: home for class: standard_input\n'
   void test_GANT_45_MessageBugDefaultTarget ( ) {
     script = testScript
     assertEquals ( -12 , processCmdLineTargets ( ) )

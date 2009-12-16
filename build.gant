@@ -19,25 +19,37 @@ final tarExtension = '.tar'
 final tgzExtension = '.tgz'
 
 property ( file : 'local.build.properties' )
-property ( file : 'gradle.properties' )
 
-carryOn = true
-[ 'gantVersion' ,
-  'groovy15Version' , 'groovy16Version' , 'groovy17Version' ,
-  'groovyStandaloneVersion' ,
-  'junitVersion' , 'commonsCliVersion' , 'ivyVersion' , 'antVersion' , 'mavenAntTaskVersion' , 'bndVersion' , 'coberturaVersion' ,
-  'groovyAntTaskTestVersionPropertyFileName' ,
-].each { name ->
-  try { binding.getVariable ( name ) }
-  catch ( MissingPropertyException mpe ) {
-    ant.project.log ( "${name} is not defined." )
-    carryOn = false
-  }
-}
-if ( ! carryOn ) {
-  ant.project.log ( 'A required property is not set, so terminating.' )
-  System.exit ( 1 )
-}
+gantVersion = '1.9.0-SNAPSHOT'
+gantBundleVersion = '1.9.0-SNAPSHOT'
+
+//  This should be a list of all the currently published versions of Groovy.  Addition to or deletion from
+//  the list of items here will need a consistent change throughout.
+
+groovy16Version = '1.6.7'
+groovy17Version = '1.7-rc-2'
+
+//  This is the version to use for all self-contained builds -- this version of Groovy will be packaged with
+//  Gant.  It should be the latest widely available version of Groovy.
+
+groovyStandaloneVersion = groovy16Version
+
+//  Should always use the same versions of things as Groovy uses.  There perhaps ought to be a way of not
+//  specifying these by discovering which version Groovy uses and then using that. 
+
+junitVersion = '4.7'
+commonsCliVersion = '1.2'
+ivyVersion = '2.1.0'
+antVersion = '1.7.1'
+mavenAntTaskVersion = '2.0.10'
+bndVersion = '0.0.380'
+coberturaVersion = '1.9'
+
+//  The Gant Ant task tests need to have the Groovy version and the easiest way to pass this information is
+//  as a global value, i.e via a file.  This is the name of the file to be used to hold a property called
+//  groovyAntTaskTestVersion.
+
+groovyAntTaskTestVersionPropertyFileName = 'groovyAntTaskTestVersion.properties'
 
 gantPrefix = 'gant-' + gantVersion
 
@@ -127,26 +139,17 @@ final distributionTopLevelFiles = [
 
 final distributionDirectories = [ 'documentation' , 'examples' , '.settings' , scriptsDirectory , jarfilesDirectory , sourceDirectory , testsDirectory ]
 
-//  The versions of Gant in the Maven repository to build distribution version of Gant against.
+//  The versions of Groovy in the Maven repository to build distribution version of Gant against.
 //
-//  Introducing the Gant Ant Task written in Java means we have to use the joint compiler to compile Gant
-//  and this means we cannot build Gant against Groovy 1.0 since the joint compiler only arrived with 1.5.0.
-//  Opinion on the user list indicated that it seemed reasonable to drop support for Groovy 1.0.
-//
-//  It is assumed that the groovyc fork mode works, which means we cannot sensibly build against any version
-//  of Groovy prior to 1.5.2 -- since that is the version in which groovyc fork mode appeared.  Using a
-//  forked Java task is not an option because there is no --classpath option in the 1.5.0 and 1.5.1 versions
-//  of Groovyc and this is essential to get things to work correctly.  Gant can still be built and
-//  distributed against Groovy 1.5.0 and 1.5.1 but it has to be done the hard (manual) way.
-//
-//  Allow a mechanism for testing individual distribution entries as well as producing all of them.
+//  As at 2009-12-16 Groovy versions prior to 1.6.0 are not supported and so all issues regarding Gant and
+//  non-supported Groovy versions are no longer relevant.
 
 final distributionVersions = [ : ]
 if ( testSpecialDistributionVersion ) {
   distributionVersions.put ( 'groovy-' +  testSpecialDistributionVersion , [ groupId : 'org.codehaus.groovy' , artifactId : 'groovy-all' , version :  testSpecialDistributionVersion ] )
 }
 else {
-  [ groovy15Version , groovy16Version , groovy17Version ].each { version ->
+  [ groovy16Version , groovy17Version ].each { version ->
     distributionVersions.put ( 'groovy-' + version , [ groupId : 'org.codehaus.groovy' , artifactId : 'groovy-all' , version : version ] )
   }
   distributionVersions.put ( 'standalone' , [ groupId : 'org.codehaus.groovy' , artifactId : 'groovy-all' , version : groovyStandaloneVersion ] )

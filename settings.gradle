@@ -14,4 +14,4 @@
 //
 //  Author : Russel Winder <russel.winder@concertant.com>
 
-include 'gant' , 'gant_groovy1.5' , 'gant_groovy1.6' , 'gant_groovy1.7'
+include 'gant' , 'gant_groovy1.6' , 'gant_groovy1.7'

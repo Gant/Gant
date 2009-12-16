@@ -30,7 +30,7 @@ cleanDirectory << 'target'
 target ( ${targetName} : '' ) { println ( cleanDirectory ) }
 """
     assertEquals ( 0 , processCmdLineTargets ( targetName ) )
-    assertEquals ( resultString ( targetName , ( groovyMinorVersion > 5 ) ? '[target]\n' : '["target"]\n' ) , output )
+    assertEquals ( resultString ( targetName , '[target]\n' ) , output )
     assertEquals ( '' , error )
   }
   void testCleanDirectoryList ( ) {
@@ -40,7 +40,7 @@ cleanDirectory << [ 'target_a' , 'target_b' ]
 target ( ${targetName} : '' ) { println ( cleanDirectory ) }
 """ 
     assertEquals ( 0 , processCmdLineTargets ( targetName ) ) 
-    assertEquals ( resultString ( targetName , ( groovyMinorVersion > 5 ) ? '[[target_a, target_b]]\n' :  '[["target_a", "target_b"]]\n' ) , output )
+    assertEquals ( resultString ( targetName , '[[target_a, target_b]]\n' ) , output )
     assertEquals ( '' , error )
   }
   void testCleanPatternString ( ) {
@@ -50,7 +50,7 @@ cleanPattern << '**/*~'
 target ( ${targetName} : '' ) {println ( cleanPattern ) }
 """
     assertEquals ( 0 , processCmdLineTargets ( targetName ) )
-    assertEquals ( resultString ( targetName , ( groovyMinorVersion > 5 ) ? '[**/*~]\n' : '["**/*~"]\n' ) , output ) 
+    assertEquals ( resultString ( targetName , '[**/*~]\n' ) , output ) 
     assertEquals ( '' , error )
   }
   void testCleanPatternList ( ) {
@@ -60,7 +60,7 @@ cleanPattern << [ '**/*~' , '**/*.bak' ]
 target ( ${targetName} : '' ) { println ( cleanPattern ) }
 """
     assertEquals ( 0 , processCmdLineTargets ( targetName ) )
-    assertEquals ( resultString ( targetName , ( groovyMinorVersion > 5 ) ? '[[**/*~, **/*.bak]]\n' : '[["**/*~", "**/*.bak"]]\n' ) , output ) 
+    assertEquals ( resultString ( targetName , '[[**/*~, **/*.bak]]\n' ) , output ) 
     assertEquals ( '' , error )
   }
   void testClobberDirectoryString ( ) {
@@ -70,7 +70,7 @@ clobberDirectory << 'target'
 target ( ${targetName} : '' ) { println ( clobberDirectory ) }
 """
     assertEquals ( 0 , processCmdLineTargets ( targetName ) )
-    assertEquals ( resultString ( targetName , ( groovyMinorVersion > 5 ) ? '[target]\n' : '["target"]\n' ) , output ) 
+    assertEquals ( resultString ( targetName , '[target]\n' ) , output ) 
     assertEquals ( '' , error )
   }
   void testClobberDirectoryList ( ) {
@@ -80,7 +80,7 @@ clobberDirectory << [ 'target_a' , 'target_b' ]
 target ( ${targetName} : '' ) { println ( clobberDirectory ) }
 """
     assertEquals ( 0 , processCmdLineTargets ( targetName ) )
-    assertEquals ( resultString ( targetName , ( groovyMinorVersion > 5 ) ? '[[target_a, target_b]]\n' : '[["target_a", "target_b"]]\n' ) , output ) 
+    assertEquals ( resultString ( targetName , '[[target_a, target_b]]\n' ) , output ) 
     assertEquals ( '' , error )
   }
   void testClobberPatternString ( ) {
@@ -92,7 +92,7 @@ target ( ${targetName} : '' ) {
 }
 """
     assertEquals ( 0 , processCmdLineTargets ( targetName ) )
-    assertEquals ( resultString ( targetName , ( groovyMinorVersion > 5 ) ? '[**/*~]\n' : '["**/*~"]\n' ) , output ) 
+    assertEquals ( resultString ( targetName , '[**/*~]\n' ) , output ) 
     assertEquals ( '' , error )
   }
   void testClobberPatternList ( ) {
@@ -102,7 +102,7 @@ clobberPattern << [ '**/*~' , '**/*.bak' ]
 target ( ${targetName} : '' ) { println ( clobberPattern ) }
 """
     assertEquals ( 0 , processCmdLineTargets ( targetName ) )
-    assertEquals ( resultString ( targetName , ( groovyMinorVersion > 5 ) ? '[[**/*~, **/*.bak]]\n' : '[["**/*~", "**/*.bak"]]\n' ) , output ) 
+    assertEquals ( resultString ( targetName , '[[**/*~, **/*.bak]]\n' ) , output ) 
     assertEquals ( '' , error )
   }
   void testParameterizedInclude ( ) {
@@ -111,7 +111,7 @@ includeTargets ** gant.targets.Clean * [ cleanDirectory : 'target' ]
 target ( ${targetName} : '' ) { println ( cleanDirectory ) }
 """
     assertEquals ( 0 , processCmdLineTargets ( targetName ) )
-    assertEquals ( resultString ( targetName , ( groovyMinorVersion > 5 ) ? '[target]\n' : '["target"]\n' ) , output ) 
+    assertEquals ( resultString ( targetName , '[target]\n' ) , output ) 
     assertEquals ( '' , error )
   }
 }

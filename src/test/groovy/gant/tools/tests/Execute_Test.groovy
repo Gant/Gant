@@ -35,7 +35,7 @@ target ( ${targetName} : '' ) { execute.executable ( '${command}' ) }
   void testExecutableListOfString ( ) {
     //  Format these correctly and they are both input and expected value.
     final command = isWindows ? '["cmd", "/c", "echo", "1"]' : '["echo", "1"]'
-    final expected = ( groovyMinorVersion > 5 ) ? command.replaceAll ( '"' , '' ) : command
+    final expected = command.replaceAll ( '"' , '' )
     script = """includeTool << gant.tools.Execute
 target ( ${targetName} : '' ) { execute.executable ( ${command} ) }
 """

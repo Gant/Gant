@@ -151,16 +151,7 @@ target ( ${targetName} : '' ) {
     assertEquals ( '' , error )
   }
   void testPropertyAccessInsideCategory ( ) {
-    /*
-     *  This tests generates a StackOverflowError with Groovy 1.5.7. The problem is, we have no idea whether
-     *  the test is checking for a bug in Gant, or whether it is just making sure that we correctly
-     *  workaround a bug in DOMCategory :( We can re-enable this test once the StackOverflowError is fixed
-     *  in Groovy and we know that we're not just working around that DOMCategory issue.
-     *
-     *  See http://jira.codehaus.org/browse/GROOVY-3109
-     */
     final message = 'Hello World'
-    if ( groovyMinorVersion < 6 ) { return }
     script = """
 target ( ${targetName} : '' ) {
   use ( groovy.xml.dom.DOMCategory ) { println ( "${message}" ) }

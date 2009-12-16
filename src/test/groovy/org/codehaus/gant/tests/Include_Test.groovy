@@ -80,7 +80,7 @@ target ( '${defaultTarget}' : '' ) { ${something} ( ) }
    //  This is a huge change of semantics, and wholly inappropriate for a bug fix release. :-(((
   private final targetsBuildScriptClass =  "includeTargets <<  groovyShell.evaluate ( '''${targetsScriptText} ; return ${targetsClassName}''' , '${targetsClassName}' )\n" + targetsBuildScriptBase
   private final targetsErrorBuildScriptClass =  "includeTargets <<  groovyShell.evaluate ( '''${targetsScriptText}''' , '${targetsClassName}' )\n" + targetsBuildScriptBase
-  private final resultErrorEvaluatingScript = 'Standard input, line 1 -- Error evaluating Gantfile: ' + ( ( ( groovyMinorVersion < 6 ) && ( groovyBugFixVersion < 8 ) ) ? 'null' : "Cannot get property 'class' on null object" ) + '\n'
+  private final resultErrorEvaluatingScript = "Standard input, line 1 -- Error evaluating Gantfile: Cannot get property 'class' on null object\n"
   private final String targetsBuildScriptFile
   private final targetsBuildScriptString =  "includeTargets <<  '''${targetsScriptText}'''\n" + targetsBuildScriptBase
   private final targetsBuildClassClass =  "includeTargets <<  groovyShell.evaluate ( '''${targetsClassText} ; return ${targetsClassName}''' )\n" + targetsBuildScriptBase
@@ -555,7 +555,7 @@ target ( ${something} : '' ) { }
 """
     assertEquals ( -4 , processCmdLineTargets ( something ) )
     assertEquals ( '' , output )
-    assertEquals ( 'Standard input, line 2 -- Error evaluating Gantfile: No signature of method: org.codehaus.gant.IncludeTargets.multiply() is applicable for argument types: (java.lang.Class) values: ' + ( ( groovyMinorVersion < 6 ) ? '{class gant.targets.Clean}' : ( groovyMinorVersion < 7 ) ? '[class gant.targets.Clean]' : '[class gant.targets.Clean]\nPossible solutions: multiply(java.util.Map), multiply(java.util.Map)' ) + '\n' , error )
+    assertEquals ( 'Standard input, line 2 -- Error evaluating Gantfile: No signature of method: org.codehaus.gant.IncludeTargets.multiply() is applicable for argument types: (java.lang.Class) values: ' + ( ( groovyMinorVersion < 7 ) ? '[class gant.targets.Clean]' : '[class gant.targets.Clean]\nPossible solutions: multiply(java.util.Map), multiply(java.util.Map)' ) + '\n' , error )
   }
   void testErrorNullPower ( ) {
     script = """
