@@ -167,6 +167,14 @@ subprojects {
     footer = copyrightString
   }
   task documentation ( dependsOn: [ 'javadoc' , 'groovydoc' ] , description : 'Create the API documentation.' )
+  task zipDoc ( type : Zip , dependsOn : documentation ) {
+    appendix = 'docs'
+    from ( docsDir )
+  }
+  task zipSrc ( type : Zip ) {
+    appendix = 'src'
+    from ( sourceSets.main.allSource )
+  }
   defaultTasks ( 'build' ) 
 }
 
