@@ -288,17 +288,24 @@ forEachDistributionVersion { archivesBaseName ->
     dependencies { groovy ( 'org.codehaus.groovy:groovy-all:' + groovyVersion ) }
     compileGroovy.doFirst { println ( '\n\tUsing Groovy version ' + groovyVersion + '\n' ) }
     test.doFirst { groovyAntTaskTestVersionPropertyFile.write ( groovyAntTaskTestVersionPropertyFileContent + groovyVersion ) }
-    uploadArchives {
-      repositories.mavenDeployer {
-        uniqueVersion = false
-        configuration = configurations.deployJars
-        repository ( url : 'https://dav.codehaus.org/repository/gant' ) {
-          authentication ( userName : gant_repoUserName , password : gant_repoPassword )
-        }
-        snapshotRepository ( url : 'https://dav.codehaus.org/snapshots.repository/gant' ){
+    try {
+      uploadArchives {
+        repositories.mavenDeployer {
+          uniqueVersion = false
+          configuration = configurations.deployJars
+          repository ( url : 'https://dav.codehaus.org/repository/gant' ) {
+            authentication ( userName : gant_repoUserName , password : gant_repoPassword )
+          }
+          snapshotRepository ( url : 'https://dav.codehaus.org/snapshots.repository/gant' ) {
             authentication ( userName: gant_repoUserName , password : gant_repoPassword )
+          }
         }
       }
+    }
+    catch ( Exception e ) {
+      // If the gant_repoUserName and/or gant_repoPassword are not defined then there will be an exception,
+      // but we don't really care since all that happens is that the archive uploading task is not
+      // initialized and if these are not defined you can;t upload anyway!
     }
   }
   ciBuildTasks << archivesBaseName + ':build'
