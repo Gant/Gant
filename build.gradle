@@ -63,7 +63,7 @@ distributionTasks = [ ]
 
 // =====================================================================
 //
-//  Specifications of things for all the (sub)projects.
+//  Specifications of things for all the (subprojects.
 
 allprojects {
   group =  'org.codehaus.gant'
