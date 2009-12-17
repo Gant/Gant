@@ -17,6 +17,9 @@ Switch from using Ant as a boostrap and Gant for other processing to using Gradl
 
 Updated to Groovy 1.7-rc-2 for Groovy 1.7.x and Groovy 1.6.7 for Groovy 1.6.x.
 
+Switch from using Ant as a boostrap and then Gant to manage the project to using Gradle for all build and
+install activity.
+
 
 1.8.1
 -----
