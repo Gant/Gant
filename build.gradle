@@ -340,6 +340,7 @@ task wrapper ( type : Wrapper ) {
 
 task clobber ( description : 'Do a really detailed clean.' ) << {
   forEachProject { item -> ant.delete ( dir : item ) }
+  ant.delete ( dir : buildDir )
   ant.delete { fileset ( dir : '.' , includes : 'texput.log,**/*~,' + groovyAntTaskTestVersionPropertyFile.name ) }
 }
 
