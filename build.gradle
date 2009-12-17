@@ -16,7 +16,6 @@
 
 import org.apache.tools.ant.filters.ReplaceTokens
 
-group =  'org.codehaus.gant'
 artifact = 'gant'
 mavenNameExtension = '_groovy'
 
@@ -64,10 +63,14 @@ distributionTasks = [ ]
 
 // =====================================================================
 //
-//  Specifications of things for all the subprojects.
+//  Specifications of things for all the (sub)projects.
+
+allprojects {
+  group =  'org.codehaus.gant'
+  version = gantVersion
+}
 
 subprojects {
-  version = gantVersion
   usePlugin ( 'groovy' )
   usePlugin ( 'osgi' )
   sourceCompatibility = 5
@@ -406,4 +409,3 @@ task clobber ( description : 'Do a really detailed clean.' ) << {
   ant.delete ( dir : buildDir )
   ant.delete { fileset ( dir : '.' , includes : 'texput.log,**/*~,' + groovyAntTaskTestVersionPropertyFile.name ) }
 }
-
