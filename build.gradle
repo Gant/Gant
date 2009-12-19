@@ -236,18 +236,26 @@ forEachDistributionVersion { projectName->
     dependencies { groovy ( 'org.codehaus.groovy:groovy-all:' + groovyVersion ) }
     compileGroovy.doFirst { println ( '\n\tUsing Groovy version ' + groovyVersion + '\n' ) }
     test.doFirst { groovyAntTaskTestVersionPropertyFile.write ( groovyAntTaskTestVersionPropertyFileContent + groovyVersion ) }
-    uploadArchives {
-      repositories.mavenDeployer {
-        uniqueVersion = false
-        configuration = configurations.deployJars
-        repository ( url : 'https://dav.codehaus.org/repository/gant' ) {
-          authentication ( userName : gant_repoUserName , password : gant_repoPassword )
-        }
-        snapshotRepository ( url : 'https://dav.codehaus.org/snapshots.repository/gant' ) {
-          authentication ( userName: gant_repoUserName , password : gant_repoPassword )
+    try {
+      uploadArchives {
+        repositories.mavenDeployer {
+          uniqueVersion = false
+          configuration = configurations.deployJars
+          repository ( url : 'https://dav.codehaus.org/repository/gant' ) {
+            authentication ( userName : gant_repoUserName , password : gant_repoPassword )
+          }
+          snapshotRepository ( url : 'https://dav.codehaus.org/snapshots.repository/gant' ) {
+            authentication ( userName: gant_repoUserName , password : gant_repoPassword )
+          }
         }
       }
     }
+    catch ( Exception e ) { 
+      //  If gant_repoUserName and/or gant_repoPassword are not defined, do nothing.
+    }
+    /*
+     *  This approach fails for CI servers.
+     *
     gradle.taskGraph.whenReady { graph ->
       if ( graph.hasTask ( uploadArchives ) ) {
         // Ensure these properties are defined.  Fail early if they are not.
@@ -255,6 +263,8 @@ forEachDistributionVersion { projectName->
         gant_repoPassword
       }
     }
+    *
+    */
     binCopySpec = copySpec {
       def scriptsDirectory = '../scripts'
       from ( '..' ) { include ( 'README*' ) }
@@ -405,15 +415,23 @@ task uploadDistribution ( type : Upload , dependsOn : buildDistribution , descri
 //  dependsOn ( buildDistribution )
   uploadDescriptor = false
   doFirst {
-    it.repositories.add ( new WebdavResolver ( ) ) {
-      name = 'gantReleases'
-      user = gant_repoUserName
-      userPassword = gant_repoPassword
-      addArtifactPattern ( 'https://dav.codehaus.org/snapshots.dist/gant/distributions/[artifact]-[revision](-[classifier]).[ext]' )
+    try {
+      it.repositories.add ( new WebdavResolver ( ) ) {
+        name = 'gantReleases'
+        user = gant_repoUserName
+        userPassword = gant_repoPassword
+        addArtifactPattern ( 'https://dav.codehaus.org/snapshots.dist/gant/distributions/[artifact]-[revision](-[classifier]).[ext]' )
+      }
+    }
+    catch ( Exception e ) {
+      //  If gant_repoUserName and/or gant_repoPassword are not defined, do nothing.
     }
   }
 }
 
+/*
+ *  This approach fails for CI servers.
+ *
 gradle.taskGraph.whenReady { graph ->
   if ( graph.hasTask ( uploadDistribution ) ) {
     // Ensure these properties are defined.  Fail early if they are not.
@@ -421,6 +439,8 @@ gradle.taskGraph.whenReady { graph ->
     gant_repoPassword
   }
 }
+*
+*/
 
 // =====================================================================
 //
