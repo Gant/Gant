@@ -208,15 +208,21 @@ final performCompile = { classpathId ->
 final makeManifest = { ->
   mkdir ( dir : buildMetadataDirectory )
   copy ( todir : buildMetadataDirectory ,  file : 'LICENCE.txt' )
+  def theVendor = 'The Codehaus'
+  def theTitle = 'Gant: Scripting Ant tasks with Groovy.'
   manifest ( file : buildMetadataDirectory + '/MANIFEST.MF' ) {
+    attribute ( name : 'Bundle-Vendor' , value : theVendor )
+    attribute ( name : 'Bundle-Description', value : 'gant' )
+    attribute ( name : 'Bundle-DocURL' , value : 'http://gant.codehaus.org' )
     attribute ( name : 'Built-By' , value : System.properties.'user.name' )
     attribute ( name : 'Extension-Name' , value : 'gant' )
-    attribute ( name : 'Specification-Title' , value : 'Gant: scripting Ant tasks with Groovy.' )
+    attribute ( name : 'Specification-Title' , value : theTitle )
     attribute ( name : 'Specification-Version' , value : gantVersion )
-    attribute ( name : 'Specification-Vendor' , value : 'The Codehaus' )
-    attribute ( name : 'Implementation-Title' , value : 'Gant: Scripting Ant tasks with Groovy.' )
+    attribute ( name : 'Specification-Vendor' , value : theVendor )
+    attribute ( name : 'Implementation-Title' , value : theTitle )
     attribute ( name : 'Implementation-Version' , value : gantVersion ) 
-    attribute ( name : 'Implementation-Vendor' , value : 'The Codehaus' )
+    attribute ( name : 'Implementation-Vendor' , value : theVendor )
+    attribute ( name : 'Export-Package' , value : '*'' )
   }
 }
 

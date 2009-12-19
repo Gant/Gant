@@ -69,6 +69,7 @@ distributionTasks = [ ]
 allprojects {
   group =  'org.codehaus.gant'
   version = gantVersion
+  bundleVersion = gantVersion
 }
 
 subprojects {
@@ -89,8 +90,10 @@ subprojects {
   def theTitle = 'Gant: Scripting Ant tasks with Groovy.'
   configure ( jar.osgi ) {
     name = 'Gant'
+    version = gantVersion
+    symbolicName = 'gant'
     instruction 'Bundle-Vendor' , theVendor
-    instruction 'Bundle-Description' , theTitle
+    instruction 'Bundle-Description' , group
     instruction 'Bundle-DocURL' , 'http://gant.codehaus.org'
     instruction 'Built-By' , System.properties.'user.name'
     instruction 'Extension-Name' , artifact
@@ -99,7 +102,8 @@ subprojects {
     instruction 'Specification-Vendor' , theVendor
     instruction 'Implementation-Title' , theTitle
     instruction 'Implementation-Version' , gantVersion
-    instruction'Implementation-Vendor' , theVendor
+    instruction 'Implementation-Vendor' , theVendor
+    instruction 'Export-Package' , '*'
   }
   repositories {
     mavenCentral ( )
