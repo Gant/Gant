@@ -21,7 +21,7 @@ final tgzExtension = '.tgz'
 property ( file : 'local.build.properties' )
 
 gantVersion = '1.9.0-SNAPSHOT'
-gantBundleVersion = '1.9.0-SNAPSHOT'
+gantBundleVersion = gantVersion
 
 //  This should be a list of all the currently published versions of Groovy.  Addition to or deletion from
 //  the list of items here will need a consistent change throughout.
@@ -157,7 +157,7 @@ else {
 
 //  As Jürgen Hermann pointed out, the trailing / on the URL is very important.
 
-final distributionURL = 'https://dav.codehaus.org/dist/gant/'
+final distributionURL = 'https://dav.codehaus.org/' + ( gantVersion.contains ( 'SNAPSHOT' ) ? 'snapshot.' : '' ) + 'dist/gant/'
 
 //  The hierarchy on the Codehaus server for the distributions is fixed and known.
 
