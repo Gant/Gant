@@ -20,7 +20,7 @@
                 <taskdef name="groovyc" classpath="${javac.classpath}" classname="org.codehaus.groovy.ant.Groovyc"/>
                 <property name="empty.dir" location="${build.dir}/empty"/>
                 <mkdir dir="${empty.dir}"/>
-                <groovyc srcdir="@{srcdir}" sourcepath="@{sourcepath}" destdir="@{destdir}" encoding="${source.encoding}" includes="@{includes}" excludes="@{excludes}">
+                <groovyc srcdir="@{srcdir}" sourcepath="@{sourcepath}" destdir="@{destdir}" encoding="${source.encoding}" includes="@{includes}" excludes="@{excludes}" includeAntRuntime="false">
                     <src>
                         <dirset dir="@{gensrcdir}" erroronmissingdir="false">
                             <include name="*"/>
@@ -29,15 +29,7 @@
                     <classpath>
                         <path path="@{classpath}"/>
                     </classpath>
-                    <javac srcdir="@{srcdir}" sourcepath="@{sourcepath}" destdir="@{destdir}" debug="@{debug}" deprecation="${javac.deprecation}" encoding="${source.encoding}" source="${javac.source}" target="${javac.target}" includes="@{includes}" excludes="@{excludes}" includeantruntime="false">
-                        <src>
-                            <dirset dir="@{gensrcdir}" erroronmissingdir="false">
-                                <include name="*"/>
-                            </dirset>
-                        </src>
-                        <classpath>
-                            <path path="@{classpath}"/>
-                        </classpath>
+                    <javac debug="@{debug}" deprecation="${javac.deprecation}" encoding="${source.encoding}" source="${javac.source}" target="${javac.target}">
                         <compilerarg line="${javac.compilerargs} ${javac.compilerargs.jaxws}"/>
                         <customize/>
                     </javac>
