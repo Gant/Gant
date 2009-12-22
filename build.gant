@@ -20,7 +20,7 @@ final tgzExtension = '.tgz'
 
 property ( file : 'local.build.properties' )
 
-gantVersion = '1.9.0-SNAPSHOT'
+gantVersion = '1.9.0'
 gantBundleVersion = gantVersion
 
 //  This should be a list of all the currently published versions of Groovy.  Addition to or deletion from
