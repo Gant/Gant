@@ -33,7 +33,7 @@ groovyVersions = [
 //  One series of Groovy needs using for the standalone distribution. This version of Groovy will be packaged with
 //  the "standalone" distribution of Gant.  It will generally be the latest widely available version of Groovy.
 
-groovyStandaloneSeries = '1.6'
+groovyStandaloneSeries = '1.7'
 
 //  In order to communicate the version of Groovy being used for a particular test to the Gant Ant task
 //  test, a file has to be written with the Groovy version number clearly stated.  Ensure correct data
