@@ -27,7 +27,7 @@ gantBundleVersion = gantVersion
 //  the list of items here will need a consistent change throughout.
 
 groovy16Version = '1.6.7'
-groovy17Version = '1.7-rc-2'
+groovy17Version = '1.7.0'
 
 //  This is the version to use for all self-contained builds -- this version of Groovy will be packaged with
 //  Gant.  It should be the latest widely available version of Groovy.
