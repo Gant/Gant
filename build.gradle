@@ -20,7 +20,7 @@ import org.gradle.api.artifacts.repositories.WebdavResolver
 artifact = 'gant'
 mavenNameExtension = '_groovy'
 
-gantVersion = '1.9.0'
+gantVersion = '1.9.1-SNAPSHOT'
 gantPrefix = artifact + '-' + gantVersion
 
 //  Nominate for each supported series of Groovy, exactly which version to use.
