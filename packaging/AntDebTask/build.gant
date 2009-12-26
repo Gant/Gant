@@ -64,7 +64,7 @@ Homepage: ${homepage}
 //  repository, so we need to make use of the Maven Ant task to be able to get it.
 
 final antlibXMLns = 'antlib:org.apache.maven.artifact.ant'
-final distributionURL = 'https://dav.codehaus.org/dist/gant/'
+final distributionURL = 'https://dav.codehaus.org/' + ( gantVersion.contains ( 'SNAPSHOT' ) ? 'snapshots.' : '' ) + 'dist/gant/'
 
 //  Load up the Ant Deb task.
 
