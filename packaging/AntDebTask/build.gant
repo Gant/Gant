@@ -94,6 +94,11 @@ target ( debFiles : 'Create the deb file of the distribution.' ) {
   execute.shell ( "cd ../.. && gradle standaloneBinZip" )
   mkdir ( dir : distDirectory )
   //execute.shell ( "cd ${distDirectory} && tar xvf ../../../build/gant-{$gantVersion}.tgz")
+  //
+  //  For some reason, trying to unzip when there is already an unzipped "installation" hangs.  Solve this
+  //  by forcibly deleteing the current version.
+  //
+  delete { fileset ( dir : distDirectory , includes : '**/*' ) }
   execute.shell ( "cd ${distDirectory} && unzip ../../../build/gant-${gantVersion}.zip")
   mkdir ( dir : debsDirectory )
   ////  Why is the ant. needed here ??????
