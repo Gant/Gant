@@ -93,8 +93,8 @@ target ( debFiles : 'Create the deb file of the distribution.' ) {
   //execute.shell ( "cd ../.. && gradle standaloneBinTgz" )
   execute.shell ( "cd ../.. && gradle standaloneBinZip" )
   mkdir ( dir : distDirectory )
-  //execute.shell ( "cd ${distDirectory} && tar xvf ../../../build/gant-1.10.0-SNAPSHOT.tgz")
-  execute.shell ( "cd ${distDirectory} && unzip ../../../build/gant-1.10.0-SNAPSHOT.zip")
+  //execute.shell ( "cd ${distDirectory} && tar xvf ../../../build/gant-{$gantVersion}.tgz")
+  execute.shell ( "cd ${distDirectory} && unzip ../../../build/gant-${gantVersion}.zip")
   mkdir ( dir : debsDirectory )
   ////  Why is the ant. needed here ??????
   ant.deb ( todir : debsDirectory , 'package' : packageName , section : section , priority : priority , architecture : architecture ,
