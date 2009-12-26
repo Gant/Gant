@@ -77,7 +77,7 @@ on a separate installation of Groovy -- all the jars needed for Gant to run are
 included in the package.
 .
 ''' ) )
-    tarfileset ( file : [ expandDirectory , 'bin' , 'gant' ].join ( '/' ) , prefix : installPrefixBase + '/bin' , filemode : '755' )
+    tarfileset ( file : 'gant' , prefix : installPrefixBase + '/bin' , filemode : '755' )
     tarfileset ( file : [ expandDirectory , 'bin' , 'startGroovy' ].join ( '/' ) , prefix : installPrefixBase + '/bin' , filemode : '644' )
     tarfileset ( file : [ expandDirectory , 'conf' , 'gant-starter.conf' ].join ( '/' ) , prefix : installPrefixBase + '/conf' )
     tarfileset ( dir : [ expandDirectory , 'lib'].join (  '/' ) , includes : '*.jar' , prefix : installPrefixBase + '/lib' )
