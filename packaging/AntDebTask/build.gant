@@ -14,9 +14,26 @@
 //
 //  Author : Russel Winder <russel.winder@concertant.com>
 
-//  TODO : Find a way of selecting this value from the Gradle build file.
+//  The overal algorithm here is to take a standalone distribution (could use either a tarball or a
+//  zipfile, prefer to use a tarball if it exists) expand it and then repackage into a deb file.  Do not
+//  include any Windows specific bits.  Furthermore replace the standard launch script with one specifically
+//  designed for the installation with its known locations and dependencies.
 
-gantVersion = '1.9.1-SNAPSHOT'
+//  Use the ant-deb-task from Marius Scurtescu <marius.scurtescu@gmail.com> to create a deb file.
+//  Assume the ant-deb.jar file is in ~/.groovy/lib.
+
+//  Extract the Gant version number from the Gradle build file.  Scanning the text with the regular
+//  expression below should result in a single match resulting in a list of two items, the full match and
+//  the capture group.  The capture group should be the version number.
+
+final matcher = ( new File ( '../../build.gradle' ) ).text =~ "gantVersion\\s*=\\s*'(.*)'"
+assert matcher != null
+assert matcher[0] != null
+assert matcher[0].size ( ) == 2
+
+final gantVersion = matcher[0][1]
+
+//  Name of and properties to be embedded in the deb.
 
 final packageName = 'gant-standalone'
 final section = 'devel'
@@ -26,17 +43,40 @@ final homepage = 'http://gant.codehaus.org/'
 
 final installPrefixBase = 'usr/share/gant'
 
+final theSynopsis = 'Gant -- Groovy scripting of Ant tasks.' 
+final theWords = """
+Gant is a tool for scripting Ant tasks using Groovy instead of XML to specify
+the logic. A Gant specification is just a Groovy script and so can bring all
+the power of Groovy to bear directly, something not possible with Ant scripts.
+Whilst it might be seen as a competitor to Ant, Gant relies on all the Ant
+tasks for the complex actions, so it is really an alternative way of doing
+builds using Ant, but using a programming language rather than XML to specify
+the rules.
+.
+This package provides a self-contained installation of Gant that does not
+depend on a separate installation of Groovy -- all the jars needed for Gant to
+run are included in the package.
+.
+Homepage: ${homepage}
+"""
+  
+//  Where to put the deb when uploading.  We need the slide-webdav jar which we get fromt he Maven
+//  repository, so we need to make use of the Maven Ant task to be able to get it.
+
 final antlibXMLns = 'antlib:org.apache.maven.artifact.ant'
 final distributionURL = 'https://dav.codehaus.org/dist/gant/'
 
-//  Use the ant-deb-task from Marius Scurtescu <marius.scurtescu@gmail.com> to create a deb file.
-//  Assume the ant-deb.jar file is in ~/.groovy/lib.
+//  Load up the Ant Deb task.
 
 ant.taskdef ( resource : 'ant_deb_task.properties' , classpath : [ System.properties.'user.home' , '.groovy' , 'lib' , 'ant-deb.jar' ].join ( System.properties.'file.separator' ) )
+
+//  Local details of where to expand the standalone distribution and where to make the debs.
 
 final debsDirectory = 'debs'
 final distDirectory = 'dist'
 final expandDirectory = distDirectory + '/gant-' + gantVersion
+
+//  Make sure we can tidy things up.  Also that we can easily run subprocesses.
 
 includeTargets << gant.targets.Clean
 cleanPattern << '**/*~'
@@ -44,23 +84,17 @@ cleanDirectory << [ debsDirectory , distDirectory ]
 
 includeTool << gant.tools.Execute
 
-theSynopsis = 'Gant -- Groovy scripting of Ant tasks.' 
-theWords = """
-Gant is a tool for scripting Ant tasks using Groovy instead of XML to specify
-the logic. A Gant specification is just a Groovy script and so can bring all
-the power of Groovy to bear directly, something not possible with Ant scripts.
-Whilst it might be seen as a competitor to Ant, Gant relies on all the Ant 
-tasks for the complex actions, so it is really an alternative way of doing
-builds using Ant, but using a programming language rather than XML to specify
-the rules.
-.
-Homepage: ${homepage}
-"""
-  
+//  The targets:  create the debs and upload the debs, set the default to build.
+
 target ( debFiles : 'Create the deb file of the distribution.' ) {
-  execute.shell ( "cd ../.. && gradle standaloneBinTgz" )
+  //
+  // TODO : As at 2009-12-24, Gradle had a bug in the Tar task that meant it didn't work.  As soon as practical fix this.
+  //
+  //execute.shell ( "cd ../.. && gradle standaloneBinTgz" )
+  execute.shell ( "cd ../.. && gradle standaloneBinZip" )
   mkdir ( dir : distDirectory )
-  execute.shell ( "cd ${distDirectory} && tar xvf ../../../build/gant-1.10.0-SNAPSHOT.tgz")
+  //execute.shell ( "cd ${distDirectory} && tar xvf ../../../build/gant-1.10.0-SNAPSHOT.tgz")
+  execute.shell ( "cd ${distDirectory} && unzip ../../../build/gant-1.10.0-SNAPSHOT.zip")
   mkdir ( dir : debsDirectory )
   ////  Why is the ant. needed here ??????
   ant.deb ( todir : debsDirectory , 'package' : packageName , section : section , priority : priority , architecture : architecture ,
@@ -68,19 +102,11 @@ target ( debFiles : 'Create the deb file of the distribution.' ) {
     version ( upstream : gantVersion )
     maintainer ( name : 'Russel Winder' , email : 'russel.winder@concertant.com' )
     //homepage ( homepage )
-    description ( synopsis : theSynopsis , theWords.replace ( '''
-.
-''' , '''
-.
-This package provides a self-contained installation of Gant that does not depend
-on a separate installation of Groovy -- all the jars needed for Gant to run are
-included in the package.
-.
-''' ) )
+    description ( synopsis : theSynopsis , theWords )
     tarfileset ( file : 'gant' , prefix : installPrefixBase + '/bin' , filemode : '755' )
     tarfileset ( file : [ expandDirectory , 'bin' , 'startGroovy' ].join ( '/' ) , prefix : installPrefixBase + '/bin' , filemode : '644' )
-    tarfileset ( file : [ expandDirectory , 'conf' , 'gant-starter.conf' ].join ( '/' ) , prefix : installPrefixBase + '/conf' )
-    tarfileset ( dir : [ expandDirectory , 'lib'].join (  '/' ) , includes : '*.jar' , prefix : installPrefixBase + '/lib' )
+    tarfileset ( file : [ expandDirectory , 'conf' , 'gant-starter.conf' ].join ( '/' ) , prefix : installPrefixBase + '/conf' , filemode : '644' )
+    tarfileset ( dir : [ expandDirectory , 'lib'].join (  '/' ) , includes : '*.jar' , prefix : installPrefixBase + '/lib' , filemode : '644' )
   }
 }
 
