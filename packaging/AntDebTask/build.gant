@@ -14,24 +14,9 @@
 //
 //  Author : Russel Winder <russel.winder@concertant.com>
 
-//  Sometimes we know the debDistribution target has been completed and so there is no need to do it again.
+//  TODO : Find a way of selecting this value from the Gradle build file.
 
-try { ignoreBuildDistribution = Boolean.valueOf ( ignoreBuildDistribution ) }
-catch ( Exception e ) { ignoreBuildDistribution = false }
-
-//  If we are building the debs then we have probably just done a distribution and may want to not bother
-//  with the tests.
-
-try { skipTests = Boolean.valueOf ( skipTests ) }
-catch ( MissingPropertyException mpe ) { skipTests = false }
-
-final targetDirectoryName = 'target_gant'
-
-final rootDirectory = '..' + System.properties.'file.separator' + '..'
-final buildDirectory = rootDirectory + System.properties.'file.separator' + targetDirectoryName
-
-property ( file : rootDirectory + System.properties.'file.separator' + 'local.build.properties' )
-property ( file : rootDirectory + System.properties.'file.separator' + 'gradle.properties' )
+gantVersion = '1.9.1-SNAPSHOT'
 
 final packageName = 'gant-standalone'
 final section = 'devel'
@@ -50,11 +35,12 @@ final distributionURL = 'https://dav.codehaus.org/dist/gant/'
 ant.taskdef ( resource : 'ant_deb_task.properties' , classpath : [ System.properties.'user.home' , '.groovy' , 'lib' , 'ant-deb.jar' ].join ( System.properties.'file.separator' ) )
 
 final debsDirectory = 'debs'
-final binDirectory = 'bin'
+final distDirectory = 'dist'
+final expandDirectory = distDirectory + '/gant-' + gantVersion
 
 includeTargets << gant.targets.Clean
 cleanPattern << '**/*~'
-cleanDirectory << [ debsDirectory , binDirectory ]
+cleanDirectory << [ debsDirectory , distDirectory ]
 
 includeTool << gant.tools.Execute
 
@@ -72,15 +58,12 @@ Homepage: ${homepage}
 """
   
 target ( debFiles : 'Create the deb file of the distribution.' ) {
-  if ( ! ignoreBuildDistribution ) { execute.shell ( "cd ${rootDirectory} && gant -DskipTests=${skipTests} debDistribution" ) }
-  mkdir ( dir : binDirectory )
-  //  Why is the ant. necessary here ???
-  ant.copy ( tofile : binDirectory + '/gant' , file : 'gant.sh' ) {
-    filterset { filter ( token : 'GANT_VERSION' , value : gantVersion ) }
-    filterset { filter ( token : 'GROOVYJAR' , value : 'groovy-all-' + groovyStandaloneVersion + '.jar' ) }
-  }
+  execute.shell ( "cd ../.. && gradle standaloneBinTgz" )
+  mkdir ( dir : distDirectory )
+  execute.shell ( "cd ${distDirectory} && tar xvf ../../../build/gant-1.10.0-SNAPSHOT.tgz")
   mkdir ( dir : debsDirectory )
-  deb ( todir : debsDirectory , 'package' : packageName , section : section , priority : priority , architecture : architecture ,
+  ////  Why is the ant. needed here ??????
+  ant.deb ( todir : debsDirectory , 'package' : packageName , section : section , priority : priority , architecture : architecture ,
         depends : 'java2-runtime', postinst : 'postinst' , prerm : 'prerm' ) {
     version ( upstream : gantVersion )
     maintainer ( name : 'Russel Winder' , email : 'russel.winder@concertant.com' )
@@ -94,10 +77,10 @@ on a separate installation of Groovy -- all the jars needed for Gant to run are
 included in the package.
 .
 ''' ) )
-    tarfileset ( file : binDirectory + '/gant' , prefix : installPrefixBase + '/bin' , filemode : '755' )
-    tarfileset ( file : [ rootDirectory , targetDirectoryName , 'install' , 'bin' , 'startGroovy' ].join ( System.properties.'file.separator' ) , prefix : installPrefixBase + '/bin' )
-    tarfileset ( file : [ rootDirectory , targetDirectoryName , 'install' , 'conf' , 'gant-starter.conf' ].join ( System.properties.'file.separator' ) , prefix : installPrefixBase + '/conf' )
-    tarfileset ( dir : [ buildDirectory , 'install' , 'lib'].join (  System.properties.'file.separator' ) , includes : '*.jar' , prefix : installPrefixBase + '/lib' )
+    tarfileset ( file : [ expandDirectory , 'bin' , 'gant' ].join ( '/' ) , prefix : installPrefixBase + '/bin' , filemode : '755' )
+    tarfileset ( file : [ expandDirectory , 'bin' , 'startGroovy' ].join ( '/' ) , prefix : installPrefixBase + '/bin' , filemode : '644' )
+    tarfileset ( file : [ expandDirectory , 'conf' , 'gant-starter.conf' ].join ( '/' ) , prefix : installPrefixBase + '/conf' )
+    tarfileset ( dir : [ expandDirectory , 'lib'].join (  '/' ) , includes : '*.jar' , prefix : installPrefixBase + '/lib' )
   }
 }
 
