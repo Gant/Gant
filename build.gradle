@@ -422,8 +422,7 @@ task uploadDistribution ( type : Upload , dependsOn : buildDistribution , descri
         name = 'gantReleases'
         user = gant_repoUserName
         userPassword = gant_repoPassword
-        def repositoryLocation = gantVersion.contains ( 'SNAPSHOT' ) ? 'snapshots.dist' : 'dist'
-        addArtifactPattern ( 'https://dav.codehaus.org/' + repositoryLocation + '/gant/distributions/[artifact]-[revision](-[classifier]).[ext]' )
+        addArtifactPattern ( 'https://dav.codehaus.org/' + ( gantVersion.contains ( 'SNAPSHOT' ) ? 'snapshots.' : '' ) + 'dist/gant/distributions/[artifact]-[revision](-[classifier]).[ext]' )
       }
     }
     catch ( Exception e ) {
