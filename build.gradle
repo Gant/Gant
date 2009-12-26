@@ -279,9 +279,8 @@ forEachDistributionVersion { projectName->
       }
       into ( 'bin' ) {
         fileMode = 0755
-        from ( [ scriptsDirectory + '/bin' , scriptsDirectory + '/bin_requiresGroovy' ] ) {
-          //filter ( ReplaceTokens , tokens : [ GROOVYJAR : 'groovy-' + groovyVersion + '.jar' ] )
-        }
+        from ( [ scriptsDirectory + '/bin' , scriptsDirectory + '/bin_requiresGroovy' ] )
+        filter ( ReplaceTokens , tokens : [ GROOVYJAR : 'groovy-' + groovyVersion + '.jar' ] )
       }
     }
     task binTgz ( type : Tar , dependsOn : 'jar' , description : 'Build the distribution tarball.' ) {
@@ -321,9 +320,8 @@ standaloneCopySpec = copySpec {
   }
   into ( 'bin' ) {
     fileMode = 0755
-    from ( [ scriptsDirectory + '/bin' , scriptsDirectory + '/bin_standalone' ] ) {
-      //filter ( ReplaceTokens , tokens : [ GROOVYJAR : 'groovy-' + groovyVersions[groovyStandaloneSeries] + '.jar' ] )
-    }
+    from ( [ scriptsDirectory + '/bin' , scriptsDirectory + '/bin_standalone' ] )
+    filter ( ReplaceTokens , tokens : [ GROOVYJAR : 'groovy-' + groovyVersions[groovyStandaloneSeries] + '.jar' ] )
   }
 }
 
