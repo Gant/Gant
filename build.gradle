@@ -283,12 +283,14 @@ forEachDistributionVersion { projectName->
         filter ( ReplaceTokens , tokens : [ GROOVYJAR : 'groovy-' + groovyVersion + '.jar' ] )
       }
     }
+    /*
     task binTgz ( type : Tar , dependsOn : 'jar' , description : 'Build the distribution tarball.' ) {
       baseName = artifact
       classifier = mavenNameExtension + '-' + groovyVersion
       compression = Compression.GZIP
       into ( gantPrefix ) { from binCopySpec }
     }
+    */
     task binZip ( type : Zip , dependsOn : 'jar' , description : 'Build the distribution zip file.' ) {
       baseName = artifact
       classifier = mavenNameExtension + '-' + groovyVersion
