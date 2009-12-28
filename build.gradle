@@ -283,20 +283,18 @@ forEachDistributionVersion { projectName->
         filter ( ReplaceTokens , tokens : [ GROOVYJAR : 'groovy-' + groovyVersion + '.jar' ] )
       }
     }
-    /*
     task binTgz ( type : Tar , dependsOn : 'jar' , description : 'Build the distribution tarball.' ) {
       baseName = artifact
       classifier = mavenNameExtension + '-' + groovyVersion
       compression = Compression.GZIP
       into ( gantPrefix ) { from binCopySpec }
     }
-    */
     task binZip ( type : Zip , dependsOn : 'jar' , description : 'Build the distribution zip file.' ) {
       baseName = artifact
       classifier = mavenNameExtension + '-' + groovyVersion
       into ( gantPrefix ) { from binCopySpec }
     }
-    distributionTasks += [ /* binTgz , */ binZip ]
+    distributionTasks += [ binTgz , binZip ]
   }
   //  Due to weird effective scoping of projects -- caused by cloning of bindings for projects? -- need to
   //  do the following to get the above tasks into the list defined by the main script.
@@ -342,7 +340,7 @@ task standaloneBinZip ( type : Zip , dependsOn : projectNameForStandalone + ':ja
   into ( gantPrefix ) { from standaloneCopySpec }
 }
 
-distributionTasks += [ /* standaloneBinTgz , */ standaloneBinZip ]
+distributionTasks += [ standaloneBinTgz , standaloneBinZip ]
 
 // =====================================================================
 //

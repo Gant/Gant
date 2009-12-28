@@ -87,19 +87,10 @@ includeTool << gant.tools.Execute
 //  The targets:  create the debs and upload the debs, set the default to build.
 
 target ( debFiles : 'Create the deb file of the distribution.' ) {
-  //
-  // TODO : As at 2009-12-24, Gradle had a bug in the Tar task that meant it didn't work.  As soon as practical fix this.
-  //
-  //execute.shell ( "cd ../.. && gradle standaloneBinTgz" )
-  execute.shell ( "cd ../.. && gradle standaloneBinZip" )
+  execute.shell ( "cd ../.. && gradle standaloneBinTgz" )
   mkdir ( dir : distDirectory )
-  //execute.shell ( "cd ${distDirectory} && tar xvf ../../../build/gant-{$gantVersion}.tgz")
-  //
-  //  For some reason, trying to unzip when there is already an unzipped "installation" hangs.  Solve this
-  //  by forcibly deleteing the current version.
-  //
+  execute.shell ( "cd ${distDirectory} && tar xvf ../../../build/gant-${gantVersion}.tgz")
   delete { fileset ( dir : distDirectory , includes : '**/*' ) }
-  execute.shell ( "cd ${distDirectory} && unzip ../../../build/gant-${gantVersion}.zip")
   mkdir ( dir : debsDirectory )
   ////  Why is the ant. needed here ??????
   ant.deb ( todir : debsDirectory , 'package' : packageName , section : section , priority : priority , architecture : architecture ,
