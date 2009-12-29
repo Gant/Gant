@@ -89,8 +89,8 @@ includeTool << gant.tools.Execute
 target ( debFiles : 'Create the deb file of the distribution.' ) {
   execute.shell ( "cd ../.. && gradle standaloneBinTgz" )
   mkdir ( dir : distDirectory )
-  execute.shell ( "cd ${distDirectory} && tar xvf ../../../build/gant-${gantVersion}.tgz")
   delete { fileset ( dir : distDirectory , includes : '**/*' ) }
+  execute.shell ( "cd ${distDirectory} && tar xvf ../../../build/gant-${gantVersion}.tgz")
   mkdir ( dir : debsDirectory )
   ////  Why is the ant. needed here ??????
   ant.deb ( todir : debsDirectory , 'package' : packageName , section : section , priority : priority , architecture : architecture ,
@@ -100,9 +100,9 @@ target ( debFiles : 'Create the deb file of the distribution.' ) {
     //homepage ( homepage )
     description ( synopsis : theSynopsis , theWords )
     tarfileset ( file : 'gant' , prefix : installPrefixBase + '/bin' , filemode : '755' )
-    tarfileset ( file : [ expandDirectory , 'bin' , 'startGroovy' ].join ( '/' ) , prefix : installPrefixBase + '/bin' , filemode : '644' )
-    tarfileset ( file : [ expandDirectory , 'conf' , 'gant-starter.conf' ].join ( '/' ) , prefix : installPrefixBase + '/conf' , filemode : '644' )
-    tarfileset ( dir : [ expandDirectory , 'lib'].join (  '/' ) , includes : '*.jar' , prefix : installPrefixBase + '/lib' , filemode : '644' )
+    tarfileset ( file : expandDirectory + '/bin/startGroovy' , prefix : installPrefixBase + '/bin' , filemode : '644' )
+    tarfileset ( file : expandDirectory + '/conf/gant-starter.conf' , prefix : installPrefixBase + '/conf' , filemode : '644' )
+    tarfileset ( dir : expandDirectory + '/lib' , includes : '*.jar' , prefix : installPrefixBase + '/lib' , filemode : '644' )
   }
 }
 
