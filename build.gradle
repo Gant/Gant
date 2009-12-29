@@ -25,6 +25,8 @@ gantPrefix = artifact + '-' + gantVersion
 
 //  Nominate for each supported series of Groovy, exactly which version to use.
 
+groovyArtefactName = 'groovy-all'
+
 groovyVersions = [
   '1.6' : '1.6.7' ,
   '1.7' : '1.7.0'
@@ -200,7 +202,7 @@ project ( ':gant' ) {
     groovyVersion = groovyVersions[groovyStandaloneSeries]
     versionMessage = 'Using Groovy version ' + groovyVersion
   }
-  dependencies { groovy ( 'org.codehaus.groovy:groovy-all:' + groovyVersion ) }
+  dependencies { groovy ( group : 'org.codehaus.groovy' , name : groovyArtefactName , version : groovyVersion ) }
   compileGroovy.doFirst { println ( '\n\t' + versionMessage +'\n' ) }
   test.doFirst { groovyAntTaskTestVersionPropertyFile.write ( groovyAntTaskTestVersionPropertyFileContent + groovyVersion ) }
   def  installDirectory = '/usr/share/gant'
@@ -212,7 +214,7 @@ project ( ':gant' ) {
     copy {
       into ( installBinDirectory )
       from ( [ scriptsDirectory + '/bin' , scriptsDirectory + '/bin_requiresGroovy' ] )
-      filter ( ReplaceTokens , tokens : [ GROOVYJAR : 'groovy-' + groovyVersion + '.jar' ] )
+      filter ( ReplaceTokens , tokens : [ GROOVYJAR : groovyArtefactName + '-' + groovyVersion + '.jar' ] )
     }
     ant.chmod ( perm : 'a+x' ) { fileset ( dir : installBinDirectory , includes : 'gant*' ) }
     copy {
@@ -237,7 +239,7 @@ forEachDistributionVersion { projectName->
   def groovyVersion = groovyVersions[ projectName.replace ( artifact + mavenNameExtension , '' ) ]
   project ( projectName ) {
     usePlugin ( 'maven' )
-    dependencies { groovy ( 'org.codehaus.groovy:groovy-all:' + groovyVersion ) }
+    dependencies { groovy ( group : 'org.codehaus.groovy' , name : groovyArtefactName , version : groovyVersion ) }
     compileGroovy.doFirst { println ( '\n\tUsing Groovy version ' + groovyVersion + '\n' ) }
     test.doFirst { groovyAntTaskTestVersionPropertyFile.write ( groovyAntTaskTestVersionPropertyFileContent + groovyVersion ) }
     try {
@@ -280,7 +282,7 @@ forEachDistributionVersion { projectName->
       into ( 'bin' ) {
         fileMode = 0755
         from ( [ scriptsDirectory + '/bin' , scriptsDirectory + '/bin_requiresGroovy' ] )
-        filter ( ReplaceTokens , tokens : [ GROOVYJAR : 'groovy-' + groovyVersion + '.jar' ] )
+        filter ( ReplaceTokens , tokens : [ GROOVYJAR : groovyArtefactName + '-' + groovyVersion + '.jar' ] )
       }
     }
     task binTgz ( type : Tar , dependsOn : 'jar' , description : 'Build the distribution tarball.' ) {
@@ -321,7 +323,7 @@ standaloneCopySpec = copySpec {
   into ( 'bin' ) {
     fileMode = 0755
     from ( [ scriptsDirectory + '/bin' , scriptsDirectory + '/bin_standalone' ] )
-    filter ( ReplaceTokens , tokens : [ GROOVYJAR : 'groovy-' + groovyVersions[groovyStandaloneSeries] + '.jar' ] )
+    filter ( ReplaceTokens , tokens : [ GROOVYJAR : groovyArtefactName + '-' + groovyVersions[groovyStandaloneSeries] + '.jar' ] )
   }
 }
 
