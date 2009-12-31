@@ -453,7 +453,7 @@ gradle.taskGraph.whenReady { graph ->
 task ciBuild ( description : 'Run just the builds that use Groovy from the Maven repository.  Used mainly on CI servers.' , dependsOn : ciBuildTasks )
 
 task wrapper ( type : Wrapper ) {
-    gradleVersion = '0.9-20091118152522+1100'
+    gradleVersion = '0.9-20091231101539+1100'
     jarPath = 'wrapper'
 }
 
