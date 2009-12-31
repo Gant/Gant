@@ -1,3 +1,9 @@
+1.9.1
+-----
+
+The change to the Gradle build tool for release of Gant 1.9.0 led to a an error in the stream processing of
+the launch scripts which led to a failure to start Gant.  This release is to fix that problem.
+
 1.9.0
 -----
 
