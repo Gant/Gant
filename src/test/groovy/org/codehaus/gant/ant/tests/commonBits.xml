@@ -27,21 +27,7 @@ Author : Russel Winder <russel.winder@concertant.com>
   <property name="targetDirectory" value="${toplevelDirectory}/target_gant"/>
   <property name="gantClassesDirectory" value="${targetDirectory}/classes"/>
   
-  <condition property="groovyHomeIsSet">
-    <isset property="environment.GROOVY_HOME"/>
-  </condition>
-
-  <target name="-initializeWithGroovyHome" if="groovyHomeIsSet">
-    <path id="groovyJarsId">
-      <fileset dir="${environment.GROOVY_HOME}/lib" includes="groovy-*.jar"/>
-      <fileset dir="${environment.GROOVY_HOME}/lib" includes="commons-cli*.jar"/>
-      <fileset dir="${environment.GROOVY_HOME}/lib" includes="asm*.jar"/>
-      <fileset dir="${environment.GROOVY_HOME}/lib" includes="antlr*.jar"/>
-      <fileset dir="${environment.GROOVY_HOME}/lib" includes="junit*.jar"/>
-    </path>
-  </target>
-
-  <target name="-initializeNoGroovyHome" unless="groovyHomeIsSet">
+  <target name="-initialize">
     <path id="mavenAntTaskJarPathId">
       <fileset dir="${toplevelDirectory}/jarfiles" includes="maven-ant-tasks-*.jar"/>
     </path>
@@ -52,8 +38,6 @@ Author : Russel Winder <russel.winder@concertant.com>
       <dependency groupId="org.codehaus.groovy" artifactId="groovy-all" version="${groovyAntTaskTestVersion}"/>
     </artifact:dependencies>
   </target>
-
-  <target name="-initialize" depends="-initializeWithGroovyHome,-initializeNoGroovyHome"/>
 
   <target name="-defineGroovyTask" depends="-initialize">
     <taskdef name="groovy" classname="org.codehaus.groovy.ant.Groovy" classpathref="groovyJarsId" />

@@ -14,6 +14,7 @@
 
 import org.codehaus.gant.ant.tests.Gant_Test
 
+//  For some reason there has to be an ant. here :-(
 ant.property ( file : 'build.properties' )
 
 //// This build file has to work in two contexts.  If GROOVY_HOME is set in the environment then the jars
@@ -43,10 +44,11 @@ target ( gantTaskdefVerifyError : 'Check that a taskdef works.' ) {
   typedef ( resource : 'org/apache/maven/artifact/ant/antlib.xml' , uri : artifact ) {
     classpath { fileset ( dir : toplevelDirectory + '/jarfiles' , includes : 'maven-ant-tasks-*.jar' ) }
   }
+  // NB Make sure the literal data here is consistent with that in the build.gradle file at the project level. 
+  property ( file : toplevelDirectory + '/groovyAntTaskTestVersion.properties' )
   def dependencyClasspathId = 'dependencyClasspath'
   "${artifact}:dependencies" ( pathId : dependencyClasspathId ) {
-    dependency ( groupId : 'org.codehaus.groovy' , artifactId : 'groovy' , version : '1.5.6' )
-    dependency ( groupId : 'commons-cli' , artifactId : 'commons-cli' , version : '1.0' )
+    dependency ( groupId : 'org.codehaus.groovy' , artifactId : 'groovy' , version : groovyAntTaskTestVersion )
   }
   taskdef ( name : 'groovyc' , classname: 'org.codehaus.groovy.ant.Groovyc' , classpathref : dependencyClasspathId )
   Gant_Test.returnValue = 'OK.'
