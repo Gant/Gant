@@ -68,7 +68,7 @@ public class GantBuilder extends AntBuilder {
         if ( padding < 0 ) { padding = 0 ; }
         sb.append ( "         ".substring ( 0 , padding ) + '[' + name + "] ") ;
         final Object[] args = (Object[]) arguments ;
-        if ( args[0] instanceof Map ) {
+        if ( args[0] instanceof Map<?,?> ) {
           //
           // IntelliJ IDEA complains that (Map) is not a proper cast but using the cast (Map<?,?>) here
           // causes a type check error.
