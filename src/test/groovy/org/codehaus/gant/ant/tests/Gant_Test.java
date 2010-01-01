@@ -216,7 +216,7 @@ public class Gant_Test extends TestCase {
   /**
    *  The output due to the targets in commonBits.xml.
    */
-  private final String commonTargetsList = "-initializeWithGroovyHome:\n\n-initializeNoGroovyHome:\n\n-initialize:\n\n-defineGantTask:\n\n" ;
+  private final String commonTargetsList = "-initialize:\n\n-defineGantTask:\n\n" ;
   /*
    *  Tests stemming from GANT-19 and relating to ensuring the right classpath when loading the Groovyc Ant
    *  task.
@@ -264,7 +264,7 @@ public class Gant_Test extends TestCase {
     sb.append ( locationPrefix ).append ( path ).append ( separator ) ;
     sb.append ( "basedir.xml\n     [echo] basedir::ant basedir=" ) ;
     sb.append ( absolutePath ) ;
-    sb.append ( "\n\n-initializeWithGroovyHome:\n\n-initializeNoGroovyHome:\n\n-initialize:\n\n-define" ) ;
+    sb.append ( "\n\n-initialize:\n\n-define" ) ;
     sb.append ( taskName ) ;
     sb.append ( "Task:\n\n" ) ;
     if ( extraClassPathDefinition ) { sb.append ( "-defineClasspath:\n\n" ) ; }
@@ -386,11 +386,11 @@ public class Gant_Test extends TestCase {
   //  For dealing with GANT-110 -- thanks to Eric Van Dewoestine for providing this.
 
   public void testInheritAll ( ) {
-    List<String> result = runAnt ( antFile.getPath ( ) , "gantTestInheritAll" , 0 , true ) ;
+    final List<String> result = runAnt ( antFile.getPath ( ) , "gantTestInheritAll" , 0 , true ) ;
     @SuppressWarnings("unchecked") List<String> output = StringUtils.lineSplit ( result.get ( 0 ) ) ;
-    assertEquals ( "     [echo] ${gant.test.inheritAll}" , output.get ( 12 ) ) ;
-    assertEquals ( "     [echo] ${gant.test.inheritAll}" , output.get ( 15 ) ) ;
-    assertEquals ( "     [echo] gantInheritAllWorks" , output.get ( 18 ) ) ;
+    assertEquals ( "     [echo] ${gant.test.inheritAll}" , output.get ( 8 ) ) ;
+    assertEquals ( "     [echo] ${gant.test.inheritAll}" , output.get ( 11 ) ) ;
+    assertEquals ( "     [echo] gantInheritAllWorks" , output.get ( 14 ) ) ;
   }
 
   //  For dealing with GANT-111 -- thanks to Eric Van Dewoestine for providing this.
