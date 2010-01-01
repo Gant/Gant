@@ -28,7 +28,7 @@ defaultmailhost
                     <currentbuildstatuslistener file="&basedir;/gant/cruisecontrol/logs/status.txt"/>
                 </listeners>
                 <log dir="&basedir;/gant/cruisecontrol/logs">
-			<merge dir="&basedir;/gant/cruisecontrol/checkout" pattern="*/build/test-results/*.xml"/>
+			<merge dir="&basedir;/gant/cruisecontrol/checkout/gant_groovy1.7/build/test-results"/>
 		</log>
 		<publishers>
 			<!-- htmlemail is used only for explicit subscribers -->
