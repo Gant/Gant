@@ -20,8 +20,30 @@ import org.gradle.api.artifacts.repositories.WebdavResolver
 artifact = 'gant'
 mavenNameExtension = '_groovy'
 
-gantVersion = '1.9.2-SNAPSHOT'
+/*
+ *  As discussed on the Groovy developer maillist (thanks to Roshan Dawrani and Paul King), the grammaer for
+ *  OSGi bundle numbers is fixed and slightly different to the expected grammar for version numbers and Maven
+ *  artifacts:
+ *
+ *   version ::= major('.'minor('.'micro('.'qualifier)?)?)?
+ *   major ::= digit+
+ *   minor ::= digit+
+ *   micro ::= digit+
+ *   qualifier ::= (alpha|digit|'_'|'-')+
+ *   digit ::= [0..9]
+ *   alpha ::= [a..zA..Z]
+ *
+ *  The core difference is that for OSGi bundle numbers the qualifies is separated by a full stop where in
+ *  other situations a minus is used.
+ */
+
+gantVersionBase = '1.9.2'
+isPrereleaseSnapshot = true
+snapshotQualifier = 'SNAPSHOT'
+
+gantVersion = gantVersionBase + ( isPrereleaseSnapshot ? '-' + snapshotQualifier : '' )
 gantPrefix = artifact + '-' + gantVersion
+gantBundleVersion =  gantVersionBase + ( isPrereleaseSnapshot ? '.' + snapshotQualifier : '' )
 
 //  Nominate for each supported series of Groovy, exactly which version to use.
 
@@ -71,7 +93,7 @@ distributionTasks = [ ]
 allprojects {
   group =  'org.codehaus.gant'
   version = gantVersion
-  bundleVersion = gantVersion
+  bundleVersion = gantBundleVersion
 }
 
 subprojects {
@@ -92,7 +114,7 @@ subprojects {
   def theTitle = 'Gant: Scripting Ant tasks with Groovy.'
   configure ( jar.osgi ) {
     name = 'Gant'
-    version = gantVersion
+    version = gantBundleVersion
     symbolicName = 'gant'
     instruction 'Bundle-Vendor' , theVendor
     instruction 'Bundle-Description' , group
@@ -100,10 +122,10 @@ subprojects {
     instruction 'Built-By' , System.properties.'user.name'
     instruction 'Extension-Name' , artifact
     instruction 'Specification-Title' , theTitle
-    instruction 'Specification-Version' , gantVersion
+    instruction 'Specification-Version' , gantBundleVersion
     instruction 'Specification-Vendor' , theVendor
     instruction 'Implementation-Title' , theTitle
-    instruction 'Implementation-Version' , gantVersion
+    instruction 'Implementation-Version' , gantBundleVersion
     instruction 'Implementation-Vendor' , theVendor
     instruction 'Export-Package' , '*'
   }
