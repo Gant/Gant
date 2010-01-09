@@ -97,8 +97,8 @@ allprojects {
 }
 
 subprojects {
-  usePlugin ( 'groovy' )
-  usePlugin ( 'osgi' )
+  apply ( id : 'groovy' )
+  apply ( id: 'osgi' )
   sourceCompatibility = 5
   targetCompatibility = 5
   configurations { deployJars }
@@ -260,7 +260,7 @@ ciBuildTasks = [ ]
 forEachDistributionVersion { projectName->
   def groovyVersion = groovyVersions[ projectName.replace ( artifact + mavenNameExtension , '' ) ]
   project ( projectName ) {
-    usePlugin ( 'maven' )
+    apply ( id : 'maven' )
     dependencies { groovy ( group : 'org.codehaus.groovy' , name : groovyArtefactName , version : groovyVersion ) }
     compileGroovy.doFirst { println ( '\n\tUsing Groovy version ' + groovyVersion + '\n' ) }
     test.doFirst { groovyAntTaskTestVersionPropertyFile.write ( groovyAntTaskTestVersionPropertyFileContent + groovyVersion ) }
@@ -475,7 +475,7 @@ gradle.taskGraph.whenReady { graph ->
 task ciBuild ( description : 'Run just the builds that use Groovy from the Maven repository.  Used mainly on CI servers.' , dependsOn : ciBuildTasks )
 
 task wrapper ( type : Wrapper ) {
-    gradleVersion = '0.9-20091231101539+1100'
+    gradleVersion = '0.9-20100107150027+1100'
     jarPath = 'wrapper'
 }
 
