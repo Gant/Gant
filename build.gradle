@@ -1,6 +1,6 @@
 //  Gant -- A Groovy way of scripting Ant tasks.
 //
-//  Copyright © 2008-9 Russel Winder
+//  Copyright © 2008-10 Russel Winder
 //
 //  Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in
 //  compliance with the License. You may obtain a copy of the License at
@@ -39,11 +39,14 @@ mavenNameExtension = '_groovy'
 
 gantVersionBase = '1.9.2'
 isPrereleaseSnapshot = true
-snapshotQualifier = 'SNAPSHOT'
 
-gantVersion = gantVersionBase + ( isPrereleaseSnapshot ? '-' + snapshotQualifier : '' )
+def createVersionString = { isForOSGi ->
+  return gantVersionBase + ( isPrereleaseSnapshot ? ( isForOSGi ? '.' : '-' ) + 'SNAPSHOT' : '' )
+}
+
+gantVersion = createVersionString ( false )
 gantPrefix = artifact + '-' + gantVersion
-gantBundleVersion =  gantVersionBase + ( isPrereleaseSnapshot ? '.' + snapshotQualifier : '' )
+gantBundleVersion =  createVersionString ( true )
 
 //  Nominate for each supported series of Groovy, exactly which version to use.
 
@@ -136,6 +139,7 @@ subprojects {
   dependencies {
     compile (
              'commons-cli:commons-cli:1.2' ,
+             //             'org.apache.ant:ant:1.8.0'
              'org.apache.ant:ant:1.7.1'
              )
     testCompile ( 'junit:junit:4.7' )
