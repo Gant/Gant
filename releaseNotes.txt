@@ -4,6 +4,9 @@
 The change to the Gradle build tool for release of Gant 1.9.0 led to a an error in the stream processing of
 the launch scripts which led to a failure to start Gant.  This release is to fix that problem.
 
+Updated to Groovy 1.6.8 and 1.7.1.
+
+
 1.9.0
 -----
 
