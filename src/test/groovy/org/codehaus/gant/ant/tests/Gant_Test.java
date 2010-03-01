@@ -261,6 +261,8 @@ public class Gant_Test extends TestCase {
   private String createMessageStart ( final String target , final String taskName , final boolean extraClassPathDefinition ) {
     final StringBuilder sb = new StringBuilder ( ) ;
     sb.append ( "Buildfile: " ) ;
+    sb.append ( System.getProperty ( "user.dir" ) ) ;
+    sb.append ( System.getProperty ( "file.separator" ) ) ;
     sb.append ( locationPrefix ).append ( path ).append ( separator ) ;
     sb.append ( "basedir.xml\n     [echo] basedir::ant basedir=" ) ;
     sb.append ( absolutePath ) ;
@@ -393,12 +395,18 @@ public class Gant_Test extends TestCase {
     assertEquals ( "     [echo] gantInheritAllWorks" , output.get ( 14 ) ) ;
   }
 
-  //  For dealing with GANT-111 -- thanks to Eric Van Dewoestine for providing this.
+  //  For dealing with GANT-111 -- thanks to Eric Van Dewoestine for providing the original --
+  //  subsequently amended as Gant evolves.
 
-  public void testGantTaskFaile ( ) {
+  public void testGantTaskFail ( ) {
     final List<String> result = runAnt ( antFile.getPath ( ) , "gantTestFail" , 1 , true ) ;
     assert result.size ( ) == 2 ;
-    assertEquals ( "\nBUILD FAILED\n: test fail message\n\n\n" , trimTimeFromSuccessfulBuild ( result.get ( 1 ) ) ) ;
+    //  The path to the build file and the line number in that file are part of the output,
+    //  so check only the parts of the output that are guaranteed, i.e. not the line number.
+    final String errorMessage = trimTimeFromSuccessfulBuild ( result.get ( 1 ) ) ;
+    assertEquals ( "\nBUILD FAILED\n" + System.getProperty ( "user.dir" ) + "/src/test/groovy/org/codehaus/gant/ant/tests/gantTest.xml",
+            errorMessage.substring ( 0 , errorMessage.indexOf ( ':' ) ) ) ; 
+    assertEquals ( ": test fail message\n\n\n" , errorMessage.substring ( errorMessage.lastIndexOf ( ':' ) ) ) ;
   }
   
 }
