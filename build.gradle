@@ -141,7 +141,7 @@ subprojects {
              'commons-cli:commons-cli:1.2' ,
              'org.apache.ant:ant:1.8.0'
              )
-    testCompile ( 'junit:junit:4.8.2' )
+    testCompile ( 'junit:junit:4.8.1' )
     testRuntime ( 'org.apache.ivy:ivy:2.1.0' )
     deployJars ( 'org.apache.maven.wagon:wagon-webdav:1.0-beta-2' )
   }
