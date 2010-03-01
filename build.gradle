@@ -66,13 +66,6 @@ groovyStandaloneSeries = '1.7'
 
 gradleWrapperVersionNumber = '0.9-20100121145940+1100'
 
-//  In order to communicate the version of Groovy being used for a particular test to the Gant Ant task
-//  test, a file has to be written with the Groovy version number clearly stated.  Ensure correct data
-//  coupling between this and src/test/groovy/org/codehaus/gant/ant/tests/commonBits.xml.
-
-def groovyAntTaskTestVersionPropertyFileContent = 'groovyAntTaskTestVersion =  '
-def groovyAntTaskTestVersionPropertyFile = new File ( 'groovyAntTaskTestVersion.properties' )
-
 //  Organize the build using subprojects.  There is a subproject gant which is for the build using the
 //  locally installed Groovy and there is one for each version of Groovy obtained from the Maven repository
 //  that is supported.  These functions ease doing the iteration over all the subprojects.  NB Gradle
@@ -158,15 +151,7 @@ subprojects {
     //  builds happen in subdirectories.  org.codehaus.gant.ant.tests.Gant_Test has a decision to make, it
     //  needs to know whether this is a Gradle build or not.  Use a property.
     //
-    //  The mechanism for handling this changed after the wrapper version here and current trunk (2010-02-23).
-    //
-    if ( project.gradle.gradleVersion == gradleWrapperVersionNumber ) {
-      options.systemProperties['buildFrameworkIdentifier'] = 'Gradle'
-    }
-    else {
-      systemProperties['buildFrameworkIdentifier'] = 'Gradle'
-    }
-    doLast { groovyAntTaskTestVersionPropertyFile.delete ( ) }
+    systemProperties['buildFrameworkIdentifier'] = 'Gradle'
   }
   clean.doLast {
     ant.delete { fileset ( dir : '.' , includes : '**/*~, texput.log' ) }
@@ -240,7 +225,7 @@ project ( ':gant' ) {
   }
   dependencies { groovy ( group : 'org.codehaus.groovy' , name : groovyArtefactName , version : groovyVersion ) }
   compileGroovy.doFirst { println ( '\n\t' + versionMessage +'\n' ) }
-  test.doFirst { groovyAntTaskTestVersionPropertyFile.write ( groovyAntTaskTestVersionPropertyFileContent + groovyVersion ) }
+  test.environment ( [ GROOVY_ANT_TASK_TEST_VERSION :  groovyVersion ] )
   def  installDirectory = '/usr/share/gant'
   try { installDirectory = evaluate ( '"' + gant_installPath + '"' ) }
   catch ( MissingPropertyException mpe ) { /* Intentionally left blank. */ }
@@ -277,7 +262,7 @@ forEachDistributionVersion { projectName->
     apply ( id : 'maven' )
     dependencies { groovy ( group : 'org.codehaus.groovy' , name : groovyArtefactName , version : groovyVersion ) }
     compileGroovy.doFirst { println ( '\n\tUsing Groovy version ' + groovyVersion + '\n' ) }
-    test.doFirst { groovyAntTaskTestVersionPropertyFile.write ( groovyAntTaskTestVersionPropertyFileContent + groovyVersion ) }
+    test.environment ( [ GROOVY_ANT_TASK_TEST_VERSION :  groovyVersion ] )
     try {
       uploadArchives {
         repositories.mavenDeployer {
@@ -496,5 +481,5 @@ task wrapper ( type : Wrapper ) {
 task clobber ( description : 'Do a really detailed clean.' ) << {
   forEachProject { item -> ant.delete ( dir : item ) }
   ant.delete ( dir : buildDir )
-  ant.delete { fileset ( dir : '.' , includes : 'texput.log,**/*~,' + groovyAntTaskTestVersionPropertyFile.name ) }
+  ant.delete { fileset ( dir : '.' , includes : 'texput.log,**/*~' ) }
 }
