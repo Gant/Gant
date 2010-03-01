@@ -62,6 +62,10 @@ groovyVersions = [
 
 groovyStandaloneSeries = '1.7'
 
+//  Due to breaking changes we need to distinguish the Gradle Wrapper version in use from when Trunk is being used.
+
+gradleWrapperVersionNumber = '0.9-20100121145940+1100'
+
 //  In order to communicate the version of Groovy being used for a particular test to the Gant Ant task
 //  test, a file has to be written with the Groovy version number clearly stated.  Ensure correct data
 //  coupling between this and src/test/groovy/org/codehaus/gant/ant/tests/commonBits.xml.
@@ -154,7 +158,14 @@ subprojects {
     //  builds happen in subdirectories.  org.codehaus.gant.ant.tests.Gant_Test has a decision to make, it
     //  needs to know whether this is a Gradle build or not.  Use a property.
     //
-    options.systemProperties['buildFrameworkIdentifier'] = 'Gradle'
+    //  The mechanism for handling this changed after the wrapper version here and current trunk (2010-02-23).
+    //
+    if ( project.gradle.gradleVersion == gradleWrapperVersionNumber ) {
+      options.systemProperties['buildFrameworkIdentifier'] = 'Gradle'
+    }
+    else {
+      systemProperties['buildFrameworkIdentifier'] = 'Gradle'
+    }
     doLast { groovyAntTaskTestVersionPropertyFile.delete ( ) }
   }
   clean.doLast {
@@ -478,7 +489,7 @@ gradle.taskGraph.whenReady { graph ->
 task ciBuild ( description : 'Run just the builds that use Groovy from the Maven repository.  Used mainly on CI servers.' , dependsOn : ciBuildTasks )
 
 task wrapper ( type : Wrapper ) {
-    gradleVersion = '0.9-20100121145940+1100'
+    gradleVersion = gradleWrapperVersionNumber
     jarPath = 'wrapper'
 }
 
