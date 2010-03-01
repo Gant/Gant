@@ -18,6 +18,9 @@ shift
 set CLASS=%~1
 shift
 
+set JARSPATH=%~1
+shift
+
 if exist "%USERPROFILE%/.groovy/preinit.bat" call "%USERPROFILE%/.groovy/preinit.bat"
 
 @rem Determine the command interpreter to execute the "CD" later
@@ -200,7 +203,7 @@ set CMD_LINE_ARGS=%$
 
 :execute
 @rem Setup the command line
-set STARTER_CLASSPATH=%GROOVY_HOME%\lib\@GROOVYJAR@;%STARTER_CLASSPATH%
+set STARTER_CLASSPATH=%GROOVY_HOME%\%JARSPATH%\@GROOVYJAR@;%STARTER_CLASSPATH%
 
 if exist "%USERPROFILE%/.groovy/init.bat" call "%USERPROFILE%/.groovy/init.bat"
 
