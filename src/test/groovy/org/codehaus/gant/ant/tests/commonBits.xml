@@ -32,10 +32,9 @@
       <fileset dir="${toplevelDirectory}/jarfiles" includes="maven-ant-tasks-*.jar"/>
     </path>
     <typedef resource="org/apache/maven/artifact/ant/antlib.xml" uri="urn:maven-artifact-ant" classpathref="mavenAntTaskJarPathId"/>
-    <!-- NB Make sure the literal data here is consistent with that in the build.gradle file at the project level. -->
-    <property file="${toplevelDirectory}/groovyAntTaskTestVersion.properties"/>
+    <property environment="environment"/>
     <artifact:dependencies pathId="groovyJarsId">
-      <dependency groupId="org.codehaus.groovy" artifactId="groovy-all" version="${groovyAntTaskTestVersion}"/>
+      <dependency groupId="org.codehaus.groovy" artifactId="groovy-all" version="${environment.GROOVY_ANT_TASK_TEST_VERSION}"/>
     </artifact:dependencies>
   </target>
 

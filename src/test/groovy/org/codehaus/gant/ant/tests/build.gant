@@ -44,11 +44,9 @@ target ( gantTaskdefVerifyError : 'Check that a taskdef works.' ) {
   typedef ( resource : 'org/apache/maven/artifact/ant/antlib.xml' , uri : artifact ) {
     classpath { fileset ( dir : toplevelDirectory + '/jarfiles' , includes : 'maven-ant-tasks-*.jar' ) }
   }
-  // NB Make sure the literal data here is consistent with that in the build.gradle file at the project level. 
-  property ( file : toplevelDirectory + '/groovyAntTaskTestVersion.properties' )
   def dependencyClasspathId = 'dependencyClasspath'
   "${artifact}:dependencies" ( pathId : dependencyClasspathId ) {
-    dependency ( groupId : 'org.codehaus.groovy' , artifactId : 'groovy' , version : groovyAntTaskTestVersion )
+    dependency ( groupId : 'org.codehaus.groovy' , artifactId : 'groovy' , version : System.getenv ( ).GROOVY_ANT_TASK_TEST_VERSION )
   }
   taskdef ( name : 'groovyc' , classname: 'org.codehaus.groovy.ant.Groovyc' , classpathref : dependencyClasspathId )
   Gant_Test.returnValue = 'OK.'
