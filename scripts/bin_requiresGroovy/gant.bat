@@ -2,7 +2,7 @@
 
 @rem  Gant -- A Groovy way of scripting Ant tasks.
 @rem
-@rem  Copyright © 2008 Russel Winder
+@rem  Copyright © 2008,2010 Russel Winder
 @rem
 @rem  Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in
 @rem  compliance with the License. You may obtain a copy of the License at
@@ -57,7 +57,7 @@ set GROOVY_SCRIPT_NAME=gant.bat
 set STARTER_CONF=%GANT_HOME%\conf\gant-starter.conf
 set JAVA_OPTS=%JAVA_OPTS% -Dgant.home="%GANT_HOME%" -Dant.home="%ANT_HOME%"
 
-%GANT_HOME%\bin\startGroovy.bat %DIRNAME% gant.Gant %*
+%GANT_HOME%\bin\startGroovy.bat %DIRNAME% gant.Gant embeddable %*
 
 @rem End local scope for the variables with windows NT shell
 if "%OS%" == "Windows_NT" endlocal
