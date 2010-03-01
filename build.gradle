@@ -132,6 +132,9 @@ subprojects {
   repositories {
     mavenCentral ( )
     mavenRepo ( urls : 'http://repository.codehaus.org/' )
+    //  Groovy 1.7.1 has been issued with a dependency on Jansi which isn't in the Maven repository.  Until
+    //  this is fixed we have to put the Jansi repository ont he search path.
+    mavenRepo ( urls : 'http://jansi.fusesource.org/repo/release' )
   }
   dependencies {
     compile (
@@ -151,7 +154,12 @@ subprojects {
     //  builds happen in subdirectories.  org.codehaus.gant.ant.tests.Gant_Test has a decision to make, it
     //  needs to know whether this is a Gradle build or not.  Use a property.
     //
-    systemProperties['buildFrameworkIdentifier'] = 'Gradle'
+    if ( project.gradle.gradleVersion == gradleWrapperVersionNumber ) {
+      options.systemProperties['buildFrameworkIdentifier'] = 'Gradle'
+    }
+    else {
+      systemProperties['buildFrameworkIdentifier'] = 'Gradle'
+    }
   }
   clean.doLast {
     ant.delete { fileset ( dir : '.' , includes : '**/*~, texput.log' ) }
@@ -225,7 +233,9 @@ project ( ':gant' ) {
   }
   dependencies { groovy ( group : 'org.codehaus.groovy' , name : groovyArtefactName , version : groovyVersion ) }
   compileGroovy.doFirst { println ( '\n\t' + versionMessage +'\n' ) }
-  test.environment ( [ GROOVY_ANT_TASK_TEST_VERSION :  groovyVersion ] )
+  if ( project.gradle.gradleVersion != gradleWrapperVersionNumber ) {
+    test.environment ( [ GROOVY_ANT_TASK_TEST_VERSION :  groovyVersion ] )
+  }
   def  installDirectory = '/usr/share/gant'
   try { installDirectory = evaluate ( '"' + gant_installPath + '"' ) }
   catch ( MissingPropertyException mpe ) { /* Intentionally left blank. */ }
@@ -262,7 +272,9 @@ forEachDistributionVersion { projectName->
     apply ( id : 'maven' )
     dependencies { groovy ( group : 'org.codehaus.groovy' , name : groovyArtefactName , version : groovyVersion ) }
     compileGroovy.doFirst { println ( '\n\tUsing Groovy version ' + groovyVersion + '\n' ) }
-    test.environment ( [ GROOVY_ANT_TASK_TEST_VERSION :  groovyVersion ] )
+    if ( project.gradle.gradleVersion != gradleWrapperVersionNumber ) {
+      test.environment ( [ GROOVY_ANT_TASK_TEST_VERSION :  groovyVersion ] )
+    }
     try {
       uploadArchives {
         repositories.mavenDeployer {
