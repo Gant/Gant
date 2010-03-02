@@ -106,14 +106,14 @@ public abstract class GantTestCase extends GroovyTestCase {
        groovyBugFixVersion =  Integer.parseInt ( version[3] ) ;
        final String discriminator = version[2] ;
        releaseType = ( discriminator.equals ( "RC" ) || discriminator.equals ( "rc" ) ) ? ReleaseType.RC_SNAPSHOT : ReleaseType.BETA_SNAPSHOT ;
-       assert version[4] == "SNAPSHOT" ;
+       assert version[4].equals ( "SNAPSHOT" ) ;
        break ;
      }
      case 6 : {    
        groovyBugFixVersion =  Integer.parseInt ( version[4] ) ;
        final String discriminator = version[3] ;
        releaseType = ( discriminator.equals ( "RC" ) || discriminator.equals ( "rc" ) ) ? ReleaseType.RC_SNAPSHOT : ReleaseType.BETA_SNAPSHOT ;
-       assert version[5] == "SNAPSHOT" ;
+       assert version[5].equals ( "SNAPSHOT" ) ;
        break ;
      }
      default :
