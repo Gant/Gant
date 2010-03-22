@@ -1,10 +1,17 @@
+1.9.2
+------
+
+Various minor bug fixes and refactorings, including switching to Groovy 1.7.1 as the main version of Groovy,
+JUnit 4.8.1 as the unit test framework, and Ant 1.8.0 as the principal version of Ant used.
+
+Maven and Gant builds removed in favour of focusing solely on Gradle as the build for the Gant project.
+
+
 1.9.1
 -----
 
 The change to the Gradle build tool for release of Gant 1.9.0 led to a an error in the stream processing of
 the launch scripts which led to a failure to start Gant.  This release is to fix that problem.
-
-Updated to Groovy 1.6.8 and 1.7.1.
 
 
 1.9.0

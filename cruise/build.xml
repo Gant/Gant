@@ -20,7 +20,7 @@
 
   <target name="delegate">
     <echo message="*** Starting the gant specific build parts ***"/>
-    <exec dir=".." executable="sh">
+    <exec dir=".." executable="sh" failonerror="true">
       <arg value="ciBuild"/>
     </exec>
     <echo message="*** gant build successfully ended          ***"/>

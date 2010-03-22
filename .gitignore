@@ -1,12 +1,11 @@
-target
-target_gant
-local.build.properties
+*~
 artwork/*.png
 bin-groovy
 bin
 out
 Gant_*.iws
-build
-dist
 .gradle
-*~
+gant
+gant_groovy*
+packaging/AntDebTask/debs
+texput.log
