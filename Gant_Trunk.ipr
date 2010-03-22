@@ -202,6 +202,12 @@
       </facet-type>
     </autodetection-disabled>
   </component>
+  <component name="GradleUISettings">
+    <setting name="root" />
+  </component>
+  <component name="GradleUISettings2">
+    <setting name="root" />
+  </component>
   <component name="IdProvider" IDEtalkID="BCCC399EAA78AF820A0E1ED8BBCA7133" />
   <component name="InspectionProjectProfileManager">
     <profiles>
