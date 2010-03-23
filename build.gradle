@@ -266,10 +266,10 @@ forEachDistributionVersion { projectName->
         repositories.mavenDeployer {
           uniqueVersion = false
           configuration = configurations.deployJars
-          repository ( url : 'https://dav.codehaus.org/repository/gant' ) {
+          repository ( url : 'dav:https://dav.codehaus.org/repository/gant/' ) {
             authentication ( userName : gant_repoUserName , password : gant_repoPassword )
           }
-          snapshotRepository ( url : 'https://dav.codehaus.org/snapshots.repository/gant' ) {
+          snapshotRepository ( url : 'dav:https://dav.codehaus.org/snapshots.repository/gant/' ) {
             authentication ( userName: gant_repoUserName , password : gant_repoPassword )
           }
         }
