@@ -1,6 +1,6 @@
 //  Gant -- A Groovy way of scripting Ant tasks.
 //
-//  Copyright © 2008-9 Russel Winder
+//  Copyright © 2008-10 Russel Winder
 //
 //  Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in
 //  compliance with the License. You may obtain a copy of the License at
@@ -115,6 +115,7 @@ public class GantBinding extends Binding implements Cloneable {
         owner.ant.project.log ( '\nBUILD ' + ( returnValue == 0 ? 'SUCCESSFUL' : 'FAILED' ) )
         owner.ant.project.log ( 'Total time: ' + elapseTime )
       } )
+    super.setVariable ( 'listOfTargetMapsDeclared' , [ ] )
     super.setVariable ( 'target' , { Map<String, String> map , Closure closure ->
         def targetName = ''
         def targetDescription = ''
@@ -188,7 +189,20 @@ public class GantBinding extends Binding implements Cloneable {
         }
         owner.setVariable ( (String) targetName , targetClosure )
         owner.setVariable ( targetName + '_description' , targetDescription )  //  For backward compatibility.
-      } )
+        owner.getVariable ( 'listOfTargetMapsDeclared' ) << targetMap
+        owner.setVariable ( 'setAllPerTargetPreHooks' , { item ->
+          for ( tgt in listOfTargetMapsDeclared ) { tgt.prehook = item }
+         } )
+        owner.setVariable ( 'setAllPerTargetPostHooks' , { item ->
+          for ( tgt in listOfTargetMapsDeclared ) { tgt.posthook = item }
+         } )
+        owner.setVariable ( 'addAllPerTargetPreHooks' , { item -> 
+          for ( tgt in listOfTargetMapsDeclared ) { tgt.prehook << item }
+         } )
+        owner.setVariable ( 'addAllPerTargetPostHooks' , { item -> 
+          for ( tgt in listOfTargetMapsDeclared ) { tgt.posthook << item }
+         } )
+       } )
     super.setVariable ( 'task' , { Map<String, String> map , Closure closure ->
         owner.ant.project.log ( 'task has now been removed from Gant, please update your Gant files to use target instead of task.' , Project.MSG_ERR )
         System.exit ( -99 ) ;

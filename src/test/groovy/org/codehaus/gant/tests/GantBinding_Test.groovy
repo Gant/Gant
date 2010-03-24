@@ -199,4 +199,60 @@ target ( 'default' : '' ) { println ( 'This should never be printed.' ) }
     assertEquals ( resultString ( targetName , gant.binding.'gant.version' + '\n' ) , output )
     assertEquals ( '' , error )
   }
+
+  //  GANT-117 requires functions to be able to set or add to the per-target pre- and post-hooks.
+
+  def baseScript = '''
+target ( 'one' : '' ) { }
+target ( 'two' : '' ) { }
+'''
+  
+  void testSetAllPerTargetPreHooks ( ) {
+    script = baseScript + '''
+setAllPerTargetPreHooks ( { -> println 'XXXX' } )
+'''
+    assertEquals ( 0 , processTargets ( 'one' ) )
+    assertEquals ( 'XXXX\n------ one\n' , output )
+    assertEquals ( '' , error )
+    assertEquals ( 0 , processTargets ( 'two' ) )
+    assertEquals ( 'XXXX\n------ one\nXXXX\n------ two\n' , output )
+    assertEquals ( '' , error )
+  }
+
+  void testSetAllPerTargetPostHooks ( ) {
+      script = baseScript + '''
+  setAllPerTargetPostHooks ( { -> println 'XXXX' } )
+  '''
+      assertEquals ( 0 , processTargets ( 'one' ) )
+      assertEquals ( 'one:\nXXXX\n' , output )
+      assertEquals ( '' , error )
+      assertEquals ( 0 , processTargets ( 'two' ) )
+      assertEquals ( 'one:\nXXXX\ntwo:\nXXXX\n' , output )
+      assertEquals ( '' , error )
+    }
+  
+  void testAddAllPerTargetPreHooks ( ) {
+      script = baseScript + '''
+  addAllPerTargetPreHooks ( { -> println 'XXXX' } )
+  '''
+      assertEquals ( 0 , processTargets ( 'one' ) )
+      assertEquals ( 'one:\nXXXX\n------ one\n' , output )
+      assertEquals ( '' , error )
+      assertEquals ( 0 , processTargets ( 'two' ) )
+      assertEquals ( 'one:\nXXXX\n------ one\ntwo:\nXXXX\n------ two\n' , output )
+      assertEquals ( '' , error )
+    }
+
+    void testAddAllPerTargetPostHooks ( ) {
+        script = baseScript + '''
+    addAllPerTargetPostHooks ( { -> println 'XXXX' } )
+    '''
+        assertEquals ( 0 , processTargets ( 'one' ) )
+        assertEquals ( 'one:\n------ one\nXXXX\n' , output )
+        assertEquals ( '' , error )
+        assertEquals ( 0 , processTargets ( 'two' ) )
+        assertEquals ( 'one:\n------ one\nXXXX\ntwo:\n------ two\nXXXX\n' , output )
+        assertEquals ( '' , error )
+      }
+
 }
