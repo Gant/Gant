@@ -128,8 +128,9 @@ subprojects {
     mavenCentral ( )
     mavenRepo ( urls : 'http://repository.codehaus.org/' )
     //  Groovy 1.7.1 has been issued with a dependency on Jansi which isn't in the Maven repository.  Until
-    //  this is fixed we have to put the Jansi repository ont he search path.
+    //  this is fixed we have to put the Jansi repository on the search path.
     mavenRepo ( urls : 'http://jansi.fusesource.org/repo/release' )
+    mavenRepo ( urls : 'file:///home/users/russel/.m2/repository' )
   }
   dependencies {
     compile (
@@ -266,10 +267,12 @@ forEachDistributionVersion { projectName->
         repositories.mavenDeployer {
           uniqueVersion = false
           configuration = configurations.deployJars
-          repository ( url : 'dav:https://dav.codehaus.org/repository/gant/' ) {
+          //repository ( url : 'dav:https://dav.codehaus.org/repository/gant/' ) {
+          repository ( url : 'https://dav.codehaus.org/repository/gant/' ) {
             authentication ( userName : gant_repoUserName , password : gant_repoPassword )
           }
-          snapshotRepository ( url : 'dav:https://dav.codehaus.org/snapshots.repository/gant/' ) {
+          //snapshotRepository ( url : 'dav:https://dav.codehaus.org/snapshots.repository/gant/' ) {
+          snapshotRepository ( url : 'https://dav.codehaus.org/snapshots.repository/gant/' ) {
             authentication ( userName: gant_repoUserName , password : gant_repoPassword )
           }
         }
@@ -443,6 +446,7 @@ task uploadDistribution ( type : Upload , dependsOn : buildDistribution , descri
         name = 'gantReleases'
         user = gant_repoUserName
         userPassword = gant_repoPassword
+        //addArtifactPattern ( 'dav:https://dav.codehaus.org/' + ( gantVersion.contains ( 'SNAPSHOT' ) ? 'snapshots.' : '' ) + 'dist/gant/distributions/[artifact]-[revision](-[classifier]).[ext]' )
         addArtifactPattern ( 'https://dav.codehaus.org/' + ( gantVersion.contains ( 'SNAPSHOT' ) ? 'snapshots.' : '' ) + 'dist/gant/distributions/[artifact]-[revision](-[classifier]).[ext]' )
       }
     }
