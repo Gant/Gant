@@ -221,7 +221,7 @@ setAllPerTargetPreHooks ( { -> println 'XXXX' } )
 
   void testSetAllPerTargetPostHooks ( ) {
       script = baseScript + '''
-  setAllPerTargetPostHooks ( { -> println 'XXXX' } )
+setAllPerTargetPostHooks ( { -> println 'XXXX' } )
   '''
       assertEquals ( 0 , processTargets ( 'one' ) )
       assertEquals ( 'one:\nXXXX\n' , output )
@@ -233,7 +233,7 @@ setAllPerTargetPreHooks ( { -> println 'XXXX' } )
   
   void testAddAllPerTargetPreHooks ( ) {
       script = baseScript + '''
-  addAllPerTargetPreHooks ( { -> println 'XXXX' } )
+addAllPerTargetPreHooks ( { -> println 'XXXX' } )
   '''
       assertEquals ( 0 , processTargets ( 'one' ) )
       assertEquals ( 'one:\nXXXX\n------ one\n' , output )
@@ -245,7 +245,7 @@ setAllPerTargetPreHooks ( { -> println 'XXXX' } )
 
     void testAddAllPerTargetPostHooks ( ) {
         script = baseScript + '''
-    addAllPerTargetPostHooks ( { -> println 'XXXX' } )
+addAllPerTargetPostHooks ( { -> println 'XXXX' } )
     '''
         assertEquals ( 0 , processTargets ( 'one' ) )
         assertEquals ( 'one:\n------ one\nXXXX\n' , output )
@@ -254,5 +254,24 @@ setAllPerTargetPreHooks ( { -> println 'XXXX' } )
         assertEquals ( 'one:\n------ one\nXXXX\ntwo:\n------ two\nXXXX\n' , output )
         assertEquals ( '' , error )
       }
+    
+      void testAddPreHookNotAClosure ( ) {
+        script = baseScript + '''
+addAllPerTargetPreHooks ( [] )
+        ''' 
+        assertEquals ( 0 , processTargets ( 'one' ) )
+        assertEquals ( 'one:\n------ one\n' , output )
+        assertEquals ( 'Target prehook list item is not a closure.\n' , error )
+      }
+      
+      void testAddPostHookNotAClosure ( ) {
+          script = baseScript + '''
+  addAllPerTargetPostHooks ( [] )
+          ''' 
+          assertEquals ( 0 , processTargets ( 'one' ) )
+          assertEquals ( 'one:\n------ one\n' , output )
+          assertEquals ( 'Target posthook list item is not a closure.\n' , error )
+        }
+
 
 }
