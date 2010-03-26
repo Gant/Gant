@@ -224,7 +224,10 @@ project ( ':gant' ) {
   }
   dependencies { groovy ( group : 'org.codehaus.groovy' , name : groovyArtefactName , version : groovyVersion ) }
   compileGroovy.doFirst { println ( '\n\t' + versionMessage +'\n' ) }
-  test.environment ( [ GROOVY_ANT_TASK_TEST_VERSION :  groovyVersion ] )
+  test.environment ( [
+                       GROOVY_ANT_TASK_TEST_VERSION :  groovyVersion ,
+                       //gradleClassesLocation : System.properties.'user.dir' + '/gant/build/classes/main'
+                     ] )
   def  installDirectory = '/usr/share/gant'
   try { installDirectory = evaluate ( '"' + gant_installPath + '"' ) }
   catch ( MissingPropertyException mpe ) { /* Intentionally left blank. */ }
@@ -261,7 +264,10 @@ forEachDistributionVersion { projectName->
     apply ( id : 'maven' )
     dependencies { groovy ( group : 'org.codehaus.groovy' , name : groovyArtefactName , version : groovyVersion ) }
     compileGroovy.doFirst { println ( '\n\tUsing Groovy version ' + groovyVersion + '\n' ) }
-    test.environment ( [ GROOVY_ANT_TASK_TEST_VERSION :  groovyVersion ] )
+    test.environment ( [
+                         GROOVY_ANT_TASK_TEST_VERSION :  groovyVersion ,
+                         //gradleClassesLocation : System.properties.'user.dir' + '/' + projectName + '/build/classes/main'
+                       ] )
     try {
       uploadArchives {
         repositories.mavenDeployer {
