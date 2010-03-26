@@ -62,12 +62,11 @@ public class Gant_Test extends TestCase {
     sb.append ( "tests" ) ;
     path = sb.toString ( ) ;
   }
-  private final String absolutePath ;
-  private final File antFile ; {
-    try { absolutePath =  ( new File ( locationPrefix + path ) ).getCanonicalPath ( ) ; }
-    catch ( final IOException ioe ) { throw new RuntimeException ( "Canonical path calculation failure." , ioe ) ; }
-    antFile =  new File ( absolutePath , "gantTest.xml" ) ;
+  private final String canonicalPath ; {
+    try { canonicalPath = ( new File ( locationPrefix + path ) ).getCanonicalPath ( ) ; }
+    catch ( final IOException ioe ) { throw new RuntimeException ( "Path calculation failure." , ioe ) ; }
   }
+  private final File antFile =  new File ( canonicalPath , "gantTest.xml" ) ;
   private Project project ;
   //  This variable is assigned in the Gant script hence the public static.
   public static String returnValue ;
@@ -224,7 +223,7 @@ public class Gant_Test extends TestCase {
   private String createBaseMessage ( ) {
     final StringBuilder sb = new StringBuilder ( ) ;
     sb.append ( "Buildfile: " ) ;
-    sb.append ( absolutePath ).append ( separator ) ;
+    sb.append ( canonicalPath ).append ( separator ) ;
     sb.append ( "gantTest.xml\n\n" ) ;
     sb.append ( commonTargetsList ) ;
     sb.append ( "gantTestDefaultFileDefaultTarget:\n" ) ;
@@ -261,11 +260,10 @@ public class Gant_Test extends TestCase {
   private String createMessageStart ( final String target , final String taskName , final boolean extraClassPathDefinition ) {
     final StringBuilder sb = new StringBuilder ( ) ;
     sb.append ( "Buildfile: " ) ;
-    sb.append ( System.getProperty ( "user.dir" ) ) ;
-    sb.append ( System.getProperty ( "file.separator" ) ) ;
-    sb.append ( locationPrefix ).append ( path ).append ( separator ) ;
+    sb.append ( canonicalPath ) ; 
+    sb.append ( separator ) ;
     sb.append ( "basedir.xml\n     [echo] basedir::ant basedir=" ) ;
-    sb.append ( absolutePath ) ;
+    sb.append ( canonicalPath ) ;
     sb.append ( "\n\n-initialize:\n\n-define" ) ;
     sb.append ( taskName ) ;
     sb.append ( "Task:\n\n" ) ;
@@ -279,17 +277,17 @@ public class Gant_Test extends TestCase {
     final StringBuilder sb = new StringBuilder ( ) ;
     sb.append ( createMessageStart ( target , "Groovy" , true ) ) ;
     sb.append ( "   [groovy] basedir::groovy basedir=" ) ;
-    sb.append ( absolutePath ) ;
+    sb.append ( canonicalPath ) ;
     sb.append ( "\n   [groovy] default:\n   [groovy] \n   [groovy] basedir::gant basedir=" ) ;
     //
     //  Currently a Gant object instantiated in a Groovy task in an Ant script does not inherit the basedir
     //  of the "calling" Ant.  Instead it assumes it is rooted in the process start directory.  According to
     //  GANT-50 this is an error.  The question is to decide whether it is or not.
     //
-    //  TODO : Should this be sb.append ( absolutePath ) ?  cf. GANT-50.
+    //  TODO : Should this be sb.append ( canonicalPath ) ?  cf. GANT-50.
     //
     sb.append ( System.getProperty ( "user.dir" ) ) ;
-    //sb.append ( absolutePath ) ;
+    //sb.append ( canonicalPath ) ;
     sb.append ( "\n   [groovy] " + endOfTargetMarker + "default\n   [groovy] \n\nBUILD SUCCESSFUL\n\n" ) ;
     final List<String> result = runAnt ( basedirAntFilePath , target , 0 , true ) ;
     assert result.size ( ) == 2 ;
@@ -301,14 +299,14 @@ public class Gant_Test extends TestCase {
     final StringBuilder sb = new StringBuilder ( ) ;
     sb.append ( createMessageStart ( target , "Groovy" , true ) ) ;
     sb.append ( "   [groovy] basedir::groovy basedir=" ) ;
-    sb.append ( absolutePath ) ;
+    sb.append ( canonicalPath ) ;
     //
     //  In this case the instantiated Gant object is connected directly to the Project object instantiated
     //  by Ant and so uses the same basedir.  However it seems that the output (and error) stream are not
     //  routed through the bit of Ant that prefixes the output with the current task name. :-(
     //
     sb.append ( "\ndefault:\nbasedir::gant basedir=" ) ;
-    sb.append ( absolutePath ) ;
+    sb.append ( canonicalPath ) ;
     sb.append ( "\n" + endOfTargetMarker + "default\n\nBUILD SUCCESSFUL\n\n" ) ;
     final List<String> result = runAnt ( basedirAntFilePath , target , 0 , true ) ;
     assert result.size ( ) == 2 ;
@@ -320,7 +318,7 @@ public class Gant_Test extends TestCase {
     final StringBuilder sb = new StringBuilder ( ) ;
     sb.append ( createMessageStart ( target , "Gant" , false ) ) ;
     sb.append ( "default:\n     [gant] basedir::gant basedir=" ) ;
-    sb.append ( absolutePath ) ;
+    sb.append ( canonicalPath ) ;
     sb.append ( "\n" + endOfTargetMarker + "default\n\nBUILD SUCCESSFUL\n\n" ) ;
     final List<String> result = runAnt ( basedirAntFilePath , target , 0 , true ) ;
     assert result.size ( ) == 2 ;
@@ -331,7 +329,7 @@ public class Gant_Test extends TestCase {
   //  Test the GANT-80 issues.
   //
   public void test_GANT_80 ( ) {
-    final String antFilePath = absolutePath + separator + "GANT_80.xml" ;
+    final String antFilePath = canonicalPath + separator + "GANT_80.xml" ;
     final StringBuilder sb = new StringBuilder ( ) ;
     sb.append ( "Buildfile: " ) ;
     sb.append ( antFilePath ) ;
@@ -347,7 +345,7 @@ public class Gant_Test extends TestCase {
   //  Ensure that errors are handled correctly by checking one error return case.
   //
   public void testGantTaskErrorReturn ( ) {
-    final File file = new File ( absolutePath , "testErrorCodeReturns.xml" ) ;
+    final File file = new File ( canonicalPath , "testErrorCodeReturns.xml" ) ;
     final String target = "usingGantAntTask" ;
     final StringBuilder sb = new StringBuilder ( ) ;
     sb.append ( "Buildfile: " ) ;
@@ -404,8 +402,7 @@ public class Gant_Test extends TestCase {
     //  The path to the build file and the line number in that file are part of the output,
     //  so check only the parts of the output that are guaranteed, i.e. not the line number.
     final String errorMessage = trimTimeFromSuccessfulBuild ( result.get ( 1 ) ) ;
-    assertEquals ( "\nBUILD FAILED\n" + System.getProperty ( "user.dir" ) + "/src/test/groovy/org/codehaus/gant/ant/tests/gantTest.xml",
-            errorMessage.substring ( 0 , errorMessage.indexOf ( ':' ) ) ) ; 
+    assertEquals ( "\nBUILD FAILED\n" + canonicalPath + "/gantTest.xml", errorMessage.substring ( 0 , errorMessage.indexOf ( ':' ) ) ) ; 
     assertEquals ( ": test fail message\n\n\n" , errorMessage.substring ( errorMessage.lastIndexOf ( ':' ) ) ) ;
   }
   

@@ -24,8 +24,8 @@
 
   <property environment="environment"/>
 
-  <property name="targetDirectory" value="${toplevelDirectory}/target_gant"/>
-  <property name="gantClassesDirectory" value="${targetDirectory}/classes"/>
+  <property name="targetDirectory" value="${toplevelDirectory}/gant/build"/>
+  <property name="gantClassesDirectory" value="${targetDirectory}/classes/main"/>
   
   <target name="-initialize">
     <path id="mavenAntTaskJarPathId">
@@ -47,7 +47,7 @@
       tested.  This target can only complete successfully if the classes are put on the class path by giving
       a parameter to the Ant invocation.  So for example:
 
-          ant -f gantTest.xml -lib ../../../../../../../../target_gant/test-classes:$GROOVY_HOME/lib/junit-4.7.jar
+          ant -f gantTest.xml -lib ../../../../../../../../target_gant/test-classes:$GROOVY_HOME/lib/junit-4.8.1.jar
 
       note that the JUnit jar has to be added as well.
   -->
