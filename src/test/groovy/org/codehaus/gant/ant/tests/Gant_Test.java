@@ -386,7 +386,7 @@ public class Gant_Test extends TestCase {
   */
   //
   //  For dealing with GANT-110 -- thanks to Eric Van Dewoestine for providing the original --
-  //  subsequently amended as Gant evolves..
+  //  subsequently amended as Gant evolves.
   //
   public void testInheritAll ( ) {
     final List<String> result = runAnt ( antFile.getPath ( ) , "gantTestInheritAll" , 0 , true ) ;
