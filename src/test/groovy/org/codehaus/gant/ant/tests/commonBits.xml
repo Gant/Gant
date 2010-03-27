@@ -20,45 +20,16 @@
 
 <project name="Common Ant File Bits for Gant Ant Task Test" xmlns:artifact="urn:maven-artifact-ant" basedir="." >
 
-  <property file="build.properties"/>
-
-  <property environment="environment"/>
-
-  <property name="targetDirectory" value="${toplevelDirectory}/gant/build"/>
-  <property name="gantClassesDirectory" value="${targetDirectory}/classes/main"/>
-  
-  <target name="-initialize">
-    <path id="mavenAntTaskJarPathId">
-      <fileset dir="${toplevelDirectory}/jarfiles" includes="maven-ant-tasks-*.jar"/>
-    </path>
-    <typedef resource="org/apache/maven/artifact/ant/antlib.xml" uri="urn:maven-artifact-ant" classpathref="mavenAntTaskJarPathId"/>
-    <property environment="environment"/>
-    <artifact:dependencies pathId="groovyJarsId">
-      <dependency groupId="org.codehaus.groovy" artifactId="groovy-all" version="${environment.GROOVY_ANT_TASK_TEST_VERSION}"/>
-    </artifact:dependencies>
-  </target>
-
-  <target name="-defineGroovyTask" depends="-initialize">
-    <taskdef name="groovy" classname="org.codehaus.groovy.ant.Groovy" classpathref="groovyJarsId" />
-  </target>
-
   <!--
-      The executing Gant script needs to be able to access the Gant_Test class in order to return the value
-      tested.  This target can only complete successfully if the classes are put on the class path by giving
-      a parameter to the Ant invocation.  So for example:
+     Assume that all the Gant and Groovy classes are on the underlying classpath.
+    -->
 
-          ant -f gantTest.xml -lib ../../../../../../../../target_gant/test-classes:$GROOVY_HOME/lib/junit-4.8.1.jar
+  <target name="-defineGroovyTask">
+    <taskdef name="groovy" classname="org.codehaus.groovy.ant.Groovy" />
+  </target>
 
-      note that the JUnit jar has to be added as well.
-  -->
-
-  <target name="-defineGantTask" depends="-initialize">
-    <taskdef name="gant" classname="org.codehaus.gant.ant.Gant">
-      <classpath>
-        <pathelement location="${gantClassesDirectory}"/>
-        <path refid="groovyJarsId"/>
-      </classpath>
-    </taskdef>
+  <target name="-defineGantTask">
+    <taskdef name="gant" classname="org.codehaus.gant.ant.Gant"/>
   </target>
   
 </project>

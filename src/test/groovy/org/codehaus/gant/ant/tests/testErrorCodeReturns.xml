@@ -3,7 +3,7 @@
 <!--
 Gant - A Groovy way of scripting Ant tasks.
 
-Copyright © 2009 Russel Winder
+Copyright © 2009-10 Russel Winder
 
 Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in
 compliance with the License. You may obtain a copy of the License at
@@ -19,14 +19,15 @@ Author : Russel Winder <russel.winder@concertant.com>
 -->
 
 <project name="Test" basedir=".">
+
+  <!--
+     Assume that all the Gant and Groovy classes are on the underlying classpath.
+    -->
+
   <import file="commonBits.xml"/>
-  <!-- target name="usingExec">
-    <exec dir="." executable="${environment.HOME}/lib/Java/gant/bin/gant" resultproperty="error">
-      <arg value="-f nonexistentGantFile.gant" />
-    </exec>
-    <echo message="ErrorLevel: ${error}" />
-  </target-->
-  <target name="usingGantAntTask" depends="-initialize,-defineGantTask">
+
+  <target name="usingGantAntTask" depends="-defineGantTask">
     <gant file="nonexistentGantFile.gant" />
   </target>
+
 </project>

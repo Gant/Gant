@@ -224,9 +224,14 @@ project ( ':gant' ) {
   }
   dependencies { groovy ( group : 'org.codehaus.groovy' , name : groovyArtefactName , version : groovyVersion ) }
   compileGroovy.doFirst { println ( '\n\t' + versionMessage +'\n' ) }
+  def buildPath = [ System.properties.'user.dir' , 'gant' , 'build' , 'classes' ]
+  def classPath = [ ]
+  classPath << ( buildPath + [ 'main' ] ).join ( File.separator ) 
+  classPath << ( buildPath + [ 'test' ] ).join ( File.separator ) 
+  configurations.testRuntime.files.each { file -> classPath <<  file.parent }
   test.environment ( [
                        GROOVY_ANT_TASK_TEST_VERSION :  groovyVersion ,
-                       //gradleClassesLocation : System.properties.'user.dir' + '/gant/build/classes/main'
+                       gradleClasspathString : classPath.join ( System.properties.'path.separator' )
                      ] )
   def  installDirectory = '/usr/share/gant'
   try { installDirectory = evaluate ( '"' + gant_installPath + '"' ) }
@@ -264,9 +269,14 @@ forEachDistributionVersion { projectName->
     apply ( id : 'maven' )
     dependencies { groovy ( group : 'org.codehaus.groovy' , name : groovyArtefactName , version : groovyVersion ) }
     compileGroovy.doFirst { println ( '\n\tUsing Groovy version ' + groovyVersion + '\n' ) }
+    def buildPath = [ System.properties.'user.dir' , projectName , 'build' , 'classes' ]
+  def classPath = [ ]
+  classPath << ( buildPath + [ 'main' ] ).join ( File.separator ) 
+  classPath << ( buildPath + [ 'test' ] ).join ( File.separator ) 
+  configurations.testRuntime.files.each { file -> classPath <<  file.parent }
     test.environment ( [
                          GROOVY_ANT_TASK_TEST_VERSION :  groovyVersion ,
-                         //gradleClassesLocation : System.properties.'user.dir' + '/' + projectName + '/build/classes/main'
+                         gradleClasspathString : classPath.join ( System.properties.'path.separator' )
                        ] )
     try {
       uploadArchives {

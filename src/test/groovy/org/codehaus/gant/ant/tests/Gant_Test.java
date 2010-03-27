@@ -182,24 +182,15 @@ public class Gant_Test extends TestCase {
     command.add ( "-f" ) ;
     command.add ( xmlFile ) ;
     if ( withClasspath ) {
-      /*
-      if ( "Gradle".equals ( System.getProperty ( "buildFrameworkIdentifier" ) ) ) {
-        command.add ( "-lib" ) ;
-        command.add ( System.getenv ( "gradleClassesLocation" ) ) ;
-      }
-      */
-      //  For Eclipse and IntelliJ IDEA the Java classpath property includes all the directories and jars
-      //  needed.  For Gradle it includes just the Gradle jars.
-      for ( final String p : System.getProperty ( "java.class.path" ).split ( System.getProperty ( "path.separator" ) ) ) {
+      final String classpathString = "Gradle".equals ( System.getProperty ( "buildFrameworkIdentifier" ) )
+              ? System.getenv ( "gradleClasspathString" )
+              : System.getProperty ( "java.class.path" ) ;
+      for ( final String p : classpathString.split ( System.getProperty ( "path.separator" ) ) ) {
         command.add ( "-lib" ) ;
         command.add ( p ) ;
       }
     }
     if ( ( target != null ) && ! target.trim ( ).equals ( "" ) ) { command.add ( target ) ; }
-
-    System.err.println ( "XXXX: " + command ) ;
-    
-
     final ProcessBuilder pb = new ProcessBuilder ( command ) ;
     final StringBuilder outputStringBuilder = new StringBuilder ( ) ;
     final StringBuilder errorStringBuilder = new StringBuilder ( ) ;
@@ -227,7 +218,7 @@ public class Gant_Test extends TestCase {
   /**
    *  The output due to the targets in commonBits.xml.
    */
-  private final String commonTargetsList = "-initialize:\n\n-defineGantTask:\n\n" ;
+  private final String commonTargetsList = "-defineGantTask:\n\n" ;
   /*
    *  Tests stemming from GANT-19 and relating to ensuring the right classpath when loading the Groovyc Ant
    *  task.
@@ -257,10 +248,7 @@ public class Gant_Test extends TestCase {
     //assertTrue ( errorResult.contains ( "org.codehaus.groovy.control.MultipleCompilationErrorsException: startup failed" ) ) ;
     //assertTrue ( errorResult.contains ( "build: 15: unable to resolve class org.codehaus.gant.ant.tests.Gant_Test\n @ line 15, column 1.\n" ) ) ;
   }
-
-  // TODO:  Fix me in Gradle
-
-  public void XXXX_testRunningAntFromShellSuccessful ( ) {
+  public void testRunningAntFromShellSuccessful ( ) {
     final List<String> result = runAnt ( antFile.getPath ( ) , null , 0 , true ) ;
     assert result.size ( ) == 2 ;
     assertEquals ( createBaseMessage ( ) + "test:\n" + endOfTargetMarker + "test\n\nBUILD SUCCESSFUL\n\n", trimTimeFromSuccessfulBuild ( result.get ( 0 ) ) ) ;
@@ -279,18 +267,14 @@ public class Gant_Test extends TestCase {
     sb.append ( separator ) ;
     sb.append ( "basedir.xml\n     [echo] basedir::ant basedir=" ) ;
     sb.append ( canonicalPath ) ;
-    sb.append ( "\n\n-initialize:\n\n-define" ) ;
+    sb.append ( "\n\n-define" ) ;
     sb.append ( taskName ) ;
     sb.append ( "Task:\n\n" ) ;
-    if ( extraClassPathDefinition ) { sb.append ( "-defineClasspath:\n\n" ) ; }
     sb.append ( target ) ;
     sb.append ( ":\n" ) ;
     return sb.toString ( ) ;
   }
-
-  // TODO:  Fix me in Gradle
-
-  public void XXXX_testBasedirInSubdirDefaultProjectForGant ( ) {
+  public void testBasedirInSubdirDefaultProjectForGant ( ) {
     final String target = "defaultProject" ;
     final StringBuilder sb = new StringBuilder ( ) ;
     sb.append ( createMessageStart ( target , "Groovy" , true ) ) ;
@@ -312,10 +296,7 @@ public class Gant_Test extends TestCase {
     assertEquals ( sb.toString ( ) , trimTimeFromSuccessfulBuild ( result.get ( 0 ) ) ) ;
     assertEquals ( "" , result.get ( 1 ) ) ;
   }
-
-  // TODO:  Fix me in Gradle
-
-  public void XXXX_testBasedirInSubdirExplicitProjectForGant ( ) {
+  public void testBasedirInSubdirExplicitProjectForGant ( ) {
     final String target = "explicitProject" ;
     final StringBuilder sb = new StringBuilder ( ) ;
     sb.append ( createMessageStart ( target , "Groovy" , true ) ) ;
@@ -334,10 +315,7 @@ public class Gant_Test extends TestCase {
     assertEquals ( sb.toString ( ) , trimTimeFromSuccessfulBuild ( result.get ( 0 ) ) ) ;
     assertEquals ( "" , result.get ( 1 ) ) ;
   }
-
-  // TODO:  Fix me in Gradle
-
-  public void XXXX_testBasedirInSubdirGantTask ( ) {
+  public void testBasedirInSubdirGantTask ( ) {
     final String target = "gantTask" ;
     final StringBuilder sb = new StringBuilder ( ) ;
     sb.append ( createMessageStart ( target , "Gant" , false ) ) ;
@@ -349,14 +327,10 @@ public class Gant_Test extends TestCase {
     assertEquals ( sb.toString ( ) , trimTimeFromSuccessfulBuild ( result.get ( 0 ) ) ) ;
     assertEquals ( "" , result.get ( 1 ) ) ;
   }
-
   //
   //  Test the GANT-80 issues.
   //
-
-  // TODO:  Fix me in Gradle
-
-  public void XXXX_test_GANT_80 ( ) {
+  public void test_GANT_80 ( ) {
     final String antFilePath = canonicalPath + separator + "GANT_80.xml" ;
     final StringBuilder sb = new StringBuilder ( ) ;
     sb.append ( "Buildfile: " ) ;
@@ -369,14 +343,10 @@ public class Gant_Test extends TestCase {
     assertEquals ( sb.toString ( ) , trimTimeFromSuccessfulBuild ( result.get ( 0 ) ) ) ;
     assertEquals ( "" , result.get ( 1 ) ) ;
   }
-
   //
   //  Ensure that errors are handled correctly by checking one error return case.
   //
-
-  // TODO:  Fix me in Gradle
-
-  public void XXXX_testGantTaskErrorReturn ( ) {
+  public void testGantTaskErrorReturn ( ) {
     final File file = new File ( canonicalPath , "testErrorCodeReturns.xml" ) ;
     final String target = "usingGantAntTask" ;
     final StringBuilder sb = new StringBuilder ( ) ;
@@ -414,25 +384,24 @@ public class Gant_Test extends TestCase {
     assertEquals ( "     [exec] Result: 253\n" , result.get ( 1 ) ) ;
   }
   */
-
-  //  For dealing with GANT-110 -- thanks to Eric Van Dewoestine for providing this.
-
-  // TODO:  Fix me in Gradle
-
-  public void XXXX_testInheritAll ( ) {
+  //
+  //  For dealing with GANT-110 -- thanks to Eric Van Dewoestine for providing the original --
+  //  subsequently amended as Gant evolves..
+  //
+  public void testInheritAll ( ) {
     final List<String> result = runAnt ( antFile.getPath ( ) , "gantTestInheritAll" , 0 , true ) ;
     @SuppressWarnings("unchecked") List<String> output = StringUtils.lineSplit ( result.get ( 0 ) ) ;
-    assertEquals ( "     [echo] ${gant.test.inheritAll}" , output.get ( 8 ) ) ;
-    assertEquals ( "     [echo] ${gant.test.inheritAll}" , output.get ( 11 ) ) ;
-    assertEquals ( "     [echo] gantInheritAllWorks" , output.get ( 14 ) ) ;
+    assertEquals ( "     [echo] ${gant.test.inheritAll}" , output.get ( 6 ) ) ;
+    assertEquals ( "gantInheritAll:" , output.get ( 8 ) ) ;
+    assertEquals ( "     [echo] ${gant.test.inheritAll}" , output.get ( 9 ) ) ;
+    assertEquals ( "gantInheritAll:" , output.get ( 11 ) ) ;
+    assertEquals ( "     [echo] gantInheritAllWorks" , output.get ( 12 ) ) ;
   }
-
+  //
   //  For dealing with GANT-111 -- thanks to Eric Van Dewoestine for providing the original --
   //  subsequently amended as Gant evolves.
-
-  // TODO:  Fix me in Gradle
-
-  public void XXXX_testGantTaskFail ( ) {
+  //
+  public void testGantTaskFail ( ) {
     final List<String> result = runAnt ( antFile.getPath ( ) , "gantTestFail" , 1 , true ) ;
     assert result.size ( ) == 2 ;
     //  The path to the build file and the line number in that file are part of the output,
