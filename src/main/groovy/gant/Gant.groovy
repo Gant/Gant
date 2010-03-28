@@ -139,10 +139,6 @@ final class Gant {
    */
   boolean dryRun = false
   /**
-   *  The verbosity of Gant's output. Defaults to { @link GantState#NORMAL }.
-   */
-  int verbosity = GantState.NORMAL
-  /**
    *  Determines whether the scripts are cached or not. Defaults to <code>false</code>.
    */
   boolean useCache = false
@@ -492,10 +488,10 @@ final class Gant {
     if ( options.l ) { gantLib.addAll ( options.l.split ( System.properties.'path.separator' ) as List ) }
     if ( options.n ) { dryRun = true }
     def function =  ( options.p || options.T ) ? 'targetList' : 'dispatch'
-    if ( options.d ) { verbosity = GantState.DEBUG }
-    if ( options.q ) { verbosity = GantState.ERRORS_ONLY }
-    if ( options.s ) { verbosity = GantState.SILENT }
-    if ( options.v ) { verbosity = GantState.VERBOSE }
+    if ( options.d ) { GantState.verbosity = GantState.DEBUG }
+    if ( options.q ) { GantState.verbosity = GantState.ERRORS_ONLY }
+    if ( options.s ) { GantState.verbosity = GantState.SILENT }
+    if ( options.v ) { GantState.verbosity = GantState.VERBOSE }
     if ( useCache && options.C ) { cacheDirectory = new File ( (String) options.C ) }
     if ( options.D ) {
       options.Ds.each { definition ->
@@ -539,22 +535,22 @@ final class Gant {
     outputBuildTime = function == 'dispatch'
     try { return processTargets ( function , targets ) }
     catch ( TargetExecutionException tee ) {
-      if ( verbosity > GantState.NORMAL ) { binding.ant.project.log ( tee.message , tee , Project.MSG_ERR ) }
+      if ( GantState.verbosity > GantState.NORMAL ) { binding.ant.project.log ( tee.message , tee , Project.MSG_ERR ) }
       else { binding.ant.project.log ( tee.message , Project.MSG_ERR ) }
       return -13
     }
     catch ( MissingTargetException mte ) {
-      if ( verbosity > GantState.NORMAL ) { binding.ant.project.log ( mte.message , mte , Project.MSG_ERR ) }
+      if ( GantState.verbosity > GantState.NORMAL ) { binding.ant.project.log ( mte.message , mte , Project.MSG_ERR ) }
       else { binding.ant.project.log ( mte.message , Project.MSG_ERR ) }
       return defaultReturnCode
     }
     catch ( TargetMissingPropertyException tmpe ) {
-      if ( verbosity > GantState.NORMAL ) { binding.ant.project.log ( constructMessageFrom ( tmpe ) , tmpe , Project.MSG_ERR ) }
+      if ( GantState.verbosity > GantState.NORMAL ) { binding.ant.project.log ( constructMessageFrom ( tmpe ) , tmpe , Project.MSG_ERR ) }
       else { binding.ant.project.log ( constructMessageFrom ( tmpe ) , Project.MSG_ERR ) }
       return defaultReturnCode
     }
     catch ( Exception e ) {
-      if ( verbosity > GantState.NORMAL ) { binding.ant.project.log ( constructMessageFrom ( e ) , e , Project.MSG_ERR ) }
+      if ( GantState.verbosity > GantState.NORMAL ) { binding.ant.project.log ( constructMessageFrom ( e ) , e , Project.MSG_ERR ) }
       else { binding.ant.project.log ( constructMessageFrom ( e ) , Project.MSG_ERR ) }
       return -4
     }
@@ -570,7 +566,7 @@ final class Gant {
   protected Integer processTargets ( String function , List<String> targets ) {
     // Configure the build based on this instance's settings.
     if ( dryRun ) { GantState.dryRun = true }
-    if ( verbosity != GantState.verbosity ) { GantState.verbosity = verbosity ; binding.ant.logger.setMessageOutputLevel ( verbosity ) }
+    //binding.ant.logger.setMessageOutputLevel ( GantState.verbosity )
     binding.cacheEnabled = useCache
     binding.gantLib = gantLib
     if ( script == null ) { throw new RuntimeException ( "No script has been loaded!" ) }

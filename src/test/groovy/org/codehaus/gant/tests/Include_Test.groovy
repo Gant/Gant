@@ -80,7 +80,7 @@ target ( '${defaultTarget}' : '' ) { ${something} ( ) }
    //  This is a huge change of semantics, and wholly inappropriate for a bug fix release. :-(((
   private final targetsBuildScriptClass =  "includeTargets <<  groovyShell.evaluate ( '''${targetsScriptText} ; return ${targetsClassName}''' , '${targetsClassName}' )\n" + targetsBuildScriptBase
   private final targetsErrorBuildScriptClass =  "includeTargets <<  groovyShell.evaluate ( '''${targetsScriptText}''' , '${targetsClassName}' )\n" + targetsBuildScriptBase
-  private final resultErrorEvaluatingScript = "Standard input, line 1 -- Error evaluating Gantfile: Cannot get property 'class' on null object\n"
+  private final resultErrorEvaluatingScript = "Standard input, line 1 -- Error evaluating Gantfile: Cannot get property 'name' on null object\n"
   private final String targetsBuildScriptFile
   private final targetsBuildScriptString =  "includeTargets <<  '''${targetsScriptText}'''\n" + targetsBuildScriptBase
   private final targetsBuildClassClass =  "includeTargets <<  groovyShell.evaluate ( '''${targetsClassText} ; return ${targetsClassName}''' )\n" + targetsBuildScriptBase

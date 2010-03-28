@@ -190,23 +190,23 @@ public class GantBinding extends Binding implements Cloneable {
         owner.setVariable ( (String) targetName , targetClosure )
         owner.setVariable ( targetName + '_description' , targetDescription )  //  For backward compatibility.
         owner.getVariable ( 'listOfTargetMapsDeclared' ) << targetMap
-        owner.setVariable ( 'setAllPerTargetPreHooks' , { item ->
-          for ( tgt in listOfTargetMapsDeclared ) { tgt.prehook = item }
-         } )
-        owner.setVariable ( 'setAllPerTargetPostHooks' , { item ->
-          for ( tgt in listOfTargetMapsDeclared ) { tgt.posthook = item }
-         } )
-        owner.setVariable ( 'addAllPerTargetPreHooks' , { item -> 
-          for ( tgt in listOfTargetMapsDeclared ) { tgt.prehook << item }
-         } )
-        owner.setVariable ( 'addAllPerTargetPostHooks' , { item -> 
-          for ( tgt in listOfTargetMapsDeclared ) { tgt.posthook << item }
-         } )
-       } )
+     } )
+    super.setVariable ( 'setAllPerTargetPreHooks' , { item ->
+      for ( tgt in listOfTargetMapsDeclared ) { tgt.prehook = item }
+    } )
+    super.setVariable ( 'setAllPerTargetPostHooks' , { item ->
+      for ( tgt in listOfTargetMapsDeclared ) { tgt.posthook = item }
+    } )
+    super.setVariable ( 'addAllPerTargetPreHooks' , { item -> 
+      for ( tgt in listOfTargetMapsDeclared ) { tgt.prehook << item }
+    } )
+    super.setVariable ( 'addAllPerTargetPostHooks' , { item -> 
+      for ( tgt in listOfTargetMapsDeclared ) { tgt.posthook << item }
+    } )
     super.setVariable ( 'task' , { Map<String, String> map , Closure closure ->
-        owner.ant.project.log ( 'task has now been removed from Gant, please update your Gant files to use target instead of task.' , Project.MSG_ERR )
-        System.exit ( -99 ) ;
-      } )
+      owner.ant.project.log ( 'task has now been removed from Gant, please update your Gant files to use target instead of task.' , Project.MSG_ERR )
+      System.exit ( -99 ) ;
+    } )
     super.setVariable ( 'targetDescriptions' , new TreeMap ( ) )
     super.setVariable ( 'message' , { String tag , Object message ->
         def padding = 9 - tag.length ( )
@@ -283,6 +283,11 @@ public class GantBinding extends Binding implements Cloneable {
                             'targets' ,
                             'defaultTarget' ,
                             'finalizeTarget' ,
+                            'listOfTargetMapsDeclared' ,
+                            'setAllPerTargetPreHooks' ,
+                            'setAllPerTargetPostHooks' , 
+                            'addAllPerTargetPreHooks' ,
+                            'addAllPerTargetPostHooks'
                             ].contains ( name ) ) { throw new RuntimeException ( 'Cannot redefine symbol ' + name ) }
     super.setVariable ( name , value )
   }
