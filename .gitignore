@@ -5,6 +5,7 @@ bin
 out
 Gant_*.iws
 .gradle
+build
 gant
 gant_groovy*
 packaging/AntDebTask/debs
