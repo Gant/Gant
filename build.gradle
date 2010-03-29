@@ -92,8 +92,8 @@ allprojects {
 }
 
 subprojects {
-  apply ( id : 'groovy' )
-  apply ( id: 'osgi' )
+  apply ( plugin : 'groovy' )
+  apply ( plugin: 'osgi' )
   sourceCompatibility = 5
   targetCompatibility = 5
   configurations { deployJars }
@@ -107,22 +107,24 @@ subprojects {
   metaInf << fileTree ( dir : '..' ).matching { include 'LICENCE.txt' }
   def theVendor = 'The Codehaus'
   def theTitle = 'Gant: Scripting Ant tasks with Groovy.'
-  configure ( jar.osgi ) {
-    name = 'Gant'
-    version = gantBundleVersion
-    symbolicName = 'gant'
-    instruction 'Bundle-Vendor' , theVendor
-    instruction 'Bundle-Description' , group
-    instruction 'Bundle-DocURL' , 'http://gant.codehaus.org'
-    instruction 'Built-By' , System.properties.'user.name'
-    instruction 'Extension-Name' , artifact
-    instruction 'Specification-Title' , theTitle
-    instruction 'Specification-Version' , gantBundleVersion
-    instruction 'Specification-Vendor' , theVendor
-    instruction 'Implementation-Title' , theTitle
-    instruction 'Implementation-Version' , gantBundleVersion
-    instruction 'Implementation-Vendor' , theVendor
-    instruction 'Export-Package' , '*'
+  jar { 
+    manifest {
+      name = 'Gant'
+      version = gantBundleVersion
+      symbolicName = 'gant'
+      instruction 'Bundle-Vendor' , theVendor
+      instruction 'Bundle-Description' , group
+      instruction 'Bundle-DocURL' , 'http://gant.codehaus.org'
+      instruction 'Built-By' , System.properties.'user.name'
+      instruction 'Extension-Name' , artifact
+      instruction 'Specification-Title' , theTitle
+      instruction 'Specification-Version' , gantBundleVersion
+      instruction 'Specification-Vendor' , theVendor
+      instruction 'Implementation-Title' , theTitle
+      instruction 'Implementation-Version' , gantBundleVersion
+      instruction 'Implementation-Vendor' , theVendor
+      instruction 'Export-Package' , '*'
+    }
   }
   repositories {
     mavenCentral ( )
@@ -266,7 +268,7 @@ ciBuildTasks = [ ]
 forEachDistributionVersion { projectName->
   def groovyVersion = groovyVersions[ projectName.replace ( artifact + mavenNameExtension , '' ) ]
   project ( projectName ) {
-    apply ( id : 'maven' )
+    apply ( plugin : 'maven' )
     dependencies { groovy ( group : 'org.codehaus.groovy' , name : groovyArtefactName , version : groovyVersion ) }
     compileGroovy.doFirst { println ( '\n\tUsing Groovy version ' + groovyVersion + '\n' ) }
     def buildPath = [ System.properties.'user.dir' , projectName , 'build' , 'classes' ]
@@ -492,7 +494,7 @@ gradle.taskGraph.whenReady { graph ->
 task ciBuild ( description : 'Run just the builds that use Groovy from the Maven repository.  Used mainly on CI servers.' , dependsOn : ciBuildTasks )
 
 task wrapper ( type : Wrapper ) {
-    gradleVersion = '0.9-20100226145830+1100'
+    gradleVersion = '0.9-20100327141517+1100'
     jarPath = 'wrapper'
 }
 
