@@ -564,6 +564,38 @@ final class Gant {
    *  Process the targets, but first execute the build script so all the targets and other code are available.
    */
   protected Integer processTargets ( String function , List<String> targets ) {
+    prepareTargets()
+    return executeTargets( function, targets )
+  }
+  
+  /**
+   * <p>
+   * Executes a pre-prepared set of targets. This method is typically used in conjunction
+   * with #prepareTargets()</p>
+   * 
+   * <pre>
+   *     gant.prepareTargets()
+   *     gant.executeTargets()
+   * </pre>
+   *  
+   *  <p>
+   *  The #processTargets() method combines the above two methods
+   *  </p>
+   * 
+   * @param function
+   * @param targets
+   * @return
+   */
+  public Integer executeTargets( String function = 'dispatch', List<String> targets = []) {
+	  (Integer) invokeMethod ( function , targets )	  
+  }
+  
+  /**
+   * Prepares Gant for execution returning the Gant script that will be used for the execution
+   * 
+   * @return The Gant script to be used
+   */
+  public GroovyObject prepareTargets() {
     // Configure the build based on this instance's settings.
     if ( dryRun ) { GantState.dryRun = true }
     //binding.ant.logger.setMessageOutputLevel ( GantState.verbosity )
@@ -571,9 +603,26 @@ final class Gant {
     binding.gantLib = gantLib
     if ( script == null ) { throw new RuntimeException ( "No script has been loaded!" ) }
     script.binding = binding
-    script.run ( )
-    return (Integer) invokeMethod ( function , targets )
+    script.run ( )	 
+    return script
   }
+  
+  /**
+   * Sets all the pre hooks
+   */
+  void setAllPerTargetPreHooks(Closure hook) {
+	  if(script) {
+		  this.script.setAllPerTargetPreHooks(hook)
+	  }
+  }
+  /**
+   * Sets all the target post hooks
+   */
+  void setAllPerTargetPostHooks(Closure hook) {
+	  if(script) {
+		  this.script.setAllPerTargetPostHooks(hook)
+	  }
+  }  
   /**
    *  Compile a script in the context of dealing with cached compiled build scripts.
    */
