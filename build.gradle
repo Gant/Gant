@@ -272,10 +272,10 @@ forEachDistributionVersion { projectName->
     dependencies { groovy ( group : 'org.codehaus.groovy' , name : groovyArtefactName , version : groovyVersion ) }
     compileGroovy.doFirst { println ( '\n\tUsing Groovy version ' + groovyVersion + '\n' ) }
     def buildPath = [ System.properties.'user.dir' , projectName , 'build' , 'classes' ]
-  def classPath = [ ]
-  classPath << ( buildPath + [ 'main' ] ).join ( File.separator ) 
-  classPath << ( buildPath + [ 'test' ] ).join ( File.separator ) 
-  configurations.testRuntime.files.each { file -> classPath <<  file.parent }
+    def classPath = [ ]
+    classPath << ( buildPath + [ 'main' ] ).join ( File.separator ) 
+    classPath << ( buildPath + [ 'test' ] ).join ( File.separator ) 
+    configurations.testRuntime.files.each { file -> classPath <<  file.parent }
     test.environment ( [
                          GROOVY_ANT_TASK_TEST_VERSION :  groovyVersion ,
                          gradleClasspathString : classPath.join ( System.properties.'path.separator' )
@@ -329,12 +329,12 @@ forEachDistributionVersion { projectName->
       baseName = artifact
       classifier = mavenNameExtension + '-' + groovyVersion
       compression = Compression.GZIP
-      into ( gantPrefix ) { from binCopySpec }
+      into ( gantPrefix ) { with binCopySpec }
     }
     task binZip ( type : Zip , dependsOn : 'jar' , description : 'Build the distribution zip file.' ) {
       baseName = artifact
       classifier = mavenNameExtension + '-' + groovyVersion
-      into ( gantPrefix ) { from binCopySpec }
+      into ( gantPrefix ) { with binCopySpec }
     }
     distributionTasks += [ binTgz , binZip ]
   }
@@ -372,14 +372,14 @@ task standaloneBinTgz ( type : Tar , dependsOn : projectNameForStandalone + ':ja
   version = gantVersion
   compression = Compression.GZIP
   destinationDir = buildDir
-  into ( gantPrefix ) { from standaloneCopySpec }
+  into ( gantPrefix ) { with standaloneCopySpec }
 }
 
 task standaloneBinZip ( type : Zip , dependsOn : projectNameForStandalone + ':jar' , description : 'Create a zip file of the standalone distribution.' ) {
   baseName = artifact
   version = gantVersion
   destinationDir = buildDir
-  into ( gantPrefix ) { from standaloneCopySpec }
+  into ( gantPrefix ) { with standaloneCopySpec }
 }
 
 distributionTasks += [ standaloneBinTgz , standaloneBinZip ]
