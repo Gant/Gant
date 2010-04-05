@@ -1,6 +1,6 @@
 //  Gant -- A Groovy way of scripting Ant tasks.
 //
-//  Copyright © 2008-9 Russel Winder
+//  Copyright © 2008-10 Russel Winder
 //
 //  Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in
 //  compliance with the License. You may obtain a copy of the License at
@@ -22,7 +22,7 @@ import org.codehaus.gant.IncludeTool
 /**
  *  A test for the <code>GantBinding</code> class.
  *
- *  @author Russel Winder <russel.winder@concertant.com>
+ *  @author Russel Winder <russel@russel.org.uk>
  */
 final class GantBinding_Test extends GantTestCase {
   final targetName = 'targetName'

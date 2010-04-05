@@ -18,8 +18,8 @@ untar or unzip.
 There are a number of distinct distributions:
 
           1.  Requires a separate Groovy installation.  There are builds:
-                a.  compiled against Groovy 1.6.7; and
-                b.  compiled against Groovy 1.7-rc-2.
+                a.  compiled against Groovy 1.6.8; and
+                b.  compiled against Groovy 1.7.1.
 
           2.  Self-contained, includes all dependent jars.
 
@@ -79,7 +79,7 @@ Contact
 If you have any problems using Gant, or have any ideas for improvements,
 please make use of the Gant users mailing list: user@gant.codehaus.org
 
-Russel Winder <russel.winder@concertant.com>
+Russel Winder <russel@russel.org.uk>
 
 ;;; Local Variables: ***
 ;;; fill-column: 78 ***

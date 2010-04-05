@@ -23,7 +23,7 @@ import org.apache.tools.ant.Target
  *  particular, all the extra bits needed in the binding for Gant to actually work at all.  Handle this as a
  *  separate class to avoid replication of initialization if binding objects are cloned.
  *
- *  @author Russel Winder <russel.winder@concertant.com>
+ *  @author Russel Winder <russel@russel.org.uk>
  */
 public class GantBinding extends Binding implements Cloneable {
   /**

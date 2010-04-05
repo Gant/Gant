@@ -1,6 +1,6 @@
 //  Gant -- A Groovy way of scripting Ant tasks.
 //
-//  Copyright © 2006-8 Russel Winder
+//  Copyright © 2006-8,2010 Russel Winder
 //
 //  Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in
 //  compliance with the License. You may obtain a copy of the License at
@@ -21,7 +21,7 @@ import org.codehaus.gant.GantBinding
  *  Ant pattern specifications and directory names for clean and for clobber.  The lists are used as the
  *  specifications when the clean or clobber methods are called.
  *
- *  @author Russel Winder <russel.winder@concertant.com>
+ *  @author Russel Winder <russel@russel.org.uk>
  */
 final class Clean {
   private GantBinding binding

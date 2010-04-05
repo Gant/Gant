@@ -1,6 +1,6 @@
 //  Gant -- A Groovy way of scripting Ant tasks.
 //
-//  Copyright © 2006-9 Russel Winder
+//  Copyright © 2006-10 Russel Winder
 //
 //  Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in
 //  compliance with the License. You may obtain a copy of the License at
@@ -89,7 +89,7 @@ import org.codehaus.groovy.runtime.InvokerInvocationException
  *  should notbe there, we have to have it in the source because asterisk followed by solidus is end of
  *  comment in Groovy</em></p>
  *
- *  @author Russel Winder <russel.winder@concertant.com>
+ *  @author Russel Winder <russel@russel.org.uk>
  *  @author Graeme Rocher <graeme.rocher@gmail.com>
  *  @author Peter Ledbrook
  */

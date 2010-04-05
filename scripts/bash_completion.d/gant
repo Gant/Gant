@@ -2,7 +2,7 @@
 
 #  Gant -- A Groovy way of scripting Ant tasks.
 
-#  Copyright © 2006-8 Russel Winder
+#  Copyright © 2006-8,2010 Russel Winder
 
 #  Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in
 #  compliance with the License. You may obtain a copy of the License at
@@ -17,7 +17,7 @@
 #  Programmable completion for the Groovy Ant (gant) command under bash.
 #  This file draws heavily on the rake and subversion file that come as standard with Bash 3.
 
-#  Author :  Russel Winder <russel.winder@concertant.com>
+#  Author :  Russel Winder <russel@russel.org.uk>
 #  Licence : ASL 2.0
 
 _gant()

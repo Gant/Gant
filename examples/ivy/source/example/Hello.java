@@ -1,6 +1,6 @@
 //   Gant -- A Groovy way of scripting Ant tasks.
 //
-//  Copyright © 2006-8 Russel Winder
+//  Copyright © 2006-8,2010 Russel Winder
 //
 //  Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in
 //  compliance with the License. You may obtain a copy of the License at
@@ -12,7 +12,7 @@
 //  implied. See the License for the specific language governing permissions and limitations under the
 //  License.
 //
-//  Author:  Russel Winder <russel.winder@concertant.com>
+//  Author:  Russel Winder <russel@russel.org.uk>
 
 package example ;
 

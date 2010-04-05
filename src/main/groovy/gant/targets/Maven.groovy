@@ -1,6 +1,6 @@
 //  Gant -- A Groovy way of scripting Ant tasks.
 //
-//  Copyright © 2007-9 Russel Winder
+//  Copyright © 2007-10 Russel Winder
 //
 //  Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in
 //  compliance with the License. You may obtain a copy of the License at
@@ -20,11 +20,11 @@ import org.codehaus.gant.GantState
 /**
  *  A class to provide the Maven 2 style lifecycle targets associated with a project.
  *
- *  @author Russel Winder <russel.winder@concertant.com>
+ *  @author Russel Winder <russel@russel.org.uk>
  */
 final class Maven {
-  private final defaultJUnitVersion = '4.7'
-  private final defaultTestNGVersion = '5.10'
+  private final defaultJUnitVersion = '4.8.1'
+  private final defaultTestNGVersion = '5.11'
   private final readOnlyKeys = [ 'binding' , 'compileDependenciesClasspathId' , 'testDependenciesClasspathId', 'antlibXMLns' , 'mavenPOMId' ]
   private final Map<String,String> properties = [
                                   groupId : '' ,

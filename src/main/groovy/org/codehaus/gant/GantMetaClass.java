@@ -1,6 +1,6 @@
 //  Gant -- A Groovy way of scripting Ant tasks.
 //
-//  Copyright © 2006-9 Russel Winder
+//  Copyright © 2006-10 Russel Winder
 //
 //  Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in
 //  compliance with the License. You may obtain a copy of the License at
@@ -38,7 +38,7 @@ import org.apache.tools.ant.BuildException ;
  *  binding called during execution of the Gant specification must be logged so that when a depends happens
  *  the full closure call history is available.</p>
  *
- *  @author Russel Winder <russel.winder@concertant.com>
+ *  @author Russel Winder <russel@russel.org.uk>
  */
 public class GantMetaClass extends DelegatingMetaClass {
   /**

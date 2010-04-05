@@ -1,6 +1,6 @@
 //  Gant -- A Groovy way of scripting Ant tasks.
 //
-//  Copyright © 2006-8 Russel Winder
+//  Copyright © 2006-8,2010 Russel Winder
 //
 //  Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in
 //  compliance with the License. You may obtain a copy of the License at
@@ -20,7 +20,7 @@ import org.codehaus.gant.GantBinding
  *  Provide support for using Ivy.  This simply redirects all method calls to the standard
  * <code>GantBuilder</code> instance, which in turn selects the method from the Ivy jar. 
  *
- *  @author Russel Winder <russel.winder@concertant.com>
+ *  @author Russel Winder <russel@russel.org.uk>
  */
 final class Ivy {
   private final GantBinding binding ;

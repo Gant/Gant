@@ -1,6 +1,6 @@
 //  Gant -- A Groovy way of scripting Ant tasks.
 //
-//  Copyright © 2006-8 Russel Winder
+//  Copyright © 2006-8,2010 Russel Winder
 //
 //  Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in
 //  compliance with the License. You may obtain a copy of the License at
@@ -20,7 +20,7 @@ package org.codehaus.gant
  *  <code>Map</code>.  The map contains a binding of various useful things, in particular there is always an
  *  entry 'Ant' to give access to the global static instance of <code>AntBuilder</code>.
  *
- *  @author Russel Winder <russel.winder@concertant.com>
+ *  @author Russel Winder <russel@russel.org.uk>
  */
 class IncludeTool extends AbstractInclude {
   /**

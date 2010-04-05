@@ -1,6 +1,6 @@
 //  Gant -- A Groovy way of scripting Ant tasks.
 //
-//  Copyright © 2009 Russel Winder
+//  Copyright © 2009-10 Russel Winder
 //
 //  Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in
 //  compliance with the License. You may obtain a copy of the License at
@@ -17,7 +17,7 @@ package org.codehaus.gant.tests
 /**
  *  A test for the prehook and posthook interceptors.
  *
- *  @author Russel Winder <russel.winder@concertant.com>
+ *  @author Russel Winder <russel@russel.org.uk>
  */
 final class Hooks_Test extends GantTestCase {
   def targetName = 'trial'

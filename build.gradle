@@ -12,7 +12,7 @@
 //  implied. See the License for the specific language governing permissions and limitations under the
 //  License.
 //
-//  Author : Russel Winder <russel.winder@concertant.com>
+//  Author : Russel Winder <russel@russel.org.uk>
 
 import org.apache.tools.ant.filters.ReplaceTokens
 import org.gradle.api.artifacts.repositories.WebdavResolver

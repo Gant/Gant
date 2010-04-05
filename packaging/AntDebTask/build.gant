@@ -1,6 +1,6 @@
 //  Gant -- A Groovy way of scripting Ant tasks.
 //
-//  Copyright © 2007-9 Russel Winder
+//  Copyright © 2007-10 Russel Winder
 //
 //  Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in
 //  compliance with the License. You may obtain a copy of the License at
@@ -12,7 +12,7 @@
 //  implied. See the License for the specific language governing permissions and limitations under the
 //  License.
 //
-//  Author : Russel Winder <russel.winder@concertant.com>
+//  Author : Russel Winder <russel@russel.org.uk>
 
 //  The overal algorithm here is to take a standalone distribution (could use either a tarball or a
 //  zipfile, prefer to use a tarball if it exists) expand it and then repackage into a deb file.  Do not
@@ -96,7 +96,7 @@ target ( debFiles : 'Create the deb file of the distribution.' ) {
   ant.deb ( todir : debsDirectory , 'package' : packageName , section : section , priority : priority , architecture : architecture ,
         depends : 'java2-runtime', postinst : 'postinst' , prerm : 'prerm' ) {
     version ( upstream : gantVersion )
-    maintainer ( name : 'Russel Winder' , email : 'russel.winder@concertant.com' )
+    maintainer ( name : 'Russel Winder' , email : 'russel@russel.org.uk' )
     //homepage ( homepage )
     description ( synopsis : theSynopsis , theWords )
     tarfileset ( file : 'gant' , prefix : installPrefixBase + '/bin' , filemode : '755' )
