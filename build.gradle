@@ -158,11 +158,10 @@ subprojects {
     ant.delete { fileset ( dir : '.' , includes : '**/*~, texput.log' ) }
     ant.delete ( dir :  'target_forMavenTest' )
   }
-  task integTest {
-    dependsOn ( 'assemble' )
+  task integTest ( type : Test , dependsOn : /* 'assemble' */ 'classes' ) {
+    integTestSourceDirectory = file ( 'src/integTest/groovy' )
+    include integTestSourceDirectory.absolutePath + '/org/codehaus/gant/ant/tests/*_Test.*'
   }
-  //task integTest ( type : AntTest , description : 'Run the integration tests.' ) {
-  //}
   def packageTitle = 'Gant ' + gantVersion
   def copyrightString = 'Copyright &#169; 2006&#8211;9  The Codehaus.  All Rights Reserved.'
   javadoc {
