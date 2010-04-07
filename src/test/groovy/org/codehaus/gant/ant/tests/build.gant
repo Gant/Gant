@@ -44,6 +44,7 @@ target ( gantTaskdefVerifyError : 'Check that a taskdef works.' ) {
   }
   def dependencyClasspathId = 'dependencyClasspath'
   "${artifact}:dependencies" ( pathId : dependencyClasspathId ) {
+    remoteRepository ( id : 'Codehaus' , url : 'http://repository.codehaus.org/' )
     dependency ( groupId : 'org.codehaus.groovy' , artifactId : 'groovy' , version : System.getenv ( ).GROOVY_ANT_TASK_TEST_VERSION )
   }
   taskdef ( name : 'groovyc' , classname: 'org.codehaus.groovy.ant.Groovyc' , classpathref : dependencyClasspathId )
