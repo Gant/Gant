@@ -1,3 +1,11 @@
+1.9.3
+-----
+
+Updated the Groovy 1.7.x series to be 1.7.2.
+
+Minor fixes to the exit code processing for the Windows launch scripts to keep in line with Groovy ones.
+
+
 1.9.2
 ------
 
