@@ -62,7 +62,7 @@ set JAVA_OPTS=%JAVA_OPTS% -Dgant.home="%GANT_HOME%" -Dant.home="%ANT_HOME%"
 @rem End local scope for the variables with windows NT shell
 if "%OS%" == "Windows_NT" endlocal
 
-exit /B %ERRORLEVEL%
+%COMSPEC% /C exit /B %ERRORLEVEL%
 
 :environmentVariableError
  echo.
