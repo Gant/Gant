@@ -154,7 +154,8 @@ target ( 'default' , '' ) { }
     try {
       assertEquals ( -4 , processCmdLineTargets ( ) )
       assertEquals ( '' , output )
-      assertEquals ( "Standard input, line 2 -- Error evaluating Gantfile: ${file.path}, line 4 -- java.lang.ArithmeticException: / by zero\n" , error )
+      //  Change made to the error report in Groovy 1.8.x compared to 1.6.8 and 1.7.2.
+      assertEquals ( "Standard input, line 2 -- Error evaluating Gantfile: ${file.path}, line 4 -- java.lang.ArithmeticException: " + ( groovyMinorVersion > 7 ? 'Division' : '/' ) + ' by zero\n' , error )
     }
     finally { file.delete ( ) }
   }
