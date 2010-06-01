@@ -243,7 +243,10 @@ project ( ':gant' ) {
     copy {
       into ( installBinDirectory )
       from ( [ scriptsDirectory + '/bin' , scriptsDirectory + '/bin_requiresGroovy' ] )
-      filter ( ReplaceTokens , tokens : [ GROOVYJAR : groovyArtefactName + '-' + groovyVersion + '.jar' ] )
+      filter ( ReplaceTokens , tokens : [
+                 GROOVYPATH : 'embeddable' ,
+                 GROOVYJAR : groovyArtefactName + '-' + groovyVersion + '.jar'
+               ] )
     }
     ant.chmod ( perm : 'a+x' ) { fileset ( dir : installBinDirectory , includes : 'gant*' ) }
     copy {
@@ -321,7 +324,10 @@ forEachDistributionVersion { projectName->
       into ( 'bin' ) {
         fileMode = 0755
         from ( [ scriptsDirectory + '/bin' , scriptsDirectory + '/bin_requiresGroovy' ] )
-        filter ( ReplaceTokens , tokens : [ GROOVYJAR : groovyArtefactName + '-' + groovyVersion + '.jar' ] )
+        filter ( ReplaceTokens , tokens : [
+                   GROOVYPATH : 'embeddable' ,
+                   GROOVYJAR : groovyArtefactName + '-' + groovyVersion + '.jar'
+                 ] )
       }
     }
     task binTgz ( type : Tar , dependsOn : 'jar' , description : 'Build the distribution tarball.' ) {
@@ -362,7 +368,10 @@ standaloneCopySpec = copySpec {
   into ( 'bin' ) {
     fileMode = 0755
     from ( [ scriptsDirectory + '/bin' , scriptsDirectory + '/bin_standalone' ] )
-    filter ( ReplaceTokens , tokens : [ GROOVYJAR : groovyArtefactName + '-' + groovyVersions[groovyStandaloneSeries] + '.jar' ] )
+    filter ( ReplaceTokens , tokens : [
+               GROOVYPATH : 'lib' ,
+               GROOVYJAR : groovyArtefactName + '-' + groovyVersions[groovyStandaloneSeries] + '.jar'
+             ] )
   }
 }
 

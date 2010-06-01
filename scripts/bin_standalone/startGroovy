@@ -60,7 +60,7 @@ case "`uname`" in
     ;;
 esac
 
-if [ "$1" = "-cp" -o "$1" = "-classpath" ] ; then
+if [ "$1" = "-cp" -o "$1" = "-classpath" -o "$1" = "--classpath" ] ; then
     CP=$2
     shift 2
 fi
@@ -194,8 +194,7 @@ TOOLS_JAR="$JAVA_HOME/lib/tools.jar"
 
 # For Darwin, add GROOVY_APP_NAME to the JAVA_OPTS as -Xdock:name
 if $darwin; then
-    JAVA_OPTS="$JAVA_OPTS -Xdock:name=$GROOVY_APP_NAME"
-# we may also want to set -Xdock:image    
+    JAVA_OPTS="$JAVA_OPTS -Xdock:name=$GROOVY_APP_NAME -Xdock:icon=$GROOVY_HOME/bin/groovy.icns"
 fi
 
 # For Cygwin, switch paths to Windows format before running java

@@ -18,9 +18,6 @@ shift
 set CLASS=%~1
 shift
 
-set JARSPATH=%~1
-shift
-
 if exist "%USERPROFILE%/.groovy/preinit.bat" call "%USERPROFILE%/.groovy/preinit.bat"
 
 @rem Determine the command interpreter to execute the "CD" later
@@ -170,8 +167,8 @@ if "x1" == "x%_SKIP%" goto skip_1
 
 rem now unescape -q, -s, -d
 set _ARG=%_ARG:-s=*%
-set _ARG=%_ARG:-d=-%
 set _ARG=%_ARG:-q="%
+set _ARG=%_ARG:-d=-%
 
 set CMD_LINE_ARGS=%CMD_LINE_ARGS% %_ARG%
 set _ARG=
@@ -203,7 +200,7 @@ set CMD_LINE_ARGS=%$
 
 :execute
 @rem Setup the command line
-set STARTER_CLASSPATH=%GROOVY_HOME%\%JARSPATH%\@GROOVYJAR@;%STARTER_CLASSPATH%
+set STARTER_CLASSPATH=%GROOVY_HOME%\@GROOVYPATH@\@GROOVYJAR@;%STARTER_CLASSPATH%
 
 if exist "%USERPROFILE%/.groovy/init.bat" call "%USERPROFILE%/.groovy/init.bat"
 
@@ -241,5 +238,4 @@ if "%OS%"=="Windows_NT" endlocal
 
 @rem Optional pause the batch file
 if "%GROOVY_BATCH_PAUSE%" == "on" pause
-
 %COMSPEC% /C exit /B %ERRORLEVEL%

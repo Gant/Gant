@@ -49,7 +49,7 @@ set GROOVY_SCRIPT_NAME=gant.bat
 set STARTER_CONF=%GANT_HOME%\conf\gant-starter.conf
 set JAVA_OPTS=%JAVA_OPTS% -Dgant.home="%GANT_HOME%" -Dant.home="%ANT_HOME%"
 
-%GANT_HOME%\bin\startGroovy.bat %DIRNAME% gant.Gant lib %*
+%GANT_HOME%\bin\startGroovy.bat %DIRNAME% gant.Gant %*
 
 @rem End local scope for the variables with windows NT shell
 if "%OS%" == "Windows_NT" endlocal
