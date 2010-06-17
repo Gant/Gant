@@ -54,8 +54,8 @@ gantBundleVersion =  createVersionString ( true )
 groovyArtefactName = 'groovy-all'
 
 groovyVersions = [
-  '1.6' : '1.6.8' ,
-  '1.7' : '1.7.2'
+  '1.6' : '1.6.9' ,
+  '1.7' : '1.7.3'
 ]
 
 //  One series of Groovy needs using for the standalone distribution. This version of Groovy will be packaged with
