@@ -26,7 +26,7 @@
 //  expression below should result in a single match resulting in a list of two items, the full match and
 //  the capture group.  The capture group should be the version number.
 
-final matcher = ( new File ( '../../build.gradle' ) ).text =~ "gantVersion\\s*=\\s*'(.*)'"
+final matcher = ( new File ( '../../build.gradle' ) ).text =~ "gantVersionBase\\s*=\\s*'(.*)'"
 assert matcher != null
 assert matcher[0] != null
 assert matcher[0].size ( ) == 2
