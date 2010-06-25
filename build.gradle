@@ -39,7 +39,7 @@ mavenNameExtension = '_groovy'
  *  other situations a minus is used.
  */
 gantVersionBase = '1.9.3'
-isPrereleaseSnapshot = true
+isPrereleaseSnapshot = false
 
 def createVersionString = { isForOSGi ->
   return gantVersionBase + ( isPrereleaseSnapshot ? ( isForOSGi ? '.' : '-' ) + 'SNAPSHOT' : '' )

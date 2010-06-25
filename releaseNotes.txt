@@ -1,12 +1,17 @@
 1.9.3
 -----
 
-Updated the Groovy 1.7.x series to be 1.7.2.
+Updated the Groovy 1.7.x series to be 1.7.3.
 
 Minor fixes to the exit code and other processing for the Windows launch scripts to keep in line with Groovy
 ones.
 
 Corrected Windows batch file processing to avoid assumptions made in startGroovy.bat.
+
+This release is really being made because it transpires that the 1.9.2 release for the Groovy 1.7 series was
+compiled against Groovy 1.7.1 which had a breaking API change that was reverted for Groovy 1.7.2 and thus
+1.7.3.  The consequence is that the version 1.9.2 gant_groovy1.7 artefact is incompatible with Groovy 1.7.2
+and 1.7.3. 
 
 
 1.9.2
