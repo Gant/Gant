@@ -82,6 +82,10 @@ def forEachProject ( Closure c ) {
 forEachProject { item ->  if ( ! ( new File ( item ) ).isDirectory ( ) ) { ant.mkdir ( dir : item ) } }
 
 distributionTasks = [ ]
+debTasks = [ ]
+
+//webdavWagonName = 'org.apache.maven.wagon:wagon-webdav-jackrabbit:1.0-beta-6' 
+webdavWagonName = 'org.apache.maven.wagon:wagon-webdav:1.0-beta-2'
 
 // =====================================================================
 //
@@ -140,8 +144,7 @@ subprojects {
              )
     testCompile ( 'junit:junit:4.8.1' )
     testRuntime ( 'org.apache.ivy:ivy:2.1.0' )
-    //deployJars ( 'org.apache.maven.wagon:wagon-webdav-jackrabbit:1.0-beta-6' )
-    deployJars ( 'org.apache.maven.wagon:wagon-webdav:1.0-beta-2' )
+    deployJars ( webdavWagonName )
   }
   compileGroovy.options.compilerArgs = ['-Xlint']
   test {
@@ -158,7 +161,7 @@ subprojects {
     ant.delete { fileset ( dir : '.' , includes : '**/*~, texput.log' ) }
     ant.delete ( dir :  'target_forMavenTest' )
   }
-  task integTest ( type : Test , dependsOn : /* 'assemble' */ 'classes' ) {
+  task integTest ( type : Test , dependsOn : /* 'assemble' */ 'classes' ) << {
     integTestSourceDirectory = file ( 'src/integTest/groovy' )
     include integTestSourceDirectory.absolutePath + '/org/codehaus/gant/ant/tests/*_Test.*'
   }
@@ -258,7 +261,7 @@ project ( ':gant' ) {
       from ( [ 'build/libs' , '../jarfiles' ] )
     }
   }
-  task uninstall ( description : "Delete ${installDirectory} so as to remove the Gant installation." ) << { ant.delete ( dir : installDirectory ) } 
+  task uninstall ( type: Delete , description : "Delete ${installDirectory} so as to remove the Gant installation." ) << { delete ( installDirectory ) } 
 }
 
 // =====================================================================
@@ -330,13 +333,13 @@ forEachDistributionVersion { projectName->
                  ] )
       }
     }
-    task binTgz ( type : Tar , dependsOn : 'jar' , description : 'Build the distribution tarball.' ) {
+    task binTgz ( type : Tar , dependsOn : 'jar' , description : 'Build the distribution tarball.' ) << {
       baseName = artifact
       classifier = mavenNameExtension + '-' + groovyVersion
       compression = Compression.GZIP
       into ( gantPrefix ) { with binCopySpec }
     }
-    task binZip ( type : Zip , dependsOn : 'jar' , description : 'Build the distribution zip file.' ) {
+    task binZip ( type : Zip , dependsOn : 'jar' , description : 'Build the distribution zip file.' ) << {
       baseName = artifact
       classifier = mavenNameExtension + '-' + groovyVersion
       into ( gantPrefix ) { with binCopySpec }
@@ -375,7 +378,7 @@ standaloneCopySpec = copySpec {
   }
 }
 
-task standaloneBinTgz ( type : Tar , dependsOn : projectNameForStandalone + ':jar' , description : 'Create a tarball of the standalone distribution.' ) {
+task standaloneBinTgz ( type : Tar , dependsOn : projectNameForStandalone + ':jar' , description : 'Create a tarball of the standalone distribution.' ) << {
   baseName = artifact
   version = gantVersion
   compression = Compression.GZIP
@@ -383,7 +386,7 @@ task standaloneBinTgz ( type : Tar , dependsOn : projectNameForStandalone + ':ja
   into ( gantPrefix ) { with standaloneCopySpec }
 }
 
-task standaloneBinZip ( type : Zip , dependsOn : projectNameForStandalone + ':jar' , description : 'Create a zip file of the standalone distribution.' ) {
+task standaloneBinZip ( type : Zip , dependsOn : projectNameForStandalone + ':jar' , description : 'Create a zip file of the standalone distribution.' ) << {
   baseName = artifact
   version = gantVersion
   destinationDir = buildDir
@@ -394,9 +397,68 @@ distributionTasks += [ standaloneBinTgz , standaloneBinZip ]
 
 // =====================================================================
 //
+//  Create the deb file of the standalone distribution.
+
+final antDebTaskDirectory = 'packaging' + System.properties.'file.separator' + 'AntDebTask'
+final debsDirectory = new File ( antDebTaskDirectory , 'debs' )
+final distDirectory = new File ( antDebTaskDirectory , 'dist' ) 
+
+task clean ( type: Delete ) {
+    delete ( debsDirectory )
+    delete ( distDirectory )
+}
+
+task standaloneDeb ( dependsOn : standaloneBinTgz , description : 'Create a deb for use with Debian and Ubuntu.' ) << {
+  final packageName = 'gant-standalone'
+  final section = 'devel'
+  final priority = 'optional'
+  final architecture = 'all'
+  final homepage = 'http://gant.codehaus.org/'
+  final installPrefixBase = 'usr/share/gant'
+  final theSynopsis = 'Gant -- Groovy scripting of Ant tasks.' 
+  final theWords = """
+Gant is a tool for scripting Ant tasks using Groovy instead of XML to specify
+the logic. A Gant specification is just a Groovy script and so can bring all
+the power of Groovy to bear directly, something not possible with Ant scripts.
+Whilst it might be seen as a competitor to Ant, Gant relies on all the Ant
+tasks for the complex actions, so it is really an alternative way of doing
+builds using Ant, but using a programming language rather than XML to specify
+the rules.
+.
+This package provides a self-contained installation of Gant that does not
+depend on a separate installation of Groovy -- all the jars needed for Gant to
+run are included in the package.
+.
+Homepage: ${homepage}
+"""
+  final expandDirectory = ( new File ( distDirectory , 'gant-' + gantVersion ) ).path
+  distDirectory.mkdirs ( )
+  ant.taskdef ( resource : 'ant_deb_task.properties' , classpath : [ System.properties.'user.home' , '.groovy' , 'lib' , 'ant-deb.jar' ].join ( System.properties.'file.separator' ) )
+  ant.delete { fileset ( dir : distDirectory , includes : '**/*' ) }
+  final process = [ 'sh' , '-x' , '-c' , "cd ${distDirectory} && tar xvf ../../../build/gant-${gantVersion}.tgz" ].execute ( )
+  process.consumeProcessOutput ( )
+  process.waitFor ( )
+  debsDirectory.mkdirs ( )
+  ant.deb ( todir : debsDirectory , 'package' : packageName , section : section , priority : priority , architecture : architecture ,
+            depends : 'java2-runtime', postinst : 'postinst' , prerm : 'prerm' ) {
+    version ( upstream : gantVersion )
+    maintainer ( name : 'Russel Winder' , email : 'russel@russel.org.uk' )
+    //homepage ( homepage )
+    description ( synopsis : theSynopsis , theWords )
+    tarfileset ( file : 'gant' , prefix : installPrefixBase + '/bin' , filemode : '755' )
+    tarfileset ( file : expandDirectory + '/bin/startGroovy' , prefix : installPrefixBase + '/bin' , filemode : '644' )
+    tarfileset ( file : expandDirectory + '/conf/gant-starter.conf' , prefix : installPrefixBase + '/conf' , filemode : '644' )
+    tarfileset ( dir : expandDirectory + '/lib' , includes : '*.jar' , prefix : installPrefixBase + '/lib' , filemode : '644' )
+  }
+}
+
+debTasks += [ standaloneDeb ]
+
+// =====================================================================
+//
 //  Create the documentation distribution.
 
-task docTgz ( type : Tar , dependsOn : [ ':gant:javadoc' , ':gant:groovydoc' ] , description : 'Create a tarball of the documentation' ) {
+task docTgz ( type : Tar , dependsOn : [ ':gant:javadoc' , ':gant:groovydoc' ] , description : 'Create a tarball of the documentation' ) << {
   baseName = artifact + '_doc'
   version = gantVersion
   compression = Compression.GZIP
@@ -404,7 +466,7 @@ task docTgz ( type : Tar , dependsOn : [ ':gant:javadoc' , ':gant:groovydoc' ] ,
   into ( gantPrefix + '/docs' ) { from ( project ( ':gant' ).docsDir ) }
 }
 
-task docZip ( type : Zip , dependsOn : [ ':gant:javadoc' , ':gant:groovydoc' ] , description : 'Create a zip file of the documentation' ) {
+task docZip ( type : Zip , dependsOn : [ ':gant:javadoc' , ':gant:groovydoc' ] , description : 'Create a zip file of the documentation' ) << {
   baseName = artifact + '_doc'
   version = gantVersion
   destinationDir = buildDir
@@ -428,7 +490,7 @@ srcContent = [
   'releaseNotes.txt' ,
 ]
 
-task srcTgz ( type : Tar , description : 'Create a tarball of the source.' ) {
+task srcTgz ( type : Tar , description : 'Create a tarball of the source.' ) << {
   baseName = artifact + '_src'
   version = gantVersion
   compression = Compression.GZIP
@@ -436,7 +498,7 @@ task srcTgz ( type : Tar , description : 'Create a tarball of the source.' ) {
   into ( gantPrefix ) { from ( projectDir ) { srcContent.each { include it } } }
 }
 
-task srcZip ( type : Zip , description : 'Create a zip file of the source.' ) {
+task srcZip ( type : Zip , description : 'Create a zip file of the source.' ) << {
   baseName = artifact + '_src'
   version = gantVersion
   destinationDir = buildDir
@@ -452,16 +514,16 @@ distributionTasks += [ srcTgz , srcZip ]
 configurations { distribution }
 
 artifacts {
-  distributionTasks.each { task -> distribution task }
+  distributionTasks.each { task -> distribution ( task ) }
 }
 
 dependencies {
-  distribution ( 'org.apache.maven.wagon:wagon-webdav:1.0-beta-2' )
+  distribution ( webdavWagonName )
 }
 
 task buildDistribution ( dependsOn : distributionTasks , description : 'Build all the uploadable distribution archives.' )
 
-task uploadDistribution ( type : Upload , dependsOn : buildDistribution , description : 'Upload all the distribution archives.' ) {
+task uploadDistribution ( type : Upload , dependsOn : buildDistribution , description : 'Upload all the distribution archives.' ) << {
   configuration = configurations.distribution
 //uploadDistribution {
 //  dependsOn ( buildDistribution )
@@ -497,6 +559,41 @@ gradle.taskGraph.whenReady { graph ->
 
 // =====================================================================
 //
+//  Configuration for getting all the debs uploaded to Codehaus.
+
+configurations { debs }
+
+artifacts {
+  //debTasks.each { task -> debs ( task ) }
+}
+
+dependencies {
+  debs ( webdavWagonName )
+}
+
+task buildDebs ( dependsOn : debTasks , description : 'Build all the uploadable debs.' )
+
+task uploadDebs ( type : Upload , dependsOn : buildDebs , description : 'Upload all the debs.' ) << {
+  configuration = configurations.debs
+  uploadDescriptor = false
+  doFirst {
+    try {
+      it.repositories.add ( new WebdavResolver ( ) ) {
+        name = 'gantReleases'
+        user = gant_repoUserName
+        userPassword = gant_repoPassword
+        //addArtifactPattern ( 'dav:https://dav.codehaus.org/' + ( gantVersion.contains ( 'SNAPSHOT' ) ? 'snapshots.' : '' ) + 'dist/gant/debs/[artifact]-[revision](-[classifier]).[ext]' )
+        addArtifactPattern ( 'https://dav.codehaus.org/' + ( gantVersion.contains ( 'SNAPSHOT' ) ? 'snapshots.' : '' ) + 'dist/gant/debs/[artifact]-[revision](-[classifier]).[ext]' )
+      }
+    }
+    catch ( Exception e ) {
+      //  If gant_repoUserName and/or gant_repoPassword are not defined, do nothing.
+    }
+  }
+}
+
+// =====================================================================
+//
 //  Odds and sods.
 
 task ciBuild ( description : 'Run just the builds that use Groovy from the Maven repository.  Used mainly on CI servers.' , dependsOn : ciBuildTasks )
@@ -508,6 +605,6 @@ task wrapper ( type : Wrapper ) {
 
 task clobber ( description : 'Do a really detailed clean.' ) << {
   forEachProject { item -> ant.delete ( dir : item ) }
-  ant.delete ( dir : buildDir )
+  delete ( buildDir )
   ant.delete { fileset ( dir : '.' , includes : 'texput.log,**/*~' ) }
 }
