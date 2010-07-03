@@ -1,2 +1,0 @@
-version=3
-http://dist.codehaus.org/gant/distributions/gant_src-([\d\.]+)\.tgz debian debian/orig-tar.sh
