@@ -400,11 +400,11 @@ distributionTasks += [ standaloneBinTgz , standaloneBinZip ]
 //  Create the deb file of the standalone distribution.
 
 final antDebTaskDirectory = 'packaging' + System.properties.'file.separator' + 'AntDebTask'
-final debsDirectory = new File ( antDebTaskDirectory , 'debs' )
-final distDirectory = new File ( antDebTaskDirectory , 'dist' ) 
+final debsDirectory = new File ( buildDir , 'debs' )
+final distDirectory = new File ( buildDir , 'dist' ) 
 
 task clean ( type: Delete ) {
-    delete ( debsDirectory )
+  //delete ( debsDirectory )
     delete ( distDirectory )
 }
 
@@ -435,7 +435,7 @@ Homepage: ${homepage}
   distDirectory.mkdirs ( )
   ant.taskdef ( resource : 'ant_deb_task.properties' , classpath : [ System.properties.'user.home' , '.groovy' , 'lib' , 'ant-deb.jar' ].join ( System.properties.'file.separator' ) )
   ant.delete { fileset ( dir : distDirectory , includes : '**/*' ) }
-  final process = [ 'sh' , '-x' , '-c' , "cd ${distDirectory} && tar xvf ../../../build/gant-${gantVersion}.tgz" ].execute ( )
+  final process = [ 'sh' , '-x' , '-c' , "cd ${distDirectory} && tar xvf ${buildDir}/gant-${gantVersion}.tgz" ].execute ( )
   process.consumeProcessOutput ( )
   process.waitFor ( )
   debsDirectory.mkdirs ( )
