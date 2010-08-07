@@ -778,7 +778,7 @@
         <inspection_tool class="ObjectNotify" enabled="true" level="WARNING" enabled_by_default="true" />
         <inspection_tool class="ObjectToString" enabled="true" level="WARNING" enabled_by_default="true" />
         <inspection_tool class="ObsoleteCollection" enabled="true" level="WARNING" enabled_by_default="true">
-          <option name="ignoreLibraryArguments" value="false" />
+          <option name="ignoreRequiredObsoleteCollectionTypes" value="false" />
         </inspection_tool>
         <inspection_tool class="OnDemandImport" enabled="true" level="WARNING" enabled_by_default="true" />
         <inspection_tool class="OverloadedVarargsMethod" enabled="true" level="WARNING" enabled_by_default="true" />
