@@ -22,6 +22,8 @@
 
   <!--
      Assume that all the Gant and Groovy classes are on the underlying classpath.
+
+     Currently do the needful with the environment variable GROOVY_ANT_TASK_TEST_VERSION.
     -->
 
   <target name="-defineGroovyTask">
