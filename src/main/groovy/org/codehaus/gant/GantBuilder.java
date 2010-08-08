@@ -70,8 +70,8 @@ public class GantBuilder extends AntBuilder {
         final Object[] args = (Object[]) arguments ;
         if ( args[0] instanceof Map<?,?> ) {
           //
-          // IntelliJ IDEA complains that (Map) is not a proper cast but using the cast (Map<?,?>) here
-          // causes a type check error.
+          // Eclipse and IntelliJ IDEA warns that (Map) is not a proper cast but using the
+          // cast (Map<?,?>) here causes a type check error.
           //
           //  TODO : Fix this.
           //
