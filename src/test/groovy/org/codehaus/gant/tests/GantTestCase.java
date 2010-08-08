@@ -45,14 +45,12 @@ public abstract class GantTestCase extends GroovyTestCase {
   //  the bugfix number -- with all of them being integers.
   //
   //  For released pre-release versions the number depends on the state of the release.  Early on the
-  //  numbers are x.y-beta-z.  Later on they are x.y-rc-z.
+  //  numbers are x.y-beta-z.  Later on they are x.y-rc-z.  Or as of 2009-11-27, they will be w.x.y-beta-z
+  //  or w.x.y-rc-z.
   //
-  //  For branches from the main repository, the number is related to the branch.  Basically add -SNAPSHOT
-  //  to the number with z being one higher than the last release.  So checkouts of maintenance branches
-  //  will have x.y.z-SNAPSHOT, while from trunk numbers will be like x.y-beta-z-SNAPSHOT.
-  //
-  //  From 2009-11-27, trunk now gives a number 1.8.0-beta-1-SNAPSHOT which adds further complexity to the
-  //  parsing :-(
+  //  For branches from the repository basically add -SNAPSHOT to the number with z being one higher than
+  //  the last release.  So checkouts of maintenance branches will have x.y.z-SNAPSHOT, while from trunk
+  //  numbers will be like x.y-beta-z-SNAPSHOT or as of 2009-11-27 w.x.y-beta-z-SNAPSHOT.
   //
   public enum ReleaseType { RELEASED, RELEASED_SNAPSHOT, BETA, BETA_SNAPSHOT, RC, RC_SNAPSHOT } ;
   public static final int groovyMajorVersion ;
@@ -61,37 +59,29 @@ public abstract class GantTestCase extends GroovyTestCase {
   public static final ReleaseType releaseType ;
   static {
     //
-    //  Originally we had:
+    //  Since Groovy 1.6 there has been a method groovy.lang.GroovySystem.getVersion for getting the version
+    //  string.  Prior to this, whilst there was a class groovy.lang.GroovySystem, it did not have the
+    //  appropriate method and the method org.codehaus.groovy.runtime.InvokerHelper.getVersion had to be
+    //  used.  Supporting versions of Groovy from 1.5 onwards therefore meant using reflection.  Now
+    //  (comment dated 2010-08-08) that the 1.6 series has been "end of life"d, we choose to remove support
+    //  for Groovy 1.5 from Gant.  In fact, Gant has failed to support Groovy 1.5 for a while so there is no
+    //  risk of problems in only allowing Groovy 1.6 onwards.
     //
-    //    final String[] version =  org.codehaus.groovy.runtime.InvokerHelper.getVersion ( ).split ( "[.-]" ) ;
-    //
-    //  but in Groovy 1.8 this method has been deprecated.  The method that must be called now is:
-    //
-    //    final String[] version =  groovy.lang.GroovySystem.getVersion ( ).split ( "[.-]" ) ;
-    //
-    //  which has actually been available since Groovy 1.6.  However, whilst the class
-    //  java.lang.GroovyStsrem exists in Groovy 1.5, the method does not in that version of Groovy.  We must
-    //  therefore use reflection to discover whether getVersion exists in the GroovySystem class and do the
-    //  right thing whatever situation pertains.
-    //
-    String[] version ;
-    try {
-      final Class<?> theClass = Class.forName ( "groovy.lang.GroovySystem" ) ;
-      final String methodName = "getVersion" ;
-      Method method ;
-      try { method = theClass.getMethod ( methodName ) ; }
-      catch ( final Exception e ) { method =  Class.forName ( "org.codehaus.groovy.runtime.InvokerHelper" ).getMethod ( methodName ) ; }
-      version = ( (String) ( method.invoke ( null ) ) ).split ( "[.-]" ) ;
-    }
-    catch ( final Exception e ) { throw new RuntimeException ( "Stuff", e ) ; }
-    //
-    //
+    final String[] version = groovy.lang.GroovySystem.getVersion ( ).split ( "[.-]" ) ;
     switch ( version.length ) {
      case 3 :
+       //
+       //  X.Y.Z
+       //
        groovyBugFixVersion =  Integer.parseInt ( version[2] ) ;
        releaseType = ReleaseType.RELEASED ;
        break ;
      case 4 :
+       //
+       //  X.Y.Z-SNAPSHOT
+       //  X.Y-rc-Z 
+       //  X.Y-beta-Z 
+       //
        if ( version[3].equals ( "SNAPSHOT" ) ) {
          groovyBugFixVersion =  Integer.parseInt ( version[2] ) ;
          releaseType = ReleaseType.RELEASED_SNAPSHOT ;
@@ -102,18 +92,35 @@ public abstract class GantTestCase extends GroovyTestCase {
          releaseType = ( discriminator.equals ( "RC" ) || discriminator.equals ( "rc" ) ) ? ReleaseType.RC : ReleaseType.BETA ;
        }
        break ;
-     case 5 : {
-       groovyBugFixVersion =  Integer.parseInt ( version[3] ) ;
-       final String discriminator = version[2] ;
-       releaseType = ( discriminator.equals ( "RC" ) || discriminator.equals ( "rc" ) ) ? ReleaseType.RC_SNAPSHOT : ReleaseType.BETA_SNAPSHOT ;
-       assert version[4].equals ( "SNAPSHOT" ) ;
+     case 5 :
+       //
+       //  X.Y.0-rc-Z
+       //  X.Y.0-beta-Z
+       //  X.Y-rc-Z-SNAPSHOT
+       //  X.Y-beta-Z-SNAPSHOT
+       //
+       if ( version[4].equals ( "SNAPSHOT" ) ) {
+         groovyBugFixVersion =  Integer.parseInt ( version[3] ) ;
+         final String discriminator = version[2] ;
+         releaseType = ( discriminator.equals ( "RC" ) || discriminator.equals ( "rc" ) ) ? ReleaseType.RC_SNAPSHOT : ReleaseType.BETA_SNAPSHOT ;
+       }
+       else {
+         assert version[2].equals ( "0" ) ;
+         groovyBugFixVersion =  Integer.parseInt ( version[4] ) ;
+         final String discriminator = version[3] ;
+         releaseType = ( discriminator.equals ( "RC" ) || discriminator.equals ( "rc" ) ) ? ReleaseType.RC : ReleaseType.BETA ;
+       }
        break ;
-     }
-     case 6 : {    
+     case 6 : {
+       //
+       //  X.Y.0-rc-Z-SNAPSHOT
+       //  X.Y.0-beta-Z-SNAPSHOT
+       //
+       assert version[2].equals ( "0" ) ;
+       assert version[5].equals ( "SNAPSHOT" ) ;
        groovyBugFixVersion =  Integer.parseInt ( version[4] ) ;
        final String discriminator = version[3] ;
        releaseType = ( discriminator.equals ( "RC" ) || discriminator.equals ( "rc" ) ) ? ReleaseType.RC_SNAPSHOT : ReleaseType.BETA_SNAPSHOT ;
-       assert version[5].equals ( "SNAPSHOT" ) ;
        break ;
      }
      default :
