@@ -173,10 +173,10 @@ public class GantMetaClass extends DelegatingMetaClass {
     return invokeMethod ( this , name , args ) ;
   }
   //////////////////////////////////////////////////////////////////////////////////////////////////////////
-  //  Groovy 1.5.x is Java 1.4 and as at 2008-07-10 Groovy 1.6.x groovy.lang.MetaClass and
-  //  groovy.lang.GroovyObject have not been marked up for Java 5 generics.  Because there is a problem that
-  //  blah(Class<?>) does not override blah(Class) -- at least according to Eclipse -- leave the Class type
-  //  without a type parameter and suffer the compilation warning.
+  //  As at 2010-08-26 it is believed that groovy.lang.MetaClass (the invokeMethod method anyway) has not
+  //  been marked up for Java 5 generics in any branch of Groovy (1.6, 1.7, trunk).  This leads to the
+  //  problem that blah(Class<?>) does not override blah(Class) -- at least according to Eclipse.  So we
+  //  must leave the Class type without a type parameter and suffer the compilation warning.
   //
   //  TODO : Class -> Class<?> when the Eclipse plugin and the Groovy code base allow.
   //////////////////////////////////////////////////////////////////////////////////////////////////////////

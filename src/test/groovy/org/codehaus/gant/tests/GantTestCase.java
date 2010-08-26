@@ -22,8 +22,6 @@ import java.io.ByteArrayInputStream ;
 import java.io.ByteArrayOutputStream ;
 import java.io.PrintStream ;
 
-import java.lang.reflect.Method ;
-
 import groovy.util.GroovyTestCase ;
 
 import gant.Gant ;
