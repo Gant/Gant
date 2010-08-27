@@ -220,6 +220,12 @@
       </facet-type>
     </autodetection-disabled>
   </component>
+  <component name="GantSettings">
+    <option name="SDK_HOME" value="$PROJECT_DIR$/../../../../lib/Java/gant" />
+  </component>
+  <component name="GradleSettings">
+    <option name="SDK_HOME" value="$PROJECT_DIR$/../../../../lib/Java/gradle" />
+  </component>
   <component name="GradleUISettings">
     <setting name="root" />
   </component>
