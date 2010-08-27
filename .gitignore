@@ -3,7 +3,7 @@ artwork/*.png
 bin-groovy
 bin
 out
-Gant_*.iws
+Gant.iws
 .gradle
 build
 gant
