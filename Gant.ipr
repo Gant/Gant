@@ -230,7 +230,20 @@
     <setting name="root" />
   </component>
   <component name="GradleUISettings2">
-    <setting name="root" />
+    <setting name="root">
+      <setting name="task-tab">
+        <setting name="show-description" value="true" />
+      </setting>
+      <setting name="favorites-tab" />
+      <setting name="command_line-tab" />
+      <setting name="setup-tab">
+        <setting name="setup">
+          <setting name="custom-gradle-executor" />
+          <setting name="current-directory" value="$PROJECT_DIR$" />
+          <setting name="log-level" value="LIFECYCLE" />
+        </setting>
+      </setting>
+    </setting>
   </component>
   <component name="IdProvider" IDEtalkID="BCCC399EAA78AF820A0E1ED8BBCA7133" />
   <component name="InspectionProjectProfileManager">
