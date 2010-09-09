@@ -50,7 +50,7 @@ public abstract class GantTestCase extends GroovyTestCase {
   //  the last release.  So checkouts of maintenance branches will have x.y.z-SNAPSHOT, while from trunk
   //  numbers will be like x.y-beta-z-SNAPSHOT or as of 2009-11-27 w.x.y-beta-z-SNAPSHOT.
   //
-  public enum ReleaseType { RELEASED, RELEASED_SNAPSHOT, BETA, BETA_SNAPSHOT, RC, RC_SNAPSHOT } ;
+  public enum ReleaseType { RELEASED, RELEASED_SNAPSHOT, BETA, BETA_SNAPSHOT, RC, RC_SNAPSHOT }
   public static final int groovyMajorVersion ;
   public static final int groovyMinorVersion ;
   public static final int groovyBugFixVersion ;
