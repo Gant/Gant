@@ -69,12 +69,12 @@ public class GantBuilder extends AntBuilder {
         sb.append ( "         ".substring ( 0 , padding ) + '[' + name + "] ") ;
         final Object[] args = (Object[]) arguments ;
         if ( args[0] instanceof Map<?,?> ) {
-          //
+          //////////////////////////////////////////////////////////////////////////////////////////////////////////
           // Eclipse and IntelliJ IDEA warns that (Map) is not a proper cast but using the
           // cast (Map<?,?>) here causes a type check error.
           //
-          //  TODO : Fix this.
-          //
+          //  TODO : Fix this rather than use a SuppressWarnings.
+          //////////////////////////////////////////////////////////////////////////////////////////////////////////
           @SuppressWarnings ( "unchecked" ) final Iterator<Map.Entry<?,?>> i = ( (Map) args[0] ).entrySet ( ).iterator ( ) ;
           while ( i.hasNext ( ) ) {
             final Map.Entry<?,?> e = i.next ( ) ;
