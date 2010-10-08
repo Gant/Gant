@@ -23,9 +23,9 @@ artifact = 'gant'
 mavenNameExtension = '_groovy'
 
 /*
- *  As discussed on the Groovy developer maillist (thanks to Roshan Dawrani and Paul King), the grammaer for
+ *  As discussed on the Groovy developer mail list (thanks to Roshan Dawrani and Paul King), the grammar for
  *  OSGi bundle numbers is fixed and slightly different to the expected grammar for version numbers and Maven
- *  artifacts:
+ *  artefacts:
  *
  *   version ::= major('.'minor('.'micro('.'qualifier)?)?)?
  *   major ::= digit+
@@ -150,7 +150,7 @@ subprojects {
              'org.apache.ant:ant:1.8.1'
              )
     testCompile ( 'junit:junit:4.8.1' )
-    testRuntime ( 'org.apache.ivy:ivy:2.1.0' )
+    testRuntime ( 'org.apache.ivy:ivy:2.2.0' )
     deployJars ( webdavWagonName )
   }
   compileGroovy.options.compilerArgs = ['-Xlint']
@@ -265,7 +265,7 @@ project ( ':gant' ) {
     }
     copy {
       into ( installDirectory + '/lib' )
-      from ( [ 'build/libs' , '../jarfiles' ] )
+      from ( [ 'build/libs' ] )
     }
   }
   task uninstall ( type: Delete , description : "Delete ${installDirectory} so as to remove the Gant installation." ) { delete ( installDirectory ) } 
@@ -373,7 +373,6 @@ standaloneCopySpec = copySpec {
   into ( 'lib' ) {
     from ( projectBase.libsDir )
     from ( projectBase.configurations.runtime )
-    from ( 'jarfiles' )
   }
   into ( 'bin' ) {
     fileMode = 0755
@@ -494,7 +493,7 @@ distributionTasks += [ docTgz , docZip ]
 //  Create the source distribution.
 
 srcContent = [
-  'documentation/' , 'examples/' , 'scripts/' , 'jarfiles/' , 'src/' ,
+  'documentation/' , 'examples/' , 'scripts/' , 'src/' ,
   'build.gradle' , 'settings.gradle' , 'gradlew' ,'gradlew.bat' , 'wrapper/' ,
   'ciBuild' ,
   'Gant_Trunk.ipr' , 'Gant_Trunk.iws' ,

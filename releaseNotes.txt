@@ -8,6 +8,8 @@ Groovy 1.6.9 is now used for the 1.6 series build of Gant and 1.7.5 for the 1.7 
 
 Deb files are now built as part of the release process.
 
+Remove the Maven Ant task jar from the repository and the distribution.
+
 
 1.9.3
 -----

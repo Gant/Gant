@@ -71,7 +71,7 @@ public class GantBuilder extends AntBuilder {
         if ( args[0] instanceof Map<?,?> ) {
           //////////////////////////////////////////////////////////////////////////////////////////////////////////
           // Eclipse and IntelliJ IDEA warns that (Map) is not a proper cast but using the
-          // cast (Map<?,?>) here causes a type check error.
+          // cast (Map<?,?>) here causes a type check error due to the capture algorithm.
           //
           //  TODO : Fix this rather than use a SuppressWarnings.
           //////////////////////////////////////////////////////////////////////////////////////////////////////////

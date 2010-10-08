@@ -97,7 +97,10 @@ target = 10
     script = 'XXXXX : YYYYY ->'
     assertEquals ( -2 , processCmdLineTargets ( ) )
     assertEquals ( '' , output )
-    assertEquals ( 'Error evaluating Gantfile: startup failed' + ( ( groovyMinorVersion > 6 ) ? ':\n' : ', ' ) + '''standard_input: 1: unexpected token: -> @ line 1, column 15.''' +
+    //  Error messages seem to get changed at bizarre parts of the lifecycle of Groovy.  Ho humm...
+    assertEquals ( 'Error evaluating Gantfile: startup failed' + ( ( groovyMinorVersion > 6 ) ? ':\n' : ', ' ) + 'standard_input: 1: ' +
+                   ( ( groovyMinorVersion > 7  && ! ( ( groovyMinorVersion == 8 ) && ( releaseType == GantTestCase.ReleaseType.BETA ) && ( groovyBugFixVersion < 3 ) ) ) ? "expecting EOF, found '->'" : 'unexpected token: ->' ) +
+                   ' @ line 1, column 15.' +
                    ( ( groovyMinorVersion > 6 ) && ! ( ( groovyMinorVersion == 7 ) && ( releaseType == GantTestCase.ReleaseType.BETA ) && ( groovyBugFixVersion < 2 ) ) ? '''
    XXXXX : YYYYY ->
                  ^
