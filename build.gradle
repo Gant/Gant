@@ -140,8 +140,8 @@ subprojects {
     }
   }
   repositories {
-    mavenCentral ( )
-    mavenRepo ( urls : 'http://repository.codehaus.org/' )
+    //mavenCentral ( )
+    //mavenRepo ( urls : 'http://repository.codehaus.org/' )
     mavenRepo ( urls : 'file:///home/users/russel/.m2/repository' )
   }
   dependencies {
@@ -631,7 +631,7 @@ task uploadRelease ( dependsOn: archivesUploadTasks + [ uploadDistribution , upl
 task ciBuild ( description : 'Run just the builds that use Groovy from the Maven repository.  Used mainly on CI servers.' , dependsOn : ciBuildTasks )
 
 task wrapper ( type : Wrapper ) {
-    gradleVersion = '0.9-rc-1'
+    gradleVersion = '0.9-rc-2'
     jarPath = 'wrapper'
 }
 
