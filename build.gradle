@@ -140,8 +140,12 @@ subprojects {
     }
   }
   repositories {
-    //mavenCentral ( )
-    //mavenRepo ( urls : 'http://repository.codehaus.org/' )
+    mavenCentral ( )
+    mavenRepo ( urls : 'http://repository.codehaus.org/' )
+    //
+    //  When disconnected from the Internet the above cannot be found.  To make sure things work use a local
+    //  Maven cache as well.  Assumes the cache has all the needed content.
+    //
     mavenRepo ( urls : 'file:///home/users/russel/.m2/repository' )
   }
   dependencies {
