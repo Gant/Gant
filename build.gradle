@@ -105,8 +105,8 @@ allprojects {
 subprojects {
   apply ( plugin : 'groovy' )
   apply ( plugin: 'osgi' )
-  sourceCompatibility = 5
-  targetCompatibility = 5
+  sourceCompatibility = 6
+  targetCompatibility = 6
   configurations { deployJars }
   sourceSets {
     //  NB All the subprojects are actually using the same source code and this is in a different place so
@@ -153,11 +153,11 @@ subprojects {
              'commons-cli:commons-cli:1.2' ,
              'org.apache.ant:ant:1.8.1'
              )
-    testCompile ( 'junit:junit:4.8.1' )
+    testCompile ( 'junit:junit:4.8.2' )
     testRuntime ( 'org.apache.ivy:ivy:2.2.0' )
     deployJars ( webdavWagonName )
   }
-  compileGroovy.options.compilerArgs = ['-Xlint']
+  compileGroovy.options.compilerArgs = [ '-Xlint' ]
   test {
     //
     //  The Gant Ant task integration test (which is still a unit test :-( has to know the absolute
