@@ -158,6 +158,7 @@ subprojects {
     deployJars ( webdavWagonName )
   }
   compileGroovy.options.compilerArgs = [ '-Xlint' ]
+  [ compileGroovy , compileTestGroovy ]*.options*.encoding = 'UTF-8'
   test {
     //
     //  The Gant Ant task integration test (which is still a unit test :-( has to know the absolute
