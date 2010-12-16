@@ -55,8 +55,8 @@ groovyArtefactName = 'groovy-all'
 
 groovyVersions = [
   '1.6' : '1.6.9' ,
-  '1.7' : '1.7.5' ,
-  '1.8' : '1.8.0-beta-2'
+  '1.7' : '1.7.6' ,
+  '1.8' : '1.8.0-beta-3'
 ]
 
 //  One series of Groovy needs using for the standalone distribution. This version of Groovy will be packaged with
