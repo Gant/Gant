@@ -151,7 +151,7 @@ subprojects {
   dependencies {
     compile (
              'commons-cli:commons-cli:1.2' ,
-             'org.apache.ant:ant:1.8.1'
+             'org.apache.ant:ant:1.8.2'
              )
     testCompile ( 'junit:junit:4.8.2' )
     testRuntime ( 'org.apache.ivy:ivy:2.2.0' )
@@ -636,8 +636,8 @@ task uploadRelease ( dependsOn: archivesUploadTasks + [ uploadDistribution , upl
 task ciBuild ( description : 'Run just the builds that use Groovy from the Maven repository.  Used mainly on CI servers.' , dependsOn : ciBuildTasks )
 
 task wrapper ( type : Wrapper ) {
-    gradleVersion = '0.9-rc-3'
-    jarPath = 'wrapper'
+    gradleVersion = '0.9'
+    jarFile = 'wrapper/gradle-wrapper.jar'
 }
 
 task clobber ( description : 'Do a really detailed clean.' ) << {
