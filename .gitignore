@@ -1,6 +1,5 @@
 *~
 artwork/*.png
-bin-groovy
 bin
 out
 Gant.iws
