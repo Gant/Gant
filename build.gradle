@@ -55,7 +55,7 @@ groovyArtefactName = 'groovy-all'
 
 groovyVersions = [
   '1.6' : '1.6.9' ,
-  '1.7' : '1.7.7' ,
+  '1.7' : '1.7.8' ,
   '1.8' : '1.8.0-beta-4'
 ]
 
