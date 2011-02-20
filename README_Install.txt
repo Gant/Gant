@@ -1,10 +1,12 @@
 Gant -- A Groovy way of scripting Ant tasks.
 
+
 This is Gant, a Groovy way of working with Ant tasks -- no more XML :-)
 
 The method of installation depends on whether you have downloaded a tarball or
-zipfile distribution, or you have a Bazaar branch -- or a Subversion checkout,
-or even a Git clone -- of the source.
+zipfile distribution, or you have a Git clone -- or even a Bazaar branch -- of
+the source.
+
 
 Distribution
 ------------
@@ -18,8 +20,9 @@ untar or unzip.
 There are a number of distinct distributions:
 
           1.  Requires a separate Groovy installation.  There are builds:
-                a.  compiled against Groovy 1.6.8; and
-                b.  compiled against Groovy 1.7.1.
+                a.  compiled against Groovy 1.6.9; and
+                b.  compiled against Groovy 1.7.8; and
+                c.  compiled against Groovy 1.8.0-rc-1
 
           2.  Self-contained, includes all dependent jars.
 
@@ -30,29 +33,18 @@ just an efficiency.
 The script $GANT_HOME/bin/gant for systems with a Posix shell, or
 $GANT_HOME/bin/gant.bat on Windows is the mechanism for launching a Gant run.
 
-Distributions 1a and 1b only include the direct Gant materials.  The Maven
+Distributions 1a, 1b and 1c only include the direct Gant materials.  The Maven
 target set depends on use of the Maven Ant tasks, and the Ivy tool depends on
 the Ivy jar, these will have to be downloaded and installed into
 $GANT_HOME/lib unless they are already available on on your CLASSPATH.
 
-Using a Bazaar Branch
----------------------
 
-You first need to get a source tree.  Bazaar is the version control system
-used for developing Gant.  For reasons that are unlikely to become apparent
-quickly, the master branch is actually held in the Subversion repository at
-Codehaus.  However the effective mainline is a branch on Launchpad.  So to get
-a branch:
+Using a Git Clone
+-----------------
 
-        bzr branch lp:gant Gant_Trunk
+Gant's mainline is a Git repository help at Codehaus.  To get a clone:
 
-or
-
-        bzr branch http://svn.codehaus.org/gant/gant/trunk Gant_Trunk
-
-(If you are going to actively develop Gant, you almost certainly want to have
-a shared repository in which this mirror branch is kept so that you can then
-make feature branches from it.)
+       git clone  git://git.codehaus.org/gant.git Gant
 
 Gradle is used as the build system for Gant, so you will need to set the
 gant_installPath property in ~/.gradle/gradle.properties so you can install
@@ -69,9 +61,31 @@ Wrapper, it will connect to the Internet to download the various jars that
 comprise Gradle.  This takes a while.  However this is only needed the first
 time, thereafter it uses the version you downloaded.
 
-
 You probably want to set the GROOVY_HOME environment variable to point at the
 Groovy installation that the Gant installation is to work with.
+
+
+Using a Bazaar Branch
+---------------------
+
+For anyone prefering to use Bazaar rather than Git, there is an automated
+bridge of the master branch of the Git clone on Launchpad.
+
+To get a branch:
+
+        bzr branch lp:gant Gant_Trunk
+
+or if you want to use bzr-git directly:
+
+        bzr branch git://git.codehaus.org/gant.git Gant_Trunk
+
+(If you are going to actively develop Gant, you almost certainly want to have
+a shared repository in which this mirror branch is kept so that you can then
+make feature branches from it.)
+
+All the information in the previous section about Gradle and building Gant
+apply when using Bazaar.
+
 
 Contact
 -------
@@ -80,6 +94,7 @@ If you have any problems using Gant, or have any ideas for improvements,
 please make use of the Gant users mailing list: user@gant.codehaus.org
 
 Russel Winder <russel@russel.org.uk>
+
 
 ;;; Local Variables: ***
 ;;; fill-column: 78 ***

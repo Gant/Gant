@@ -1,10 +1,9 @@
 1.9.4
 -----
 
-Add Groovy 1.8 to the Groovy series supported by Gant.  As at 2010-09-17, Groovy 1.8.0-beta-2 is the version
-in the Maven repository.
+Add Groovy 1.8 to the Groovy series supported by Gant. 
 
-Groovy 1.6.9 is now used for the 1.6 series build of Gant and 1.7.5 for the 1.7 series build.
+Groovy 1.6.9 is now used for the 1.6 series build of Gant and 1.7.8 for the 1.7 series build.
 
 Deb files are now built as part of the release process.
 
