@@ -14,6 +14,8 @@
 
 package gant
 
+import java.io.InputStreamReader
+
 import java.lang.reflect.InvocationTargetException
 
 import org.apache.commons.cli.GnuParser
@@ -232,7 +234,7 @@ final class Gant {
    */
   public Gant loadScript ( InputStream scriptSource ) {
     if ( ! buildClassName ) { buildClassName = streamInputClassName }
-    script = binding.groovyShell.parse ( scriptSource , buildClassName )
+    script = binding.groovyShell.parse ( new InputStreamReader ( scriptSource ) , buildClassName )
     binding.'gant.file' = '<stream>'
     return this
   }
