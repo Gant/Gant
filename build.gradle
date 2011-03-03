@@ -87,10 +87,12 @@ debTasks = [ ]
 
 //  Using the JackRabbit wagon gets round some problems associated with uploading the distributions that
 //  occurs with the standard wagon.  However, it does not solve the problem of not creating missing
-//  directories that gives difficulties with new artefact uploads.
+//  directories that gives difficulties with new artefact uploads.  GPars moved to using
+//  wagon-http-lightweight.  See if that works here.
 
-webdavWagonName = 'org.apache.maven.wagon:wagon-webdav-jackrabbit:1.0-beta-6' 
-//webdavWagonName = 'org.apache.maven.wagon:wagon-webdav:1.0-beta-2'
+webdavWagonName = 'org.apache.maven.wagon:wagon-webdav-lightweight:1.0-beta-6'
+//webdavWagonName = 'org.apache.maven.wagon:wagon-webdav-jackrabbit:1.0-beta-7' 
+//webdavWagonName = 'org.apache.maven.wagon:wagon-webdav:1.0-beta-6'
 
 // =====================================================================
 //
@@ -304,17 +306,17 @@ forEachDistributionVersion { projectName->
           configuration = configurations.deployJars
           //repository ( url : 'dav:https://dav.codehaus.org/repository/gant/' ) {
           repository ( url : 'https://dav.codehaus.org/repository/gant/' ) {
-            authentication ( userName : gant_repoUserName , password : gant_repoPassword )
+            authentication ( userName : codehausUsername , password : codehausPassword )
           }
           //snapshotRepository ( url : 'dav:https://dav.codehaus.org/snapshots.repository/gant/' ) {
           snapshotRepository ( url : 'https://dav.codehaus.org/snapshots.repository/gant/' ) {
-            authentication ( userName: gant_repoUserName , password : gant_repoPassword )
+            authentication ( userName: codehausUsername , password : codehausPassword )
           }
         }
       }
     }
     catch ( Exception e ) { 
-      //  If gant_repoUserName and/or gant_repoPassword are not defined, do nothing.
+      //  If codehausUsername and/or codehausPassword are not defined, do nothing.
     }
     /*
      *  This approach fails for CI servers.
@@ -322,8 +324,8 @@ forEachDistributionVersion { projectName->
     gradle.taskGraph.whenReady { graph ->
       if ( graph.hasTask ( uploadArchives ) ) {
         // Ensure these properties are defined.  Fail early if they are not.
-        gant_repoUserName
-        gant_repoPassword
+        codehausUsername
+        codehausPassword
       }
     }
     *
@@ -550,14 +552,14 @@ task uploadDistribution ( type : Upload , dependsOn : buildDistribution , descri
     try {
       it.repositories.add ( new WebdavResolver ( ) ) {
         name = 'gantDistributions'
-        user = gant_repoUserName
-        userPassword = gant_repoPassword
+        user = codehausUsername
+        userPassword = codehausPassword
         //addArtifactPattern ( 'dav:https://dav.codehaus.org/' + ( gantVersion.contains ( 'SNAPSHOT' ) ? 'snapshots.' : '' ) + 'dist/gant/distributions/[artifact]-[revision](-[classifier]).[ext]' )
         addArtifactPattern ( 'https://dav.codehaus.org/' + ( gantVersion.contains ( 'SNAPSHOT' ) ? 'snapshots.' : '' ) + 'dist/gant/distributions/[artifact]-[revision](-[classifier]).[ext]' )
       }
     }
     catch ( Exception e ) {
-      //  If gant_repoUserName and/or gant_repoPassword are not defined, do nothing.
+      //  If codehausUsername and/or codehausPassword are not defined, do nothing.
     }
   }
 }
@@ -568,8 +570,8 @@ task uploadDistribution ( type : Upload , dependsOn : buildDistribution , descri
 gradle.taskGraph.whenReady { graph ->
   if ( graph.hasTask ( uploadDistribution ) ) {
     // Ensure these properties are defined.  Fail early if they are not.
-    gant_repoUserName
-    gant_repoPassword
+    codehausUsername
+    codehausPassword
   }
 }
 *
@@ -608,14 +610,14 @@ task uploadDebs ( type : Upload , dependsOn : buildDebs , description : 'Upload 
     try {
       it.repositories.add ( new WebdavResolver ( ) ) {
         name = 'gantDebs'
-        user = gant_repoUserName
-        userPassword = gant_repoPassword
+        user = codehausUsername
+        userPassword = codehausPassword
         //addArtifactPattern ( 'dav:https://dav.codehaus.org/' + ( gantVersion.contains ( 'SNAPSHOT' ) ? 'snapshots.' : '' ) + 'dist/gant/debs/[artifact]_[revision](_[classifier]).[ext]' )
         addArtifactPattern ( 'https://dav.codehaus.org/' + ( gantVersion.contains ( 'SNAPSHOT' ) ? 'snapshots.' : '' ) + 'dist/gant/debs/[artifact]_[revision](_[classifier]).[ext]' )
       }
     }
     catch ( Exception e ) {
-      //  If gant_repoUserName and/or gant_repoPassword are not defined, do nothing.
+      //  If codehausUsername and/or codehausPassword are not defined, do nothing.
     }
   }
 }
