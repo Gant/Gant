@@ -87,12 +87,11 @@ debTasks = [ ]
 
 //  Using the JackRabbit wagon gets round some problems associated with uploading the distributions that
 //  occurs with the standard wagon.  However, it does not solve the problem of not creating missing
-//  directories that gives difficulties with new artefact uploads.  GPars moved to using
-//  wagon-http-lightweight.  See if that works here.
+//  directories that gives difficulties with new artefact uploads.  Have to cadaver in and create the
+//  hierarchy first :-(
 
-webdavWagonName = 'org.apache.maven.wagon:wagon-webdav-lightweight:1.0-beta-6'
-//webdavWagonName = 'org.apache.maven.wagon:wagon-webdav-jackrabbit:1.0-beta-7' 
-//webdavWagonName = 'org.apache.maven.wagon:wagon-webdav:1.0-beta-6'
+webdavWagonName = 'org.apache.maven.wagon:wagon-webdav-jackrabbit:1.0-beta-7' 
+//webdavWagonName = 'org.apache.maven.wagon:wagon-webdav:1.0-beta-2'
 
 // =====================================================================
 //
