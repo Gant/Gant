@@ -243,7 +243,25 @@
       <setting name="task-tab">
         <setting name="show-description" value="true" />
       </setting>
-      <setting name="favorites-tab" />
+      <setting name="favorites-tab">
+        <setting name="favorites">
+          <setting name="favorite">
+            <setting name="full-command-line" value="test" />
+            <setting name="display-name" value="test" />
+            <setting name="show-output" value="false" />
+          </setting>
+          <setting name="favorite">
+            <setting name="full-command-line" value="build" />
+            <setting name="display-name" value="build" />
+            <setting name="show-output" value="true" />
+          </setting>
+          <setting name="favorite">
+            <setting name="full-command-line" value=":clean" />
+            <setting name="display-name" value=":clean" />
+            <setting name="show-output" value="false" />
+          </setting>
+        </setting>
+      </setting>
       <setting name="command_line-tab" />
       <setting name="setup-tab">
         <setting name="setup">
@@ -251,6 +269,9 @@
           <setting name="current-directory" value="$PROJECT_DIR$" />
           <setting name="log-level" value="LIFECYCLE" />
         </setting>
+      </setting>
+      <setting name="main_panel">
+        <setting name="current-tab" value="Favorites" />
       </setting>
     </setting>
   </component>
