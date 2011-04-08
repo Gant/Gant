@@ -256,8 +256,8 @@
             <setting name="show-output" value="true" />
           </setting>
           <setting name="favorite">
-            <setting name="full-command-line" value=":clean" />
-            <setting name="display-name" value=":clean" />
+            <setting name="full-command-line" value="clean" />
+            <setting name="display-name" value="clean" />
             <setting name="show-output" value="false" />
           </setting>
         </setting>
