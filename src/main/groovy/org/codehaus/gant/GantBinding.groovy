@@ -1,6 +1,6 @@
 //  Gant -- A Groovy way of scripting Ant tasks.
 //
-//  Copyright © 2008-10 Russel Winder
+//  Copyright © 2008--2011 Russel Winder
 //
 //  Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in
 //  compliance with the License. You may obtain a copy of the License at
@@ -104,9 +104,9 @@ public class GantBinding extends Binding implements Cloneable {
     //  Do not allow the output of the ant.property call to escape.  If the output is allowed out then Ant,
     //  Gant, Maven, Eclipse and IntelliJ IDEA all behave slightly differently.  This makes testing nigh on
     //  impossible.  Also the user doesn't need to know about these.
-    ant.logger.setMessageOutputLevel ( GantState.SILENT )
+    ant.logger.messageOutputLevel = GantState.SILENT
     ant.property ( environment : 'environment' )
-    ant.logger.setMessageOutputLevel ( GantState.verbosity )
+    ant.logger.messageOutputLevel = GantState.verbosity
     super.setVariable ( 'includeTargets' , new IncludeTargets ( this ) )
     super.setVariable ( 'includeTool' , new IncludeTool ( this ) )
     super.setVariable ( 'globalPreHook' , null )

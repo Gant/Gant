@@ -170,7 +170,7 @@ public class Gant extends Task {
     //  the new Project object.  GANT-93 leads to change in the way the Gant file is extracted.
     newProject.setBaseDir ( antProject.getBaseDir ( ) ) ;
     //  Deal with GANT-110 by using the strategy proposed by Eric Van Dewoestine.
-    if ( inheritAll ){ addAlmostAll ( newProject , antProject ) ; }
+    if ( inheritAll ) { addAlmostAll ( newProject , antProject ) ; }
     final File gantFile = newProject.resolveFile( file ) ;
     if ( ! gantFile.exists ( ) ) { throw new BuildException ( "Gantfile does not exist." , getLocation ( ) ) ; }
     final GantBuilder ant = new GantBuilder ( newProject ) ;

@@ -1,6 +1,6 @@
 //  Gant -- A Groovy way of scripting Ant tasks.
 //
-//  Copyright © 2006-10 Russel Winder
+//  Copyright © 2006--2011 Russel Winder
 //
 //  Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in
 //  compliance with the License. You may obtain a copy of the License at
@@ -13,8 +13,6 @@
 //  License.
 
 package gant
-
-import java.io.InputStreamReader
 
 import java.lang.reflect.InvocationTargetException
 
@@ -502,9 +500,9 @@ final class Gant {
         //  Do not allow the output of the ant.property call to escape.  If the output is allowed out then
         //  Ant, Gant, Maven, Eclipse and IntelliJ IDEA all behave slightly differently.  This makes testing
         //  nigh on impossible.  Also the user doesn't need to know about these.
-        binding.ant.logger.setMessageOutputLevel ( GantState.SILENT )
+        binding.ant.logger.messageOutputLevel = GantState.SILENT
         binding.ant.property ( name : pair[0] , value : pair[1] )
-        binding.ant.logger.setMessageOutputLevel ( GantState.verbosity )
+        binding.ant.logger.messageOutputLevel = GantState.verbosity
       }
     }
     if ( options.L ) {
@@ -556,7 +554,8 @@ final class Gant {
       else { binding.ant.project.log ( constructMessageFrom ( e ) , Project.MSG_ERR ) }
       return -4
     }
-    //  Cannot get here.
+    //  Cannot get here.  Add an IntelliJ IDEA specific suppression.
+    //noinspection GroovyUnreachableStatement
     assert 1 == 0
   }
   public Integer processTargets ( ) { processTargets ( 'dispatch' , [ ] ) }
@@ -597,7 +596,7 @@ final class Gant {
    * 
    * @return The Gant script to be used
    */
-  public GroovyObject prepareTargets() {
+  public GroovyObject prepareTargets ( ) {
     // Configure the build based on this instance's settings.
     if ( dryRun ) { GantState.dryRun = true }
     //binding.ant.logger.setMessageOutputLevel ( GantState.verbosity )
@@ -608,22 +607,17 @@ final class Gant {
     script.run ( )	 
     return script
   }
-  
   /**
    * Sets all the pre hooks
    */
-  void setAllPerTargetPreHooks(Closure hook) {
-	  if(script) {
-		  this.script.setAllPerTargetPreHooks(hook)
-	  }
+  void setAllPerTargetPreHooks ( Closure hook ) {
+	  if ( script ) { this.script.allPerTargetPreHooks = hook }
   }
   /**
    * Sets all the target post hooks
    */
-  void setAllPerTargetPostHooks(Closure hook) {
-	  if(script) {
-		  this.script.setAllPerTargetPostHooks(hook)
-	  }
+  void setAllPerTargetPostHooks ( Closure hook ) {
+	  if ( script ) { this.script.allPerTargetPostHooks = hook }
   }  
   /**
    *  Compile a script in the context of dealing with cached compiled build scripts.

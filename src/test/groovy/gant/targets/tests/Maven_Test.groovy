@@ -1,6 +1,6 @@
 //  Gant -- A Groovy way of scripting Ant tasks.
 //
-//  Copyright © 2007-10 Russel Winder
+//  Copyright © 2007--2011 Russel Winder
 //
 //  Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in
 //  compliance with the License. You may obtain a copy of the License at
@@ -41,7 +41,7 @@ includeTargets << gant.targets.Maven
     final compiledClassesDirectory = new File ( targetDirectory , 'classes' )
     final root = 'hello'
     final gantBuilder = new GantBuilder ( )
-    gantBuilder.logger.setMessageOutputLevel ( GantState.SILENT )
+    gantBuilder.logger.messageOutputLevel = GantState.SILENT
     gantBuilder.delete ( dir : mavenTargetSetTestDirectory.path )
     gantBuilder.mkdir ( dir : javaFileDirectory.path )
     ( new File ( javaFileDirectory , root + '.java' ) ).write ( "class ${root} { }" )
