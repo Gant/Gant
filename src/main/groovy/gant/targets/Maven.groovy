@@ -1,6 +1,6 @@
 //  Gant -- A Groovy way of scripting Ant tasks.
 //
-//  Copyright © 2007-10 Russel Winder
+//  Copyright © 2007--2011 Russel Winder
 //
 //  Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in
 //  compliance with the License. You may obtain a copy of the License at
@@ -26,7 +26,7 @@ final class Maven {
   private final defaultJUnitVersion = '4.8.1'
   private final defaultTestNGVersion = '5.11'
   private final readOnlyKeys = [ 'binding' , 'compileDependenciesClasspathId' , 'testDependenciesClasspathId', 'antlibXMLns' , 'mavenPOMId' ]
-  private final Map<String,String> properties = [
+  private final Map<String,Object> properties = [
                                   groupId : '' ,
                                   artifactId : '' ,
                                   version : '' ,
@@ -87,9 +87,7 @@ final class Maven {
    *  Initialize all the values given the information presented to the constructors.  This is the second
    *  stage of construction and is separated out from the constructors since the GStrings will be
    *  initialized using the extant values at teh moment of construction and the two constructors need to
-   *  preinitialize things in slightly different ways.
-   *
-   *  @param binding The <code>GantBinding</code> to bind to.
+   *  pre-initialize things in slightly different ways.
    */
   private initialize ( ) {
     properties.default_mainSourcePath = "${properties.sourcePath}${System.properties.'file.separator'}main"
@@ -140,9 +138,18 @@ final class Maven {
       //  Do not allow the output of the ant.property call to escape.  If the output is allowed out then
       //  Ant, Gant, Maven, Eclipse and IntelliJ IDEA all behave slightly differently.  This makes testing
       //  nigh on impossible.  Also the user doesn't need to know about these.
-      owner.binding.ant.logger.setMessageOutputLevel ( GantState.SILENT )
+      owner.binding.ant.logger.messageOutputLevel = GantState.SILENT
       owner.binding.ant.taskdef ( name : 'groovyc' , classname : 'org.codehaus.groovy.ant.Groovyc' )
-      owner.binding.ant.logger.setMessageOutputLevel ( GantState.verbosity )
+      owner.binding.ant.logger.messageOutputLevel = GantState.verbosity
+      //  Interesting side effect of using properties rather than a method call in the above statement.
+      //  With method call, the value of the expression was equivalent to 0 so that was the value
+      //  returned by this method, which eventually became the return value of the target.  Using
+      //  properties, the assignment means the value of the statement is the assigned value which is
+      //  whatever it is.  In the absence of an explicit return, Groovy uses the value of the last expression,
+      //  which in this case is whatever was assigned above.  This is unlikely to be 0, and anyway is
+      //  liable to change -- which is a bit non-deterministic.  If control gets here assume everything is
+      //  fine and explicitly return 0.    
+      0
     }
     /*
     properties.binding.target.call ( validate : 'Validate the project is correct and all necessary information is available.' ) {
