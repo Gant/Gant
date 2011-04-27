@@ -56,7 +56,7 @@ groovyArtefactName = 'groovy-all'
 groovyVersions = [
   '1.6' : '1.6.9' ,
   '1.7' : '1.7.10' ,
-  '1.8' : '1.8.0-rc-4'
+  '1.8' : '1.8.0'
 ]
 
 //  One series of Groovy needs using for the standalone distribution. This version of Groovy will be packaged with
@@ -637,7 +637,7 @@ task uploadRelease ( dependsOn: archivesUploadTasks + [ uploadDistribution , upl
 task ciBuild ( description : 'Run just the builds that use Groovy from the Maven repository.  Used mainly on CI servers.' , dependsOn : ciBuildTasks )
 
 task wrapper ( type : Wrapper ) {
-    gradleVersion = '1.0-milestone-2'
+    gradleVersion = '1.0-milestone-3'
     jarFile = 'wrapper/gradle-wrapper.jar'
 }
 
