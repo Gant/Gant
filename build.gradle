@@ -62,7 +62,7 @@ groovyVersions = [
 //  One series of Groovy needs using for the standalone distribution. This version of Groovy will be packaged with
 //  the "standalone" distribution of Gant.  It will generally be the latest widely available version of Groovy.
 
-groovyStandaloneSeries = '1.7'
+groovyStandaloneSeries = '1.8'
 
 //  Organize the build using subprojects.  There is a subproject gant which is for the build using the
 //  locally installed Groovy and there is one for each version of Groovy obtained from the Maven repository

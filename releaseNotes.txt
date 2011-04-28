@@ -4,6 +4,9 @@
 GroovyShell.parse(InputStream, String) has been removed in Groovy 1.9.x.  This introduces and
 incompatibility with the 1.6.x API.  Drop Gant support for Groovy 1.6.9.
 
+Switch to using Groovy 1.8.0 (instead of 1.7.10) as the bundled version of Groovy for the stand-alone Gant
+distribution.
+
 
 1.9.4
 -----
