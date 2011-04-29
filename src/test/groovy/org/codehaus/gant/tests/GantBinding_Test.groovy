@@ -1,6 +1,6 @@
 //  Gant -- A Groovy way of scripting Ant tasks.
 //
-//  Copyright © 2008-10 Russel Winder
+//  Copyright © 2008--2011 Russel Winder
 //
 //  Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in
 //  compliance with the License. You may obtain a copy of the License at
@@ -212,17 +212,17 @@ target ( 'two' : '' ) { }
 setAllPerTargetPreHooks ( { -> println 'XXXX' } )
 '''
     assertEquals ( 0 , processTargets ( 'one' ) )
-    assertEquals ( 'XXXX\n------ one\n' , output )
+    assertEquals ( "XXXX\n${exitMarker}one\n" , output )
     assertEquals ( '' , error )
     assertEquals ( 0 , processTargets ( 'two' ) )
-    assertEquals ( 'XXXX\n------ one\nXXXX\n------ two\n' , output )
+    assertEquals ( "XXXX\n${exitMarker}one\nXXXX\n${exitMarker}two\n" , output )
     assertEquals ( '' , error )
   }
 
   void testSetAllPerTargetPostHooks ( ) {
       script = baseScript + '''
 setAllPerTargetPostHooks ( { -> println 'XXXX' } )
-  '''
+'''
       assertEquals ( 0 , processTargets ( 'one' ) )
       assertEquals ( 'one:\nXXXX\n' , output )
       assertEquals ( '' , error )
@@ -234,44 +234,78 @@ setAllPerTargetPostHooks ( { -> println 'XXXX' } )
   void testAddAllPerTargetPreHooks ( ) {
       script = baseScript + '''
 addAllPerTargetPreHooks ( { -> println 'XXXX' } )
-  '''
+'''
       assertEquals ( 0 , processTargets ( 'one' ) )
-      assertEquals ( 'one:\nXXXX\n------ one\n' , output )
+      assertEquals ( "one:\nXXXX\n${exitMarker}one\n" , output )
       assertEquals ( '' , error )
       assertEquals ( 0 , processTargets ( 'two' ) )
-      assertEquals ( 'one:\nXXXX\n------ one\ntwo:\nXXXX\n------ two\n' , output )
+      assertEquals ( "one:\nXXXX\n${exitMarker}one\ntwo:\nXXXX\n${exitMarker}two\n" , output )
       assertEquals ( '' , error )
     }
 
     void testAddAllPerTargetPostHooks ( ) {
-        script = baseScript + '''
+      script = baseScript + '''
 addAllPerTargetPostHooks ( { -> println 'XXXX' } )
-    '''
-        assertEquals ( 0 , processTargets ( 'one' ) )
-        assertEquals ( 'one:\n------ one\nXXXX\n' , output )
-        assertEquals ( '' , error )
-        assertEquals ( 0 , processTargets ( 'two' ) )
-        assertEquals ( 'one:\n------ one\nXXXX\ntwo:\n------ two\nXXXX\n' , output )
-        assertEquals ( '' , error )
-      }
+'''
+      assertEquals ( 0 , processTargets ( 'one' ) )
+      assertEquals ( "one:\n${exitMarker}one\nXXXX\n" , output )
+      assertEquals ( '' , error )
+      assertEquals ( 0 , processTargets ( 'two' ) )
+      assertEquals ( "one:\n${exitMarker}one\nXXXX\ntwo:\n${exitMarker}two\nXXXX\n" , output )
+      assertEquals ( '' , error )
+    }
     
-      void testAddPreHookNotAClosure ( ) {
-        script = baseScript + '''
+  void testAddPreHookNotAClosure ( ) {
+    script = baseScript + '''
 addAllPerTargetPreHooks ( [] )
-        ''' 
-        assertEquals ( 0 , processTargets ( 'one' ) )
-        assertEquals ( 'one:\n------ one\n' , output )
-        assertEquals ( 'Target prehook list item is not a closure.\n' , error )
-      }
-      
-      void testAddPostHookNotAClosure ( ) {
-          script = baseScript + '''
+''' 
+    assertEquals ( 0 , processTargets ( 'one' ) )
+    assertEquals ( "one:\n${exitMarker}one\n" , output )
+    assertEquals ( 'Target prehook list item is not a closure.\n' , error )
+  }
+  
+  void testAddPostHookNotAClosure ( ) {
+    script = baseScript + '''
   addAllPerTargetPostHooks ( [] )
-          ''' 
-          assertEquals ( 0 , processTargets ( 'one' ) )
-          assertEquals ( 'one:\n------ one\n' , output )
-          assertEquals ( 'Target posthook list item is not a closure.\n' , error )
-        }
+'''
+    assertEquals ( 0 , processTargets ( 'one' ) )
+    assertEquals ( "one:\n${exitMarker}one\n" , output )
+    assertEquals ( 'Target posthook list item is not a closure.\n' , error )
+  }
 
+  //  Some tests stemming from the 1.9.4 regression investigation.
+
+  final regressionInvestigationOutput = 'The Default Target Is Running...'
+  final regressionInvestigationDecoratedOutput = "default:\n${regressionInvestigationOutput}\n${exitMarker}default\n"
+  final regressionInvestigationScript = """
+target ( default : 'some default target' ) {
+    println ( '${regressionInvestigationOutput}' )
+}
+"""
+  final regressionInvestigationKillHooks = """
+setAllPerTargetPreHooks ( { } )
+setAllPerTargetPostHooks ( { } )
+"""
+
+  void testNotSettingPreAndPostHooksOnDefaultTask ( ) {
+    script = regressionInvestigationScript
+    assertEquals ( 0 , processTargets ( ) )
+    assertEquals ( regressionInvestigationDecoratedOutput , output )
+    assertEquals ( '' , error )
+  }
+
+  void testSettingPreAndPostHooksToNothingBeforeDefaultTask ( ) {
+    script = regressionInvestigationKillHooks + regressionInvestigationScript
+    assertEquals ( 0 , processTargets ( ) )
+    assertEquals ( regressionInvestigationDecoratedOutput , output )
+    assertEquals ( '' , error )
+  }
+
+  void testSettingPreAndPostHooksToNothingAfterDefaultTask ( ) {
+    script = regressionInvestigationScript + regressionInvestigationKillHooks
+    assertEquals ( 0 , processTargets ( ) )
+    assertEquals ( regressionInvestigationOutput + '\n' , output )
+    assertEquals ( '' , error )
+  }
 
 }
