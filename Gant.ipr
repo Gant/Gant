@@ -69,6 +69,16 @@
           <option name="LABEL_INDENT_ABSOLUTE" value="false" />
           <option name="USE_RELATIVE_INDENTS" value="false" />
         </ADDITIONAL_INDENT_OPTIONS>
+        <ADDITIONAL_INDENT_OPTIONS fileType="haml">
+          <option name="INDENT_SIZE" value="2" />
+          <option name="CONTINUATION_INDENT_SIZE" value="8" />
+          <option name="TAB_SIZE" value="4" />
+          <option name="USE_TAB_CHARACTER" value="false" />
+          <option name="SMART_TABS" value="false" />
+          <option name="LABEL_INDENT_SIZE" value="0" />
+          <option name="LABEL_INDENT_ABSOLUTE" value="false" />
+          <option name="USE_RELATIVE_INDENTS" value="false" />
+        </ADDITIONAL_INDENT_OPTIONS>
         <ADDITIONAL_INDENT_OPTIONS fileType="java">
           <option name="INDENT_SIZE" value="2" />
           <option name="CONTINUATION_INDENT_SIZE" value="8" />
@@ -417,7 +427,9 @@
         <inspection_tool class="ConditionSignal" enabled="true" level="WARNING" enabled_by_default="true" />
         <inspection_tool class="ConditionalExpressionWithIdenticalBranches" enabled="true" level="WARNING" enabled_by_default="true" />
         <inspection_tool class="ConflictingAnnotations" level="WARNING" enabled="false" />
-        <inspection_tool class="ConfusingElse" enabled="true" level="WARNING" enabled_by_default="true" />
+        <inspection_tool class="ConfusingElse" enabled="true" level="WARNING" enabled_by_default="true">
+          <option name="reportWhenNoStatementFollow" value="false" />
+        </inspection_tool>
         <inspection_tool class="ConfusingFloatingPointLiteral" enabled="true" level="WARNING" enabled_by_default="true" />
         <inspection_tool class="ConfusingMainMethod" enabled="true" level="WARNING" enabled_by_default="true" />
         <inspection_tool class="ConfusingOctalEscape" enabled="true" level="WARNING" enabled_by_default="true" />
@@ -652,7 +664,6 @@
           <option name="ignoreConstantConversions" value="false" />
         </inspection_tool>
         <inspection_tool class="IncrementDecrementUsedAsExpression" enabled="true" level="WARNING" enabled_by_default="true" />
-        <inspection_tool class="IndexOfReplaceableByContains" enabled="true" level="WARNING" enabled_by_default="true" />
         <inspection_tool class="InjectOfNonPublicMember" level="WARNING" enabled="false" />
         <inspection_tool class="InnerClassOnInterface" enabled="true" level="WARNING" enabled_by_default="true">
           <option name="m_ignoreInnerInterfaces" value="false" />
@@ -682,7 +693,9 @@
         <inspection_tool class="InstanceofThis" enabled="true" level="WARNING" enabled_by_default="true" />
         <inspection_tool class="InstantiationOfUtilityClass" enabled="true" level="WARNING" enabled_by_default="true" />
         <inspection_tool class="IntegerDivisionInFloatingPointContext" enabled="true" level="WARNING" enabled_by_default="true" />
-        <inspection_tool class="IntegerMultiplicationImplicitCastToLong" enabled="true" level="WARNING" enabled_by_default="true" />
+        <inspection_tool class="IntegerMultiplicationImplicitCastToLong" enabled="true" level="WARNING" enabled_by_default="true">
+          <option name="ignoreNonOverflowingCompileTimeConstants" value="true" />
+        </inspection_tool>
         <inspection_tool class="InterceptionAnnotationWithoutRuntimeRetention" level="WARNING" enabled="false" />
         <inspection_tool class="InterfaceNamingConvention" enabled="true" level="WARNING" enabled_by_default="true">
           <option name="m_regex" value="[A-Z][A-Za-z\d]*" />
@@ -842,6 +855,7 @@
         </inspection_tool>
         <inspection_tool class="NonReproducibleMathCall" enabled="true" level="WARNING" enabled_by_default="true" />
         <inspection_tool class="NonSerializableFieldInSerializableClass" enabled="true" level="WARNING" enabled_by_default="true">
+          <option name="ignoreAnonymousInnerClasses" value="false" />
           <option name="superClassString" value="java.awt.Component" />
         </inspection_tool>
         <inspection_tool class="NonSerializableObjectBoundToHttpSession" enabled="true" level="WARNING" enabled_by_default="true" />
@@ -976,6 +990,7 @@
           <option name="m_reportObjectMethods" value="true" />
           <option name="m_reportArrayMethods" value="true" />
           <option name="m_reportCollectionMethods" value="true" />
+          <option name="m_ignorePrivateMethods" value="false" />
         </inspection_tool>
         <inspection_tool class="ReturnOfCollectionField" enabled="true" level="WARNING" enabled_by_default="true">
           <option name="ignorePrivateMethods" value="true" />
@@ -992,15 +1007,19 @@
         <inspection_tool class="SerialVersionUIDNotStaticFinal" enabled="true" level="WARNING" enabled_by_default="true" />
         <inspection_tool class="SerializableClassInSecureContext" enabled="true" level="WARNING" enabled_by_default="true" />
         <inspection_tool class="SerializableHasSerialVersionUIDField" enabled="true" level="WARNING" enabled_by_default="true">
+          <option name="ignoreAnonymousInnerClasses" value="false" />
           <option name="superClassString" value="java.awt.Component" />
         </inspection_tool>
         <inspection_tool class="SerializableHasSerializationMethods" enabled="true" level="WARNING" enabled_by_default="true">
+          <option name="ignoreAnonymousInnerClasses" value="false" />
           <option name="superClassString" value="java.awt.Component" />
         </inspection_tool>
         <inspection_tool class="SerializableInnerClassHasSerialVersionUIDField" enabled="true" level="WARNING" enabled_by_default="true">
+          <option name="ignoreAnonymousInnerClasses" value="false" />
           <option name="superClassString" value="java.awt.Component" />
         </inspection_tool>
         <inspection_tool class="SerializableInnerClassWithNonSerializableOuterClass" enabled="true" level="WARNING" enabled_by_default="true">
+          <option name="ignoreAnonymousInnerClasses" value="false" />
           <option name="superClassString" value="java.awt.Component" />
         </inspection_tool>
         <inspection_tool class="SerializableWithUnconstructableAncestor" enabled="true" level="WARNING" enabled_by_default="true" />
@@ -1044,7 +1063,6 @@
           <option name="m_ignorePrimitives" value="false" />
         </inspection_tool>
         <inspection_tool class="StringBufferReplaceableByString" enabled="true" level="WARNING" enabled_by_default="true" />
-        <inspection_tool class="StringBufferReplaceableByStringBuilder" enabled="true" level="WARNING" enabled_by_default="true" />
         <inspection_tool class="StringBufferToStringInConcatenation" enabled="true" level="WARNING" enabled_by_default="true" />
         <inspection_tool class="StringCompareTo" enabled="true" level="WARNING" enabled_by_default="true" />
         <inspection_tool class="StringConcatenationInLoops" enabled="true" level="WARNING" enabled_by_default="true">
