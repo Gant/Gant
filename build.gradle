@@ -212,6 +212,24 @@ subprojects {
     footer = copyrightString
   }
   task documentation ( dependsOn: [ 'javadoc' , 'groovydoc' ] , description : 'Create the API documentation.' )
+  task javadocArtifact ( type : Jar , dependsOn : 'javadoc' ) {
+    classifier = 'javadoc'
+    from docsDir
+  }
+  task groovydocArtifact ( type : Jar , dependsOn : 'groovydoc' ) {
+    classifier = 'groovydoc'
+    from docsDir
+  }
+  task sourceArtifact ( type : Jar ) {
+    classifier = 'sources'
+    from sourceSets.main.allSource
+  }
+  task allArtifacts ( dependsOn : [ jar , javadocArtifact , groovydocArtifact , sourceArtifact ] )
+  artifacts {
+    archives ( javadocArtifact )
+    archives ( groovydocArtifact )
+    archives ( sourceArtifact )
+  }
   defaultTasks ( 'build' ) 
 }
 
