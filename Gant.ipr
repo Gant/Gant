@@ -240,10 +240,10 @@
     </autodetection-disabled>
   </component>
   <component name="GantSettings">
-    <option name="SDK_HOME" value="$USER_HOME$/lib/Java/gant" />
+    <option name="SDK_HOME" value="$GANT_HOME" />
   </component>
   <component name="GradleSettings">
-    <option name="SDK_HOME" value="$USER_HOME$/lib/Java/gradle" />
+    <option name="SDK_HOME" value="$GRADLE_HOME" />
   </component>
   <component name="GradleUISettings">
     <setting name="root" />
@@ -1397,9 +1397,6 @@
   </component>
   <component name="ProjectDetails">
     <option name="projectName" value="Gant" />
-  </component>
-  <component name="ProjectKey">
-    <option name="state" value="project:///home/users/russel/Repositories/Bazaar/Masters/Gant/Trunk_Development/Gant.ipr" />
   </component>
   <component name="ProjectModuleManager">
     <modules>
