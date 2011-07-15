@@ -1,6 +1,6 @@
 //  Gant -- A Groovy way of scripting Ant tasks.
 //
-//  Copyright © 2006-10 Russel Winder
+//  Copyright © 2006-11 Russel Winder
 //
 //  Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in
 //  compliance with the License. You may obtain a copy of the License at
@@ -17,6 +17,12 @@ package org.codehaus.gant ;
 import java.util.HashSet ;
 import java.util.List ;
 import java.util.Set ;
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////////
+//  In Groovy 1.7.x Closure was a type, in Groovy 1.8.x Closure is a parameterized type.
+//  To support compilation against both versions of Groovy with the same source,
+//  suffer the "raw type" warnings that Eclipse issues.
+//////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 import groovy.lang.Closure ;
 import groovy.lang.DelegatingMetaClass ;
