@@ -35,7 +35,7 @@ mavenNameExtension = '_groovy'
  *   digit ::= [0..9]
  *   alpha ::= [a..zA..Z]
  *
- *  The core difference is that for OSGi bundle numbers the qualifies is separated by a full stop where in
+ *  The core difference is that for OSGi bundle numbers the qualifier is separated by a full stop where in
  *  other situations a minus is used.
  */
 gantVersionBase = '1.9.6'
@@ -44,6 +44,8 @@ isPrereleaseSnapshot = true
 def createVersionString = { isForOSGi ->
   return gantVersionBase + ( isPrereleaseSnapshot ? ( isForOSGi ? '.' : '-' ) + 'SNAPSHOT' : '' )
 }
+
+debPackagingNumber = '1'
 
 gantVersion = createVersionString ( false )
 gantPrefix = artifact + '-' + gantVersion
@@ -54,9 +56,10 @@ gantBundleVersion =  createVersionString ( true )
 groovyArtefactName = 'groovy-all'
 
 groovyVersions = [
-  //  '1.6' : '1.6.9' , // GroovyShell API of 1.6.9 is incompatible with 1.9.0
+  //  '1.6' : '1.6.9' , // GroovyShell API of 1.6.9 is incompatible with 1.9.x
   '1.7' : '1.7.10' ,
-  '1.8' : '1.8.0'
+  '1.8' : '1.8.0' ,
+  //'1.9' : '1.9.0-beta-1-SNAPSHOT'
 ]
 
 //  One series of Groovy needs using for the standalone distribution. This version of Groovy will be packaged with
@@ -146,6 +149,8 @@ subprojects {
     //
     //  When disconnected from the Internet the above cannot be found.  To make sure things work use a local
     //  Maven cache as well.  Assumes the cache has all the needed content.
+    //
+    //  Also Groovy 1.9.0-beta-1-SNAPSHOT is in my cache but not in the repositories above.
     //
     mavenRepo ( urls : 'file:///home/users/russel/.m2/repository' )
   }
@@ -440,9 +445,11 @@ task clean ( type: Delete ) {
 
 final packageName = 'gant-standalone'
 final architecture = 'all'
-createdDebFileName = packageName + '_' + gantVersion + '_' + architecture + '.deb'
+createdDebFileName = packageName + '_' + gantVersion + '-' + debPackagingNumber + '_' + architecture + '.deb'
 
 task standaloneDeb ( dependsOn : standaloneBinTgz , description : 'Create a deb for use with Debian and Ubuntu.' ) << {
+  //final packageName = 'gant-standalone'
+  //final architecture = 'all'
   final section = 'devel'
   final priority = 'optional'
   final homepage = 'http://gant.codehaus.org/'
@@ -464,6 +471,7 @@ run are included in the package.
 Homepage: ${homepage}
 """
   final expandDirectory = ( new File ( distDirectory , 'gant-' + gantVersion ) ).path
+  final packagingDirectory = 'packaging/AntDebTask'
   distDirectory.mkdirs ( )
   ant.taskdef ( resource : 'ant_deb_task.properties' , classpath : [ System.properties.'user.home' , '.groovy' , 'lib' , 'ant-deb.jar' ].join ( System.properties.'file.separator' ) )
   ant.delete { fileset ( dir : distDirectory , includes : '**/*' ) }
@@ -473,20 +481,20 @@ Homepage: ${homepage}
   process.waitFor ( )
   debsDirectory.mkdirs ( )
   def result = ant.deb ( todir : debsDirectory , 'package' : packageName , section : section , priority : priority , architecture : architecture ,
-            depends : 'java2-runtime', postinst : 'postinst' , prerm : 'prerm' ) {
+            depends : 'java2-runtime', postinst : packagingDirectory+ '/postinst' , prerm : packagingDirectory + '/prerm' ) {
     version ( upstream : gantVersion )
     maintainer ( name : 'Russel Winder' , email : 'russel@russel.org.uk' )
     //homepage ( homepage )
     description ( synopsis : theSynopsis , theWords )
-    tarfileset ( file : 'gant' , prefix : installPrefixBase + '/bin' , filemode : '755' )
+    tarfileset ( file : packagingDirectory + '/gant' , prefix : installPrefixBase + '/bin' , filemode : '755' )
     tarfileset ( file : expandDirectory + '/bin/startGroovy' , prefix : installPrefixBase + '/bin' , filemode : '644' )
     tarfileset ( file : expandDirectory + '/conf/gant-starter.conf' , prefix : installPrefixBase + '/conf' , filemode : '644' )
     tarfileset ( dir : expandDirectory + '/lib' , includes : '*.jar' , prefix : installPrefixBase + '/lib' , filemode : '644' )
   }
-  //  The deb Ant taskl appears not to record the name of the resultant deb file so we have to construct it
+  //  The deb Ant task appears not to record the name of the resultant deb file so we have to construct it
   //  by replicating the algorithm :-(( and leaving the result in the binding to be used elsewhere --
   //  i.e. by the uploading task.
-  createdDebFileName = result._package + '_' + result._version + '_' + result._architecture + '.deb'
+  assert createdDebFileName == result._package + '_' + result._version + '_' + result._architecture + '.deb'
 }
 
 debTasks += [ standaloneDeb ]
@@ -602,9 +610,9 @@ configurations { debs }
 
 // Until after 0.9, it is only possible to use archive tasks in structures such as:
 //
-//    artifacts {
-//      debTasks.each { task -> debs ( task ) }
-//    }
+//artifacts {
+//  debTasks.each { task -> debs ( task ) }
+//}
 //
 //  so we can't do it for the deb tasks :-(( Fortunately, other came across this problem and came up with a
 //  solution.  cf.
