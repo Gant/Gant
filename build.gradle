@@ -41,7 +41,7 @@ mavenNameExtension = '_groovy'
 gantVersionBase = '1.9.7'
 isPrereleaseSnapshot = true
 
-def createVersionString = { isForOSGi ->
+final createVersionString = { isForOSGi ->
   return gantVersionBase + ( isPrereleaseSnapshot ? ( isForOSGi ? '.' : '-' ) + 'SNAPSHOT' : '' )
 }
 
@@ -120,8 +120,8 @@ subprojects {
     integTest { groovy { srcDir '../src/integTest/groovy' } }  
   }
   metaInf << fileTree ( dir : '..' ).matching { include 'LICENCE.txt' }
-  def theVendor = 'The Codehaus'
-  def theTitle = 'Gant: Scripting Ant tasks with Groovy.'
+  final theVendor = 'The Codehaus'
+  final theTitle = 'Gant: Scripting Ant tasks with Groovy.'
   jar { 
     manifest {
       name = 'Gant'
@@ -183,8 +183,8 @@ subprojects {
     integTestSourceDirectory = file ( 'src/integTest/groovy' )
     include integTestSourceDirectory.absolutePath + '/org/codehaus/gant/ant/tests/*_Test.*'
   }
-  def packageTitle = 'Gant ' + gantVersion
-  def copyrightString = 'Copyright &#169; 2006&#8211;9  The Codehaus.  All Rights Reserved.'
+  final packageTitle = 'Gant ' + gantVersion
+  final copyrightString = 'Copyright &#169; 2006&#8211;9  The Codehaus.  All Rights Reserved.'
   javadoc {
     options.overview ( 'overview.html' )
     options.showAll ( )
@@ -217,18 +217,22 @@ subprojects {
     footer = copyrightString
   }
   task documentation ( dependsOn: [ 'javadoc' , 'groovydoc' ] , description : 'Create the API documentation.' )
+  final docLibDir = new File ( buildDir , 'docJars' )
   task javadocArtifact ( type : Jar , dependsOn : 'javadoc' ) {
     classifier = 'javadoc'
     from docsDir
   }
+  javadocArtifact.destinationDir = docLibDir
   task groovydocArtifact ( type : Jar , dependsOn : 'groovydoc' ) {
     classifier = 'groovydoc'
     from docsDir
   }
+  groovydocArtifact.destinationDir = docLibDir
   task sourceArtifact ( type : Jar ) {
     classifier = 'sources'
     from sourceSets.main.allSource
   }
+  sourceArtifact.destinationDir = docLibDir
   task allArtifacts ( dependsOn : [ jar , javadocArtifact , groovydocArtifact , sourceArtifact ] )
   artifacts {
     archives ( javadocArtifact )
@@ -246,12 +250,12 @@ subprojects {
 project ( ':gant' ) {
   //  If the user has GROOVY_HOME set then use that Groovy rather than the one specified in the properties
   //  files.  However we have to fiddle to find the version number.
-  def groovyHome = System.getenv ( ).'GROOVY_HOME'
-  def groovyLib = null
+  final groovyHome = System.getenv ( ).'GROOVY_HOME'
+  final groovyLib = null
   if ( groovyHome ) {
     groovyLib = new File ( groovyHome , 'lib' )
-    def groovyVersionPatternString = /^groovy-(all-)?([0-9].*)\.jar/
-    def items = groovyLib.listFiles ( [ accept : { File dir , String name -> return ( name =~ groovyVersionPatternString ).find ( ) } ] as FilenameFilter )
+    final groovyVersionPatternString = /^groovy-(all-)?([0-9].*)\.jar/
+    final items = groovyLib.listFiles ( [ accept : { File dir , String name -> return ( name =~ groovyVersionPatternString ).find ( ) } ] as FilenameFilter )
     assert items 
     groovyVersion = ( items[0].name =~ groovyVersionPatternString )[0][2]
     assert groovyVersion
@@ -264,8 +268,8 @@ project ( ':gant' ) {
   }
   dependencies { groovy ( group : 'org.codehaus.groovy' , name : groovyArtefactName , version : groovyVersion ) }
   compileGroovy.doFirst { println ( '\n\t' + versionMessage +'\n' ) }
-  def buildPath = [ System.properties.'user.dir' , 'gant' , 'build' , 'classes' ]
-  def classPath = [ ]
+  final buildPath = [ System.properties.'user.dir' , 'gant' , 'build' , 'classes' ]
+  final classPath = [ ]
   classPath << ( buildPath + [ 'main' ] ).join ( File.separator ) 
   classPath << ( buildPath + [ 'test' ] ).join ( File.separator ) 
   configurations.testRuntime.files.each { file -> classPath <<  file.parent }
@@ -273,12 +277,13 @@ project ( ':gant' ) {
                        GROOVY_ANT_TASK_TEST_VERSION :  groovyVersion ,
                        gradleClasspathString : classPath.join ( System.properties.'path.separator' )
                      ] )
-  def  installDirectory = '/usr/share/gant'
+  final installDirectory = '/usr/share/gant'
   try { installDirectory = evaluate ( '"' + gant_installPath + '"' ) }
   catch ( MissingPropertyException mpe ) { /* Intentionally left blank. */ }
   task install ( dependsOn : 'assemble' , description : "Install Gant (compiled against Groovy ${groovyVersion}) to ${installDirectory}." ) << {
-    def installBinDirectory = installDirectory + '/bin'
-    def scriptsDirectory = '../scripts'
+    delete ( installDirectory )
+    final installBinDirectory = installDirectory + '/bin'
+    final scriptsDirectory = '../scripts'
     copy {
       into ( installBinDirectory )
       from ( [ scriptsDirectory + '/bin' , scriptsDirectory + '/bin_requiresGroovy' ] )
@@ -307,13 +312,13 @@ project ( ':gant' ) {
 ciBuildTasks = [ ]
 
 forEachDistributionVersion { projectName->
-  def groovyVersion = groovyVersions[ projectName.replace ( artifact + mavenNameExtension , '' ) ]
+  final groovyVersion = groovyVersions[ projectName.replace ( artifact + mavenNameExtension , '' ) ]
   project ( projectName ) {
     apply ( plugin : 'maven' )
     dependencies { groovy ( group : 'org.codehaus.groovy' , name : groovyArtefactName , version : groovyVersion ) }
     compileGroovy.doFirst { println ( '\n\tUsing Groovy version ' + groovyVersion + '\n' ) }
-    def buildPath = [ System.properties.'user.dir' , projectName , 'build' , 'classes' ]
-    def classPath = [ ]
+    final buildPath = [ System.properties.'user.dir' , projectName , 'build' , 'classes' ]
+    final classPath = [ ]
     classPath << ( buildPath + [ 'main' ] ).join ( File.separator ) 
     classPath << ( buildPath + [ 'test' ] ).join ( File.separator ) 
     configurations.testRuntime.files.each { file -> classPath <<  file.parent }
@@ -353,7 +358,7 @@ forEachDistributionVersion { projectName->
     *
     */
     binCopySpec = copySpec {
-      def scriptsDirectory = '../scripts'
+      final scriptsDirectory = '../scripts'
       from ( '..' ) { include ( 'README*' ) }
       into ( 'conf' ) { from ( scriptsDirectory + '/conf' ) { include ( '*.conf' ) } } 
       into ( 'lib' ) {
@@ -395,8 +400,8 @@ forEachDistributionVersion { projectName->
 projectNameForStandalone = 'gant_groovy' + groovyStandaloneSeries
 
 standaloneCopySpec = copySpec {
-  def scriptsDirectory = 'scripts'
-  def projectBase = project ( projectNameForStandalone )
+  final scriptsDirectory = 'scripts'
+  final projectBase = project ( projectNameForStandalone )
   from ( '.' ) { include ( 'README*' ) }
   into ( 'conf' ) { from ( scriptsDirectory + '/conf' ) { include ( '*.conf' ) } } 
   into ( 'lib' ) {
@@ -480,7 +485,7 @@ Homepage: ${homepage}
   process.consumeProcessOutput ( )
   process.waitFor ( )
   debsDirectory.mkdirs ( )
-  def result = ant.deb ( todir : debsDirectory , 'package' : packageName , section : section , priority : priority , architecture : architecture ,
+  final result = ant.deb ( todir : debsDirectory , 'package' : packageName , section : section , priority : priority , architecture : architecture ,
             depends : 'java2-runtime', postinst : packagingDirectory+ '/postinst' , prerm : packagingDirectory + '/prerm' ) {
     version ( upstream : gantVersion )
     maintainer ( name : 'Russel Winder' , email : 'russel@russel.org.uk' )
