@@ -56,7 +56,6 @@ gantBundleVersion =  createVersionString ( true )
 groovyArtefactName = 'groovy-all'
 
 groovyVersions = [
-  //  '1.6' : '1.6.9' , // GroovyShell API of 1.6.9 is incompatible with 1.9.x
   '1.7' : '1.7.10' ,
   '1.8' : '1.8.1' ,
   '1.9' : '1.9.0-beta-1'
@@ -95,6 +94,15 @@ debTasks = [ ]
 
 webdavWagonName = 'org.apache.maven.wagon:wagon-webdav-jackrabbit:1.0-beta-7' 
 //webdavWagonName = 'org.apache.maven.wagon:wagon-webdav:1.0-beta-2'
+
+//  In creating distributions which include jar files for the source, javadoc, and groovydoc, it is
+//  imperative to ensure that they do not get located into the library directory for jars containing
+//  compiled code for execution: it is critical to avoid getting the source, javadoc, and groovydoc jars on
+//  the classpath.  Rather than build with defaults and sift when creating the distributions, cause the
+//  source, javadoc, and groovydoc jars to be located in a different place.  This is the name of that place
+//  which will be a peer to the executables jars directory.
+
+docsJarsDirName = 'docsJars'
 
 // =====================================================================
 //
@@ -217,22 +225,22 @@ subprojects {
     footer = copyrightString
   }
   task documentation ( dependsOn: [ 'javadoc' , 'groovydoc' ] , description : 'Create the API documentation.' )
-  final docLibDir = new File ( buildDir , 'docJars' )
+  final docsJarsDir = new File ( buildDir , docsJarsDirName )
   task javadocArtifact ( type : Jar , dependsOn : 'javadoc' ) {
     classifier = 'javadoc'
     from docsDir
   }
-  javadocArtifact.destinationDir = docLibDir
+  javadocArtifact.destinationDir = docsJarsDir
   task groovydocArtifact ( type : Jar , dependsOn : 'groovydoc' ) {
     classifier = 'groovydoc'
     from docsDir
   }
-  groovydocArtifact.destinationDir = docLibDir
+  groovydocArtifact.destinationDir = docsJarsDir
   task sourceArtifact ( type : Jar ) {
     classifier = 'sources'
     from sourceSets.main.allSource
   }
-  sourceArtifact.destinationDir = docLibDir
+  sourceArtifact.destinationDir = docsJarsDir
   task allArtifacts ( dependsOn : [ jar , javadocArtifact , groovydocArtifact , sourceArtifact ] )
   artifacts {
     archives ( javadocArtifact )
@@ -299,7 +307,7 @@ project ( ':gant' ) {
     }
     copy {
       into ( installDirectory + '/lib' )
-      from ( [ 'build/libs' ] )
+      from ( new File ( buildDir , 'libs' ) )
     }
   }
   task uninstall ( type: Delete , description : "Delete ${installDirectory} so as to remove the Gant installation." ) { delete ( installDirectory ) } 
@@ -530,14 +538,15 @@ distributionTasks += [ docTgz , docZip ]
 //  Create the source distribution.
 
 srcContent = [
-  'documentation/' , 'examples/' , 'scripts/' , 'src/' ,
+  'artwork/' , 'documentation/' , 'examples/' , 'packaging' , 'scripts/' , 'src/' ,
   'build.gradle' , 'settings.gradle' , 'gradlew' ,'gradlew.bat' , 'wrapper/' ,
   'ciBuild' ,
-  'Gant_Trunk.ipr' , 'Gant_Trunk.iws' ,
+  'Gant.ipr' , 'Gant.iws' ,
   '.classpath' , '.project' , '.settings/' ,
   'LICENCE.txt' ,
   'README_Install.txt' ,
   'releaseNotes.txt' ,
+  'overview.html' ,
 ]
 
 task srcTgz ( type : Tar , description : 'Create a tarball of the source.' ) {

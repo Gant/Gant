@@ -1,3 +1,10 @@
+1.9.6
+-----
+
+No substantive changes to Gant, this release is made post release of Groovy 1.8.1 and 1.9.0-beta-1
+principally to get a version of Gant compiled against he Groovy 1.9 series into the Maven repository.
+
+
 1.9.5
 -----
 
