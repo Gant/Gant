@@ -593,8 +593,6 @@ task uploadDistribution ( type : Upload , dependsOn : buildDistribution , descri
         name = 'gantDistributions'
         user = codehausUsername
         userPassword = codehausPassword
-        //addArtifactPattern ( 'dav:https://dav.codehaus.org/' + ( gantVersion.contains ( 'SNAPSHOT' ) ? 'snapshots.' : '' ) + 'dist/gant/distributions/[artifact]-[revision](-[classifier]).[ext]' )
-        addArtifactPattern ( 'https://dav.codehaus.org/' + ( gantVersion.contains ( 'SNAPSHOT' ) ? 'snapshots.' : '' ) + 'dist/gant/distributions/[artifact]-[revision](-[classifier]).[ext]' )
       }
     }
     catch ( Exception e ) {
@@ -622,11 +620,11 @@ gradle.taskGraph.whenReady { graph ->
 
 configurations { debs }
 
-// Until after 0.9, it is only possible to use archive tasks in structures such as:
+// It is only possible to use archive tasks in structures such as:
 //
-//artifacts {
-//  debTasks.each { task -> debs ( task ) }
-//}
+//    artifacts {
+//      debTasks.each { task -> debs ( task ) }
+//    }
 //
 //  so we can't do it for the deb tasks :-(( Fortunately, other came across this problem and came up with a
 //  solution.  cf.
@@ -642,6 +640,8 @@ dependencies {
 
 task buildDebs ( dependsOn : debTasks , description : 'Build all the uploadable debs.' )
 
+//  Seemingly this tasksk picks up no things to upload?
+
 task uploadDebs ( type : Upload , dependsOn : buildDebs , description : 'Upload all the debs.' ) {
   configuration = configurations.debs
   uploadDescriptor = false
@@ -651,8 +651,6 @@ task uploadDebs ( type : Upload , dependsOn : buildDebs , description : 'Upload 
         name = 'gantDebs'
         user = codehausUsername
         userPassword = codehausPassword
-        //addArtifactPattern ( 'dav:https://dav.codehaus.org/' + ( gantVersion.contains ( 'SNAPSHOT' ) ? 'snapshots.' : '' ) + 'dist/gant/debs/[artifact]_[revision](_[classifier]).[ext]' )
-        addArtifactPattern ( 'https://dav.codehaus.org/' + ( gantVersion.contains ( 'SNAPSHOT' ) ? 'snapshots.' : '' ) + 'dist/gant/debs/[artifact]_[revision](_[classifier]).[ext]' )
       }
     }
     catch ( Exception e ) {
