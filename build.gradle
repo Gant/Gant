@@ -494,8 +494,9 @@ Homepage: ${homepage}
   process.waitFor ( )
   debsDirectory.mkdirs ( )
   final result = ant.deb ( todir : debsDirectory , 'package' : packageName , section : section , priority : priority , architecture : architecture ,
-            depends : 'java2-runtime', postinst : packagingDirectory+ '/postinst' , prerm : packagingDirectory + '/prerm' ) {
-    version ( upstream : gantVersion )
+                           depends : 'java2-runtime', postinst : packagingDirectory+ '/postinst' , prerm : packagingDirectory + '/prerm' ,
+                           conflicts : 'gant' ) {
+    version ( upstream : gantVersion , debian : debPackagingNumber )
     maintainer ( name : 'Russel Winder' , email : 'russel@russel.org.uk' )
     //homepage ( homepage )
     description ( synopsis : theSynopsis , theWords )
