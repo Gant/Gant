@@ -27,12 +27,12 @@ if "%DIRNAME%" == "" set DIRNAME=.\
 @rem If GANT_HOME is not set, deduce a path.
 
 if not "%GANT_HOME%" == "" goto endSetGantHome
-   set GANT_HOME=%DIRNAME%..
+   set GANT_HOME="%DIRNAME%.."
 :endSetGantHome
 
 @rem  Force GROOVY_HOME to be GANT_HOME so that the startGroovy code does the right thing.
 
-set GROOVY_HOME=%GANT_HOME%
+set GROOVY_HOME="%GANT_HOME%"
 
 @rem  If ANT_HOME is not set, deduce a path -- this is needed in order to discover the location of the jars
 @rem  asscoiated with the Ant installation.
@@ -46,10 +46,10 @@ if not "%ANT_HOME%" == "" goto endSetAntHome
 
 set PROGNAME=gant.bat
 set GROOVY_SCRIPT_NAME=gant.bat
-set STARTER_CONF=%GANT_HOME%\conf\gant-starter.conf
-set JAVA_OPTS=%JAVA_OPTS% -Dgant.home="%GANT_HOME%" -Dant.home="%ANT_HOME%"
+set STARTER_CONF="%GANT_HOME%\conf\gant-starter.conf"
+set JAVA_OPTS="%JAVA_OPTS%" -Dgant.home="%GANT_HOME%" -Dant.home="%ANT_HOME%"
 
-%GANT_HOME%\bin\startGroovy.bat %DIRNAME% gant.Gant %*
+"%GANT_HOME%\bin\startGroovy.bat" "%DIRNAME%" gant.Gant %*
 
 @rem End local scope for the variables with windows NT shell
 if "%OS%" == "Windows_NT" endlocal
