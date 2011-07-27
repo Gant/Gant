@@ -594,6 +594,8 @@ task uploadDistribution ( type : Upload , dependsOn : buildDistribution , descri
         name = 'gantDistributions'
         user = codehausUsername
         userPassword = codehausPassword
+        //addArtifactPattern ( 'dav:https://dav.codehaus.org/' + ( gantVersion.contains ( 'SNAPSHOT' ) ? 'snapshots.' : '' ) + 'dist/gant/distributions/[artifact]-[revision](-[classifier]).[ext]' )
+        addArtifactPattern ( 'https://dav.codehaus.org/' + ( gantVersion.contains ( 'SNAPSHOT' ) ? 'snapshots.' : '' ) + 'dist/gant/distributions/[artifact]-[revision](-[classifier]).[ext]' )
       }
     }
     catch ( Exception e ) {
@@ -652,6 +654,8 @@ task uploadDebs ( type : Upload , dependsOn : buildDebs , description : 'Upload 
         name = 'gantDebs'
         user = codehausUsername
         userPassword = codehausPassword
+        //addArtifactPattern ( 'dav:https://dav.codehaus.org/' + ( gantVersion.contains ( 'SNAPSHOT' ) ? 'snapshots.' : '' ) + 'dist/gant/debs/[artifact]_[revision](_[classifier]).[ext]' )
+        addArtifactPattern ( 'https://dav.codehaus.org/' + ( gantVersion.contains ( 'SNAPSHOT' ) ? 'snapshots.' : '' ) + 'dist/gant/debs/[artifact]_[revision](_[classifier]).[ext]' )
       }
     }
     catch ( Exception e ) {
