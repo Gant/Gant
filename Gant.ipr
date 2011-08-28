@@ -6,6 +6,13 @@
   <component name="BuildJarProjectSettings">
     <option name="BUILD_JARS_ON_MAKE" value="false" />
   </component>
+  <component name="CheckStyle-IDEA">
+    <option name="configuration">
+      <map>
+        <entry key="location-0" value="CLASSPATH:/sun_checks.xml:The default CheckStyle rules." />
+      </map>
+    </option>
+  </component>
   <component name="CodeStyleProjectProfileManger">
     <option name="PROJECT_PROFILE" />
     <option name="USE_PROJECT_LEVEL_SETTINGS" value="false" />
@@ -43,6 +50,16 @@
           <option name="INDENT_SIZE" value="2" />
           <option name="CONTINUATION_INDENT_SIZE" value="8" />
           <option name="TAB_SIZE" value="2" />
+          <option name="USE_TAB_CHARACTER" value="false" />
+          <option name="SMART_TABS" value="false" />
+          <option name="LABEL_INDENT_SIZE" value="0" />
+          <option name="LABEL_INDENT_ABSOLUTE" value="false" />
+          <option name="USE_RELATIVE_INDENTS" value="false" />
+        </ADDITIONAL_INDENT_OPTIONS>
+        <ADDITIONAL_INDENT_OPTIONS fileType="css">
+          <option name="INDENT_SIZE" value="4" />
+          <option name="CONTINUATION_INDENT_SIZE" value="8" />
+          <option name="TAB_SIZE" value="4" />
           <option name="USE_TAB_CHARACTER" value="false" />
           <option name="SMART_TABS" value="false" />
           <option name="LABEL_INDENT_SIZE" value="0" />
@@ -89,6 +106,26 @@
           <option name="LABEL_INDENT_ABSOLUTE" value="false" />
           <option name="USE_RELATIVE_INDENTS" value="false" />
         </ADDITIONAL_INDENT_OPTIONS>
+        <ADDITIONAL_INDENT_OPTIONS fileType="js">
+          <option name="INDENT_SIZE" value="4" />
+          <option name="CONTINUATION_INDENT_SIZE" value="4" />
+          <option name="TAB_SIZE" value="4" />
+          <option name="USE_TAB_CHARACTER" value="false" />
+          <option name="SMART_TABS" value="false" />
+          <option name="LABEL_INDENT_SIZE" value="0" />
+          <option name="LABEL_INDENT_ABSOLUTE" value="false" />
+          <option name="USE_RELATIVE_INDENTS" value="false" />
+        </ADDITIONAL_INDENT_OPTIONS>
+        <ADDITIONAL_INDENT_OPTIONS fileType="jsp">
+          <option name="INDENT_SIZE" value="4" />
+          <option name="CONTINUATION_INDENT_SIZE" value="8" />
+          <option name="TAB_SIZE" value="4" />
+          <option name="USE_TAB_CHARACTER" value="false" />
+          <option name="SMART_TABS" value="false" />
+          <option name="LABEL_INDENT_SIZE" value="0" />
+          <option name="LABEL_INDENT_ABSOLUTE" value="false" />
+          <option name="USE_RELATIVE_INDENTS" value="false" />
+        </ADDITIONAL_INDENT_OPTIONS>
         <ADDITIONAL_INDENT_OPTIONS fileType="py">
           <option name="INDENT_SIZE" value="4" />
           <option name="CONTINUATION_INDENT_SIZE" value="8" />
@@ -129,6 +166,23 @@
           <option name="LABEL_INDENT_ABSOLUTE" value="false" />
           <option name="USE_RELATIVE_INDENTS" value="false" />
         </ADDITIONAL_INDENT_OPTIONS>
+        <codeStyleSettings language="JavaScript">
+          <option name="ELSE_ON_NEW_LINE" value="true" />
+          <option name="CATCH_ON_NEW_LINE" value="true" />
+          <option name="FINALLY_ON_NEW_LINE" value="true" />
+          <option name="ALIGN_MULTILINE_PARAMETERS" value="false" />
+          <option name="ALIGN_MULTILINE_FOR" value="false" />
+          <option name="KEEP_SIMPLE_BLOCKS_IN_ONE_LINE" value="true" />
+          <option name="KEEP_SIMPLE_METHODS_IN_ONE_LINE" value="true" />
+          <option name="LABELED_STATEMENT_WRAP" value="0" />
+          <option name="IF_BRACE_FORCE" value="3" />
+          <option name="WHILE_BRACE_FORCE" value="3" />
+          <option name="FOR_BRACE_FORCE" value="3" />
+          <option name="METHOD_ANNOTATION_WRAP" value="0" />
+          <option name="CLASS_ANNOTATION_WRAP" value="0" />
+          <option name="FIELD_ANNOTATION_WRAP" value="0" />
+          <option name="PARENT_SETTINGS_INSTALLED" value="true" />
+        </codeStyleSettings>
       </value>
     </option>
     <option name="USE_PER_PROJECT_SETTINGS" value="true" />
@@ -453,24 +507,25 @@
         <inspection_tool class="ConvertOldAnnotations" enabled="true" level="WARNING" enabled_by_default="true" />
         <inspection_tool class="CovariantCompareTo" enabled="true" level="WARNING" enabled_by_default="true" />
         <inspection_tool class="CovariantEquals" enabled="true" level="WARNING" enabled_by_default="true" />
-        <inspection_tool class="CssInvalidElementInspection" level="ERROR" enabled="false" />
-        <inspection_tool class="CssInvalidImportInspection" level="WARNING" enabled="false" />
-        <inspection_tool class="CssInvalidShorthandPropertyValue" level="ERROR" enabled="false" />
-        <inspection_tool class="CssNegativeValueInspection" level="ERROR" enabled="false" />
-        <inspection_tool class="CssNoGenericFontName" level="WARNING" enabled="false" />
-        <inspection_tool class="CssOptimizeSimilarPropertiesInspection" level="INFO" enabled="false" />
-        <inspection_tool class="CssOverwrittenProperties" level="WARNING" enabled="false" />
-        <inspection_tool class="CssRgbFunctionInspection" level="ERROR" enabled="false" />
-        <inspection_tool class="CssUnitlessNumber" level="WARNING" enabled="false" />
-        <inspection_tool class="CssUnknownProperty" level="WARNING" enabled="false">
+        <inspection_tool class="CssInvalidElementInspection" enabled="false" level="ERROR" enabled_by_default="false" />
+        <inspection_tool class="CssInvalidImportInspection" enabled="false" level="WARNING" enabled_by_default="false" />
+        <inspection_tool class="CssInvalidShorthandPropertyValue" enabled="false" level="ERROR" enabled_by_default="false" />
+        <inspection_tool class="CssNegativeValueInspection" enabled="false" level="ERROR" enabled_by_default="false" />
+        <inspection_tool class="CssNoGenericFontName" enabled="false" level="WARNING" enabled_by_default="false" />
+        <inspection_tool class="CssOptimizeSimilarPropertiesInspection" enabled="false" level="INFO" enabled_by_default="false" />
+        <inspection_tool class="CssOverwrittenProperties" enabled="false" level="WARNING" enabled_by_default="false" />
+        <inspection_tool class="CssRgbFunctionInspection" enabled="false" level="ERROR" enabled_by_default="false" />
+        <inspection_tool class="CssUnitlessNumber" enabled="false" level="WARNING" enabled_by_default="false" />
+        <inspection_tool class="CssUnknownProperty" enabled="false" level="WARNING" enabled_by_default="false">
           <option name="myCustomPropertiesEnabled" value="false" />
+          <option name="myIgnoreVendorSpecificProperties" value="false" />
           <option name="myCustomPropertiesList">
             <value>
               <list size="0" />
             </value>
           </option>
         </inspection_tool>
-        <inspection_tool class="CssUnusedSymbolInspection" level="WARNING" enabled="false" />
+        <inspection_tool class="CssUnusedSymbolInspection" enabled="false" level="WARNING" enabled_by_default="false" />
         <inspection_tool class="CustomClassloader" enabled="true" level="WARNING" enabled_by_default="true" />
         <inspection_tool class="CustomSecurityManager" enabled="true" level="WARNING" enabled_by_default="true" />
         <inspection_tool class="CyclicClassDependency" enabled="true" level="WARNING" enabled_by_default="true" />
@@ -1214,7 +1269,7 @@
         </inspection_tool>
         <inspection_tool class="VolatileArrayField" enabled="true" level="WARNING" enabled_by_default="true" />
         <inspection_tool class="VolatileLongOrDoubleField" enabled="true" level="WARNING" enabled_by_default="true" />
-        <inspection_tool class="W3CssValidation" level="WARNING" enabled="false">
+        <inspection_tool class="W3CssValidation" enabled="false" level="WARNING" enabled_by_default="false">
           <option name="myCssVersion" value="css3" />
         </inspection_tool>
         <inspection_tool class="WaitCalledOnCondition" enabled="true" level="WARNING" enabled_by_default="true" />
