@@ -26,6 +26,8 @@ import org.codehaus.gant.IncludeTool
  */
 final class GantBinding_Test extends GantTestCase {
   final targetName = 'targetName'
+  final propertyToCheck = 'java.vm.specification.version'
+  final propertyValue = System.getProperty  ( propertyToCheck )
   void testCreate ( ) {
     def object = new GantBinding ( )
     assertTrue ( object.ant instanceof GantBuilder )
@@ -59,7 +61,7 @@ target ( ${targetName} : '' ) {
   }
   void testAntPropertyAccessAsAntPropertyOutsideTarget ( ) {
     script = """
-assert ant.project.properties.'java.vm.specification.version' == '1.0'
+assert ant.project.properties.'${propertyToCheck}' == '${propertyValue}'
 target ( ${targetName} : '' ) { }
 """
     assertEquals ( 0 , processCmdLineTargets ( targetName ) )
@@ -69,7 +71,7 @@ target ( ${targetName} : '' ) { }
   void testAntPropertyAccessAsAntPropertyInsideTarget ( ) {
     script = """
 target ( ${targetName} : '' ) {
-  assert ant.project.properties.'java.vm.specification.version' == '1.0'
+  assert ant.project.properties.'${propertyToCheck}' == '${propertyValue}'
 }
 """
     assertEquals ( 0 , processCmdLineTargets ( targetName ) )
@@ -78,7 +80,7 @@ target ( ${targetName} : '' ) {
   }
   void testAntPropertyAccessAsBindingVariableOutsideTarget ( ) {
     script = """
-assert binding.'java.vm.specification.version' == '1.0'
+assert binding.'${propertyToCheck}' == '${propertyValue}'
 target ( ${targetName} : '' ) { }
 """
     assertEquals ( 0 , processCmdLineTargets ( targetName ) )
@@ -88,7 +90,7 @@ target ( ${targetName} : '' ) { }
   void testAntPropertyAccessAsBindingVariableInsideTarget ( ) {
     script = """
 target ( ${targetName} : '' ) {
-  assert binding.'java.vm.specification.version' == '1.0'
+  assert binding.'${propertyToCheck}' == '${propertyValue}'
 }
 """
     assertEquals ( 0 , processCmdLineTargets ( targetName ) )
@@ -97,7 +99,7 @@ target ( ${targetName} : '' ) {
   }
   void testAntPropertyAccessViaObjectSpecifierOutsideTarget ( ) {
     script = """
-assert this.'java.vm.specification.version' == '1.0'
+assert this.'${propertyToCheck}' == '${propertyValue}'
 target ( ${targetName} : '' ) { }
 """
     assertEquals ( 0 , processCmdLineTargets ( targetName ) )
@@ -107,9 +109,9 @@ target ( ${targetName} : '' ) { }
   void testAntPropertyAccessViaObjectSpecifierInsideTarget ( ) {
     script = """
 target ( ${targetName} : '' ) {
-  assert this.'java.vm.specification.version' == '1.0'
-  assert owner.'java.vm.specification.version' == '1.0'
-  assert delegate.'java.vm.specification.version' == '1.0'
+  assert this.'${propertyToCheck}' == '${propertyValue}'
+  assert owner.'${propertyToCheck}' == '${propertyValue}'
+  assert delegate.'${propertyToCheck}' == '${propertyValue}'
 }
 """
     assertEquals ( 0 , processCmdLineTargets ( targetName ) )

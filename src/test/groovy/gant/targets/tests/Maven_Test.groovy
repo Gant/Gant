@@ -46,10 +46,16 @@ includeTargets << gant.targets.Maven
     gantBuilder.mkdir ( dir : javaFileDirectory.path )
     ( new File ( javaFileDirectory , root + '.java' ) ).write ( "class ${root} { }" )
     final targetName = 'compile'
+    //  Java 7 introduces a new warning message about setting bootclasspath when setting a source level
+    //  lower than the current Java version.  Circumvent this for all cases by enforcing not using the
+    //  default of 5, but the same version as the running version.
+    final versionNumber = System.getProperty ( 'java.version' )[2]
     script = """
 includeTargets ** gant.targets.Maven * [
     sourcePath : '${sourceDirectory.path}' ,
-    targetPath : '${targetDirectory.path}'
+    targetPath : '${targetDirectory.path}' ,
+    javaCompileProperties : [ source : '${versionNumber}' , target : '${versionNumber}' , debug : 'false' ] ,
+
 ]
 """
     assertEquals ( 0 , processCmdLineTargets ( targetName ) )
