@@ -680,9 +680,7 @@ task uploadRelease ( dependsOn: archivesUploadTasks + [ uploadDistribution , upl
 task ciBuild ( description : 'Run just the builds that use Groovy from the Maven repository.  Used mainly on CI servers.' , dependsOn : ciBuildTasks )
 
 task wrapper ( type : Wrapper ) {
-  //gradleVersion = '1.0-milestone-4'
-  gradleVersion = '1.0-milestone-4-20110725000027+0200'
-  jarFile = 'wrapper/gradle-wrapper.jar'
+  gradleVersion = '1.0-milestone-5-20110920085801+0200'
 }
 
 task clobber ( description : 'Do a really detailed clean.' ) << {
