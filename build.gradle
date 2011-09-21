@@ -158,8 +158,6 @@ subprojects {
     //  When disconnected from the Internet the above cannot be found.  To make sure things work use a local
     //  Maven cache as well.  Assumes the cache has all the needed content.
     //
-    //  Also Groovy 1.9.0-beta-1-SNAPSHOT is in my cache but not in the repositories above.
-    //
     mavenRepo ( url : 'file:///home/users/russel/.m2/repository' )
   }
   dependencies {
