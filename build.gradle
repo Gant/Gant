@@ -58,7 +58,7 @@ groovyArtefactName = 'groovy-all'
 groovyVersions = [
   '1.7' : '1.7.10' ,
   '1.8' : '1.8.2' ,
-  '1.9' : '1.9.0-beta-2'
+  '1.9' : '1.9.0-beta-3'
 ]
 
 //  One series of Groovy needs using for the standalone distribution. This version of Groovy will be packaged with
@@ -153,14 +153,14 @@ subprojects {
   }
   repositories {
     mavenCentral ( )
-    mavenRepo ( urls : 'http://repository.codehaus.org/' )
+    mavenRepo ( url : 'http://repository.codehaus.org/' )
     //
     //  When disconnected from the Internet the above cannot be found.  To make sure things work use a local
     //  Maven cache as well.  Assumes the cache has all the needed content.
     //
     //  Also Groovy 1.9.0-beta-1-SNAPSHOT is in my cache but not in the repositories above.
     //
-    mavenRepo ( urls : 'file:///home/users/russel/.m2/repository' )
+    mavenRepo ( url : 'file:///home/users/russel/.m2/repository' )
   }
   dependencies {
     compile (
