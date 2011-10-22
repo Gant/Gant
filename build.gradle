@@ -92,8 +92,12 @@ debTasks = [ ]
 //  directories that gives difficulties with new artefact uploads.  Have to cadaver in and create the
 //  hierarchy first :-(
 
-webdavWagonName = 'org.apache.maven.wagon:wagon-webdav-jackrabbit:1.0-beta-7' 
+//webdavWagonName = 'org.apache.maven.wagon:wagon-webdav-jackrabbit:2.0' 
 //webdavWagonName = 'org.apache.maven.wagon:wagon-webdav:1.0-beta-2'
+
+//  Try the lightweight HTTP wagon.
+
+webdavWagonName = 'org.apache.maven.wagon:wagon-http-lightweight:2.0'
 
 //  In creating distributions which include jar files for the source, javadoc, and groovydoc, it is
 //  imperative to ensure that they do not get located into the library directory for jars containing
