@@ -8,7 +8,7 @@
     <orderEntry type="sourceFolder" forTests="false" />
     <orderEntry type="module" module-name="Main" />
     <orderEntry type="library" name="Groovy_HEAD" level="application" />
-    <orderEntry type="inheritedJdk" />
+    <orderEntry type="jdk" jdkName="$project_jdk_name$" jdkType="JavaSDK" />
   </component>
   <component name="copyright">
     <Base>
