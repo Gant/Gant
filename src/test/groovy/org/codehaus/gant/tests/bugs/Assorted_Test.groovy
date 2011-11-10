@@ -48,8 +48,8 @@ def foo { badvariable }
 """
     assertEquals ( -2 , processCmdLineTargets( targetName ) )
     assertEquals ( '' , output )
-    assertEquals ( 'Error evaluating Gantfile: startup failed' + ( ( groovyMinorVersion > 6 ) ? ':\n' : ', ' ) + '''standard_input: 3: unexpected token: foo @ line 3, column 5.''' +
-                  ( ( groovyMinorVersion > 6 ) && ! ( ( groovyMinorVersion == 7 ) && ( releaseType == GantTestCase.ReleaseType.BETA ) && ( groovyBugFixVersion < 2 ) ) ? '''
+    assertEquals ( 'Error evaluating Gantfile: startup failed' + ( ( ( groovyMajorVersion > 1 ) || ( groovyMinorVersion > 6 ) ) ? ':\n' : ', ' ) + '''standard_input: 3: unexpected token: foo @ line 3, column 5.''' +
+                  ( ( ( groovyMajorVersion > 1 ) || ( ( groovyMinorVersion > 6 ) && ! ( ( groovyMinorVersion == 7 ) && ( releaseType == GantTestCase.ReleaseType.BETA ) && ( groovyBugFixVersion < 2 ) ) ) ) ? '''
    def foo { badvariable }
        ^
 
@@ -65,7 +65,7 @@ def foo { badvariable }
     try { assertEquals ( -4 , processCmdLineTargets ( targetName ) ) }
     finally { file.delete ( ) }
     assertEquals ( '' , output )
-    assertTrue ( error.startsWith ( 'Standard input, line 1 -- Error evaluating Gantfile: org.codehaus.groovy.control.MultipleCompilationErrorsException: startup failed' + ( ( groovyMinorVersion > 6 ) ? ':\n' : ', ' ) ) )
+    assertTrue ( error.startsWith ( 'Standard input, line 1 -- Error evaluating Gantfile: org.codehaus.groovy.control.MultipleCompilationErrorsException: startup failed' + ( ( ( groovyMajorVersion > 1 ) || ( groovyMinorVersion > 6 ) ) ? ':\n' : ', ' ) ) )
     assertTrue ( error.endsWith ( '''GANT_32.groovy: 2: unexpected token: foo @ line 2, column 5.
    def foo { badvariable }
        ^
@@ -156,7 +156,7 @@ target ( 'default' , '' ) { }
       assertEquals ( '' , output )
       //  There is a change made to the error reporting in 1.8.x and 1.7.x, x > 2, compared to 1.6.x and 1.7.x[012].
       assertEquals ( "Standard input, line 2 -- Error evaluating Gantfile: ${file.path}, line 4 -- java.lang.ArithmeticException: " +
-                     ( ( ( groovyMinorVersion > 7 ) || ( ( groovyMinorVersion == 7 ) && ( groovyBugFixVersion > 2 ) ) ) ? 'Division' : '/' ) +
+                     ( ( ( groovyMajorVersion > 1 ) || ( ( groovyMinorVersion > 7 ) || ( ( groovyMinorVersion == 7 ) && ( groovyBugFixVersion > 2 ) ) ) ) ? 'Division' : '/' ) +
                      ' by zero\n' , error )
     }
     finally { file.delete ( ) }

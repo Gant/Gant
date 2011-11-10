@@ -98,10 +98,10 @@ target = 10
     assertEquals ( -2 , processCmdLineTargets ( ) )
     assertEquals ( '' , output )
     //  Error messages seem to get changed at bizarre parts of the lifecycle of Groovy.  Ho humm...
-    assertEquals ( 'Error evaluating Gantfile: startup failed' + ( ( groovyMinorVersion > 6 ) ? ':\n' : ', ' ) + 'standard_input: 1: ' +
-                   ( ( groovyMinorVersion > 7  && ! ( ( groovyMinorVersion == 8 ) && ( releaseType == GantTestCase.ReleaseType.BETA ) && ( groovyBugFixVersion < 3 ) ) ) ? "expecting EOF, found '->'" : 'unexpected token: ->' ) +
+    assertEquals ( 'Error evaluating Gantfile: startup failed' + ( ( ( groovyMajorVersion > 1 ) || ( groovyMinorVersion > 6 ) ) ? ':\n' : ', ' ) + 'standard_input: 1: ' +
+                   ( ( ( groovyMajorVersion > 1 ) || ( ( groovyMinorVersion > 7 )  && ! ( ( groovyMinorVersion == 8 ) && ( releaseType == GantTestCase.ReleaseType.BETA ) && ( groovyBugFixVersion < 3 ) ) ) ) ? "expecting EOF, found '->'" : 'unexpected token: ->' ) +
                    ' @ line 1, column 15.' +
-                   ( ( groovyMinorVersion > 6 ) && ! ( ( groovyMinorVersion == 7 ) && ( releaseType == GantTestCase.ReleaseType.BETA ) && ( groovyBugFixVersion < 2 ) ) ? '''
+                   ( ( ( groovyMajorVersion > 1 ) || ( ( groovyMinorVersion > 6 )  && ! ( ( groovyMinorVersion == 7 ) && ( releaseType == GantTestCase.ReleaseType.BETA ) && ( groovyBugFixVersion < 2 ) ) ) ) ? '''
    XXXXX : YYYYY ->
                  ^
 
