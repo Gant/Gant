@@ -1,11 +1,15 @@
 1.9.7
 -----
 
-No substantive changes to Gant, per se.  Groovy 1.7.10, 1.8.3 and 1.9.0-beta-4 are the ones built against. 
+No substantive changes to Gant, per se.  Groovy 1.7.10, 1.8.4 and 2.0.0-beta-1 are the ones built against. 
 
 Various minor changes to the build framework and project files have been made.  Various launch scripts have
 been re-synchronized with those of Groovy.  Various changes made to allow for using Java 7 as well as Java
 6, but none in Gant itself only in the tests.
+
+This release actually triggered by the release of Groovy 2.0.0-beta-1 since it is a revolutionary change to
+the numbering of Groovy -- 1.9.x series has been dropped and replaced by the 2.0.x series, i.e. the changes
+have been deemed a major change.  Which is probably right.
 
 
 1.9.6
