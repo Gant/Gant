@@ -8,6 +8,6 @@
 	<classpathentry kind="var" path="M2_REPO/org/apache/ant/ant-launcher/1.8.2/ant-launcher-1.8.2.jar"/>
 	<classpathentry kind="var" path="M2_REPO/org/apache/ivy/ivy/2.2.0/ivy-2.2.0.jar"/>
 	<classpathentry kind="var" path="M2_REPO/junit/junit/4.10/junit-4.10.jar"/>
-	<classpathentry kind="var" path="M2_REPO/org/codehaus/groovy/groovy-all/1.8.4/groovy-all-1.8.4.jar"/>
+	<classpathentry kind="var" path="M2_REPO/org/codehaus/groovy/groovy-all/1.8.5/groovy-all-1.8.5.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
