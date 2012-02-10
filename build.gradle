@@ -17,7 +17,7 @@
 //  Author : Russel Winder <russel@russel.org.uk>
 
 import org.apache.tools.ant.filters.ReplaceTokens
-import org.gradle.api.artifacts.repositories.WebdavResolver
+//import org.gradle.api.artifacts.repositories.WebdavResolver
 
 artifact = 'gant'
 mavenNameExtension = '_groovy'
@@ -589,9 +589,10 @@ task uploadDistribution ( type : Upload , dependsOn : buildDistribution , descri
 //uploadDistribution {
 //  dependsOn ( buildDistribution )
   uploadDescriptor = false
+    /*
   doFirst {
     try {
-      it.repositories.add ( new WebdavResolver ( ) ) {
+        it.repositories.add ( new WebdavResolver ( ) ) {
         name = 'gantDistributions'
         user = codehausUsername
         userPassword = codehausPassword
@@ -603,6 +604,7 @@ task uploadDistribution ( type : Upload , dependsOn : buildDistribution , descri
       //  If codehausUsername and/or codehausPassword are not defined, do nothing.
     }
   }
+    */
 }
 
 /*
@@ -649,6 +651,7 @@ task buildDebs ( dependsOn : debTasks , description : 'Build all the uploadable 
 task uploadDebs ( type : Upload , dependsOn : buildDebs , description : 'Upload all the debs.' ) {
   configuration = configurations.debs
   uploadDescriptor = false
+      /*
   doFirst {
     try {
       it.repositories.add ( new WebdavResolver ( ) ) {
@@ -663,7 +666,9 @@ task uploadDebs ( type : Upload , dependsOn : buildDebs , description : 'Upload 
       //  If codehausUsername and/or codehausPassword are not defined, do nothing.
     }
   }
+      */
 }
+
 
 // =====================================================================
 //
@@ -681,7 +686,7 @@ task uploadRelease ( dependsOn: archivesUploadTasks + [ uploadDistribution , upl
 task ciBuild ( description : 'Run just the builds that use Groovy from the Maven repository.  Used mainly on CI servers.' , dependsOn : ciBuildTasks )
 
 task wrapper ( type : Wrapper ) {
-  gradleVersion = '1.0-milestone-6'
+  gradleVersion = '1.0-milestone-7'
 }
 
 task clobber ( description : 'Do a really detailed clean.' ) << {
