@@ -19,8 +19,8 @@
 import org.apache.tools.ant.filters.ReplaceTokens
 //import org.gradle.api.artifacts.repositories.WebdavResolver
 
-artifact = 'gant'
-mavenNameExtension = '_groovy'
+ext.artifact = 'gant'
+ext.mavenNameExtension = '_groovy'
 
 /*
  *  As discussed on the Groovy developer mail list (thanks to Roshan Dawrani and Paul King), the grammar for
@@ -38,24 +38,24 @@ mavenNameExtension = '_groovy'
  *  The core difference is that for OSGi bundle numbers the qualifier is separated by a full stop where in
  *  other situations a minus is used.
  */
-gantVersionBase = '1.9.8'
-isPrereleaseSnapshot = true
+final gantVersionBase = '1.9.8'
+final isPrereleaseSnapshot = true
 
 final createVersionString = { isForOSGi ->
   return gantVersionBase + ( isPrereleaseSnapshot ? ( isForOSGi ? '.' : '-' ) + 'SNAPSHOT' : '' )
 }
 
-debPackagingNumber = '1'
+final debPackagingNumber = '1'
 
-gantVersion = createVersionString false
-gantPrefix = artifact + '-' + gantVersion
-gantBundleVersion =  createVersionString true
+final gantVersion = createVersionString false
+final gantPrefix = artifact + '-' + gantVersion
+final gantBundleVersion =  createVersionString true
 
 //  Nominate for each supported series of Groovy, exactly which version to use.
 
-groovyArtefactName = 'groovy-all'
+final groovyArtefactName = 'groovy-all'
 
-groovyVersions = [
+ext.groovyVersions = [
   '1.7' : '1.7.10' ,
   '1.8' : '1.8.6' ,
   '2.0' : '2.0.0-beta-2'
@@ -64,7 +64,7 @@ groovyVersions = [
 //  One series of Groovy needs using for the standalone distribution. This version of Groovy will be packaged with
 //  the "standalone" distribution of Gant.  It will generally be the latest widely available released version of Groovy.
 
-groovyStandaloneSeries = '1.8'
+final groovyStandaloneSeries = '1.8'
 
 //  Organize the build using subprojects.  There is a subproject gant which is for the build using the
 //  locally installed Groovy and there is one for each version of Groovy obtained from the Maven repository
@@ -84,8 +84,8 @@ def forEachProject ( Closure c ) {
 
 forEachProject { item ->  if ( ! ( new File ( item ) ).isDirectory ( ) ) { mkdir item } }
 
-distributionTasks = [ ]
-debTasks = [ ]
+ext.distributionTasks = [ ]
+final debTasks = [ ]
 
 //  Using the JackRabbit wagon gets round some problems associated with uploading the distributions that
 //  occurs with the standard wagon.  However, it does not solve the problem of not creating missing
@@ -97,7 +97,7 @@ debTasks = [ ]
 
 //  Try the lightweight HTTP wagon.
 
-webdavWagonName = 'org.apache.maven.wagon:wagon-http-lightweight:2.0'
+final webdavWagonName = 'org.apache.maven.wagon:wagon-http-lightweight:2.0'
 
 //  In creating distributions which include jar files for the source, javadoc, and groovydoc, it is
 //  imperative to ensure that they do not get located into the library directory for jars containing
@@ -106,7 +106,7 @@ webdavWagonName = 'org.apache.maven.wagon:wagon-http-lightweight:2.0'
 //  source, javadoc, and groovydoc jars to be located in a different place.  This is the name of that place
 //  which will be a peer to the executables jars directory.
 
-docsJarsDirName = 'docsJars'
+final docsJarsDirName = 'docsJars'
 
 // =====================================================================
 //
@@ -115,7 +115,6 @@ docsJarsDirName = 'docsJars'
 allprojects {
   group =  'org.codehaus.gant'
   version = gantVersion
-  bundleVersion = gantBundleVersion
 }
 
 subprojects {
@@ -189,8 +188,7 @@ subprojects {
     delete 'texput.log' , 'target_forMavenTest'
   }
   task integTest ( type : Test , dependsOn : /* 'assemble' */ 'classes' ) {
-    integTestSourceDirectory = file 'src/integTest/groovy'
-    include integTestSourceDirectory.absolutePath + '/org/codehaus/gant/ant/tests/*_Test.*'
+    include file ( 'src/integTest/groovy' ).absolutePath + '/org/codehaus/gant/ant/tests/*_Test.*'
   }
   final packageTitle = 'Gant ' + gantVersion
   final copyrightString = 'Copyright &#169; 2006&#8211;9  The Codehaus.  All Rights Reserved.'
@@ -261,6 +259,8 @@ project ( ':gant' ) {
   //  files.  However we have to fiddle to find the version number.
   final groovyHome = System.getenv ( ).'GROOVY_HOME'
   final groovyLib = null
+  def groovyVersion
+  def versionMessage
   if ( groovyHome ) {
     groovyLib = new File ( groovyHome , 'lib' )
     final groovyVersionPatternString = /^groovy-(all-)?([0-9].*)\.jar/
@@ -318,7 +318,7 @@ project ( ':gant' ) {
 //
 //  The subprojects compiling the source against specific Groovy version from the Maven repository.
 
-ciBuildTasks = [ ]
+final ciBuildTasks = [ ]
 
 forEachDistributionVersion { projectName->
   final groovyVersion = groovyVersions[ projectName.replace ( artifact + mavenNameExtension , '' ) ]
@@ -366,7 +366,7 @@ forEachDistributionVersion { projectName->
     }
     *
     */
-    binCopySpec = copySpec {
+    final binCopySpec = copySpec {
       final scriptsDirectory = '../scripts'
       from ( '..' ) { include 'README*' }
       into ( 'conf' ) { from ( scriptsDirectory + '/conf' ) { include '*.conf' } } 
@@ -406,9 +406,9 @@ forEachDistributionVersion { projectName->
 //
 //  Create the standalone distribution.
 
-projectNameForStandalone = 'gant_groovy' + groovyStandaloneSeries
+final projectNameForStandalone = 'gant_groovy' + groovyStandaloneSeries
 
-standaloneCopySpec = copySpec {
+final standaloneCopySpec = copySpec {
   final scriptsDirectory = 'scripts'
   final projectBase = project projectNameForStandalone
   from ( '.' ) { include 'README*' }
@@ -459,7 +459,7 @@ task clean ( type: Delete ) {
 
 final packageName = 'gant-standalone'
 final architecture = 'all'
-createdDebFileName = packageName + '_' + gantVersion + '-' + debPackagingNumber + '_' + architecture + '.deb'
+final createdDebFileName = packageName + '_' + gantVersion + '-' + debPackagingNumber + '_' + architecture + '.deb'
 
 task standaloneDeb ( dependsOn : standaloneBinTgz , description : 'Create a deb for use with Debian and Ubuntu.' ) << {
   //final packageName = 'gant-standalone'
@@ -539,7 +539,7 @@ distributionTasks += [ docTgz , docZip ]
 //
 //  Create the source distribution.
 
-srcContent = [
+final srcContent = [
   'artwork/' , 'documentation/' , 'examples/' , 'packaging' , 'scripts/' , 'src/' ,
   'build.gradle' , 'settings.gradle' , 'gradlew' ,'gradlew.bat' , 'wrapper/' ,
   'ciBuild' ,
@@ -674,7 +674,7 @@ task uploadDebs ( type : Upload , dependsOn : buildDebs , description : 'Upload 
 //
 //  Do a complete release.
 
-archivesUploadTasks = [ ]
+final archivesUploadTasks = [ ]
 forEachDistributionVersion { archivesUploadTasks << ':' + it + ':uploadArchives'}
 
 task uploadRelease ( dependsOn: archivesUploadTasks + [ uploadDistribution , uploadDebs ] , description : 'Upload all elements of a release.' )
@@ -686,7 +686,7 @@ task uploadRelease ( dependsOn: archivesUploadTasks + [ uploadDistribution , upl
 task ciBuild ( description : 'Run just the builds that use Groovy from the Maven repository.  Used mainly on CI servers.' , dependsOn : ciBuildTasks )
 
 task wrapper ( type : Wrapper ) {
-  gradleVersion = '1.0-milestone-8a'
+  gradleVersion = '1.0-milestone-9'
 }
 
 task clobber ( description : 'Do a really detailed clean.' ) << {
