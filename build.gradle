@@ -210,16 +210,9 @@ subprojects {
     javadoc.options.docTitle = javadoc.title
   }
   groovydoc {
-    //  javadoc task depends on classes task.  groovydoc is not dependent on classes task and seems not to
-    //  need it.  Should we put a dependency in for symmetry or rely on it working not to bother?
-    ////dependsOn ( 'classes' )
-    packageNames = [ 'gant.*' , 'org.codehaus.gant.*' ] // Why have to have this when not needed for javadoc?
     overview = 'overview.html'
     includePrivate = false
-    encoding = 'UTF-8'
     use = true
-    author = 'true'
-    version = 'true'
     windowTitle = packageTitle
     docTitle = packageTitle
     header = packageTitle
