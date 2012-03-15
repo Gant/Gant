@@ -191,17 +191,19 @@ subprojects {
     include file ( 'src/integTest/groovy' ).absolutePath + '/org/codehaus/gant/ant/tests/*_Test.*'
   }
   final packageTitle = 'Gant ' + gantVersion
-  final copyrightString = 'Copyright &#169; 2006&#8211;9  The Codehaus.  All Rights Reserved.'
+  final copyrightString = 'Copyright &#169; 2006&#8211;12  The Codehaus.  All Rights Reserved.'
   javadoc {
-    options.overview 'overview.html'
-    options.showAll ( )
-    options.encoding 'UTF-8'
-    options.setUse true
-    options.author true
-    options.version true
-    options.windowTitle packageTitle
-    options.docTitle packageTitle
-    options.footer copyrightString
+    options {
+      overview 'overview.html'
+      showAll ( )
+      encoding 'UTF-8'
+      setUse true
+      author true
+      version true
+      windowTitle packageTitle
+      docTitle packageTitle
+      footer copyrightString
+    }
   }
   javadoc.doFirst {
     javadoc.title = packageTitle
