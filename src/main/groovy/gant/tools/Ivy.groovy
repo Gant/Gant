@@ -20,7 +20,7 @@ import org.codehaus.gant.GantBinding
  *  Provide support for using Ivy.  This simply redirects all method calls to the standard
  * <code>GantBuilder</code> instance, which in turn selects the method from the Ivy jar. 
  *
- *  @author Russel Winder <russel@russel.org.uk>
+ *  @author Russel Winder <russel@winder.org.uk>
  */
 final class Ivy {
   private final GantBinding binding ;

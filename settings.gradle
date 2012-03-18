@@ -12,6 +12,6 @@
 //  implied. See the License for the specific language governing permissions and limitations under the
 //  License.
 //
-//  Author : Russel Winder <russel@russel.org.uk>
+//  Author : Russel Winder <russel@winder.org.uk>
 
 include 'gant' , 'gant_groovy1.7' , 'gant_groovy1.8' , 'gant_groovy2.0'

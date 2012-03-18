@@ -20,7 +20,7 @@ import org.codehaus.gant.GantBinding
  *  Provides methods for executing operating system commands ensuring that the pipes are flushed and
  *  so the execution cannot block on full pipes.
  *
- *  @author Russel Winder <russel@russel.org.uk>
+ *  @author Russel Winder <russel@winder.org.uk>
  */
 final class Execute {
   private final GantBinding binding ;

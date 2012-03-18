@@ -21,7 +21,7 @@ import org.codehaus.gant.tests.GantTestCase
  *
  *  <p>Original idea for the test due to Peter Ledbrook.</p>
  *
- *  @author Russel Winder <russel@russel.org.uk>
+ *  @author Russel Winder <russel@winder.org.uk>
  */
 final class GANT_33_Test extends GantTestCase {
   private final buildScript =  '''

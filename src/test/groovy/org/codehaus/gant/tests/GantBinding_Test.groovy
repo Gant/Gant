@@ -22,7 +22,7 @@ import org.codehaus.gant.IncludeTool
 /**
  *  A test for the <code>GantBinding</code> class.
  *
- *  @author Russel Winder <russel@russel.org.uk>
+ *  @author Russel Winder <russel@winder.org.uk>
  */
 final class GantBinding_Test extends GantTestCase {
   final targetName = 'targetName'

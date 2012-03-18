@@ -17,7 +17,7 @@ package org.codehaus.gant.tests
 /**
  *  A test to ensure certain options get processed correctly.
  *
- *  @author Russel Winder <russel@russel.org.uk>
+ *  @author Russel Winder <russel@winder.org.uk>
  */
 final class Options_Test extends GantTestCase {
   private final targetName = 'printDefinitions'

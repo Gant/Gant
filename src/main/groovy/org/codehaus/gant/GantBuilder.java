@@ -36,7 +36,7 @@ import org.apache.tools.ant.Project ;
  *  dry-run capability, and things to help support interaction between Gant and the underlying
  *  <code>Project</code>.
  *
- *  @author Russel Winder <russel@russel.org.uk>
+ *  @author Russel Winder <russel@winder.org.uk>
  */
 public class GantBuilder extends AntBuilder {
   /**

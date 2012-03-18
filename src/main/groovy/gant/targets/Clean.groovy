@@ -21,7 +21,7 @@ import org.codehaus.gant.GantBinding
  *  Ant pattern specifications and directory names for clean and for clobber.  The lists are used as the
  *  specifications when the clean or clobber methods are called.
  *
- *  @author Russel Winder <russel@russel.org.uk>
+ *  @author Russel Winder <russel@winder.org.uk>
  */
 final class Clean {
   private GantBinding binding

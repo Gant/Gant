@@ -17,7 +17,7 @@ package org.codehaus.gant.tests
 /**
  *  A test for the prehook and posthook interceptors.
  *
- *  @author Russel Winder <russel@russel.org.uk>
+ *  @author Russel Winder <russel@winder.org.uk>
  */
 final class Hooks_Test extends GantTestCase {
   def targetName = 'trial'

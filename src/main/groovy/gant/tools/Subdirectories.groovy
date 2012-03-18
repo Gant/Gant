@@ -20,7 +20,7 @@ import org.codehaus.gant.GantState
 /**
  *  Provides methods for executing processes in all subdirectories of the working directory.
  *
- *  @author Russel Winder <russel@russel.org.uk>
+ *  @author Russel Winder <russel@winder.org.uk>
  */
 final class Subdirectories {
   private final GantBinding binding ;

@@ -19,7 +19,7 @@ import org.codehaus.gant.GantBinding
 /**
  *  Provide support for supporting LaTeX document processing.
  *
- *  @author Russel Winder <russel@russel.org.uk>
+ *  @author Russel Winder <russel@winder.org.uk>
  */
 class LaTeX {
   public final ltxExtension = '.ltx'

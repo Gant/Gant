@@ -17,7 +17,7 @@ package org.codehaus.gant.tests
 /**
  *  A test to ensure that creating a new Gant object and using works.
  *
- *  @author Russel Winder <russel@russel.org.uk>
+ *  @author Russel Winder <russel@winder.org.uk>
  */
 final class SubGant_Test extends GantTestCase {
   private final targetName = 'targetName'

@@ -26,7 +26,7 @@ import org.apache.tools.ant.Project ;
  *  contains things that should be in the <code>Gant</code> class but could not be.  All this is no longer
  *  true, so the material could go back into the <code>Gant</code> class.</p>
  *
- *  @author Russel Winder <russel@russel.org.uk>
+ *  @author Russel Winder <russel@winder.org.uk>
  */
 public class GantState {
 

@@ -19,7 +19,7 @@ import org.codehaus.gant.tests.GantTestCase
 /**
  *  A test to ensure that the Execute tool is not broken.
  *
- *  @author Russel Winder <russel@russel.org.uk>
+ *  @author Russel Winder <russel@winder.org.uk>
  */
 final class Execute_Test extends GantTestCase {
   final targetName = 'testing'

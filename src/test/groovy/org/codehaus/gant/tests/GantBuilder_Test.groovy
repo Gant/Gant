@@ -20,7 +20,7 @@ import org.codehaus.gant.GantState
 /**
  *  A test for the <code>GantBuilder</code> class.
  *
- *  @author Russel Winder <russel@russel.org.uk>
+ *  @author Russel Winder <russel@winder.org.uk>
  */
 final class GantBuilder_Test extends GantTestCase {
   void testSetMessageOutputLevel ( ) {

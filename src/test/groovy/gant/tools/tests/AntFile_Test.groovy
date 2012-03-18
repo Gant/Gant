@@ -19,7 +19,7 @@ import org.codehaus.gant.tests.GantTestCase
 /**
  *  A test to ensure that the AntFile tool is not broken.
  *
- *  @author Russel Winder <russel@russel.org.uk>
+ *  @author Russel Winder <russel@winder.org.uk>
  */
 final class AntFile_Test extends GantTestCase {
 

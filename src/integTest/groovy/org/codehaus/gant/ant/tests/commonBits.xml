@@ -15,7 +15,7 @@
    implied. See the License for the specific language governing permissions and limitations under the
    License.
   
-   Author : Russel Winder <russel@russel.org.uk>
+   Author : Russel Winder <russel@winder.org.uk>
 -->
 
 <project name="Common Ant File Bits for Gant Ant Task Test" xmlns:artifact="urn:maven-artifact-ant" basedir="." >

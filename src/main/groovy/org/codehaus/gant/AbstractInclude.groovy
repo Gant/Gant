@@ -19,7 +19,7 @@ package org.codehaus.gant
  *
  *  @see IncludeTargets
  *  @see IncludeTool
- *  @author Russel Winder <russel@russel.org.uk>
+ *  @author Russel Winder <russel@winder.org.uk>
  */
 abstract class AbstractInclude {
   /**

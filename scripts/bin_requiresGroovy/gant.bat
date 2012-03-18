@@ -14,7 +14,7 @@
 @rem  implied. See the License for the specific language governing permissions and limitations under the
 @rem  License.
 @rem
-@rem  Author : Russel Winder <russel@russel.org.uk>
+@rem  Author : Russel Winder <russel@winder.org.uk>
 
 @rem  Gant initiation script for Windows.
 

@@ -20,7 +20,7 @@ import org.codehaus.gant.GantState
 /**
  *  A test to ensure that the target listing works. 
  *
- *  @author Russel Winder <russel@russel.org.uk>
+ *  @author Russel Winder <russel@winder.org.uk>
  */
 final class ToolMetaClassLookup_Test extends GantTestCase {
   private final something = 'something'

@@ -17,7 +17,7 @@ package org.codehaus.gant.tests
 /**
  *  A test to ensure that the targets method lookup works.
  *
- *  @author Russel Winder <russel@russel.org.uk>
+ *  @author Russel Winder <russel@winder.org.uk>
  */
 final class TargetMetaClassLookup_Test extends GantTestCase {
   private final something = 'something'

@@ -32,7 +32,7 @@ import org.codehaus.gant.GantState ;
  *  A Gant test case: Adds the required input stream manipulation features to avoid replication of code.
  *  Also prepare a new instance of Gant for each test.
  *
- *  @author Russel Winder <russel@russel.org.uk>
+ *  @author Russel Winder <russel@winder.org.uk>
  */
 public abstract class GantTestCase extends GroovyTestCase {
   public static final String exitMarker = "------ " ;

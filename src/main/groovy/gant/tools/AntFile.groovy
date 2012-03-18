@@ -22,7 +22,7 @@ import org.apache.tools.ant.ProjectHelper
  *  Support for including Ant XML files into a Gant run which sets up the targets from the Ant file as Gant
  *  targets.
  *
- *  @author Russel Winder <russel@russel.org.uk>
+ *  @author Russel Winder <russel@winder.org.uk>
  */
 final class AntFile {
   private final GantBinding binding

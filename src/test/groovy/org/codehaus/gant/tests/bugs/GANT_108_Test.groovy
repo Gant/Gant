@@ -12,7 +12,7 @@
 //  implied. See the License for the specific language governing permissions and limitations under the
 //  License.
 //
-//  Author : Russel Winder <russel@russel.org.uk>
+//  Author : Russel Winder <russel@winder.org.uk>
 
 package  org.codehaus.gant.tests.bugs
 

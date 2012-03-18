@@ -17,7 +17,7 @@ package org.codehaus.gant.tests
 /**
  *  A test to ensure that using standard Groovy functions works.
  *
- *  @author Russel Winder <russel@russel.org.uk>
+ *  @author Russel Winder <russel@winder.org.uk>
  */
 final class CallPrint_Test extends GantTestCase {
   final outputString = 'Hello World.'

@@ -20,7 +20,7 @@ import org.codehaus.gant.GantState
 /**
  *  A class to provide the Maven 2 style lifecycle targets associated with a project.
  *
- *  @author Russel Winder <russel@russel.org.uk>
+ *  @author Russel Winder <russel@winder.org.uk>
  */
 final class Maven {
   private final defaultJUnitVersion = '4.8.1'

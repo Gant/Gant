@@ -12,7 +12,7 @@
 //  implied. See the License for the specific language governing permissions and limitations under the
 //  License.
 //
-//  Author : Russel Winder <russel@russel.org.uk>
+//  Author : Russel Winder <russel@winder.org.uk>
 
 //  The overal algorithm here is to take a standalone distribution (could use either a tarball or a
 //  zipfile, prefer to use a tarball if it exists) expand it and then repackage into a deb file.  Do not

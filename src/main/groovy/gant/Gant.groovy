@@ -89,7 +89,7 @@ import org.codehaus.groovy.runtime.InvokerInvocationException
  *  should notbe there, we have to have it in the source because asterisk followed by solidus is end of
  *  comment in Groovy</em></p>
  *
- *  @author Russel Winder <russel@russel.org.uk>
+ *  @author Russel Winder <russel@winder.org.uk>
  *  @author Graeme Rocher <graeme.rocher@gmail.com>
  *  @author Peter Ledbrook
  */

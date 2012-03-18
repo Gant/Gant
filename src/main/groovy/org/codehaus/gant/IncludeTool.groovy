@@ -20,7 +20,7 @@ package org.codehaus.gant
  *  <code>Map</code>.  The map contains a binding of various useful things, in particular there is always an
  *  entry 'Ant' to give access to the global static instance of <code>AntBuilder</code>.
  *
- *  @author Russel Winder <russel@russel.org.uk>
+ *  @author Russel Winder <russel@winder.org.uk>
  */
 class IncludeTool extends AbstractInclude {
   /**

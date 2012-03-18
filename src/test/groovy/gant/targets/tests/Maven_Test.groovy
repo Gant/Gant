@@ -22,7 +22,7 @@ import org.codehaus.gant.tests.GantTestCase
 /**
  *  A test to ensure that the Maven targets are not broken.
  *
- *  @author Russel Winder <russel@russel.org.uk>
+ *  @author Russel Winder <russel@winder.org.uk>
  */
 final class Maven_Test extends GantTestCase {
   void testLoadingTargets ( ) {

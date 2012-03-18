@@ -20,7 +20,7 @@ package org.codehaus.gant.tests
  *  <p>This test stems from a mis-feature report made on the Groovy/Gant user mailing list by Mike
  *  Nooney.</p>
  *
- *  @author Russel Winder <russel@russel.org.uk>
+ *  @author Russel Winder <russel@winder.org.uk>
  */
 final class XMLProcessing_Test extends GantTestCase {
   public void testMikeNooneyXMLExampleToEnsureNoProblemWithXMLJars ( ) {

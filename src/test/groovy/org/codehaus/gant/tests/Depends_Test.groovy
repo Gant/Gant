@@ -18,7 +18,7 @@ package org.codehaus.gant.tests
  *  A test for the depends processing, i.e. make sure the depends calls the method when appropriate and not
  *  when appropriate.
  *
- *  @author Russel Winder <russel@russel.org.uk>
+ *  @author Russel Winder <russel@winder.org.uk>
  */
 final class Depends_Test extends GantTestCase {
   final outputMessage = 'done.'

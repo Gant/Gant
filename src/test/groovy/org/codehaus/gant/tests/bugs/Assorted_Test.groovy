@@ -12,7 +12,7 @@
 //  implied. See the License for the specific language governing permissions and limitations under the
 //  License.
 //
-//  Author : Russel Winder <russel@russel.org.uk>
+//  Author : Russel Winder <russel@winder.org.uk>
 
 //  This file contains the individual tests resulting from specific bug reports that do not require their
 //  own test class (because there are not a set of tests), and they do not obviously belong in another test

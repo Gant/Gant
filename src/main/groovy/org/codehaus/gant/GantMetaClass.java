@@ -44,7 +44,7 @@ import org.apache.tools.ant.BuildException ;
  *  binding called during execution of the Gant specification must be logged so that when a depends happens
  *  the full closure call history is available.</p>
  *
- *  @author Russel Winder <russel@russel.org.uk>
+ *  @author Russel Winder <russel@winder.org.uk>
  */
 public class GantMetaClass extends DelegatingMetaClass {
   /**

@@ -17,7 +17,7 @@ package org.codehaus.gant.tests
 /**
  *  A test to ensure that calling an Ant task without the Ant object works as required.
  *
- *  @author Russel Winder <russel@russel.org.uk>
+ *  @author Russel Winder <russel@winder.org.uk>
  */
 final class NoAntObject_Test extends GantTestCase {
   private final targetName = 'targetName'
