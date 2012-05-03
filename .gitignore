@@ -1,11 +1,11 @@
 *~
 artwork/*.png
-bin
-out
+bin/*
+out/*
 Gant.iws
 .gradle
-build
-gant
-gant_groovy*
+build/*
+gant/*
+gant_groovy*/*
 packaging/AntDebTask/debs
 texput.log
