@@ -89,9 +89,9 @@ public class GantBuilder extends AntBuilder {
           }
           sb.append ( '\n' ) ;
           getProject ( ).log ( sb.toString ( ) ) ;
-          if ( args.length == 2 ) { ( (Closure) args[1] ).call ( ) ; }
+          if ( args.length == 2 ) { ( (Closure<?>) args[1] ).call ( ) ; }
         }
-        else if ( args[0] instanceof Closure ) { ( (Closure) args[0] ).call ( ) ; }
+        else if ( args[0] instanceof Closure ) { ( (Closure<?>) args[0] ).call ( ) ; }
         else { throw new RuntimeException ( "Unexpected type of parameter to method " + name ) ; }
       }
       return null ;

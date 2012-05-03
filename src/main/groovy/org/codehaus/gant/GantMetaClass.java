@@ -56,7 +56,7 @@ public class GantMetaClass extends DelegatingMetaClass {
    *  Should a different data structure be used, one that is a bit more thread safe?  Arguably it is
    *  reasonable for this to be a synchronized object.</p>
    */
-  private static final Set<Closure> methodsInvoked = new HashSet<Closure> ( ) ;
+  private static final Set<Closure<?>> methodsInvoked = new HashSet<Closure<?>> ( ) ;
   /**
    *  The binding (aka global shared state) that is being used.
    */
@@ -75,7 +75,7 @@ public class GantMetaClass extends DelegatingMetaClass {
    *  @return the result of the <code>Closure</code> call, or <code>null</code> if the closure was not
    *  called.
    */
-  private Object processClosure ( final Closure closure ) {
+  private Object processClosure ( final Closure<?> closure ) {
     if ( ! methodsInvoked.contains ( closure ) ) {
       methodsInvoked.add ( closure ) ;
       return closure.call ( ) ;
@@ -92,14 +92,14 @@ public class GantMetaClass extends DelegatingMetaClass {
    */
   private Object processArgument ( final Object argument ) {
     final Object returnObject ;
-    if ( argument instanceof Closure ) { returnObject = processClosure ( (Closure) argument ) ; }
+    if ( argument instanceof Closure ) { returnObject = processClosure ( (Closure<?>) argument ) ; }
     else {
       final String errorReport = "depends called with an argument (" + argument + ") that is not a known target or list of targets." ;
       Object theArgument = argument ;
       if ( theArgument instanceof GString ) { theArgument = theArgument.toString ( ) ; }
       if ( theArgument instanceof String ) {
         final Object entry = binding.getVariable ( (String) theArgument ) ;
-        if ( ( entry != null ) && ( entry instanceof Closure ) ) { returnObject = processClosure ( (Closure) entry ) ; }
+        if ( ( entry != null ) && ( entry instanceof Closure ) ) { returnObject = processClosure ( (Closure<?>) entry ) ; }
         else { throw new RuntimeException ( errorReport ) ; }
       }
       else { throw new RuntimeException ( errorReport ) ; }
@@ -132,7 +132,7 @@ public class GantMetaClass extends DelegatingMetaClass {
       try {
         returnObject = super.invokeMethod ( object , methodName , arguments ) ;
         try {
-          final Closure closure = (Closure) binding.getVariable ( methodName ) ;
+          final Closure<?> closure = (Closure<?>) binding.getVariable ( methodName ) ;
           if ( closure != null ) { methodsInvoked.add ( closure ) ; }
         }
         catch ( final MissingPropertyException mpe ) { /* Purposefully empty */ }

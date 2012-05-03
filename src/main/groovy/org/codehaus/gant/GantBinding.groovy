@@ -47,7 +47,6 @@ public class GantBinding extends Binding implements Cloneable {
    *  @param binding The <code>Binding</code> to use as a base of maplets to initialize the
    *  <code>GantBinding</code> with.
    */
-  //  TODO : Check to see if this constructor is ever needed.
   public GantBinding ( final Binding binding ) {
     super ( binding.variables )
     setVariable ( 'ant' , new GantBuilder ( ) )
@@ -82,8 +81,8 @@ public class GantBinding extends Binding implements Cloneable {
    *  Call a target wrapped in <code>BuildListener</code> event handler.
    */
   private withTargetEvent ( targetName , targetDescription , Closure callable ) {
-    def antTarget = new Target ( name : targetName , project : ant.antProject , description : targetDescription )
-    def event = new GantEvent ( antTarget , this )
+    final antTarget = new Target ( name : targetName , project : ant.antProject , description : targetDescription )
+    final event = new GantEvent ( antTarget , this )
     def targetResult = null
     try {
       buildListeners.each { BuildListener b -> b.targetStarted ( event ) }
