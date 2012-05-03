@@ -22,6 +22,7 @@ import groovy.lang.MissingPropertyException ;
  *  @author Peter Ledbrook 
  */
 public class TargetMissingPropertyException extends GantException {
+  public static final long serialVersionUID = 1 ;
   public TargetMissingPropertyException ( ) { super ( ) ; }
   public TargetMissingPropertyException ( final String msg ) { super ( msg ) ; }
   public TargetMissingPropertyException ( final MissingPropertyException e ) { super ( e ) ; }

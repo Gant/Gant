@@ -20,6 +20,7 @@ package gant ;
  *  @author Peter Ledbrook
  */
 public class MissingTargetException extends GantException {
+  public static final long serialVersionUID = 1 ;
   public MissingTargetException ( ) { super ( ) ; }
   public MissingTargetException ( final String msg ) { super ( msg ) ; }
   public MissingTargetException ( final Exception e ) { super ( e ) ; }

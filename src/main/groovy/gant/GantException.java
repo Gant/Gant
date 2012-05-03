@@ -27,6 +27,7 @@ import org.apache.tools.ant.BuildException ;
  *  @author Peter Ledbrook
  */
 public class GantException extends /*RuntimeException*/ BuildException {
+  public static final long serialVersionUID = 1 ;
   public GantException ( ) { super( ) ; }
   public GantException ( final String msg ) { super ( msg ) ; }
   public GantException ( final Exception e ) { super ( e ) ; }

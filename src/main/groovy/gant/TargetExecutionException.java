@@ -20,6 +20,7 @@ package gant ;
  *  @author Peter Ledbrook 
  */
 public class TargetExecutionException extends GantException {
+  public static final long serialVersionUID = 1 ;
   public TargetExecutionException ( ) { super ( ) ; }
   public TargetExecutionException ( final String msg ) { super ( msg ) ; }
   public TargetExecutionException ( final Exception e ) { super ( e ) ; }
