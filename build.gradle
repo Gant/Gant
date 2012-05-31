@@ -57,7 +57,7 @@ final groovyArtefactName = 'groovy-all'
 
 ext.groovyVersions = [
   '1.8' : '1.8.6' ,
-  '2.0' : '2.0.0-beta-3'
+  '2.0' : '2.0.0-rc-1'
 ]
 
 //  One series of Groovy needs using for the standalone distribution. This version of Groovy will be packaged with
@@ -165,7 +165,7 @@ subprojects {
   dependencies {
     compile (
       'commons-cli:commons-cli:1.2' ,
-      'org.apache.ant:ant:1.8.3'
+      'org.apache.ant:ant:1.8.4'
     )
     testCompile 'junit:junit:4.10'
     testRuntime 'org.apache.ivy:ivy:2.2.0'
