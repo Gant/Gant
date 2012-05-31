@@ -297,15 +297,6 @@
     <option name="SDK_HOME" value="$GANT_HOME$" />
   </component>
   <component name="GradleSettings">
-    <option name="expandStates">
-      <map>
-        <entry key="Gant" value="true" />
-        <entry key="Main/Gant" value="true" />
-        <entry key="Test/Gant" value="true" />
-        <entry key="dependencies/Main/Gant" value="true" />
-        <entry key="dependencies/Test/Gant" value="true" />
-      </map>
-    </option>
     <option name="linkedProjectPath" value="$PROJECT_DIR$/build.gradle" />
   </component>
   <component name="GradleUISettings">
