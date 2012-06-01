@@ -2,9 +2,9 @@
 
 Gant is a lightweight dependency programming framework for Groovy and Java systems.
 
-Gant was originally created as a build framework: [Groovy](http://groovy.codehaus.org) has an AntBuilder and
+Gant was originally created as a build framework: [Groovy](http://groovy.codehaus.org) has AntBuilder and
 Gant was a framework built around it, created so as to be able to avoid using XML with Ant. Groovy makes a
-much better build specification that XML and Gant gave access to all the Ant tasks available from Ant. So
+much better build specification language than XML; Gant gives access to all the Ant tasks using Groovy. So
 successful was this model that Gant was forked to create the official Groovy Front-End to Ant that is now an
 Ant standard feature.
 
@@ -80,16 +80,17 @@ The messages on this output are exactly the strings associated with the target n
 # The Source
 
 The Gant mainline source is in a [Git repository](https://github.com/Gant/Gant) held on GitHub. Feel free to
-fork amend and send in pull requests. The master branch is currently both the 1.9.x series maintenance
-branch and the development branch. All development should though happen on feature branches.
+fork, amend and send in pull requests. The master branch is currently both the 1.9.x series maintenance
+branch and the development branch. All development should though happen on feature branches until accepted
+and merged into master..
 
 The Git repository held at Codehaus is an administrative mirror and shouldn't really be the repository to
 fork in order to work on Gant development.
 
 # Support
 
-Although GitHub is used for the source itself, Codehaus is used for the [website](http://gant.codehaus.org),
-wiki, [issue tracker](http://jira.codehaus.org/browse/GANT) and
+Although GitHub is used for the Gant source, [Codehaus](http://www.codehaus.org) is used for the
+[website](http://gant.codehaus.org), wiki, [issue tracker](http://jira.codehaus.org/browse/GANT) and
 [continuous integration](http://bamboo.ci.codehaus.org/browse/GANT).
 
 # Licence
