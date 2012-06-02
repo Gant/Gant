@@ -57,7 +57,7 @@ final groovyArtefactName = 'groovy-all'
 
 ext.groovyVersions = [
   '1.8' : '1.8.6' ,
-  '2.0' : '2.0.0-rc-1'
+  '2.0' : '2.0.0-rc-2'
 ]
 
 //  One series of Groovy needs using for the standalone distribution. This version of Groovy will be packaged with
@@ -158,7 +158,8 @@ subprojects {
     maven  { url 'http://repository.codehaus.org/' }
     //
     //  When disconnected from the Internet the above cannot be found.  To make sure things work use a local
-    //  Maven cache as well.  Assumes the cache has all the needed content.
+    //  Maven cache as well.  Assumes the cache has all the needed content. This also helps when
+    //  experimenting with SNAPSHOT versions of Groovy.
     //
     mavenLocal ( )
   }
