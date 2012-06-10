@@ -115,10 +115,14 @@ allprojects {
   version = gantVersion
 }
 
+final signingPropertiesAreSet = {
+  project.hasProperty ( 'signing.keyId' ) && project.hasProperty ( 'signing.password' ) && project.hasProperty ( 'signing.secretKeyRingFile' ) 
+}
+
 subprojects {
   apply plugin : 'groovy'
   apply plugin : 'osgi'
-  apply plugin : 'signing'
+  if ( signingPropertiesAreSet ( ) ) { apply plugin : 'signing' }
   sourceCompatibility = 6
   targetCompatibility = 6
   configurations { deployJars }
@@ -185,8 +189,10 @@ subprojects {
   task integTest ( type : Test , dependsOn : /* 'assemble' */ 'classes' ) {
     include file ( 'src/integTest/groovy' ).absolutePath + '/org/codehaus/gant/ant/tests/*_Test.*'
   }
-  signing {
-    sign configurations.archives
+  if ( signingPropertiesAreSet ( ) ) {
+    signing {
+      sign configurations.archives
+    }
   }
   final packageTitle = 'Gant ' + gantVersion
   final copyrightString = 'Copyright &#169; 2006&#8211;12  The Codehaus.  All Rights Reserved.'
@@ -358,6 +364,9 @@ forEachDistributionVersion { projectName->
       if ( taskGraph.hasTask ( uploadArchives ) ) {
         if ( ! project.hasProperty ( 'gant_experimentalMavenRepository' ) && ! ( project.hasProperty ( 'codehausUsername') && project.hasProperty ( 'codehausPassword' ) ) ) {
           throw new RuntimeException ( 'Must define both codehausUsername and codehausPassword to upload archives.')
+        }
+        if ( ! signingPropertiesAreSet ( ) ) {
+          throw new RuntimeException ( 'Must define signing.keyId, signing.password, and signing.secretKeyRingFile' )
         }
         uploadArchives.repositories.mavenDeployer {
           uniqueVersion = false
