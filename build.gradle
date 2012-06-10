@@ -345,7 +345,7 @@ forEachDistributionVersion { projectName->
             configuration = configurations.deployJars
             beforeDeployment { MavenDeployment deployment -> signing.signPom(deployment) }
             if ( project.hasProperty ( 'gant_experimentalMavenRepository' ) ) {
-              repository url : "file://${projectDir}/../build/${gant_experimentalMavenRepository}"
+              repository url : "file://${rootProject.buildDir}/${gant_experimentalMavenRepository}"
             } else {
               //repository ( url : 'dav:https://dav.codehaus.org/repository/gant/' ) {
               repository ( url : 'https://dav.codehaus.org/repository/gant/' ) {
