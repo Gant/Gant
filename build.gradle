@@ -154,14 +154,9 @@ subprojects {
     }
   }
   repositories {
+    if ( project.hasProperty ( 'gant_useMavenLocal' ) && gant_useMavenLocal ) { mavenLocal ( ) }
     mavenCentral ( )
     maven  { url 'http://repository.codehaus.org/' }
-    //
-    //  When disconnected from the Internet the above cannot be found.  To make sure things work use a local
-    //  Maven cache as well.  Assumes the cache has all the needed content. This also helps when
-    //  experimenting with SNAPSHOT versions of Groovy.
-    //
-    mavenLocal ( )
   }
   dependencies {
     compile (
@@ -318,6 +313,30 @@ project ( ':gant' ) {
 
 final ciBuildTasks = [ ]
 
+final pomSpecification = {
+  project {
+    name 'Gant'
+    url 'http://gant.codehaus.org.uk'
+    description 'A framework for programming dependencies.'
+    packaging 'bundle'
+    licenses {
+      license {
+        name 'The Apache Software License, Version 2.0'
+        url 'http://www.apache.org/licenses/LICENSE-2.0.txt'
+        distribution 'repo'
+      }
+    }
+    scm {
+      url 'scm:git@github.com:Gant/Gant.git'
+      connection 'scm:git@github.com:Gant/Gant.git'
+      developerConnection 'scm:git@github.com:Gant/Gant.git'
+    }
+    developers {
+      developer { name 'Russel Winder' }
+    }
+  }
+}
+
 forEachDistributionVersion { projectName->
   final groovyVersion = groovyVersions[ projectName.replace ( artifact + mavenNameExtension , '' ) ]
   project ( projectName ) {
@@ -334,50 +353,29 @@ forEachDistributionVersion { projectName->
                          gradleClasspathString : classPath.join ( System.properties.'path.separator' )
                        ] )
    
+    install.repositories.mavenInstaller { pom pomSpecification }
     gradle.taskGraph.whenReady { taskGraph -> 
       if ( taskGraph.hasTask ( uploadArchives ) ) {
         if ( ! project.hasProperty ( 'gant_experimentalMavenRepository' ) && ! ( project.hasProperty ( 'codehausUsername') && project.hasProperty ( 'codehausPassword' ) ) ) {
           throw new RuntimeException ( 'Must define both codehausUsername and codehausPassword to upload archives.')
         }
-        uploadArchives {
-          repositories.mavenDeployer {
-            uniqueVersion = false
-            configuration = configurations.deployJars
-            beforeDeployment { MavenDeployment deployment -> signing.signPom(deployment) }
-            if ( project.hasProperty ( 'gant_experimentalMavenRepository' ) ) {
-              repository url : "file://${rootProject.buildDir}/${gant_experimentalMavenRepository}"
-            } else {
-              //repository ( url : 'dav:https://dav.codehaus.org/repository/gant/' ) {
-              repository ( url : 'https://dav.codehaus.org/repository/gant/' ) {
-                authentication userName : codehausUsername , password : codehausPassword
-              }
-              //snapshotRepository ( url : 'dav:https://dav.codehaus.org/snapshots.repository/gant/' ) {
-              snapshotRepository ( url : 'https://dav.codehaus.org/snapshots.repository/gant/' ) {
-                authentication userName: codehausUsername , password : codehausPassword
-              }
+        uploadArchives.repositories.mavenDeployer {
+          uniqueVersion = false
+          configuration = configurations.deployJars
+          beforeDeployment { MavenDeployment deployment -> signing.signPom(deployment) }
+          if ( project.hasProperty ( 'gant_experimentalMavenRepository' ) ) {
+            repository url : "file://${rootProject.buildDir}/${gant_experimentalMavenRepository}"
+          } else {
+            //repository ( url : 'dav:https://dav.codehaus.org/repository/gant/' ) {
+            repository ( url : 'https://dav.codehaus.org/repository/gant/' ) {
+              authentication userName : codehausUsername , password : codehausPassword
             }
-            pom.project {
-              name 'Gant'
-              url 'http://gant.codehaus.org.uk'
-              description 'A framework for programming dependencies.'
-              packaging 'bundle'
-              licenses {
-                license {
-                  name 'The Apache Software License, Version 2.0'
-                  url 'http://www.apache.org/licenses/LICENSE-2.0.txt'
-                  distribution 'repo'
-                }
-              }
-              scm {
-                url 'scm:git@github.com:Gant/Gant.git'
-                connection 'scm:git@github.com:Gant/Gant.git'
-                developerConnection 'scm:git@github.com:Gant/Gant.git'
-              }
-              developers {
-                developer { name 'Russel Winder' }
-              }
+            //snapshotRepository ( url : 'dav:https://dav.codehaus.org/snapshots.repository/gant/' ) {
+            snapshotRepository ( url : 'https://dav.codehaus.org/snapshots.repository/gant/' ) {
+              authentication userName: codehausUsername , password : codehausPassword
             }
           }
+          pom pomSpecification
         }
       }
     }
