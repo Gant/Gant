@@ -17,7 +17,6 @@
 //  Author : Russel Winder <russel@winder.org.uk>
 
 import org.apache.tools.ant.filters.ReplaceTokens
-//import org.gradle.api.artifacts.repositories.WebdavResolver
 
 ext.artifact = 'gant'
 ext.mavenNameExtension = '_groovy'
@@ -119,6 +118,7 @@ allprojects {
 subprojects {
   apply plugin : 'groovy'
   apply plugin : 'osgi'
+  apply plugin : 'signing'
   sourceCompatibility = 6
   targetCompatibility = 6
   configurations { deployJars }
@@ -189,6 +189,9 @@ subprojects {
   }
   task integTest ( type : Test , dependsOn : /* 'assemble' */ 'classes' ) {
     include file ( 'src/integTest/groovy' ).absolutePath + '/org/codehaus/gant/ant/tests/*_Test.*'
+  }
+  signing {
+    sign configurations.archives
   }
   final packageTitle = 'Gant ' + gantVersion
   final copyrightString = 'Copyright &#169; 2006&#8211;12  The Codehaus.  All Rights Reserved.'
@@ -330,37 +333,54 @@ forEachDistributionVersion { projectName->
                          GROOVY_ANT_TASK_TEST_VERSION :  groovyVersion ,
                          gradleClasspathString : classPath.join ( System.properties.'path.separator' )
                        ] )
-    try {
-      uploadArchives {
-        repositories.mavenDeployer {
-          uniqueVersion = false
-          configuration = configurations.deployJars
-          //repository ( url : 'dav:https://dav.codehaus.org/repository/gant/' ) {
-          repository ( url : 'https://dav.codehaus.org/repository/gant/' ) {
-            authentication userName : codehausUsername , password : codehausPassword
-          }
-          //snapshotRepository ( url : 'dav:https://dav.codehaus.org/snapshots.repository/gant/' ) {
-          snapshotRepository ( url : 'https://dav.codehaus.org/snapshots.repository/gant/' ) {
-            authentication userName: codehausUsername , password : codehausPassword
+   
+    gradle.taskGraph.whenReady { taskGraph -> 
+      if ( taskGraph.hasTask ( uploadArchives ) ) {
+        if ( ! project.hasProperty ( 'gant_experimentalMavenRepository' ) && ! ( project.hasProperty ( 'codehausUsername') && project.hasProperty ( 'codehausPassword' ) ) ) {
+          throw new RuntimeException ( 'Must define both codehausUsername and codehausPassword to upload archives.')
+        }
+        uploadArchives {
+          repositories.mavenDeployer {
+            uniqueVersion = false
+            configuration = configurations.deployJars
+            beforeDeployment { MavenDeployment deployment -> signing.signPom(deployment) }
+            if ( project.hasProperty ( 'gant_experimentalMavenRepository' ) ) {
+              repository url : "file://${projectDir}/../build/${gant_experimentalMavenRepository}"
+            } else {
+              //repository ( url : 'dav:https://dav.codehaus.org/repository/gant/' ) {
+              repository ( url : 'https://dav.codehaus.org/repository/gant/' ) {
+                authentication userName : codehausUsername , password : codehausPassword
+              }
+              //snapshotRepository ( url : 'dav:https://dav.codehaus.org/snapshots.repository/gant/' ) {
+              snapshotRepository ( url : 'https://dav.codehaus.org/snapshots.repository/gant/' ) {
+                authentication userName: codehausUsername , password : codehausPassword
+              }
+            }
+            pom.project {
+              name 'Gant'
+              url 'http://gant.codehaus.org.uk'
+              description 'A framework for programming dependencies.'
+              packaging 'bundle'
+              licenses {
+                license {
+                  name 'The Apache Software License, Version 2.0'
+                  url 'http://www.apache.org/licenses/LICENSE-2.0.txt'
+                  distribution 'repo'
+                }
+              }
+              scm {
+                url 'scm:git@github.com:Gant/Gant.git'
+                connection 'scm:git@github.com:Gant/Gant.git'
+                developerConnection 'scm:git@github.com:Gant/Gant.git'
+              }
+              developers {
+                developer { name 'Russel Winder' }
+              }
+            }
           }
         }
       }
     }
-    catch ( Exception e ) { 
-      //  If codehausUsername and/or codehausPassword are not defined, do nothing.
-    }
-    /*
-     *  This approach fails for CI servers.
-     *
-    gradle.taskGraph.whenReady { graph ->
-      if ( graph.hasTask ( uploadArchives ) ) {
-        // Ensure these properties are defined.  Fail early if they are not.
-        codehausUsername
-        codehausPassword
-      }
-    }
-    *
-    */
     final binCopySpec = copySpec {
       final scriptsDirectory = '../scripts'
       from ( '..' ) { include 'README*' }
@@ -504,6 +524,8 @@ Homepage: ${homepage}
   //  The deb Ant task appears not to record the name of the resultant deb file so we have to construct it
   //  by replicating the algorithm :-(( and leaving the result in the binding to be used elsewhere --
   //  i.e. by the uploading task.
+  println result
+  println ( result._description.synopsis , result._description.extendedFormatted )
   assert createdDebFileName == result._package + '_' + result._version + '_' + result._architecture + '.deb'
 }
 
