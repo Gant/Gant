@@ -510,7 +510,9 @@ Homepage: ${homepage}
   final result = ant.deb ( todir : debsDirectory , 'package' : packageName , section : section , priority : priority , architecture : architecture ,
                            depends : 'java2-runtime', postinst : packagingDirectory+ '/postinst' , prerm : packagingDirectory + '/prerm' ,
                            conflicts : 'gant' ) {
-    version upstream : gantVersion , debian : debPackagingNumber
+    //  Hack required to make Gradle get things right.
+    //version upstream : gantVersion , debian : debPackagingNumber
+    delegate.version upstream : gantVersion , debian : debPackagingNumber
     maintainer name : 'Russel Winder' , email : 'russel@russel.org.uk'
     //homepage homepage
     description synopsis : theSynopsis , theWords
@@ -522,8 +524,6 @@ Homepage: ${homepage}
   //  The deb Ant task appears not to record the name of the resultant deb file so we have to construct it
   //  by replicating the algorithm :-(( and leaving the result in the binding to be used elsewhere --
   //  i.e. by the uploading task.
-  println result
-  println ( result._description.synopsis , result._description.extendedFormatted )
   assert createdDebFileName == result._package + '_' + result._version + '_' + result._architecture + '.deb'
 }
 
