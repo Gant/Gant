@@ -1,7 +1,12 @@
-Updated to Groovy 1.8.6 and 2.0.0-beta-2.
+1.9.8
+-----
 
-Abandoned support for Groovy 1.7.x series. Groovy 1.8 series brough a parameterized Closure class and
+Updated to Groovy 1.8.6 and 2.0.0.
+
+Abandoned support for Groovy 1.7.x series. Groovy 1.8 series brought a parameterized Closure class and
 supporting the two versions of Closure in the same code base is too much hassle.
+
+This release was tirggered by the release of Groovy 2.0.0.
 
 
 1.9.7
