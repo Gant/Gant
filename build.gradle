@@ -37,8 +37,8 @@ ext.mavenNameExtension = '_groovy'
  *  The core difference is that for OSGi bundle numbers the qualifier is separated by a full stop where in
  *  other situations a minus is used.
  */
-final gantVersionBase = '1.9.8'
-final isPrereleaseSnapshot = false
+final gantVersionBase = '1.9.9'
+final isPrereleaseSnapshot = true
 
 final createVersionString = { isForOSGi ->
   return gantVersionBase + ( isPrereleaseSnapshot ? ( isForOSGi ? '.' : '-' ) + 'SNAPSHOT' : '' )
