@@ -95,7 +95,7 @@ final debTasks = [ ]
 
 //  Try the lightweight HTTP wagon.
 
-final webdavWagonName = 'org.apache.maven.wagon:wagon-http-lightweight:2.0'
+final webdavWagonName = 'org.apache.maven.wagon:wagon-http-lightweight:2.2'
 
 //  In creating distributions which include jar files for the source, javadoc, and groovydoc, it is
 //  imperative to ensure that they do not get located into the library directory for jars containing
