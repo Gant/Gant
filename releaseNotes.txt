@@ -1,3 +1,6 @@
+Updated to Groovy 1.8.7 and 2.0.1.
+
+
 1.9.8
 -----
 
