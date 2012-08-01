@@ -83,17 +83,18 @@ def forEachProject ( Closure c ) {
 forEachProject { item ->  if ( ! ( new File ( item ) ).isDirectory ( ) ) { mkdir item } }
 
 ext.distributionTasks = [ ]
-final debTasks = [ ]
+ext.debTasks = [ ]
 
 //  Using the JackRabbit wagon gets round some problems associated with uploading the distributions that
 //  occurs with the standard wagon.  However, it does not solve the problem of not creating missing
 //  directories that gives difficulties with new artefact uploads.  Have to cadaver in and create the
 //  hierarchy first :-(
 
-//webdavWagonName = 'org.apache.maven.wagon:wagon-webdav-jackrabbit:2.0' 
+//webdavWagonName = 'org.apache.maven.wagon:wagon-webdav-jackrabbit:2.2' 
 //webdavWagonName = 'org.apache.maven.wagon:wagon-webdav:1.0-beta-2'
 
-//  Try the lightweight HTTP wagon.
+//  Try the lightweight HTTP wagon. Still requires creating the directory structure with cadaver or
+//  equivalent :-(
 
 final webdavWagonName = 'org.apache.maven.wagon:wagon-http-lightweight:2.2'
 
@@ -108,7 +109,7 @@ final docsJarsDirName = 'docsJars'
 
 // =====================================================================
 //
-//  Specifications of things for all the (subprojects.
+//  Specifications of things for all the (sub)projects.
 
 allprojects {
   group =  'org.codehaus.gant'
@@ -373,6 +374,7 @@ forEachDistributionVersion { projectName->
           configuration = configurations.deployJars
           beforeDeployment { MavenDeployment deployment -> signing.signPom(deployment) }
           if ( project.hasProperty ( 'gant_experimentalMavenRepository' ) ) {
+            if ( ! gant_experimentalMavenRepository ) { throw new RuntimeException ( 'gant_experimentalMavenRepository value not reasonable.' ) }
             repository url : "file://${rootProject.buildDir}/${gant_experimentalMavenRepository}"
           } else {
             //repository ( url : 'dav:https://dav.codehaus.org/repository/gant/' ) {
@@ -470,7 +472,6 @@ distributionTasks += [ standaloneBinTgz , standaloneBinZip ]
 //
 //  Create the deb file of the standalone distribution.
 
-final antDebTaskDirectory = 'packaging' + System.properties.'file.separator' + 'AntDebTask'
 final debsDirectory = new File ( buildDir , 'debs' )
 final distDirectory = new File ( buildDir , 'dist' ) 
 
@@ -479,19 +480,36 @@ task clean ( type: Delete ) {
   delete distDirectory
 }
 
-final packageName = 'gant-standalone'
-final architecture = 'all'
-final createdDebFileName = packageName + '_' + gantVersion + '-' + debPackagingNumber + '_' + architecture + '.deb'
-
 task standaloneDeb ( dependsOn : standaloneBinTgz , description : 'Create a deb for use with Debian and Ubuntu.' ) << {
-  //final packageName = 'gant-standalone'
-  //final architecture = 'all'
-  final section = 'devel'
-  final priority = 'optional'
-  final homepage = 'http://gant.codehaus.org/'
+  final packageName = 'gant-standalone'
+  final architecture = 'all'
+  final createdDebFileName = packageName + '_' + gantVersion + '-' + debPackagingNumber + '_' + architecture + '.deb'
   final installPrefixBase = 'usr/share/gant'
-  final theSynopsis = 'Gant -- Groovy scripting of Ant tasks.' 
-  final theWords = """
+  final expandDirectory = ( new File ( distDirectory , 'gant-' + gantVersion ) ).path
+  final packagingDirectory = 'packaging/AntDebTask'
+  inputs.file packagingDirectory + '/gant'
+  inputs.file expandDirectory + '/bin/startGroovy'
+  inputs.file expandDirectory + '/conf/gant-starter.conf'
+  inputs.dir expandDirectory + '/lib'
+  outputs.file debsDirectory.absolutePath + '/' + createdDebFileName
+  // Using doLast here causes a concurrent modification exception.
+  //doLast {
+    delete distDirectory
+    distDirectory.mkdirs ( )
+    ant.taskdef resource : 'ant_deb_task.properties' , classpath : [ System.properties.'user.home' , '.groovy' , 'lib' , 'ant-deb.jar' ].join ( System.properties.'file.separator' )
+    logger.info "==>  Untaring ${buildDir}/gant-${gantVersion}.tgz to ${distDirectory}"
+    final process = [ 'sh' , '-x' , '-c' , "cd ${distDirectory} && tar xvf ${buildDir}/gant-${gantVersion}.tgz" ].execute ( )
+    process.consumeProcessOutput ( )
+    process.waitFor ( )
+    debsDirectory.mkdirs ( )
+    final result = ant.deb ( todir : debsDirectory , 'package' : packageName , section : 'devel' , priority : 'optional' , architecture : architecture ,
+                             depends : 'java2-runtime', postinst : packagingDirectory+ '/postinst' , prerm : packagingDirectory + '/prerm' ,
+                             conflicts : 'gant' ) {
+      //  Hack required to make Gradle get things right.
+      //version upstream : gantVersion , debian : debPackagingNumber
+      delegate.version upstream : gantVersion , debian : debPackagingNumber
+      maintainer name : 'Russel Winder' , email : 'russel@winder.org.uk'
+      description synopsis : 'Gant -- Groovy scripting of Ant tasks.' , '''
 Gant is a tool for scripting Ant tasks using Groovy instead of XML to specify
 the logic. A Gant specification is just a Groovy script and so can bring all
 the power of Groovy to bear directly, something not possible with Ant scripts.
@@ -504,39 +522,20 @@ This package provides a self-contained installation of Gant that does not
 depend on a separate installation of Groovy -- all the jars needed for Gant to
 run are included in the package.
 .
-Homepage: ${homepage}
-"""
-  final expandDirectory = ( new File ( distDirectory , 'gant-' + gantVersion ) ).path
-  final packagingDirectory = 'packaging/AntDebTask'
-  delete distDirectory
-  distDirectory.mkdirs ( )
-  ant.taskdef resource : 'ant_deb_task.properties' , classpath : [ System.properties.'user.home' , '.groovy' , 'lib' , 'ant-deb.jar' ].join ( System.properties.'file.separator' )
-  logger.info "==>  Untaring ${buildDir}/gant-${gantVersion}.tgz to ${distDirectory}"
-  final process = [ 'sh' , '-x' , '-c' , "cd ${distDirectory} && tar xvf ${buildDir}/gant-${gantVersion}.tgz" ].execute ( )
-  process.consumeProcessOutput ( )
-  process.waitFor ( )
-  debsDirectory.mkdirs ( )
-  final result = ant.deb ( todir : debsDirectory , 'package' : packageName , section : section , priority : priority , architecture : architecture ,
-                           depends : 'java2-runtime', postinst : packagingDirectory+ '/postinst' , prerm : packagingDirectory + '/prerm' ,
-                           conflicts : 'gant' ) {
-    //  Hack required to make Gradle get things right.
-    //version upstream : gantVersion , debian : debPackagingNumber
-    delegate.version upstream : gantVersion , debian : debPackagingNumber
-    maintainer name : 'Russel Winder' , email : 'russel@russel.org.uk'
-    //homepage homepage
-    description synopsis : theSynopsis , theWords
-    tarfileset file : packagingDirectory + '/gant' , prefix : installPrefixBase + '/bin' , filemode : '755'
-    tarfileset file : expandDirectory + '/bin/startGroovy' , prefix : installPrefixBase + '/bin' , filemode : '644'
-    tarfileset file : expandDirectory + '/conf/gant-starter.conf' , prefix : installPrefixBase + '/conf' , filemode : '644'
-    tarfileset dir : expandDirectory + '/lib' , includes : '*.jar' , prefix : installPrefixBase + '/lib' , filemode : '644'
-  }
-  //  The deb Ant task appears not to record the name of the resultant deb file so we have to construct it
-  //  by replicating the algorithm :-(( and leaving the result in the binding to be used elsewhere --
-  //  i.e. by the uploading task.
-  assert createdDebFileName == result._package + '_' + result._version + '_' + result._architecture + '.deb'
+Homepage: http://gant.codehaus.org/
+'''
+      tarfileset file : packagingDirectory + '/gant' , prefix : installPrefixBase + '/bin' , filemode : '755'
+      tarfileset file : expandDirectory + '/bin/startGroovy' , prefix : installPrefixBase + '/bin' , filemode : '644'
+      tarfileset file : expandDirectory + '/conf/gant-starter.conf' , prefix : installPrefixBase + '/conf' , filemode : '644'
+      tarfileset dir : expandDirectory + '/lib' , includes : '*.jar' , prefix : installPrefixBase + '/lib' , filemode : '644'
+    }
+    //  The deb Ant task appears not to record the name of the resultant deb file so we have to construct it
+    //  by replicating the algorithm :-((
+    assert createdDebFileName == result._package + '_' + result._version + '_' + result._architecture + '.deb'
+    //}
 }
 
-debTasks += [ standaloneDeb ]
+debTasks << standaloneDeb
 
 // =====================================================================
 //
@@ -594,103 +593,60 @@ distributionTasks += [ srcTgz , srcZip ]
 
 // =====================================================================
 //
-//  Configuration for getting all the distribution materials uploaded to Codehaus.
+//  Tasks for getting all the distribution materials uploaded to Codehaus.
 
-configurations { distribution }
-
-artifacts {
-  distributionTasks.each { task -> distribution task }
+final checkAuthority = { ->
+  if ( ! project.hasProperty ( 'gant_experimentalDistributionLocation' ) && ! ( project.hasProperty ( 'codehausUsername' ) && project.hasProperty ( 'codehausPassword' ) ) ) {
+    throw new RuntimeException ( 'Must define both codehausUsername and codehausPassword to upload distributions.')
+  }
 }
 
-dependencies {
-  distribution ( webdavWagonName )
+final undertakeUpload = { copySpec , uploadSpec ->
+  if ( project.hasProperty ( 'gant_experimentalDistributionLocation' ) ) {
+    if ( ! gant_experimentalDistributionLocation ) { throw new RuntimeException ( 'gant_experimentalDistributionLocation value not reasonable.' ) }
+    copy copySpec
+  }
+  else {
+    configurations { upload }
+    repositories {
+      if ( project.hasProperty ( 'gant_useMavenLocal' ) && gant_useMavenLocal ) { mavenLocal ( ) }
+      mavenCentral ( )
+    }
+    dependencies { upload 'com.googlecode.sardine:sardine:146' }
+    assert uploadSpec.size ( ) == 2
+    final targetDirectoryUrl = 'https://dav.codehaus.org/' + ( gantVersion.contains ( 'SNAPSHOT' ) ? 'snapshots.' : '' ) + 'dist/gant/' + uploadSpec[0]
+    /*
+    com.googlecode.sardine.Sardine sardine = com.googlecode.sardine.SardineFactory.begin ( codehausUsername , codehausPassword )
+    */
+  }
 }
 
 task buildDistribution ( dependsOn : distributionTasks , description : 'Build all the uploadable distribution archives.' )
 
-task uploadDistribution ( type : Upload , dependsOn : buildDistribution , description : 'Upload all the distribution archives.' ) {
-  configuration = configurations.distribution
-//uploadDistribution {
-//  dependsOn ( buildDistribution )
-  uploadDescriptor = false
-    /*
-  doFirst {
-    try {
-        it.repositories.add ( new WebdavResolver ( ) ) {
-        name = 'gantDistributions'
-        user = codehausUsername
-        userPassword = codehausPassword
-        //addArtifactPattern 'dav:https://dav.codehaus.org/' + ( gantVersion.contains ( 'SNAPSHOT' ) ? 'snapshots.' : '' ) + 'dist/gant/distributions/[artifact]-[revision](-[classifier]).[ext]'
-        addArtifactPattern 'https://dav.codehaus.org/' + ( gantVersion.contains ( 'SNAPSHOT' ) ? 'snapshots.' : '' ) + 'dist/gant/distributions/[artifact]-[revision](-[classifier]).[ext]'
-      }
-    }
-    catch ( Exception e ) {
-      //  If codehausUsername and/or codehausPassword are not defined, do nothing.
-    }
-  }
-    */
+task uploadDistribution ( dependsOn : buildDistribution , description : 'Upload all the distribution archives.' ) << {
+  checkAuthority ( )
+  undertakeUpload (
+    {
+      distributionTasks.each { task -> from task }
+      into rootProject.buildDir.absolutePath + '/' + gant_experimentalDistributionLocation + '/distributions' 
+    } ,
+    [ 'distributions' , distributionTasks ] )
 }
-
-/*
- *  This approach fails for CI servers.
- *
-gradle.taskGraph.whenReady { graph ->
-  if ( graph.hasTask ( uploadDistribution ) ) {
-    // Ensure these properties are defined.  Fail early if they are not.
-    codehausUsername
-    codehausPassword
-  }
-}
-*
-*/
 
 // =====================================================================
 //
-//  Configuration for getting all the debs uploaded to Codehaus.
-
-configurations { debs }
-
-// It is only possible to use archive tasks in structures such as:
-//
-//    artifacts {
-//      debTasks.each { task -> debs ( task ) }
-//    }
-//
-//  so we can't do it for the deb tasks :-(( Fortunately, other came across this problem and came up with a
-//  solution.  cf.
-// http://markmail.org/thread/niseybxbjynckr2c#query:+page:1+mid:5dntrp2cwfoodxjx+state:results
-
-artifacts {
-  new org.gradle.api.internal.artifacts.publish.DefaultPublishArtifact ( 'gant-standalone' , 'deb' , 'deb' , null , new Date ( ) , file ( debsDirectory.absolutePath + '/' + createdDebFileName ) )
-}
-
-dependencies {
-  debs webdavWagonName
-}
+//  Tasks for getting all the debs uploaded to Codehaus.
 
 task buildDebs ( dependsOn : debTasks , description : 'Build all the uploadable debs.' )
 
-//  Seemingly this tasksk picks up no things to upload?
-
-task uploadDebs ( type : Upload , dependsOn : buildDebs , description : 'Upload all the debs.' ) {
-  configuration = configurations.debs
-  uploadDescriptor = false
-      /*
-  doFirst {
-    try {
-      it.repositories.add ( new WebdavResolver ( ) ) {
-        name = 'gantDebs'
-        user = codehausUsername
-        userPassword = codehausPassword
-        //addArtifactPattern 'dav:https://dav.codehaus.org/' + ( gantVersion.contains ( 'SNAPSHOT' ) ? 'snapshots.' : '' ) + 'dist/gant/debs/[artifact]_[revision](_[classifier]).[ext]'
-        addArtifactPattern 'https://dav.codehaus.org/' + ( gantVersion.contains ( 'SNAPSHOT' ) ? 'snapshots.' : '' ) + 'dist/gant/debs/[artifact]_[revision](_[classifier]).[ext]'
-      }
-    }
-    catch ( Exception e ) {
-      //  If codehausUsername and/or codehausPassword are not defined, do nothing.
-    }
-  }
-      */
+task uploadDebs ( dependsOn : buildDebs , description : 'Upload all the debs.' ) << {
+  checkAuthority ( )
+  undertakeUpload (
+    {
+      debTasks.each { task -> from task }
+      into rootProject.buildDir.absolutePath + '/' + gant_experimentalDistributionLocation + '/debs' 
+    } ,
+    [ 'debs' , debTasks ] )
 }
 
 
@@ -710,7 +666,7 @@ task uploadRelease ( dependsOn: archivesUploadTasks + [ uploadDistribution , upl
 task ciBuild ( description : 'Run just the builds that use Groovy from the Maven repository.  Used mainly on CI servers.' , dependsOn : ciBuildTasks )
 
 task wrapper ( type : Wrapper ) {
-  gradleVersion = '1.0'
+  gradleVersion = '1.1'
 }
 
 task clobber ( description : 'Do a really detailed clean.' ) << {
