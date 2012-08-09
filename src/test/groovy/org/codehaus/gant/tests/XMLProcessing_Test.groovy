@@ -1,6 +1,6 @@
 //  Gant -- A Groovy way of scripting Ant tasks.
 //
-//  Copyright © 2008-10 Russel Winder
+//  Copyright © 2008–2012 Russel Winder
 //
 //  Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in
 //  compliance with the License. You may obtain a copy of the License at
@@ -23,7 +23,7 @@ package org.codehaus.gant.tests
  *  @author Russel Winder <russel@winder.org.uk>
  */
 final class XMLProcessing_Test extends GantTestCase {
-  public void testMikeNooneyXMLExampleToEnsureNoProblemWithXMLJars ( ) {
+  public void testMikeNooneyXMLExampleToEnsureNoProblemWithXMLJars() {
     def xmlScript = '''
 <Document>
     <Sentence code="S0001" format="Document.Title"/>
@@ -35,25 +35,29 @@ final class XMLProcessing_Test extends GantTestCase {
     <Sentence code="S0007" format="Sentence"/>
 </Document>
 '''
+    //  There appears to be a (breaking) change in JDK7 → JDK8 in the way blank lines in XML documents are
+    //  handled. Circumvent this by leaving them in for JDK version other than 8.
+    if (System.properties.'java.version'.startsWith('1.8')) {
+      xmlScript = xmlScript.substring(1)
+    }
     def targetName = 'testing'
-    def flob = """
-target ( ${targetName} : '' ) {
-  def testClass = new GroovyShell ( binding ).evaluate ( '''
+    script = """
+target(${targetName}: '') {
+  def testClass = new GroovyShell(binding).evaluate('''
 class Test {
-	public static void test ( ) {
-		def reader = new StringReader ( \\\'\\\'\\\' ${xmlScript} \\\'\\\'\\\' )
-		def xmlData = groovy.xml.DOMBuilder.parse ( reader )
+	public static void test() {
+		def reader = new StringReader(\\\'\\\'\\\'${xmlScript}\\\'\\\'\\\')
+		def xmlData = groovy.xml.DOMBuilder.parse(reader)
 		def rootElement = xmlData.documentElement
-		println ( 'root element:' + rootElement )
+		println('root element:' + rootElement)
 	}
 }
 return Test
 ''' )
-  testClass.test ( )
+  testClass.test()
 }
 """
-    script = flob
-    assertEquals ( 0 , processCmdLineTargets ( targetName ) )
-    assertEquals ( resultString ( targetName , 'root element:<?xml version="1.0" encoding="UTF-8"?>' + xmlScript + '\n' ) , output )
+    assertEquals(0, processCmdLineTargets(targetName))
+    assertEquals(resultString(targetName, 'root element:<?xml version="1.0" encoding="UTF-8"?>' + xmlScript + '\n'), output)
   }
 }
