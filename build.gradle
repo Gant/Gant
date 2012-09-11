@@ -55,8 +55,8 @@ final gantBundleVersion =  createVersionString true
 final groovyArtefactName = 'groovy-all'
 
 ext.groovyVersions = [
-  '1.8' : '1.8.7' ,
-  '2.0' : '2.0.1'
+  '1.8' : '1.8.8' ,
+  '2.0' : '2.0.2'
 ]
 
 //  One series of Groovy needs using for the standalone distribution. This version of Groovy will be packaged with
@@ -74,7 +74,7 @@ final groovyStandaloneSeries = '2.0'
 def forEachDistributionVersion ( Closure c ) {
   for ( String s : groovyVersions.keySet ( ) ) { c ( artifact + mavenNameExtension + s ) }
 }
-  
+
 def forEachProject ( Closure c ) {
   c artifact
   forEachDistributionVersion c
@@ -90,7 +90,7 @@ ext.debTasks = [ ]
 //  directories that gives difficulties with new artefact uploads.  Have to cadaver in and create the
 //  hierarchy first :-(
 
-//webdavWagonName = 'org.apache.maven.wagon:wagon-webdav-jackrabbit:2.2' 
+//webdavWagonName = 'org.apache.maven.wagon:wagon-webdav-jackrabbit:2.2'
 //webdavWagonName = 'org.apache.maven.wagon:wagon-webdav:1.0-beta-2'
 
 //  Try the lightweight HTTP wagon. Still requires creating the directory structure with cadaver or
@@ -117,7 +117,7 @@ allprojects {
 }
 
 final signingPropertiesAreSet = {
-  project.hasProperty ( 'signing.keyId' ) && project.hasProperty ( 'signing.password' ) && project.hasProperty ( 'signing.secretKeyRingFile' ) 
+  project.hasProperty ( 'signing.keyId' ) && project.hasProperty ( 'signing.password' ) && project.hasProperty ( 'signing.secretKeyRingFile' )
 }
 
 subprojects {
@@ -132,12 +132,12 @@ subprojects {
     //  the location of the source must be specified explicitly.
     main { groovy { srcDir '../src/main/groovy' } }
     test { groovy { srcDir '../src/test/groovy' } }
-    integTest { groovy { srcDir '../src/integTest/groovy' } }  
+    integTest { groovy { srcDir '../src/integTest/groovy' } }
   }
   metaInf << fileTree ( dir : '..' ).matching { include 'LICENCE.txt' }
   final theVendor = 'The Codehaus'
   final theTitle = 'Gant: Scripting Ant tasks with Groovy.'
-  jar { 
+  jar {
     manifest {
       name = 'Gant'
       version = gantBundleVersion
@@ -265,7 +265,7 @@ project ( ':gant' ) {
     groovyLib = new File ( groovyHome , 'lib' )
     final groovyVersionPatternString = /^groovy-(all-)?([0-9].*)\.jar/
     final items = groovyLib.listFiles ( [ accept : { File dir , String name -> return ( name =~ groovyVersionPatternString ).find ( ) } ] as FilenameFilter )
-    assert items 
+    assert items
     groovyVersion = ( items[0].name =~ groovyVersionPatternString )[0][2]
     assert groovyVersion
     repositories { flatDir ( name : 'groovyInstallation' , dirs : [ new File ( groovyHome , 'embeddable' ) , groovyLib ] ) }
@@ -279,8 +279,8 @@ project ( ':gant' ) {
   compileGroovy.doFirst { println ( '\n\t' + versionMessage +'\n' ) }
   final buildPath = [ System.properties.'user.dir' , 'gant' , 'build' , 'classes' ]
   final classPath = [ ]
-  classPath << ( buildPath + [ 'main' ] ).join ( File.separator ) 
-  classPath << ( buildPath + [ 'test' ] ).join ( File.separator ) 
+  classPath << ( buildPath + [ 'main' ] ).join ( File.separator )
+  classPath << ( buildPath + [ 'test' ] ).join ( File.separator )
   configurations.testRuntime.files.each { file -> classPath <<  file.parent }
   test.environment ( [
                        GROOVY_ANT_TASK_TEST_VERSION :  groovyVersion ,
@@ -311,7 +311,7 @@ project ( ':gant' ) {
       from new File ( buildDir , 'libs' )
     }
   }
-  task uninstall ( type: Delete , description : "Delete ${installDirectory} so as to remove the Gant installation." ) { delete installDirectory } 
+  task uninstall ( type: Delete , description : "Delete ${installDirectory} so as to remove the Gant installation." ) { delete installDirectory }
 }
 
 // =====================================================================
@@ -352,16 +352,16 @@ forEachDistributionVersion { projectName->
     compileGroovy.doFirst { println ( '\n\tUsing Groovy version ' + groovyVersion + '\n' ) }
     final buildPath = [ System.properties.'user.dir' , projectName , 'build' , 'classes' ]
     final classPath = [ ]
-    classPath << ( buildPath + [ 'main' ] ).join ( File.separator ) 
-    classPath << ( buildPath + [ 'test' ] ).join ( File.separator ) 
+    classPath << ( buildPath + [ 'main' ] ).join ( File.separator )
+    classPath << ( buildPath + [ 'test' ] ).join ( File.separator )
     configurations.testRuntime.files.each { file -> classPath <<  file.parent }
     test.environment ( [
                          GROOVY_ANT_TASK_TEST_VERSION :  groovyVersion ,
                          gradleClasspathString : classPath.join ( System.properties.'path.separator' )
                        ] )
-   
+
     install.repositories.mavenInstaller { pom pomSpecification }
-    gradle.taskGraph.whenReady { taskGraph -> 
+    gradle.taskGraph.whenReady { taskGraph ->
       if ( taskGraph.hasTask ( uploadArchives ) ) {
         if ( ! project.hasProperty ( 'gant_experimentalMavenRepository' ) && ! ( project.hasProperty ( 'codehausUsername') && project.hasProperty ( 'codehausPassword' ) ) ) {
           throw new RuntimeException ( 'Must define both codehausUsername and codehausPassword to upload archives.')
@@ -393,7 +393,7 @@ forEachDistributionVersion { projectName->
     final binCopySpec = copySpec {
       final scriptsDirectory = '../scripts'
       from ( '..' ) { include 'README*' }
-      into ( 'conf' ) { from ( scriptsDirectory + '/conf' ) { include '*.conf' } } 
+      into ( 'conf' ) { from ( scriptsDirectory + '/conf' ) { include '*.conf' } }
       into ( 'lib' ) {
         from libsDir
         rename projectName + '-' + version , artifact + '-' + version + mavenNameExtension + '-' + groovyVersion
@@ -423,7 +423,7 @@ forEachDistributionVersion { projectName->
   //  Due to weird effective scoping of projects -- caused by cloning of bindings for projects? -- need to
   //  do the following to get the above tasks into the list defined by the main script.
   distributionTasks += project ( projectName ).distributionTasks
-  ciBuildTasks << projectName + ':build'  
+  ciBuildTasks << projectName + ':build'
 }
 
 // =====================================================================
@@ -436,7 +436,7 @@ final standaloneCopySpec = copySpec {
   final scriptsDirectory = 'scripts'
   final projectBase = project projectNameForStandalone
   from ( '.' ) { include 'README*' }
-  into ( 'conf' ) { from ( scriptsDirectory + '/conf' ) { include '*.conf' } } 
+  into ( 'conf' ) { from ( scriptsDirectory + '/conf' ) { include '*.conf' } }
   into ( 'lib' ) {
     from projectBase.libsDir
     from projectBase.configurations.runtime
@@ -473,7 +473,7 @@ distributionTasks += [ standaloneBinTgz , standaloneBinZip ]
 //  Create the deb file of the standalone distribution.
 
 final debsDirectory = new File ( buildDir , 'debs' )
-final distDirectory = new File ( buildDir , 'dist' ) 
+final distDirectory = new File ( buildDir , 'dist' )
 
 task clean ( type: Delete ) {
   delete debsDirectory
@@ -628,7 +628,7 @@ task uploadDistribution ( dependsOn : buildDistribution , description : 'Upload 
   undertakeUpload (
     {
       distributionTasks.each { task -> from task }
-      into rootProject.buildDir.absolutePath + '/' + gant_experimentalDistributionLocation + '/distributions' 
+      into rootProject.buildDir.absolutePath + '/' + gant_experimentalDistributionLocation + '/distributions'
     } ,
     [ 'distributions' , distributionTasks ] )
 }
@@ -644,7 +644,7 @@ task uploadDebs ( dependsOn : buildDebs , description : 'Upload all the debs.' )
   undertakeUpload (
     {
       debTasks.each { task -> from task }
-      into rootProject.buildDir.absolutePath + '/' + gant_experimentalDistributionLocation + '/debs' 
+      into rootProject.buildDir.absolutePath + '/' + gant_experimentalDistributionLocation + '/debs'
     } ,
     [ 'debs' , debTasks ] )
 }
