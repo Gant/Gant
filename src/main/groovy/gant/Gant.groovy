@@ -610,13 +610,13 @@ final class Gant {
   /**
    * Sets all the pre hooks
    */
-  void setAllPerTargetPreHooks ( Closure hook ) {
+  void setAllPerTargetPreHooks ( Closure<?> hook ) {
     if ( script ) { this.script.setAllPerTargetPreHooks ( hook ) } // Must use function call here, fails using property access.
   }
   /**
    * Sets all the target post hooks
    */
-  void setAllPerTargetPostHooks ( Closure hook ) {
+  void setAllPerTargetPostHooks ( Closure<?> hook ) {
     if ( script ) { this.script.setAllPerTargetPostHooks ( hook ) } // Must use function call here, fails using property access.
   }  
   /**
