@@ -81,7 +81,7 @@ public class GantBuilder extends AntBuilder {
           //
           //  TODO : Fix this rather than use a SuppressWarnings.
           //////////////////////////////////////////////////////////////////////////////////////////////////////////
-          @SuppressWarnings ( "unchecked" ) final Iterator<Map.Entry<?,?>> i = ( (Map) args[0] ).entrySet ( ).iterator ( ) ;
+          @SuppressWarnings ( { "unchecked" , "rawtypes" }  ) final Iterator<Map.Entry<?,?>> i = ( (Map) args[0] ).entrySet ( ).iterator ( ) ;
           while ( i.hasNext ( ) ) {
             final Map.Entry<?,?> e = i.next ( ) ;
             sb.append ( e.getKey ( ) + " : '" + e.getValue ( ) + '\'' ) ;

@@ -202,6 +202,7 @@ public class GantMetaClass extends DelegatingMetaClass {
    *  @param fromInsideClass Whether the call was invoked from the inside or the outside of the class.
    *  @return The return value of the method
    */
+  @SuppressWarnings("rawtypes")
   @Override public Object invokeMethod ( final Class sender , final Object receiver , final String methodName , final Object[] arguments, final boolean isCallToSuper, final boolean fromInsideClass ) {
     return invokeMethod ( receiver , methodName , arguments ) ;
   }
