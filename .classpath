@@ -8,7 +8,7 @@
 	<classpathentry kind="var" path="M2_REPO/org/apache/ant/ant-launcher/1.8.3/ant-launcher-1.8.3.jar"/>
 	<classpathentry kind="var" path="M2_REPO/org/apache/ivy/ivy/2.2.0/ivy-2.2.0.jar"/>
 	<classpathentry kind="var" path="M2_REPO/junit/junit/4.10/junit-4.10.jar"/>
-	<classpathentry kind="var" path="M2_REPO/org/codehaus/groovy/groovy-all/2.0.1-SNAPSHOT/groovy-all-2.0.1-SNAPSHOT.jar"/>
+	<classpathentry kind="var" path="M2_REPO/org/codehaus/groovy/groovy-all/2.1.0-SNAPSHOT/groovy-all-2.1.0-SNAPSHOT.jar"/>
 	<classpathentry exported="true" kind="con" path="GROOVY_DSL_SUPPORT"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
