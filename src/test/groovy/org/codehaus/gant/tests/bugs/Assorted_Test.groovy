@@ -1,6 +1,6 @@
 //  Gant -- A Groovy way of scripting Ant tasks.
 //
-//  Copyright © 2009-10 Russel Winder
+//  Copyright © 2009–2010, 2013  Russel Winder
 //
 //  Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in
 //  compliance with the License. You may obtain a copy of the License at
@@ -195,4 +195,15 @@ target ( ${targetName} : '' ) {
     assertEquals ( ": destination directory \"${ ( new File ( destinationDirectory ) ).absolutePath }\" does not exist or is not a directory\n" , error )
   }
 
+  void test_GANT_131_commandLineParsingOfDValuesWithEquals() {
+    targetName = 'someNameOrOther'
+    script = """
+target(name: '${targetName}') {
+  println 'key: ' + key
+}
+"""
+    assertEquals(0, processCmdLineTargets(['-Dkey="xxx=yyy"', targetName]))
+    assertEquals(resultString(targetName, 'key: xxx=yyy'), output)
+    assertEquals('', error)
+  }
 }
