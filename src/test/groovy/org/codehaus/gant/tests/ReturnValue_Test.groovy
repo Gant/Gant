@@ -1,6 +1,6 @@
 //  Gant -- A Groovy way of scripting Ant tasks.
 //
-//  Copyright © 2008-10 Russel Winder
+//  Copyright © 2008–2010, 2013  Russel Winder
 //
 //  Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in
 //  compliance with the License. You may obtain a copy of the License at
@@ -20,51 +20,51 @@ package org.codehaus.gant.tests
  *  @author Russel Winder <russel@winder.org.uk>
  */
 final class ReturnValue_Test extends GantTestCase {
-  void testMissingMethodInDefaultTarget ( ) {
+  void testMissingMethodInDefaultTarget() {
     script = '''
-target ( 'default' : '' ) { blah ( ) }
+target('default': '') { blah() }
 '''
-    assertEquals ( -13 , processCmdLineTargets ( ) )
+    assertEquals(-13, processCmdLineTargets())
   }
-  void testMissingMethodInNonDefaultTarget ( ) {
+  void testMissingMethodInNonDefaultTarget() {
     script = '''
-target ( doit : '' ) { blah ( ) }
+target(doit: '') { blah() }
 '''
-    assertEquals ( -13 , processCmdLineTargets ( 'doit' ) )
+    assertEquals(-13, processCmdLineTargets('doit'))
   }
-  void testMissingPropertyInDefaultTarget ( ) {
+  void testMissingPropertyInDefaultTarget() {
     script = '''
-target ( 'default' : '' ) { x = blah }
+target('default': '') { x = blah }
 '''
-    assertEquals ( -12 , processCmdLineTargets ( ) )
+    assertEquals(-12, processCmdLineTargets())
   }
-  void testMissingPropertyInNonDefaultTarget ( ) {
+  void testMissingPropertyInNonDefaultTarget() {
     script = '''
-target ( doit : '' ) { x = blah }
+target(doit: '') { x = blah }
 '''
-    assertEquals ( -11 , processCmdLineTargets ( 'doit' ) )
+    assertEquals(-11, processCmdLineTargets('doit'))
   }
-  void testExplicitReturnCodeInDefaultTarget ( ) {
+  void testExplicitReturnCodeInDefaultTarget() {
     def code = 27
     script = """
-target ( 'default' : '' ) { ${code} }
+target('default': '') { ${code} }
 """
-    assertEquals ( code , processCmdLineTargets ( ) )
+    assertEquals(code, processCmdLineTargets())
   }
-  void testExplicitReturnCodeInNonDefaultTarget ( ) {
+  void testExplicitReturnCodeInNonDefaultTarget() {
     def code = 28
     script = """
-target ( doit : '' ) { ${code} }
+target(doit: '') { ${code} }
 """
-    assertEquals ( code , processCmdLineTargets ( 'doit' ) )
+    assertEquals(code, processCmdLineTargets('doit'))
   }
-  void testScriptCompilationError ( ) {
+  void testScriptCompilationError() {
     script = '''
 this is definitely not a legal script.
 '''
-    assertEquals ( -2 , processCmdLineTargets ( ) )
+    assertEquals(-2, processCmdLineTargets())
   }
-  void testCannotFindScript ( ) {
-    assertEquals ( -3 , ( new gant.Gant ( ) ).processArgs ( [ '-f' , 'blah_blah_blah_blah' ] as String[] ) )
+  void testCannotFindScript() {
+    assertEquals(-3,(new gant.Gant()).processArgs([ '-f', 'blah_blah_blah_blah' ] as String[]))
   }
 }

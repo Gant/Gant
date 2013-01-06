@@ -1,6 +1,6 @@
 //  Gant -- A Groovy way of scripting Ant tasks.
 //
-//  Copyright © 2008,2012 Peter Ledbrook
+//  Copyright © 2008, 2012, 2013  Peter Ledbrook
 //
 //  Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in
 //  compliance with the License. You may obtain a copy of the License at
@@ -12,7 +12,7 @@
 //  implied. See the License for the specific language governing permissions and limitations under the
 //  License.
 
-package gant ;
+package gant;
 
 /**
  *  Thrown when an undefined target is invoked.
@@ -20,9 +20,9 @@ package gant ;
  *  @author Peter Ledbrook
  */
 public class MissingTargetException extends GantException {
-  public static final long serialVersionUID = 1 ;
-  public MissingTargetException ( ) { super ( ) ; }
-  public MissingTargetException ( final String msg ) { super ( msg ) ; }
-  public MissingTargetException ( final Exception e ) { super ( e ) ; }
-  public MissingTargetException ( final String msg , final Exception e ) { super ( msg , e ) ; }
+  public static final long serialVersionUID = 1;
+  public MissingTargetException() { super(); }
+  public MissingTargetException(final String msg) { super(msg); }
+  public MissingTargetException(final Exception e) { super(e); }
+  public MissingTargetException(final String msg, final Exception e) { super(msg, e); }
 }

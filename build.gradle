@@ -2,7 +2,7 @@
 
 //  Gant -- A Groovy way of scripting Ant tasks.
 //
-//  Copyright © 2008–2012 Russel Winder
+//  Copyright © 2008–2013 Russel Winder
 //
 //  Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in
 //  compliance with the License. You may obtain a copy of the License at
@@ -14,7 +14,7 @@
 //  implied. See the License for the specific language governing permissions and limitations under the
 //  License.
 //
-//  Author : Russel Winder <russel@winder.org.uk>
+//  Author: Russel Winder <russel@winder.org.uk>
 
 import org.apache.tools.ant.filters.ReplaceTokens
 
@@ -26,13 +26,13 @@ ext.mavenNameExtension = '_groovy'
  *  OSGi bundle numbers is fixed and slightly different to the expected grammar for version numbers and Maven
  *  artefacts:
  *
- *   version ::= major('.'minor('.'micro('.'qualifier)?)?)?
- *   major ::= digit+
- *   minor ::= digit+
- *   micro ::= digit+
- *   qualifier ::= (alpha|digit|'_'|'-')+
- *   digit ::= [0..9]
- *   alpha ::= [a..zA..Z]
+ *   version::= major('.'minor('.'micro('.'qualifier)?)?)?
+ *   major::= digit+
+ *   minor::= digit+
+ *   micro::= digit+
+ *   qualifier::= (alpha|digit|'_'|'-')+
+ *   digit::= [0..9]
+ *   alpha::= [a..zA..Z]
  *
  *  The core difference is that for OSGi bundle numbers the qualifier is separated by a full stop where in
  *  other situations a minus is used.
@@ -41,7 +41,7 @@ final gantVersionBase = '1.9.9'
 final isPrereleaseSnapshot = true
 
 final createVersionString = { isForOSGi ->
-  return gantVersionBase + ( isPrereleaseSnapshot ? ( isForOSGi ? '.' : '-' ) + 'SNAPSHOT' : '' )
+  return gantVersionBase + (isPrereleaseSnapshot ? (isForOSGi ? '.': '-') + 'SNAPSHOT': '')
 }
 
 final debPackagingNumber = '1'
@@ -55,8 +55,8 @@ final gantBundleVersion =  createVersionString true
 final groovyArtefactName = 'groovy-all'
 
 ext.groovyVersions = [
-  '1.8' : '1.8.8' ,
-  '2.0' : '2.0.6' ,
+  '1.8': '1.8.8',
+  '2.0': '2.0.6',
 ]
 
 //  One series of Groovy needs using for the standalone distribution. This version of Groovy will be packaged with
@@ -71,16 +71,16 @@ final groovyStandaloneSeries = '2.0'
 //  subproject has its own source, etc.  This build slightly perverts the general approach by using exactly
 //  the same source for each subproject, the only difference is the version of Groovy used for compilation.
 
-def forEachDistributionVersion ( Closure c ) {
-  for ( String s : groovyVersions.keySet ( ) ) { c ( artifact + mavenNameExtension + s ) }
+def forEachDistributionVersion(Closure c) {
+  for (String s: groovyVersions.keySet()) { c(artifact + mavenNameExtension + s) }
 }
 
-def forEachProject ( Closure c ) {
+def forEachProject(Closure c) {
   c artifact
   forEachDistributionVersion c
 }
 
-forEachProject { item ->  if ( ! ( new File ( item ) ).isDirectory ( ) ) { mkdir item } }
+forEachProject { item ->  if (!(new File(item)).isDirectory()) { mkdir item } }
 
 ext.distributionTasks = [ ]
 ext.debTasks = [ ]
@@ -88,13 +88,13 @@ ext.debTasks = [ ]
 //  Using the JackRabbit wagon gets round some problems associated with uploading the distributions that
 //  occurs with the standard wagon.  However, it does not solve the problem of not creating missing
 //  directories that gives difficulties with new artefact uploads.  Have to cadaver in and create the
-//  hierarchy first :-(
+//  hierarchy first:-(
 
 //webdavWagonName = 'org.apache.maven.wagon:wagon-webdav-jackrabbit:2.2'
 //webdavWagonName = 'org.apache.maven.wagon:wagon-webdav:1.0-beta-2'
 
 //  Try the lightweight HTTP wagon. Still requires creating the directory structure with cadaver or
-//  equivalent :-(
+//  equivalent:-(
 
 final webdavWagonName = 'org.apache.maven.wagon:wagon-http-lightweight:2.2'
 
@@ -117,13 +117,13 @@ allprojects {
 }
 
 final signingPropertiesAreSet = {
-  project.hasProperty ( 'signing.keyId' ) && project.hasProperty ( 'signing.password' ) && project.hasProperty ( 'signing.secretKeyRingFile' )
+  project.hasProperty('signing.keyId') && project.hasProperty('signing.password') && project.hasProperty('signing.secretKeyRingFile')
 }
 
 subprojects {
-  apply plugin : 'groovy'
-  apply plugin : 'osgi'
-  if ( signingPropertiesAreSet ( ) ) { apply plugin : 'signing' }
+  apply plugin: 'groovy'
+  apply plugin: 'osgi'
+  if (signingPropertiesAreSet()) { apply plugin: 'signing' }
   sourceCompatibility = 6
   targetCompatibility = 6
   configurations { deployJars }
@@ -134,7 +134,7 @@ subprojects {
     test { groovy { srcDir '../src/test/groovy' } }
     integTest { groovy { srcDir '../src/integTest/groovy' } }
   }
-  metaInf << fileTree ( dir : '..' ).matching { include 'LICENCE.txt' }
+  metaInf << fileTree(dir: '..').matching { include 'LICENCE.txt' }
   final theVendor = 'The Codehaus'
   final theTitle = 'Gant: Scripting Ant tasks with Groovy.'
   jar {
@@ -142,41 +142,41 @@ subprojects {
       name = 'Gant'
       version = gantBundleVersion
       symbolicName = 'gant'
-      instruction 'Bundle-Vendor' , theVendor
-      instruction 'Bundle-Description' , group
-      instruction 'Bundle-DocURL' , 'http://gant.codehaus.org'
-      instruction 'Built-By' , System.properties.'user.name'
-      instruction 'Extension-Name' , artifact
-      instruction 'Specification-Title' , theTitle
-      instruction 'Specification-Version' , gantBundleVersion
-      instruction 'Specification-Vendor' , theVendor
-      instruction 'Implementation-Title' , theTitle
-      instruction 'Implementation-Version' , gantBundleVersion
-      instruction 'Implementation-Vendor' , theVendor
-      instruction 'provider' , theVendor
-      instruction 'Export-Package' , "*;version=${gantVersion}"
+      instruction 'Bundle-Vendor', theVendor
+      instruction 'Bundle-Description', group
+      instruction 'Bundle-DocURL', 'http://gant.codehaus.org'
+      instruction 'Built-By', System.properties.'user.name'
+      instruction 'Extension-Name', artifact
+      instruction 'Specification-Title', theTitle
+      instruction 'Specification-Version', gantBundleVersion
+      instruction 'Specification-Vendor', theVendor
+      instruction 'Implementation-Title', theTitle
+      instruction 'Implementation-Version', gantBundleVersion
+      instruction 'Implementation-Vendor', theVendor
+      instruction 'provider', theVendor
+      instruction 'Export-Package', "*;version=${gantVersion}"
       instruction 'Import-Package', '*;resolution:=optional'
     }
   }
   repositories {
-    if ( project.hasProperty ( 'gant_useMavenLocal' ) && gant_useMavenLocal ) { mavenLocal ( ) }
-    mavenCentral ( )
+    if (project.hasProperty('gant_useMavenLocal') && gant_useMavenLocal) { mavenLocal() }
+    mavenCentral()
     maven  { url 'http://repository.codehaus.org/' }
   }
   dependencies {
     compile (
-      'commons-cli:commons-cli:1.2' ,
+      'commons-cli:commons-cli:1.2',
       'org.apache.ant:ant:1.8.4'
-    )
+   )
     testCompile 'junit:junit:4.10'
     testRuntime 'org.apache.ivy:ivy:2.2.0'
     deployJars webdavWagonName
   }
   compileGroovy.options.compilerArgs = [ '-Xlint' ]
-  [ compileGroovy , compileTestGroovy ]*.options*.encoding = 'UTF-8'
+  [ compileGroovy, compileTestGroovy ]*.options*.encoding = 'UTF-8'
   test {
     //
-    //  The Gant Ant task integration test (which is still a unit test :-( has to know the absolute
+    //  The Gant Ant task integration test (which is still a unit test:-(has to know the absolute
     //  locations of certain files.  Because Gradle uses a multi-project build there is an extra level
     //  complexity in paths compared to Eclipse, IntelliJ IDEA or Gant builds because the multi-project
     //  builds happen in subdirectories.  org.codehaus.gant.ant.tests.Gant_Test has a decision to make, it
@@ -185,22 +185,22 @@ subprojects {
     systemProperties['buildFrameworkIdentifier'] = 'Gradle'
   }
   clean.doLast {
-    delete 'texput.log' , 'target_forMavenTest'
+    delete 'texput.log', 'target_forMavenTest'
   }
-  task integTest ( type : Test , dependsOn : /* 'assemble' */ 'classes' ) {
-    include file ( 'src/integTest/groovy' ).absolutePath + '/org/codehaus/gant/ant/tests/*_Test.*'
+  task integTest(type: Test, dependsOn: /* 'assemble' */ 'classes') {
+    include file('src/integTest/groovy').absolutePath + '/org/codehaus/gant/ant/tests/*_Test.*'
   }
-  if ( signingPropertiesAreSet ( ) ) {
+  if (signingPropertiesAreSet()) {
     signing {
       sign configurations.archives
     }
   }
   final packageTitle = 'Gant ' + gantVersion
-  final copyrightString = 'Copyright &#169; 2006&#8211;12  The Codehaus.  All Rights Reserved.'
+  final copyrightString = 'Copyright &#169; 2006&#8211;2013  The Codehaus.  All Rights Reserved.'
   javadoc {
     options {
       overview 'overview.html'
-      showAll ( )
+      showAll()
       encoding 'UTF-8'
       setUse true
       author true
@@ -223,24 +223,24 @@ subprojects {
     header = packageTitle
     footer = copyrightString
   }
-  task documentation ( dependsOn: [ 'javadoc' , 'groovydoc' ] , description : 'Create the API documentation.' )
-  final docsJarsDir = new File ( buildDir , docsJarsDirName )
-  task javadocArtifact ( type : Jar , dependsOn : 'javadoc' ) {
+  task documentation(dependsOn: [ 'javadoc', 'groovydoc' ], description: 'Create the API documentation.')
+  final docsJarsDir = new File(buildDir, docsJarsDirName)
+  task javadocArtifact(type: Jar, dependsOn: 'javadoc') {
     classifier = 'javadoc'
     from docsDir
   }
   javadocArtifact.destinationDir = docsJarsDir
-  task groovydocArtifact ( type : Jar , dependsOn : 'groovydoc' ) {
+  task groovydocArtifact(type: Jar, dependsOn: 'groovydoc') {
     classifier = 'groovydoc'
     from docsDir
   }
   groovydocArtifact.destinationDir = docsJarsDir
-  task sourceArtifact ( type : Jar ) {
+  task sourceArtifact(type: Jar) {
     classifier = 'sources'
     from sourceSets.main.allSource
   }
   sourceArtifact.destinationDir = docsJarsDir
-  task allArtifacts ( dependsOn : [ jar , javadocArtifact , groovydocArtifact , sourceArtifact ] )
+  task allArtifacts(dependsOn: [ jar, javadocArtifact, groovydocArtifact, sourceArtifact ])
   artifacts {
     archives javadocArtifact
     archives groovydocArtifact
@@ -254,64 +254,64 @@ subprojects {
 //  Use the locally installed Groovy or the standalone version from the Maven repository.  This subproject
 //  is used for local installation and also for generating the documentation.
 
-project ( ':gant' ) {
+project(':gant') {
   //  If the user has GROOVY_HOME set then use that Groovy rather than the one specified in the properties
   //  files.  However we have to fiddle to find the version number.
-  final groovyHome = System.getenv ( ).'GROOVY_HOME'
+  final groovyHome = System.getenv().'GROOVY_HOME'
   final groovyLib = null
   def groovyVersion
   def versionMessage
-  if ( groovyHome ) {
-    groovyLib = new File ( groovyHome , 'lib' )
+  if (groovyHome) {
+    groovyLib = new File(groovyHome, 'lib')
     final groovyVersionPatternString = /^groovy-(all-)?([0-9].*)\.jar/
-    final items = groovyLib.listFiles ( [ accept : { File dir , String name -> return ( name =~ groovyVersionPatternString ).find ( ) } ] as FilenameFilter )
+    final items = groovyLib.listFiles([ accept: { File dir, String name -> return (name =~ groovyVersionPatternString).find() } ] as FilenameFilter)
     assert items
-    groovyVersion = ( items[0].name =~ groovyVersionPatternString )[0][2]
+    groovyVersion = (items[0].name =~ groovyVersionPatternString)[0][2]
     assert groovyVersion
-    repositories { flatDir ( name : 'groovyInstallation' , dirs : [ new File ( groovyHome , 'embeddable' ) , groovyLib ] ) }
+    repositories { flatDir(name: 'groovyInstallation', dirs: [ new File(groovyHome, 'embeddable'), groovyLib ]) }
     versionMessage = 'Using Groovy version ' + groovyVersion + ' from ' + groovyHome
   }
   else {
     groovyVersion = groovyVersions[groovyStandaloneSeries]
     versionMessage = 'Using Groovy version ' + groovyVersion
   }
-  dependencies { groovy ( group : 'org.codehaus.groovy' , name : groovyArtefactName , version : groovyVersion ) }
-  compileGroovy.doFirst { println ( '\n\t' + versionMessage +'\n' ) }
-  final buildPath = [ System.properties.'user.dir' , 'gant' , 'build' , 'classes' ]
+  dependencies { groovy(group: 'org.codehaus.groovy', name: groovyArtefactName, version: groovyVersion) }
+  compileGroovy.doFirst { println('\n\t' + versionMessage +'\n') }
+  final buildPath = [ System.properties.'user.dir', 'gant', 'build', 'classes' ]
   final classPath = [ ]
-  classPath << ( buildPath + [ 'main' ] ).join ( File.separator )
-  classPath << ( buildPath + [ 'test' ] ).join ( File.separator )
+  classPath << (buildPath + [ 'main' ]).join(File.separator)
+  classPath << (buildPath + [ 'test' ]).join(File.separator)
   configurations.testRuntime.files.each { file -> classPath <<  file.parent }
-  test.environment ( [
-                       GROOVY_ANT_TASK_TEST_VERSION :  groovyVersion ,
-                       gradleClasspathString : classPath.join ( System.properties.'path.separator' )
-                     ] )
+  test.environment([
+                       GROOVY_ANT_TASK_TEST_VERSION:  groovyVersion,
+                       gradleClasspathString: classPath.join(System.properties.'path.separator')
+                     ])
   final installDirectory = '/usr/share/gant'
-  try { installDirectory = evaluate ( '"' + gant_installPath + '"' ) }
-  catch ( MissingPropertyException mpe ) { /* Intentionally left blank. */ }
-  task install ( dependsOn : 'assemble' , description : "Install Gant (compiled against Groovy ${groovyVersion}) to ${installDirectory}." ) << {
+  try { installDirectory = evaluate('"' + gant_installPath + '"') }
+  catch (MissingPropertyException mpe) { /* Intentionally left blank. */ }
+  task install(dependsOn: 'assemble', description: "Install Gant (compiled against Groovy ${groovyVersion}) to ${installDirectory}.") << {
     delete installDirectory
     final installBinDirectory = installDirectory + '/bin'
     final scriptsDirectory = '../scripts'
     copy {
       into installBinDirectory
-      from ( [ scriptsDirectory + '/bin' , scriptsDirectory + '/bin_requiresGroovy' ] )
-      filter ReplaceTokens , tokens : [
-                 GROOVYPATH : 'embeddable' ,
-                 GROOVYJAR : groovyArtefactName + '-' + groovyVersion + '.jar'
+      from([ scriptsDirectory + '/bin', scriptsDirectory + '/bin_requiresGroovy' ])
+      filter ReplaceTokens, tokens: [
+                 GROOVYPATH: 'embeddable',
+                 GROOVYJAR: groovyArtefactName + '-' + groovyVersion + '.jar'
                ]
     }
-    ant.chmod ( perm : 'a+x' ) { fileset ( dir : installBinDirectory , includes : 'gant*' ) }
+    ant.chmod(perm: 'a+x') { fileset(dir: installBinDirectory, includes: 'gant*') }
     copy {
       into installDirectory + '/conf'
       from scriptsDirectory + '/conf/gant-starter.conf'
     }
     copy {
       into installDirectory + '/lib'
-      from new File ( buildDir , 'libs' )
+      from new File(buildDir, 'libs')
     }
   }
-  task uninstall ( type: Delete , description : "Delete ${installDirectory} so as to remove the Gant installation." ) { delete installDirectory }
+  task uninstall(type: Delete, description: "Delete ${installDirectory} so as to remove the Gant installation.") { delete installDirectory }
 }
 
 // =====================================================================
@@ -345,45 +345,45 @@ final pomSpecification = {
 }
 
 forEachDistributionVersion { projectName->
-  final groovyVersion = groovyVersions[ projectName.replace ( artifact + mavenNameExtension , '' ) ]
-  project ( projectName ) {
-    apply plugin : 'maven'
-    dependencies { groovy ( group : 'org.codehaus.groovy' , name : groovyArtefactName , version : groovyVersion ) }
-    compileGroovy.doFirst { println ( '\n\tUsing Groovy version ' + groovyVersion + '\n' ) }
-    final buildPath = [ System.properties.'user.dir' , projectName , 'build' , 'classes' ]
+  final groovyVersion = groovyVersions[ projectName.replace(artifact + mavenNameExtension, '') ]
+  project(projectName) {
+    apply plugin: 'maven'
+    dependencies { groovy(group: 'org.codehaus.groovy', name: groovyArtefactName, version: groovyVersion) }
+    compileGroovy.doFirst { println('\n\tUsing Groovy version ' + groovyVersion + '\n') }
+    final buildPath = [ System.properties.'user.dir', projectName, 'build', 'classes' ]
     final classPath = [ ]
-    classPath << ( buildPath + [ 'main' ] ).join ( File.separator )
-    classPath << ( buildPath + [ 'test' ] ).join ( File.separator )
+    classPath << (buildPath + [ 'main' ]).join(File.separator)
+    classPath << (buildPath + [ 'test' ]).join(File.separator)
     configurations.testRuntime.files.each { file -> classPath <<  file.parent }
-    test.environment ( [
-                         GROOVY_ANT_TASK_TEST_VERSION :  groovyVersion ,
-                         gradleClasspathString : classPath.join ( System.properties.'path.separator' )
-                       ] )
+    test.environment([
+                         GROOVY_ANT_TASK_TEST_VERSION:  groovyVersion,
+                         gradleClasspathString: classPath.join(System.properties.'path.separator')
+                       ])
 
     install.repositories.mavenInstaller { pom pomSpecification }
     gradle.taskGraph.whenReady { taskGraph ->
-      if ( taskGraph.hasTask ( uploadArchives ) ) {
-        if ( ! project.hasProperty ( 'gant_experimentalMavenRepository' ) && ! ( project.hasProperty ( 'codehausUsername') && project.hasProperty ( 'codehausPassword' ) ) ) {
-          throw new RuntimeException ( 'Must define both codehausUsername and codehausPassword to upload archives.')
+      if (taskGraph.hasTask(uploadArchives)) {
+        if (! project.hasProperty('gant_experimentalMavenRepository') && !(project.hasProperty('codehausUsername') && project.hasProperty('codehausPassword'))) {
+          throw new RuntimeException('Must define both codehausUsername and codehausPassword to upload archives.')
         }
-        if ( ! signingPropertiesAreSet ( ) ) {
-          throw new RuntimeException ( 'Must define signing.keyId, signing.password, and signing.secretKeyRingFile' )
+        if (! signingPropertiesAreSet()) {
+          throw new RuntimeException('Must define signing.keyId, signing.password, and signing.secretKeyRingFile')
         }
         uploadArchives.repositories.mavenDeployer {
           uniqueVersion = false
           configuration = configurations.deployJars
           beforeDeployment { MavenDeployment deployment -> signing.signPom(deployment) }
-          if ( project.hasProperty ( 'gant_experimentalMavenRepository' ) ) {
-            if ( ! gant_experimentalMavenRepository ) { throw new RuntimeException ( 'gant_experimentalMavenRepository value not reasonable.' ) }
-            repository url : "file://${rootProject.buildDir}/${gant_experimentalMavenRepository}"
+          if (project.hasProperty('gant_experimentalMavenRepository')) {
+            if (! gant_experimentalMavenRepository) { throw new RuntimeException('gant_experimentalMavenRepository value not reasonable.') }
+            repository url: "file://${rootProject.buildDir}/${gant_experimentalMavenRepository}"
           } else {
-            //repository ( url : 'dav:https://dav.codehaus.org/repository/gant/' ) {
-            repository ( url : 'https://dav.codehaus.org/repository/gant/' ) {
-              authentication userName : codehausUsername , password : codehausPassword
+            //repository(url: 'dav:https://dav.codehaus.org/repository/gant/') {
+            repository(url: 'https://dav.codehaus.org/repository/gant/') {
+              authentication userName: codehausUsername, password: codehausPassword
             }
-            //snapshotRepository ( url : 'dav:https://dav.codehaus.org/snapshots.repository/gant/' ) {
-            snapshotRepository ( url : 'https://dav.codehaus.org/snapshots.repository/gant/' ) {
-              authentication userName: codehausUsername , password : codehausPassword
+            //snapshotRepository(url: 'dav:https://dav.codehaus.org/snapshots.repository/gant/') {
+            snapshotRepository(url: 'https://dav.codehaus.org/snapshots.repository/gant/') {
+              authentication userName: codehausUsername, password: codehausPassword
             }
           }
           pom pomSpecification
@@ -392,37 +392,37 @@ forEachDistributionVersion { projectName->
     }
     final binCopySpec = copySpec {
       final scriptsDirectory = '../scripts'
-      from ( '..' ) { include 'README*' }
-      into ( 'conf' ) { from ( scriptsDirectory + '/conf' ) { include '*.conf' } }
-      into ( 'lib' ) {
+      from('..') { include 'README*' }
+      into('conf') { from(scriptsDirectory + '/conf') { include '*.conf' } }
+      into('lib') {
         from libsDir
-        rename projectName + '-' + version , artifact + '-' + version + mavenNameExtension + '-' + groovyVersion
+        rename projectName + '-' + version, artifact + '-' + version + mavenNameExtension + '-' + groovyVersion
       }
-      into ( 'bin' ) {
+      into('bin') {
         fileMode = 0755
-        from ( [ scriptsDirectory + '/bin' , scriptsDirectory + '/bin_requiresGroovy' ] )
-        filter ReplaceTokens , tokens : [
-                   GROOVYPATH : 'embeddable' ,
-                   GROOVYJAR : groovyArtefactName + '-' + groovyVersion + '.jar'
+        from([ scriptsDirectory + '/bin', scriptsDirectory + '/bin_requiresGroovy' ])
+        filter ReplaceTokens, tokens: [
+                   GROOVYPATH: 'embeddable',
+                   GROOVYJAR: groovyArtefactName + '-' + groovyVersion + '.jar'
                  ]
       }
     }
-    task binTgz ( type : Tar , dependsOn : 'jar' , description : 'Build the distribution tarball.' ) {
+    task binTgz(type: Tar, dependsOn: 'jar', description: 'Build the distribution tarball.') {
       baseName = artifact
       classifier = mavenNameExtension + '-' + groovyVersion
       compression = Compression.GZIP
-      into ( gantPrefix ) { with binCopySpec }
+      into(gantPrefix) { with binCopySpec }
     }
-    task binZip ( type : Zip , dependsOn : 'jar' , description : 'Build the distribution zip file.' ) {
+    task binZip(type: Zip, dependsOn: 'jar', description: 'Build the distribution zip file.') {
       baseName = artifact
       classifier = mavenNameExtension + '-' + groovyVersion
-      into ( gantPrefix ) { with binCopySpec }
+      into(gantPrefix) { with binCopySpec }
     }
-    distributionTasks += [ binTgz , binZip ]
+    distributionTasks += [ binTgz, binZip ]
   }
   //  Due to weird effective scoping of projects -- caused by cloning of bindings for projects? -- need to
   //  do the following to get the above tasks into the list defined by the main script.
-  distributionTasks += project ( projectName ).distributionTasks
+  distributionTasks += project(projectName).distributionTasks
   ciBuildTasks << projectName + ':build'
 }
 
@@ -435,57 +435,57 @@ final projectNameForStandalone = 'gant_groovy' + groovyStandaloneSeries
 final standaloneCopySpec = copySpec {
   final scriptsDirectory = 'scripts'
   final projectBase = project projectNameForStandalone
-  from ( '.' ) { include 'README*' }
-  into ( 'conf' ) { from ( scriptsDirectory + '/conf' ) { include '*.conf' } }
-  into ( 'lib' ) {
+  from('.') { include 'README*' }
+  into('conf') { from(scriptsDirectory + '/conf') { include '*.conf' } }
+  into('lib') {
     from projectBase.libsDir
     from projectBase.configurations.runtime
   }
-  into ( 'bin' ) {
+  into('bin') {
     fileMode = 0755
-    from ( [ scriptsDirectory + '/bin' , scriptsDirectory + '/bin_standalone' ] )
-    filter ReplaceTokens , tokens : [
-               GROOVYPATH : 'lib' ,
-               GROOVYJAR : groovyArtefactName + '-' + groovyVersions[groovyStandaloneSeries] + '.jar'
+    from([ scriptsDirectory + '/bin', scriptsDirectory + '/bin_standalone' ])
+    filter ReplaceTokens, tokens: [
+               GROOVYPATH: 'lib',
+               GROOVYJAR: groovyArtefactName + '-' + groovyVersions[groovyStandaloneSeries] + '.jar'
              ]
   }
 }
 
-task standaloneBinTgz ( type : Tar , dependsOn : projectNameForStandalone + ':jar' , description : 'Create a tarball of the standalone distribution.' ) {
+task standaloneBinTgz(type: Tar, dependsOn: projectNameForStandalone + ':jar', description: 'Create a tarball of the standalone distribution.') {
   baseName = artifact
   version = gantVersion
   compression = Compression.GZIP
   destinationDir = buildDir
-  into ( gantPrefix ) { with standaloneCopySpec }
+  into(gantPrefix) { with standaloneCopySpec }
 }
 
-task standaloneBinZip ( type : Zip , dependsOn : projectNameForStandalone + ':jar' , description : 'Create a zip file of the standalone distribution.' ) {
+task standaloneBinZip(type: Zip, dependsOn: projectNameForStandalone + ':jar', description: 'Create a zip file of the standalone distribution.') {
   baseName = artifact
   version = gantVersion
   destinationDir = buildDir
-  into ( gantPrefix ) { with standaloneCopySpec }
+  into(gantPrefix) { with standaloneCopySpec }
 }
 
-distributionTasks += [ standaloneBinTgz , standaloneBinZip ]
+distributionTasks += [ standaloneBinTgz, standaloneBinZip ]
 
 // =====================================================================
 //
 //  Create the deb file of the standalone distribution.
 
-final debsDirectory = new File ( buildDir , 'debs' )
-final distDirectory = new File ( buildDir , 'dist' )
+final debsDirectory = new File(buildDir, 'debs')
+final distDirectory = new File(buildDir, 'dist')
 
-task clean ( type: Delete ) {
+task clean(type: Delete) {
   delete debsDirectory
   delete distDirectory
 }
 
-task standaloneDeb ( dependsOn : standaloneBinTgz , description : 'Create a deb for use with Debian and Ubuntu.' ) << {
+task standaloneDeb(dependsOn: standaloneBinTgz, description: 'Create a deb for use with Debian and Ubuntu.') << {
   final packageName = 'gant-standalone'
   final architecture = 'all'
   final createdDebFileName = packageName + '_' + gantVersion + '-' + debPackagingNumber + '_' + architecture + '.deb'
   final installPrefixBase = 'usr/share/gant'
-  final expandDirectory = ( new File ( distDirectory , 'gant-' + gantVersion ) ).path
+  final expandDirectory = (new File(distDirectory, 'gant-' + gantVersion)).path
   final packagingDirectory = 'packaging/AntDebTask'
   inputs.file packagingDirectory + '/gant'
   inputs.file expandDirectory + '/bin/startGroovy'
@@ -495,21 +495,21 @@ task standaloneDeb ( dependsOn : standaloneBinTgz , description : 'Create a deb 
   // Using doLast here causes a concurrent modification exception.
   //doLast {
     delete distDirectory
-    distDirectory.mkdirs ( )
-    ant.taskdef resource : 'ant_deb_task.properties' , classpath : [ System.properties.'user.home' , '.groovy' , 'lib' , 'ant-deb.jar' ].join ( System.properties.'file.separator' )
+    distDirectory.mkdirs()
+    ant.taskdef resource: 'ant_deb_task.properties', classpath: [ System.properties.'user.home', '.groovy', 'lib', 'ant-deb.jar' ].join(System.properties.'file.separator')
     logger.info "==>  Untaring ${buildDir}/gant-${gantVersion}.tgz to ${distDirectory}"
-    final process = [ 'sh' , '-x' , '-c' , "cd ${distDirectory} && tar xvf ${buildDir}/gant-${gantVersion}.tgz" ].execute ( )
-    process.consumeProcessOutput ( )
-    process.waitFor ( )
-    debsDirectory.mkdirs ( )
-    final result = ant.deb ( todir : debsDirectory , 'package' : packageName , section : 'devel' , priority : 'optional' , architecture : architecture ,
-                             depends : 'java2-runtime', postinst : packagingDirectory+ '/postinst' , prerm : packagingDirectory + '/prerm' ,
-                             conflicts : 'gant' ) {
+    final process = [ 'sh', '-x', '-c', "cd ${distDirectory} && tar xvf ${buildDir}/gant-${gantVersion}.tgz" ].execute()
+    process.consumeProcessOutput()
+    process.waitFor()
+    debsDirectory.mkdirs()
+    final result = ant.deb(todir: debsDirectory, 'package': packageName, section: 'devel', priority: 'optional', architecture: architecture,
+                             depends: 'java2-runtime', postinst: packagingDirectory+ '/postinst', prerm: packagingDirectory + '/prerm',
+                             conflicts: 'gant') {
       //  Hack required to make Gradle get things right.
-      //version upstream : gantVersion , debian : debPackagingNumber
-      delegate.version upstream : gantVersion , debian : debPackagingNumber
-      maintainer name : 'Russel Winder' , email : 'russel@winder.org.uk'
-      description synopsis : 'Gant -- Groovy scripting of Ant tasks.' , '''
+      //version upstream: gantVersion, debian: debPackagingNumber
+      delegate.version upstream: gantVersion, debian: debPackagingNumber
+      maintainer name: 'Russel Winder', email: 'russel@winder.org.uk'
+      description synopsis: 'Gant -- Groovy scripting of Ant tasks.', '''
 Gant is a tool for scripting Ant tasks using Groovy instead of XML to specify
 the logic. A Gant specification is just a Groovy script and so can bring all
 the power of Groovy to bear directly, something not possible with Ant scripts.
@@ -524,13 +524,13 @@ run are included in the package.
 .
 Homepage: http://gant.codehaus.org/
 '''
-      tarfileset file : packagingDirectory + '/gant' , prefix : installPrefixBase + '/bin' , filemode : '755'
-      tarfileset file : expandDirectory + '/bin/startGroovy' , prefix : installPrefixBase + '/bin' , filemode : '644'
-      tarfileset file : expandDirectory + '/conf/gant-starter.conf' , prefix : installPrefixBase + '/conf' , filemode : '644'
-      tarfileset dir : expandDirectory + '/lib' , includes : '*.jar' , prefix : installPrefixBase + '/lib' , filemode : '644'
+      tarfileset file: packagingDirectory + '/gant', prefix: installPrefixBase + '/bin', filemode: '755'
+      tarfileset file: expandDirectory + '/bin/startGroovy', prefix: installPrefixBase + '/bin', filemode: '644'
+      tarfileset file: expandDirectory + '/conf/gant-starter.conf', prefix: installPrefixBase + '/conf', filemode: '644'
+      tarfileset dir: expandDirectory + '/lib', includes: '*.jar', prefix: installPrefixBase + '/lib', filemode: '644'
     }
     //  The deb Ant task appears not to record the name of the resultant deb file so we have to construct it
-    //  by replicating the algorithm :-((
+    //  by replicating the algorithm:-((
     assert createdDebFileName == result._package + '_' + result._version + '_' + result._architecture + '.deb'
     //}
 }
@@ -541,112 +541,112 @@ debTasks << standaloneDeb
 //
 //  Create the documentation distribution.
 
-task docTgz ( type : Tar , dependsOn : [ ':gant:javadoc' , ':gant:groovydoc' ] , description : 'Create a tarball of the documentation' ) {
+task docTgz(type: Tar, dependsOn: [':gant:javadoc', ':gant:groovydoc'], description: 'Create a tarball of the documentation') {
   baseName = artifact + '_doc'
   version = gantVersion
   compression = Compression.GZIP
   destinationDir = buildDir
-  into ( gantPrefix + '/docs' ) { from project ( ':gant' ).docsDir }
+  into(gantPrefix + '/docs') { from project(':gant').docsDir }
 }
 
-task docZip ( type : Zip , dependsOn : [ ':gant:javadoc' , ':gant:groovydoc' ] , description : 'Create a zip file of the documentation' ) {
+task docZip(type: Zip, dependsOn: [':gant:javadoc', ':gant:groovydoc'], description: 'Create a zip file of the documentation') {
   baseName = artifact + '_doc'
   version = gantVersion
   destinationDir = buildDir
-  into ( gantPrefix + '/docs' ) { from project ( ':gant' ).docsDir }
+  into(gantPrefix + '/docs') { from project(':gant').docsDir }
 }
 
-distributionTasks += [ docTgz , docZip ]
+distributionTasks += [ docTgz, docZip ]
 
 // =====================================================================
 //
 //  Create the source distribution.
 
 final srcContent = [
-  'artwork/' , 'documentation/' , 'examples/' , 'packaging' , 'scripts/' , 'src/' ,
-  'build.gradle' , 'settings.gradle' , 'gradlew' ,'gradlew.bat' , 'wrapper/' ,
-  'ciBuild' ,
-  'Gant.ipr' , 'Gant.iws' ,
-  '.classpath' , '.project' , '.settings/' ,
-  'LICENCE.txt' ,
-  'README_Install.txt' ,
-  'releaseNotes.txt' ,
-  'overview.html' ,
+  'artwork/', 'documentation/', 'examples/', 'packaging', 'scripts/', 'src/',
+  'build.gradle', 'settings.gradle', 'gradlew','gradlew.bat', 'wrapper/',
+  'ciBuild',
+  'Gant.ipr', 'Gant.iws',
+  '.classpath', '.project', '.settings/',
+  'LICENCE.txt',
+  'README_Install.txt',
+  'releaseNotes.txt',
+  'overview.html',
 ]
 
-task srcTgz ( type : Tar , description : 'Create a tarball of the source.' ) {
+task srcTgz(type: Tar, description: 'Create a tarball of the source.') {
   baseName = artifact + '_src'
   version = gantVersion
   compression = Compression.GZIP
   destinationDir = buildDir
-  into ( gantPrefix ) { from ( projectDir ) { srcContent.each { include it } } }
+  into(gantPrefix) { from(projectDir) { srcContent.each { include it } } }
 }
 
-task srcZip ( type : Zip , description : 'Create a zip file of the source.' ) {
+task srcZip(type: Zip, description: 'Create a zip file of the source.') {
   baseName = artifact + '_src'
   version = gantVersion
   destinationDir = buildDir
-  into ( gantPrefix ) { from ( projectDir ) { srcContent.each { include it } } }
+  into(gantPrefix) { from(projectDir) { srcContent.each { include it } } }
 }
 
-distributionTasks += [ srcTgz , srcZip ]
+distributionTasks += [ srcTgz, srcZip ]
 
 // =====================================================================
 //
 //  Tasks for getting all the distribution materials uploaded to Codehaus.
 
 final checkAuthority = { ->
-  if ( ! project.hasProperty ( 'gant_experimentalDistributionLocation' ) && ! ( project.hasProperty ( 'codehausUsername' ) && project.hasProperty ( 'codehausPassword' ) ) ) {
-    throw new RuntimeException ( 'Must define both codehausUsername and codehausPassword to upload distributions.')
+  if (! project.hasProperty('gant_experimentalDistributionLocation') && !(project.hasProperty('codehausUsername') && project.hasProperty('codehausPassword'))) {
+    throw new RuntimeException('Must define both codehausUsername and codehausPassword to upload distributions.')
   }
 }
 
-final undertakeUpload = { copySpec , uploadSpec ->
-  if ( project.hasProperty ( 'gant_experimentalDistributionLocation' ) ) {
-    if ( ! gant_experimentalDistributionLocation ) { throw new RuntimeException ( 'gant_experimentalDistributionLocation value not reasonable.' ) }
+final undertakeUpload = { copySpec, uploadSpec ->
+  if (project.hasProperty('gant_experimentalDistributionLocation')) {
+    if (! gant_experimentalDistributionLocation) { throw new RuntimeException('gant_experimentalDistributionLocation value not reasonable.') }
     copy copySpec
   }
   else {
     configurations { upload }
     repositories {
-      if ( project.hasProperty ( 'gant_useMavenLocal' ) && gant_useMavenLocal ) { mavenLocal ( ) }
-      mavenCentral ( )
+      if (project.hasProperty('gant_useMavenLocal') && gant_useMavenLocal) { mavenLocal() }
+      mavenCentral()
     }
     dependencies { upload 'com.googlecode.sardine:sardine:146' }
-    assert uploadSpec.size ( ) == 2
-    final targetDirectoryUrl = 'https://dav.codehaus.org/' + ( gantVersion.contains ( 'SNAPSHOT' ) ? 'snapshots.' : '' ) + 'dist/gant/' + uploadSpec[0]
+    assert uploadSpec.size() == 2
+    final targetDirectoryUrl = 'https://dav.codehaus.org/' + (gantVersion.contains('SNAPSHOT') ? 'snapshots.' : '') + 'dist/gant/' + uploadSpec[0]
     /*
-    com.googlecode.sardine.Sardine sardine = com.googlecode.sardine.SardineFactory.begin ( codehausUsername , codehausPassword )
+    com.googlecode.sardine.Sardine sardine = com.googlecode.sardine.SardineFactory.begin(codehausUsername, codehausPassword)
     */
   }
 }
 
-task buildDistribution ( dependsOn : distributionTasks , description : 'Build all the uploadable distribution archives.' )
+task buildDistribution(dependsOn: distributionTasks, description: 'Build all the uploadable distribution archives.')
 
-task uploadDistribution ( dependsOn : buildDistribution , description : 'Upload all the distribution archives.' ) << {
-  checkAuthority ( )
+task uploadDistribution(dependsOn: buildDistribution, description: 'Upload all the distribution archives.') << {
+  checkAuthority()
   undertakeUpload (
     {
       distributionTasks.each { task -> from task }
       into rootProject.buildDir.absolutePath + '/' + gant_experimentalDistributionLocation + '/distributions'
-    } ,
-    [ 'distributions' , distributionTasks ] )
+    },
+    ['distributions', distributionTasks])
 }
 
 // =====================================================================
 //
 //  Tasks for getting all the debs uploaded to Codehaus.
 
-task buildDebs ( dependsOn : debTasks , description : 'Build all the uploadable debs.' )
+task buildDebs(dependsOn: debTasks, description: 'Build all the uploadable debs.')
 
-task uploadDebs ( dependsOn : buildDebs , description : 'Upload all the debs.' ) << {
-  checkAuthority ( )
-  undertakeUpload (
+task uploadDebs(dependsOn: buildDebs, description: 'Upload all the debs.') << {
+  checkAuthority()
+  undertakeUpload(
     {
-      debTasks.each { task -> from task }
+      debTasks.each{task -> from task}
       into rootProject.buildDir.absolutePath + '/' + gant_experimentalDistributionLocation + '/debs'
-    } ,
-    [ 'debs' , debTasks ] )
+    },
+    ['debs', debTasks])
 }
 
 
@@ -654,22 +654,22 @@ task uploadDebs ( dependsOn : buildDebs , description : 'Upload all the debs.' )
 //
 //  Do a complete release.
 
-final archivesUploadTasks = [ ]
-forEachDistributionVersion { archivesUploadTasks << ':' + it + ':uploadArchives'}
+final archivesUploadTasks = []
+forEachDistributionVersion{archivesUploadTasks << ':' + it + ':uploadArchives'}
 
-task uploadRelease ( dependsOn: archivesUploadTasks + [ uploadDistribution , uploadDebs ] , description : 'Upload all elements of a release.' )
+task uploadRelease(dependsOn: archivesUploadTasks + [uploadDistribution, uploadDebs], description: 'Upload all elements of a release.')
 
 // =====================================================================
 //
 //  Odds and sods.
 
-task ciBuild ( description : 'Run just the builds that use Groovy from the Maven repository.  Used mainly on CI servers.' , dependsOn : ciBuildTasks )
+task ciBuild(description: 'Run just the builds that use Groovy from the Maven repository.  Used mainly on CI servers.', dependsOn: ciBuildTasks)
 
-task wrapper ( type : Wrapper ) {
+task wrapper(type: Wrapper) {
   gradleVersion = '1.3'
 }
 
-task clobber ( description : 'Do a really detailed clean.' ) << {
-  forEachProject { item -> delete item }
-  delete buildDir , 'texput.log'
+task clobber(description: 'Do a really detailed clean.') << {
+  forEachProject{item -> delete item}
+  delete buildDir, 'texput.log'
 }

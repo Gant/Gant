@@ -1,6 +1,6 @@
 //  Gant -- A Groovy way of scripting Ant tasks.
 //
-//  Copyright © 2006-10 Russel Winder
+//  Copyright © 2006–2010, 2013  Russel Winder
 //
 //  Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in
 //  compliance with the License. You may obtain a copy of the License at
@@ -15,201 +15,201 @@
 package org.codehaus.gant.tests
 
 /**
- *  A test to ensure that the target listing works. 
+ *  A test to ensure that the target listing works.
  *
  *  @author Russel Winder <russel@winder.org.uk>
  */
 final class ListingTargets_Test extends GantTestCase {
   final coreScript = '''
-target ( something : "Do something." ) { }
-target ( somethingElse : "Do something else." ) { }
+target(something: "Do something.") { }
+target(somethingElse: "Do something else.") { }
 '''
-  void testSomethingUsingP ( ) {
+  void testSomethingUsingP() {
     script = coreScript
-    assertEquals ( 0 , gant.processArgs ( [ '-p' ,  '-f' ,  '-' ] as String[] ) )
-    assertEquals ( '''
+    assertEquals(0, gant.processArgs(['-p',  '-f',  '-'] as String[]))
+    assertEquals('''
  something      Do something.
  somethingElse  Do something else.
 
-''' , output ) 
+''', output)
   }
-  void testSomethingAndCleanUsingP ( ) {
+  void testSomethingAndCleanUsingP() {
     script = 'includeTargets << gant.targets.Clean\n' + coreScript
-    assertEquals ( 0 , gant.processArgs ( [ '-p' ,  '-f' ,  '-' ] as String[] ) )
-    assertEquals ( '''
+    assertEquals(0, gant.processArgs(['-p',  '-f',  '-'] as String[]))
+    assertEquals('''
  clean          Action the cleaning.
- clobber        Action the clobbering.  Do the cleaning first.
+ clobber        Action the clobbering. Do the cleaning first.
  something      Do something.
  somethingElse  Do something else.
 
-''' , output ) 
+''', output)
   }
-  void testGStringsUsingP ( ) {
+  void testGStringsUsingP() {
     script = '''
 def theWord = 'The Word'
-target ( something : "Do ${theWord}." ) { }
-target ( somethingElse : "Do ${theWord}." ) { }
+target(something: "Do ${theWord}.") { }
+target(somethingElse: "Do ${theWord}.") { }
 '''
-    assertEquals ( 0 , gant.processArgs ( [ '-p' ,  '-f' ,  '-' ] as String[] ) )
-    assertEquals ( '''
+    assertEquals(0, gant.processArgs(['-p',  '-f',  '-'] as String[]))
+    assertEquals('''
  something      Do The Word.
  somethingElse  Do The Word.
 
-''' , output ) 
+''', output)
   }
-  void testDefaultSomethingUsingP ( ) {
+  void testDefaultSomethingUsingP() {
     script = '''
-target ( something : "Do something." ) { }
-target ( somethingElse : "Do something else." ) { }
-target ( 'default' : "The default." ) { something ( ) }
+target(something: "Do something.") { }
+target(somethingElse: "Do something else.") { }
+target('default': "The default.") { something() }
 '''
-    assertEquals ( 0 , gant.processArgs ( [ '-p' ,  '-f' ,  '-' ] as String[] ) )
-    assertEquals ( '''
+    assertEquals(0, gant.processArgs(['-p',  '-f',  '-'] as String[]))
+    assertEquals('''
  default        The default.
  something      Do something.
  somethingElse  Do something else.
 
 Default target is default.
 
-''' , output ) 
-  }  
-  void testDefaultSomethingSetDefaultClosureUsingP ( ) {
+''', output)
+  }
+  void testDefaultSomethingSetDefaultClosureUsingP() {
     script = '''
-target ( something : "Do something." ) { }
-target ( somethingElse : "Do something else." ) { }
-setDefaultTarget ( something )
+target(something: "Do something.") { }
+target(somethingElse: "Do something else.") { }
+setDefaultTarget(something)
 '''
-    assertEquals ( 0 , gant.processArgs ( [ '-p' ,  '-f' ,  '-' ] as String[] ) )
-    assertEquals ( '''
+    assertEquals(0, gant.processArgs(['-p',  '-f',  '-'] as String[]))
+    assertEquals('''
  something      Do something.
  somethingElse  Do something else.
 
 Default target is something.
 
-''' , output ) 
-  }  
-  void testDefaultSomethingSetDefaultStringUsingP ( ) {
+''', output)
+  }
+  void testDefaultSomethingSetDefaultStringUsingP() {
     script = '''
-target ( something : "Do something." ) { }
-target ( somethingElse : "Do something else." ) { }
-setDefaultTarget ( 'something' )
+target(something: "Do something.") { }
+target(somethingElse: "Do something else.") { }
+setDefaultTarget('something')
 '''
-    assertEquals ( 0 , gant.processArgs ( [ '-p' ,  '-f' ,  '-' ] as String[] ) )
-    assertEquals ( '''
+    assertEquals(0, gant.processArgs(['-p',  '-f',  '-'] as String[]))
+    assertEquals('''
  something      Do something.
  somethingElse  Do something else.
 
 Default target is something.
 
-''' , output ) 
-  }  
-  void testDefaultSomethingSetDefaultFailUsingP ( ) {
+''', output)
+  }
+  void testDefaultSomethingSetDefaultFailUsingP() {
     script = '''
-target ( something : "Do something." ) { }
-target ( somethingElse : "Do something else." ) { }
-setDefaultTarget ( 'fail' )
+target(something: "Do something.") { }
+target(somethingElse: "Do something else.") { }
+setDefaultTarget('fail')
 '''
-    assertEquals ( 0 , gant.processArgs ( [ '-p' ,  '-f' ,  '-' ] as String[] ) )
-    assertEquals ( '''
+    assertEquals(0, gant.processArgs(['-p',  '-f',  '-'] as String[]))
+    assertEquals('''
  something      Do something.
  somethingElse  Do something else.
 
-''' , output ) 
+''', output)
   }
 
   // -------------------------------------------------------------------------------------------------
 
-  void testSomethingUsingT ( ) {
-    script = coreScript 
-    assertEquals ( 0 , gant.processArgs ( [ '-T' ,  '-f' ,  '-' ] as String[] ) )
-    assertEquals ( '''
+  void testSomethingUsingT() {
+    script = coreScript
+    assertEquals(0, gant.processArgs(['-T',  '-f',  '-'] as String[]))
+    assertEquals('''
  something      Do something.
  somethingElse  Do something else.
 
-''' , output ) 
+''', output)
   }
-  void testSomethingAndCleanUsingT ( ) {
+  void testSomethingAndCleanUsingT() {
     script = 'includeTargets << gant.targets.Clean\n' + coreScript
-    assertEquals ( 0 , gant.processArgs ( [ '-T' ,  '-f' ,  '-' ] as String[] ) )
-    assertEquals ( '''
+    assertEquals(0, gant.processArgs(['-T',  '-f',  '-'] as String[]))
+    assertEquals('''
  clean          Action the cleaning.
- clobber        Action the clobbering.  Do the cleaning first.
+ clobber        Action the clobbering. Do the cleaning first.
  something      Do something.
  somethingElse  Do something else.
 
-''' , output ) 
+''', output)
   }
-  void testGStringsUsingT ( ) {
+  void testGStringsUsingT() {
     script = '''
 def theWord = 'The Word'
-target ( something : "Do ${theWord}." ) { }
-target ( somethingElse : "Do ${theWord}." ) { }
+target(something: "Do ${theWord}.") { }
+target(somethingElse: "Do ${theWord}.") { }
 '''
-    assertEquals ( 0 , gant.processArgs ( [ '-T' ,  '-f' ,  '-' ] as String[] ) )
-    assertEquals ( '''
+    assertEquals(0, gant.processArgs(['-T',  '-f',  '-'] as String[]))
+    assertEquals('''
  something      Do The Word.
  somethingElse  Do The Word.
 
-''' , output ) 
+''', output)
   }
-  void testDefaultSomethingUsingT ( ) {
+  void testDefaultSomethingUsingT() {
     script = '''
-target ( something : "Do something." ) { }
-target ( somethingElse : "Do something else." ) { }
-target ( 'default' : "The default target." ) { something ( ) }
+target(something: "Do something.") { }
+target(somethingElse: "Do something else.") { }
+target('default': "The default target.") { something() }
 '''
-    assertEquals ( 0 , gant.processArgs ( [ '-T' ,  '-f' ,  '-' ] as String[] ) )
-    assertEquals ( '''
+    assertEquals(0, gant.processArgs(['-T',  '-f',  '-'] as String[]))
+    assertEquals('''
  default        The default target.
  something      Do something.
  somethingElse  Do something else.
 
 Default target is default.
 
-''' , output ) 
-  }  
-  void testDefaultSomethingSetDefaultClosureUsingT ( ) {
+''', output)
+  }
+  void testDefaultSomethingSetDefaultClosureUsingT() {
     script = '''
-target ( something : "Do something." ) { }
-target ( somethingElse : "Do something else." ) { }
-setDefaultTarget ( something )
+target(something: "Do something.") { }
+target(somethingElse: "Do something else.") { }
+setDefaultTarget(something)
 '''
-    assertEquals ( 0 , gant.processArgs ( [ '-T' ,  '-f' ,  '-' ] as String[] ) )
-    assertEquals ( '''
+    assertEquals(0, gant.processArgs(['-T',  '-f',  '-'] as String[]))
+    assertEquals('''
  something      Do something.
  somethingElse  Do something else.
 
 Default target is something.
 
-''' , output ) 
-  }  
-  void testDefaultSomethingSetDefaultStringUsingT ( ) {
+''', output)
+  }
+  void testDefaultSomethingSetDefaultStringUsingT() {
     script = '''
-target ( something : "Do something." ) { }
-target ( somethingElse : "Do something else." ) { }
-setDefaultTarget ( 'something' )
+target(something: "Do something.") { }
+target(somethingElse: "Do something else.") { }
+setDefaultTarget('something')
 '''
-    assertEquals ( 0 , gant.processArgs ( [ '-T' ,  '-f' ,  '-' ] as String[] ) )
-    assertEquals ( '''
+    assertEquals(0, gant.processArgs(['-T',  '-f',  '-'] as String[]))
+    assertEquals('''
  something      Do something.
  somethingElse  Do something else.
 
 Default target is something.
 
-''' , output ) 
-  }  
-  void testDefaultSomethingSetDefaultFailUsingT ( ) {
+''', output)
+  }
+  void testDefaultSomethingSetDefaultFailUsingT() {
     script = '''
-target ( something : "Do something." ) { }
-target ( somethingElse : "Do something else." ) { }
-setDefaultTarget ( 'fail' )
+target(something: "Do something.") { }
+target(somethingElse: "Do something else.") { }
+setDefaultTarget('fail')
 '''
-    assertEquals ( 0 , gant.processArgs ( [ '-T' ,  '-f' ,  '-' ] as String[] ) )
-    assertEquals ( '''
+    assertEquals(0, gant.processArgs(['-T',  '-f',  '-'] as String[]))
+    assertEquals('''
  something      Do something.
  somethingElse  Do something else.
 
-''' , output ) 
+''', output)
   }
 
   // -------------------------------------------------------------------------------------------------
@@ -222,45 +222,45 @@ setDefaultTarget ( 'fail' )
    *  format worked fine -- despite not having any unit tests.
    */
 
-  void test_GANT_71_oldFormatStillWorksUsingP ( ) {
+  void test_GANT_71_oldFormatStillWorksUsingP() {
     script = '''
-target ( test : 'testing' ) { println ( "$it.name:" ) }
+target(test: 'testing') { println("$it.name:") }
 '''
-    assertEquals ( 0 , gant.processArgs ( [ '-p' , '-f' , '-' ] as String[] ) )
-    assertEquals ( '''
+    assertEquals(0, gant.processArgs(['-p', '-f', '-'] as String[]))
+    assertEquals('''
  test  testing
 
-''' , output )
+''', output)
   }
-  void test_GANT_71_newFormatWorksUsingP ( ) {
+  void test_GANT_71_newFormatWorksUsingP() {
     script = '''
-target ( name : 'test' , description : 'testing' ) { println ( "$it.name:" ) }
+target(name: 'test', description: 'testing') { println("$it.name:") }
 '''
-    assertEquals ( 0 , gant.processArgs ( [ '-p' , '-f' , '-' ] as String[] ) )
-    assertEquals ( '''
+    assertEquals(0, gant.processArgs(['-p', '-f', '-'] as String[]))
+    assertEquals('''
  test  testing
 
-''' , output )
+''', output)
   }
 
-  void test_GANT_71_oldFormatStillWorksUsingT ( ) {
+  void test_GANT_71_oldFormatStillWorksUsingT() {
     script = '''
-target ( test : 'testing' ) { println ( "$it.name:" ) }
+target(test: 'testing') { println("$it.name:") }
 '''
-    assertEquals ( 0 , gant.processArgs ( [ '-T' , '-f' , '-' ] as String[] ) )
-    assertEquals ( '''
+    assertEquals(0, gant.processArgs(['-T', '-f', '-'] as String[]))
+    assertEquals('''
  test  testing
 
-''' , output )
+''', output)
   }
-  void test_GANT_71_newFormatWorksUsingT ( ) {
+  void test_GANT_71_newFormatWorksUsingT() {
     script = '''
-target ( name : 'test' , description : 'testing' ) { println ( "$it.name:" ) }
+target(name: 'test', description: 'testing') { println("$it.name:") }
 '''
-    assertEquals ( 0 , gant.processArgs ( [ '-T' , '-f' , '-' ] as String[] ) )
-    assertEquals ( '''
+    assertEquals(0, gant.processArgs(['-T', '-f', '-'] as String[]))
+    assertEquals('''
  test  testing
 
-''' , output )
+''', output)
   }
 }

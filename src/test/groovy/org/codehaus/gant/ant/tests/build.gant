@@ -1,6 +1,6 @@
 //  Gant -- A Groovy way of scripting Ant tasks.
 //
-//  Copyright © 2008-10 Russel Winder
+//  Copyright © 2008–2010, 2013  Russel Winder
 //
 //  Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in
 //  compliance with the License. You may obtain a copy of the License at
@@ -15,25 +15,25 @@
 import org.codehaus.gant.ant.tests.Gant_Test
 
 //  For some reason there has to be an ant. here :-(
-ant.property ( file : 'build.properties' )
+ant.property(file: 'build.properties')
 
-target ( test : 'A test target in the default file.' ) { Gant_Test.returnValue = Gant_Test.returnValue + test_description }
+target(test: 'A test target in the default file.') { Gant_Test.returnValue = Gant_Test.returnValue + test_description }
 
-target ( blah : 'Another target in the default file.' ) { Gant_Test.returnValue = Gant_Test.returnValue + blah_description }
+target(blah: 'Another target in the default file.') { Gant_Test.returnValue = Gant_Test.returnValue + blah_description }
 
 //// This build file has to work in two contexts.  If GROOVY_HOME is set in the environment then the jars
 //// from that installation of Groovy should be used so as to ensure testing in the right context.  If the
 //// environment does not have a GROOVY_HOME set then grab some specific versions to make things work.
 
-target ( gantTaskdefVerifyError : 'Check that a taskdef works.' ) {
-  final groovyHome = System.getenv ( ).'GROOVY_HOME'
+target(gantTaskdefVerifyError: 'Check that a taskdef works.') {
+  final groovyHome = System.getenv().'GROOVY_HOME'
   //  Just ensure that the environment variables really have been brought in.
   assert groovyHome == ant.project.properties.'environment.GROOVY_HOME'
-  if ( groovyHome != null ) {
-    taskdef ( name : 'groovyc' , classname: 'org.codehaus.groovy.ant.Groovyc' ) {
+  if (groovyHome != null) {
+    taskdef(name: 'groovyc', classname: 'org.codehaus.groovy.ant.Groovyc') {
       classpath {
-        fileset ( dir : groovyHome + '/lib' , includes : 'groovy*.jar' )
-        fileset ( dir : groovyHome + '/lib' , includes : 'commons-cli*.jar' )
+        fileset(dir: groovyHome + '/lib', includes: 'groovy*.jar')
+        fileset(dir: groovyHome + '/lib', includes: 'commons-cli*.jar')
       }
     }
   }
@@ -48,34 +48,34 @@ target ( gantTaskdefVerifyError : 'Check that a taskdef works.' ) {
    *
   //  Paths are relative to the directory in which this file resides.
   def artifact = 'urn:maven-artifact-ant'
-  typedef ( resource : 'org/apache/maven/artifact/ant/antlib.xml' , uri : artifact ) {
-    classpath { fileset ( dir : toplevelDirectory + '/jarfiles' , includes : 'maven-ant-tasks-*.jar' ) }
+  typedef(resource: 'org/apache/maven/artifact/ant/antlib.xml', uri: artifact) {
+    classpath { fileset(dir: toplevelDirectory + '/jarfiles', includes: 'maven-ant-tasks-*.jar') }
   }
   def dependencyClasspathId = 'dependencyClasspath'
-  "${artifact}:dependencies" ( pathId : dependencyClasspathId ) {
-    remoteRepository ( id : 'Codehaus' , url : 'http://repository.codehaus.org/' )
-    dependency ( groupId : 'org.codehaus.groovy' , artifactId : 'groovy' , version : System.getenv ( ).GROOVY_ANT_TASK_TEST_VERSION )
+  "${artifact}:dependencies"(pathId: dependencyClasspathId) {
+    remoteRepository(id: 'Codehaus', url: 'http://repository.codehaus.org/')
+    dependency(groupId: 'org.codehaus.groovy', artifactId: 'groovy', version: System.getenv().GROOVY_ANT_TASK_TEST_VERSION)
   }
-  taskdef ( name : 'groovyc' , classname: 'org.codehaus.groovy.ant.Groovyc' , classpathref : dependencyClasspathId )
+  taskdef(name: 'groovyc', classname: 'org.codehaus.groovy.ant.Groovyc', classpathref: dependencyClasspathId)
   *
   */
   Gant_Test.returnValue = 'OK.'
 }
 
-target ( gantParameters : '' ) {  
-  Gant_Test.returnValue = 'gant' + ( flob ? ' -Dflob=' + flob : '' ) + ( burble ? ' -Dburble' : '' ) + ' gantParameters' 
+target(gantParameters: '') {
+  Gant_Test.returnValue = 'gant' +(flob ? ' -Dflob=' + flob: '') +(burble ? ' -Dburble': '') + ' gantParameters'
 }
 
 //  For dealing with GANT-110 -- thanks to Eric Van Dewoestine for providing this.
 
-target ( gantInheritAll : 'Check that a inheritAll works.' ) {
-  echo ( message : '${gant.test.inheritAll}' )
+target(gantInheritAll: 'Check that a inheritAll works.') {
+  echo(message: '${gant.test.inheritAll}')
 }
 
 //  For dealing with GANT-111 -- thanks to Eric Van Dewoestine for providing this.
 
-target ( testFail : '' ){
-  fail ( message : 'test fail message' )
+target(testFail: ''){
+  fail(message: 'test fail message')
 }
 
-setDefaultTarget ( test )
+setDefaultTarget(test)

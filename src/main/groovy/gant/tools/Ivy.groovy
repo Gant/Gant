@@ -1,6 +1,6 @@
 //  Gant -- A Groovy way of scripting Ant tasks.
 //
-//  Copyright © 2006-8,2010 Russel Winder
+//  Copyright © 2006–2008, 2010, 2013  Russel Winder
 //
 //  Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in
 //  compliance with the License. You may obtain a copy of the License at
@@ -18,7 +18,7 @@ import org.codehaus.gant.GantBinding
 
 /**
  *  Provide support for using Ivy.  This simply redirects all method calls to the standard
- * <code>GantBuilder</code> instance, which in turn selects the method from the Ivy jar. 
+ * <code>GantBuilder</code> instance, which in turn selects the method from the Ivy jar.
  *
  *  @author Russel Winder <russel@winder.org.uk>
  */
@@ -31,9 +31,9 @@ final class Ivy {
    *
    *  @param binding The <code>GantBinding</code> to bind to.
    */
-  Ivy ( final GantBinding binding ) {
+  Ivy(final GantBinding binding) {
     this.binding = binding
-    binding.ant.taskdef ( resource : 'org/apache/ivy/ant/antlib.xml' , uri : ivyURI )
+    binding.ant.taskdef(resource: 'org/apache/ivy/ant/antlib.xml' , uri: ivyURI)
   }
  /**
    *  Constructor to support "includeTool **" usage.  By default assumes that an Ivy jar is already in the
@@ -44,17 +44,17 @@ final class Ivy {
    *  @param binding The <code>GantBinding</code> to bind to.
    *  @param map The <code>Map</code> of parameters for intialization.
    */
-  Ivy ( final GantBinding binding , final Map<String,String> map ) {
+  Ivy(final GantBinding binding , final Map<String,String> map) {
     this.binding = binding
-    if ( map.containsKey ( 'ivyJarPath' ) ) {
+    if (map.containsKey('ivyJarPath')) {
       final classpathId = 'ivy.class.path'
-      binding.ant.path ( id : classpathId ) { binding.ant.fileset ( dir : map.ivyJarPath , includes : 'ivy*.jar' ) }
-      binding.ant.taskdef ( resource : 'org/apache/ivy/ant/antlib.xml' , uri : ivyURI , classpathref : classpathId )
+      binding.ant.path(id: classpathId) { binding.ant.fileset(dir: map.ivyJarPath , includes: 'ivy*.jar') }
+      binding.ant.taskdef(resource: 'org/apache/ivy/ant/antlib.xml' , uri: ivyURI , classpathref: classpathId)
     }
     else {
-      binding.ant.taskdef ( resource : 'org/apache/ivy/ant/antlib.xml' , uri : ivyURI )
+      binding.ant.taskdef(resource: 'org/apache/ivy/ant/antlib.xml' , uri: ivyURI)
     }
   }
   //  To save having to maintain lists of the functions available, simply redirect all method calls to the GantBuilder object.
-  def invokeMethod ( String name , args ) { binding.ant.invokeMethod ( ivyURI + ':' + name , args ) }
+  def invokeMethod(String name , args) { binding.ant.invokeMethod(ivyURI + ':' + name , args) }
 }

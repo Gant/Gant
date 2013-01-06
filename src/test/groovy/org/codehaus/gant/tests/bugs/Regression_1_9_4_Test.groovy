@@ -1,6 +1,6 @@
 //  Gant -- A Groovy way of scripting Ant tasks.
 //
-//  Copyright © 2011 Russel Winder
+//  Copyright © 2011, 2013  Russel Winder
 //
 //  Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in
 //  compliance with the License. You may obtain a copy of the License at
@@ -28,53 +28,53 @@ final class Regression_1_9_4_Test extends GantTestCase {
   final expectedOutput = theMessage + '\n'
   final expectedDecoratedOutput = "default:\n${expectedOutput}${exitMarker}default\n"
   final groovyScript = """
-target ( default : 'some default target' ) {
-    println ( '${theMessage}' )
+target(default: 'some default target') {
+    println('${theMessage}')
 }
 """
   final groovyProgramTemplate = """
 import gant.Gant
 doNothingClosure = { }
-gant = new Gant ( )
+gant = new Gant()
 gant.loadScript ('''
 ${groovyScript}
-''' )
-gant.prepareTargets ( )
-__ITEM__
-gant.executeTargets ( )
-"""
-  void testForExpectedBehaviourOfBaseProgram ( ) {
-    final groovyShell = new GroovyShell ( )
-    groovyShell.evaluate ( groovyProgramTemplate.replace ( '__ITEM__' , '' ) )
-    assertEquals ( expectedDecoratedOutput , output )
-  }
-  void testForPresenceOfTheRegression ( ) {
-    final groovyProgram = groovyProgramTemplate.replace ( '__ITEM__' , '''
-gant.setAllPerTargetPostHooks ( doNothingClosure )
-gant.setAllPerTargetPreHooks ( doNothingClosure )
 ''')
-    final groovyShell = new GroovyShell ( )
-    groovyShell.evaluate ( groovyProgram )
-    assertEquals ( expectedOutput , output )
+gant.prepareTargets()
+__ITEM__
+gant.executeTargets()
+"""
+  void testForExpectedBehaviourOfBaseProgram() {
+    final groovyShell = new GroovyShell()
+    groovyShell.evaluate(groovyProgramTemplate.replace('__ITEM__', ''))
+    assertEquals(expectedDecoratedOutput, output)
   }
-  void testForCorrectBehaviourOfScript ( ) {
+  void testForPresenceOfTheRegression() {
+    final groovyProgram = groovyProgramTemplate.replace('__ITEM__', '''
+gant.setAllPerTargetPostHooks(doNothingClosure)
+gant.setAllPerTargetPreHooks(doNothingClosure)
+''')
+    final groovyShell = new GroovyShell()
+    groovyShell.evaluate(groovyProgram)
+    assertEquals(expectedOutput, output)
+  }
+  void testForCorrectBehaviourOfScript() {
     script = groovyScript
-    assertEquals ( 0 , processTargets ( ) )
-    assertEquals ( expectedDecoratedOutput , output )
+    assertEquals(0, processTargets())
+    assertEquals(expectedDecoratedOutput, output)
   }
 
   final switchOffHooks = """
-setAllPerTargetPreHooks ( { } )
-setAllPerTargetPostHooks ( { } )
+setAllPerTargetPreHooks({ })
+setAllPerTargetPostHooks({ })
 """
-  void testForExpectedBehaviourOfPreAmendedScript ( ) {
+  void testForExpectedBehaviourOfPreAmendedScript() {
     script = switchOffHooks + groovyScript
-    assertEquals ( 0 , processTargets ( ) )
-    assertEquals ( expectedDecoratedOutput , output )
+    assertEquals(0, processTargets())
+    assertEquals(expectedDecoratedOutput, output)
   }
-  void testForExpectedBehaviourOfPostAmendedScript ( ) {
+  void testForExpectedBehaviourOfPostAmendedScript() {
     script = groovyScript + switchOffHooks
-    assertEquals ( 0 , processTargets ( ) )
-    assertEquals ( expectedOutput , output )
+    assertEquals(0, processTargets())
+    assertEquals(expectedOutput, output)
   }
 }

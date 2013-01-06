@@ -1,6 +1,6 @@
 //  Gant -- A Groovy way of scripting Ant tasks.
 //
-//  Copyright  © 2008 Russel Winder
+//  Copyright  © 2008, 2013  Russel Winder
 //
 //  Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in
 //  compliance with the License. You may obtain a copy of the License at
@@ -25,21 +25,21 @@ import org.apache.tools.ant.Task
  *
  *  @author Graeme Rocher
  *  @since 1.6
- * 
+ *
  *  Created: 2008-12-18
  */
 public class GantEvent extends BuildEvent {
   private GantBinding binding
-  public GantEvent ( final Project project , final GantBinding binding ) {
-    super ( project )
+  public GantEvent(final Project project, final GantBinding binding) {
+    super(project)
     this.binding = binding
   }
-  public GantEvent ( final Target target , final GantBinding binding ) {
-    super ( target )
+  public GantEvent(final Target target, final GantBinding binding) {
+    super(target)
     this.binding = binding
   }
-  public GantEvent ( final Task task , final GantBinding binding ) {
-    super ( task )
+  public GantEvent(final Task task, final GantBinding binding) {
+    super(task)
     this.binding = binding
   }
 }

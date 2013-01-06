@@ -1,6 +1,6 @@
 //  Gant -- A Groovy way of scripting Ant tasks.
 //
-//  Copyright © 2008-9 Russel Winder
+//  Copyright © 2008–2009, 2013  Russel Winder
 //
 //  Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in
 //  compliance with the License. You may obtain a copy of the License at
@@ -12,26 +12,26 @@
 //  implied. See the License for the specific language governing permissions and limitations under the
 //  License.
 
-package org.codehaus.gant.ant ;
+package org.codehaus.gant.ant;
 
-import java.io.File ;
+import java.io.File;
 
-import java.util.ArrayList ;
+import java.util.ArrayList;
 import java.util.Enumeration;
-import java.util.HashMap ;
+import java.util.HashMap;
 import java.util.Hashtable;
-import java.util.List ;
-import java.util.Map ;
+import java.util.List;
+import java.util.Map;
 
-import org.apache.tools.ant.AntClassLoader ;
-import org.apache.tools.ant.BuildException ;
-import org.apache.tools.ant.BuildListener ;
-import org.apache.tools.ant.MagicNames ;
-import org.apache.tools.ant.Project ;
-import org.apache.tools.ant.Task ;
+import org.apache.tools.ant.AntClassLoader;
+import org.apache.tools.ant.BuildException;
+import org.apache.tools.ant.BuildListener;
+import org.apache.tools.ant.MagicNames;
+import org.apache.tools.ant.Project;
+import org.apache.tools.ant.Task;
 
-import org.codehaus.gant.GantBinding ;
-import org.codehaus.gant.GantBuilder ;
+import org.codehaus.gant.GantBinding;
+import org.codehaus.gant.GantBuilder;
 
 /**
  *  Execute a Gant script.
@@ -63,85 +63,85 @@ public class Gant extends Task {
    *  relative to the basedir of the Ant project if it is set, or the directory in which the job was started
    *  if the basedir is not set.
    */
-  private String file = "build.gant" ;
+  private String file = "build.gant";
   /**
    *  Flag determining whether properties are inherited from the parent project.
    */
-  private boolean inheritAll = false ;
+  private boolean inheritAll = false;
   /**
    *  A class representing a nested definition tag.
    */
   public static final class Definition {
-    private String name ;
-    private String value ;
-    public void setName ( final String s ) { name = s ; }
-    public String getName ( ) { return name ; }
-    public void setValue ( final String s ) { value = s ; }
-    public String getValue ( ) { return value ; }
+    private String name;
+    private String value;
+    public void setName(final String s) { name = s; }
+    public String getName() { return name; }
+    public void setValue(final String s) { value = s; }
+    public String getValue() { return value; }
   }
   /**
    *  A list of definitions to be set in the Gant instance.
    */
-  private final List<Definition> definitions = new ArrayList<Definition> ( ) ;
+  private final List<Definition> definitions = new ArrayList<Definition>();
   /**
    *  A class representing a nested target tag.
    */
   public static final class GantTarget {
-    private String value ;
-    public void setValue ( final String s ) { value = s ; }
-    public String getValue ( ) { return value ; }
+    private String value;
+    public void setValue(final String s) { value = s; }
+    public String getValue() { return value; }
   }
   /**
    *  A list of targets to be achieved by the Gant instance.
    */
-  private final List<GantTarget> targets = new ArrayList<GantTarget> ( ) ;
+  private final List<GantTarget> targets = new ArrayList<GantTarget>();
   /**
    *  Set the name of the build file to use.  This path is relative to the basedir of the Ant project if it
    *  is set, or the directory in which the job was started if the basedir is not set.
    *
    *  @param f The name of the file to be used to drive the build.
    */
-  public void setFile ( final String f ) { file = f ; }
+  public void setFile(final String f) { file = f; }
   /**
    *  Set the target to be achieved.
    *
    *  @param t The target to achieve.
    */
-  public void setTarget ( final String t ) {
-    final GantTarget gt = new GantTarget ( ) ;
-    gt.setValue ( t ) ;
-    targets.add ( gt ) ;
+  public void setTarget(final String t) {
+    final GantTarget gt = new GantTarget();
+    gt.setValue(t);
+    targets.add(gt);
   }
   /**
    *  Create a node to represent a nested <code>gantTarget</code> tag.
    *
    *  @return a new <code>GantTarget</code> instance ready for values to be added.
    */
-  public GantTarget createGantTarget ( ) {
-    final GantTarget gt = new GantTarget ( ) ;
-    targets.add ( gt ) ;
-    return gt ;
+  public GantTarget createGantTarget() {
+    final GantTarget gt = new GantTarget();
+    targets.add(gt);
+    return gt;
   }
   /**
    *  Create a node to represent a nested <code>definition</code> tag.
    *
    *  @return a new <code>Definition</code> instance ready for values to be added.
    */
-  public Definition createDefinition ( ) {
-    final Definition definition = new Definition ( ) ;
-    definitions.add ( definition ) ;
-    return definition ;
+  public Definition createDefinition() {
+    final Definition definition = new Definition();
+    definitions.add(definition);
+    return definition;
   }
   /**
    *  If true, pass all properties to the new Ant project.
    *
    *  @param value if true pass all properties to the new Ant project.
    */
-  public void setInheritAll ( final boolean value ) { inheritAll = value ; }
+  public void setInheritAll(final boolean value) { inheritAll = value; }
   /**
    * Load the file and then execute it.
    */
-  @Override public void execute ( ) throws BuildException {
+  @Override public void execute() throws BuildException {
     //
     //  At first it might seem appropriate to use the Project object from the calling Ant instance as the
     //  Project object used by the AntBuilder object and hence GantBuilder object associated with the Gant
@@ -156,41 +156,41 @@ public class Gant extends Task {
     //
     //  NB As this class is called Gant, we have to use fully qualified name to get to the Gant main class.
     //
-    final Project antProject =  getOwningTarget ( ).getProject ( ) ;
-    final Project newProject = new Project ( ) ;
-    newProject.init ( ) ;
+    final Project antProject =  getOwningTarget().getProject();
+    final Project newProject = new Project();
+    newProject.init();
     //  Deal with GANT-80 by getting all the the loggers from the Ant instance Project object and adding
     //  them to the new Project Object.  This was followed up by GANT-91 so the code was amended to copying
     //  over all listeners except the class loader if present.
-    for ( final Object o : antProject.getBuildListeners ( ) ) {
-      final BuildListener listener = (BuildListener) o ;
-      if ( ! ( listener instanceof AntClassLoader ) ) { newProject.addBuildListener ( listener ) ; }
+    for (final Object o : antProject.getBuildListeners()) {
+      final BuildListener listener = (BuildListener) o;
+      if (!(listener instanceof AntClassLoader)) { newProject.addBuildListener(listener); }
     }
     //  Deal with GANT-50 by getting the base directory from the Ant instance Project object and use it for
     //  the new Project object.  GANT-93 leads to change in the way the Gant file is extracted.
-    newProject.setBaseDir ( antProject.getBaseDir ( ) ) ;
+    newProject.setBaseDir(antProject.getBaseDir());
     //  Deal with GANT-110 by using the strategy proposed by Eric Van Dewoestine.
-    if ( inheritAll ) { addAlmostAll ( newProject , antProject ) ; }
-    final File gantFile = newProject.resolveFile( file ) ;
-    if ( ! gantFile.exists ( ) ) { throw new BuildException ( "Gantfile does not exist." , getLocation ( ) ) ; }
-    final GantBuilder ant = new GantBuilder ( newProject ) ;
-    final Map<String,String> environmentParameter = new HashMap<String,String> ( ) ;
-    environmentParameter.put ( "environment" , "environment" ) ;
-    ant.invokeMethod ( "property" , new Object[] { environmentParameter } ) ;
-    final GantBinding binding = new GantBinding ( ) ;
-    binding.forcedSettingOfVariable ( "ant" , ant ) ;
-    for ( final Definition definition : definitions ) {
-      final Map<String,String> definitionParameter = new HashMap<String,String> ( ) ;
-      definitionParameter.put ( "name" , definition.getName ( ) ) ;
-      definitionParameter.put ( "value" , definition.getValue ( ) ) ;
-      ant.invokeMethod ( "property" , new Object[] { definitionParameter } ) ;
+    if (inheritAll) { addAlmostAll(newProject, antProject); }
+    final File gantFile = newProject.resolveFile(file);
+    if (! gantFile.exists()) { throw new BuildException("Gantfile does not exist.", getLocation()); }
+    final GantBuilder ant = new GantBuilder(newProject);
+    final Map<String,String> environmentParameter = new HashMap<String,String>();
+    environmentParameter.put("environment", "environment");
+    ant.invokeMethod("property", new Object[] { environmentParameter });
+    final GantBinding binding = new GantBinding();
+    binding.forcedSettingOfVariable("ant", ant);
+    for (final Definition definition : definitions) {
+      final Map<String,String> definitionParameter = new HashMap<String,String>();
+      definitionParameter.put("name", definition.getName());
+      definitionParameter.put("value", definition.getValue());
+      ant.invokeMethod("property", new Object[] { definitionParameter });
     }
-    final gant.Gant gant = new gant.Gant ( binding ) ;
-    gant.loadScript ( gantFile ) ;
-    final List<String> targetsAsStrings = new ArrayList<String> ( ) ;
-    for ( final GantTarget g : targets ) { targetsAsStrings.add ( g.getValue ( ) ) ; }
-    final int returnCode =  gant.processTargets ( targetsAsStrings ) ;
-    if ( returnCode != 0 ) { throw new BuildException ( "Gant execution failed with return code " + returnCode + '.' , getLocation ( ) ) ; }
+    final gant.Gant gant = new gant.Gant(binding);
+    gant.loadScript(gantFile);
+    final List<String> targetsAsStrings = new ArrayList<String>();
+    for (final GantTarget g : targets) { targetsAsStrings.add(g.getValue()); }
+    final int returnCode =  gant.processTargets(targetsAsStrings);
+    if (returnCode != 0) { throw new BuildException("Gant execution failed with return code " + returnCode + '.', getLocation()); }
   }
   /**
    *  Copy all properties from the given project to the new project -- omitting those that have already been
@@ -201,13 +201,13 @@ public class Gant extends Task {
    *  @param oldProject the {@code Project} to copy properties from.
    */
   //  Russel Winder rehacked the code provided by Eric Van Dewoestine.
-  private void addAlmostAll ( final Project newProject , final Project oldProject ) {
-    @SuppressWarnings ( "unchecked" ) final Hashtable<String,String> properties = oldProject.getProperties ( ) ;
-    final Enumeration<String> e = properties.keys ( ) ;
-    while ( e.hasMoreElements ( ) ) {
-      final String key = e.nextElement ( ) ;
-      if ( ! ( MagicNames.PROJECT_BASEDIR.equals ( key ) || MagicNames.ANT_FILE.equals ( key ) ) ) {
-        if ( newProject.getProperty ( key ) == null ) { newProject.setNewProperty ( key , properties.get ( key ) ) ; }
+  private void addAlmostAll(final Project newProject, final Project oldProject) {
+    @SuppressWarnings("unchecked") final Hashtable<String,String> properties = oldProject.getProperties();
+    final Enumeration<String> e = properties.keys();
+    while (e.hasMoreElements()) {
+      final String key = e.nextElement();
+      if (!(MagicNames.PROJECT_BASEDIR.equals(key) || MagicNames.ANT_FILE.equals(key))) {
+        if (newProject.getProperty(key) == null) { newProject.setNewProperty(key, properties.get(key)); }
       }
     }
   }

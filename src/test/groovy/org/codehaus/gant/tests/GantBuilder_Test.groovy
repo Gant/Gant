@@ -1,6 +1,6 @@
 //  Gant -- A Groovy way of scripting Ant tasks.
 //
-//  Copyright © 2008-10 Russel Winder
+//  Copyright © 2008–2010, 2013  Russel Winder
 //
 //  Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in
 //  compliance with the License. You may obtain a copy of the License at
@@ -23,16 +23,16 @@ import org.codehaus.gant.GantState
  *  @author Russel Winder <russel@winder.org.uk>
  */
 final class GantBuilder_Test extends GantTestCase {
-  void testSetMessageOutputLevel ( ) {
+  void testSetMessageOutputLevel() {
     //  org.apache.tools.ant.BuildLogger appears to have no way of querying the message output level only of
     //  setting it. This means we can only test that using the setMessageOutputLevel fails to fail.
-    assertEquals ( GantState.NORMAL , GantState.verbosity )
-    final gantBuilder = new GantBuilder ( )
+    assertEquals(GantState.NORMAL, GantState.verbosity)
+    final gantBuilder = new GantBuilder()
     GantState.verbosity = GantState.VERBOSE
-    gantBuilder.logger.setMessageOutputLevel ( GantState.verbosity )
-    assertEquals ( GantState.VERBOSE , GantState.verbosity )
+    gantBuilder.logger.setMessageOutputLevel(GantState.verbosity)
+    assertEquals(GantState.VERBOSE, GantState.verbosity)
   }
-  void testGroovycTaskFail ( ) {
+  void testGroovycTaskFail() {
     final targetName = 'hello'
     final sourceDirectory = '.'
     final destinationDirectory = '/tmp/tmp/tmp/tmp'
@@ -42,12 +42,12 @@ final class GantBuilder_Test extends GantTestCase {
     //  another test may have caused the Groovyc task to be loaded which leads to a 0 return value.
     //
     script = """
-target ( ${targetName} : '' ) {
-  groovyc ( srcdir : '${sourceDirectory}' , destdir : '${destinationDirectory}' )
+target(${targetName}: '') {
+  groovyc(srcdir: '${sourceDirectory}', destdir: '${destinationDirectory}')
 }
 """
-    assertEquals ( -13 , processCmdLineTargets ( targetName ) )
-    assertEquals ( targetName + ':\n' , output )
-    assertEquals ( expectedError , error )
+    assertEquals(-13, processCmdLineTargets(targetName))
+    assertEquals(targetName + ':\n', output)
+    assertEquals(expectedError, error)
   }
 }

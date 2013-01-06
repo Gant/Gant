@@ -558,7 +558,6 @@
         <inspection_tool class="DoubleCheckedLocking" enabled="true" level="WARNING" enabled_by_default="true">
           <option name="ignoreOnVolatileVariables" value="false" />
         </inspection_tool>
-        <inspection_tool class="DoubleNegation" enabled="true" level="WARNING" enabled_by_default="true" />
         <inspection_tool class="DriverManagerGetConnection" enabled="true" level="WARNING" enabled_by_default="true" />
         <inspection_tool class="DuplicateBooleanBranch" enabled="true" level="WARNING" enabled_by_default="true" />
         <inspection_tool class="DuplicateCondition" enabled="true" level="WARNING" enabled_by_default="true">
@@ -835,11 +834,7 @@
         <inspection_tool class="LoopWithImplicitTerminationCondition" enabled="true" level="WARNING" enabled_by_default="true" />
         <inspection_tool class="LossyEncoding" enabled="true" level="WARNING" enabled_by_default="true" />
         <inspection_tool class="MagicCharacter" enabled="true" level="WARNING" enabled_by_default="true" />
-        <inspection_tool class="MagicNumber" enabled="true" level="WARNING" enabled_by_default="true">
-          <option name="ignoreInHashCode" value="true" />
-          <option name="ignoreInTestCode" value="false" />
-          <option name="ignoreInAnnotations" value="true" />
-        </inspection_tool>
+        <inspection_tool class="MagicNumber" enabled="true" level="WARNING" enabled_by_default="true" />
         <inspection_tool class="MapReplaceableByEnumMap" enabled="true" level="WARNING" enabled_by_default="true" />
         <inspection_tool class="MarkerInterface" enabled="true" level="WARNING" enabled_by_default="true" />
         <inspection_tool class="MethodCount" enabled="true" level="WARNING" enabled_by_default="true">
@@ -978,6 +973,7 @@
         <inspection_tool class="PackageVisibleField" enabled="true" level="WARNING" enabled_by_default="true" />
         <inspection_tool class="PackageVisibleInnerClass" enabled="true" level="WARNING" enabled_by_default="true">
           <option name="ignoreEnums" value="false" />
+          <option name="ignoreInterfaces" value="false" />
         </inspection_tool>
         <inspection_tool class="PackageWithTooFewClasses" enabled="true" level="WARNING" enabled_by_default="true">
           <option name="limit" value="3" />
@@ -1011,6 +1007,7 @@
         <inspection_tool class="PointlessIndexOfComparison" enabled="true" level="WARNING" enabled_by_default="true" />
         <inspection_tool class="ProtectedInnerClass" enabled="true" level="WARNING" enabled_by_default="true">
           <option name="ignoreEnums" value="false" />
+          <option name="ignoreInterfaces" value="false" />
         </inspection_tool>
         <inspection_tool class="ProtectedMemberInFinalClass" enabled="true" level="WARNING" enabled_by_default="true" />
         <inspection_tool class="PublicField" enabled="true" level="WARNING" enabled_by_default="true">
@@ -1039,11 +1036,7 @@
           <option name="SAFARI" value="true" />
         </inspection_tool>
         <inspection_tool class="RandomDoubleForRandomInteger" enabled="true" level="WARNING" enabled_by_default="true" />
-        <inspection_tool class="RawUseOfParameterizedType" enabled="true" level="WARNING" enabled_by_default="true">
-          <option name="ignoreObjectConstruction" value="true" />
-          <option name="ignoreTypeCasts" value="false" />
-          <option name="ignoreUncompilable" value="false" />
-        </inspection_tool>
+        <inspection_tool class="RawUseOfParameterizedType" enabled="true" level="WARNING" enabled_by_default="true" />
         <inspection_tool class="ReadObjectAndWriteObjectPrivate" enabled="true" level="WARNING" enabled_by_default="true" />
         <inspection_tool class="ReadObjectInitialization" enabled="true" level="WARNING" enabled_by_default="true" />
         <inspection_tool class="ReadResolveAndWriteReplaceProtected" enabled="true" level="WARNING" enabled_by_default="true" />
@@ -1220,10 +1213,7 @@
         <inspection_tool class="TimeToString" enabled="true" level="WARNING" enabled_by_default="true" />
         <inspection_tool class="ToArrayCallWithZeroLengthArrayArgument" enabled="false" level="WARNING" enabled_by_default="false" />
         <inspection_tool class="TodoComment" enabled="true" level="WARNING" enabled_by_default="true" />
-        <inspection_tool class="TooBroadCatch" enabled="true" level="WARNING" enabled_by_default="true">
-          <option name="onlyWarnOnRootExceptions" value="false" />
-          <option name="ignoreInTestCode" value="false" />
-        </inspection_tool>
+        <inspection_tool class="TooBroadCatch" enabled="true" level="WARNING" enabled_by_default="true" />
         <inspection_tool class="TooBroadScope" enabled="true" level="WARNING" enabled_by_default="true">
           <option name="m_allowConstructorAsInitializer" value="false" />
           <option name="m_onlyLookAtBlocks" value="false" />
@@ -1358,28 +1348,6 @@
       <list>
         <option value="$PROJECT_DIR$/pom.xml" />
       </list>
-    </option>
-  </component>
-  <component name="NullableNotNullManager">
-    <option name="myDefaultNullable" value="org.jetbrains.annotations.Nullable" />
-    <option name="myDefaultNotNull" value="org.jetbrains.annotations.NotNull" />
-    <option name="myNullables">
-      <value>
-        <list size="3">
-          <item index="0" class="java.lang.String" itemvalue="org.jetbrains.annotations.Nullable" />
-          <item index="1" class="java.lang.String" itemvalue="javax.annotation.Nullable" />
-          <item index="2" class="java.lang.String" itemvalue="edu.umd.cs.findbugs.annotations.Nullable" />
-        </list>
-      </value>
-    </option>
-    <option name="myNotNulls">
-      <value>
-        <list size="3">
-          <item index="0" class="java.lang.String" itemvalue="org.jetbrains.annotations.NotNull" />
-          <item index="1" class="java.lang.String" itemvalue="javax.annotation.Nonnull" />
-          <item index="2" class="java.lang.String" itemvalue="edu.umd.cs.findbugs.annotations.NonNull" />
-        </list>
-      </value>
     </option>
   </component>
   <component name="Palette2">

@@ -1,6 +1,6 @@
 //  Gant -- A Groovy way of scripting Ant tasks.
 //
-//  Copyright © 2006--2011 Russel Winder
+//  Copyright © 2006–2011, 2013  Russel Winder
 //
 //  Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in
 //  compliance with the License. You may obtain a copy of the License at
@@ -55,34 +55,34 @@ import org.codehaus.groovy.runtime.InvokerInvocationException
  *  <p>A trivial example build specification is:</p>
  *
  *  <pre>
- *      target ( stuff : 'A target to do some stuff.' ) {
- *        clean ( )
- *        otherStuff ( )
+ *      target(stuff: 'A target to do some stuff.') {
+ *        clean()
+ *        otherStuff()
  *      }
- *      target ( otherStuff : 'A target to do some other stuff' ) {
- *        depends ( clean )
+ *      target(otherStuff: 'A target to do some other stuff') {
+ *        depends(clean)
  *      }
- *      target ( clean : 'Clean the directory and subdirectories' ) {
- *        delete ( dir : 'build' , quiet : 'true' )
- *        delete ( quiet : 'true' ) { fileset ( dir : '.' , includes : '** /*~,** /*.bak'  , defaultexcludes : 'false' ) }
+ *      target(clean: 'Clean the directory and subdirectories') {
+ *        delete(dir: 'build', quiet: 'true')
+ *        delete(quiet: 'true') { fileset(dir: '.', includes: '** /*~,** /*.bak' , defaultexcludes: 'false') }
  *      }
- *      setDefaultTarget ( stuff )
+ *      setDefaultTarget(stuff)
  * </pre>
  *
  *  <p>or, using some a ready made targets class:</p>
  *
  *  <pre>
  *      includeTargets << gant.targets.Clean
- *      cleanPattern << [ '** / *~' , '** / *.bak' ]
+ *      cleanPattern << [ '** / *~', '** / *.bak' ]
  *      cleanDirectory << 'build'
- *      target ( stuff : 'A target to do some stuff.' ) {
- *        clean ( )
- *        otherStuff ( )
+ *      target(stuff: 'A target to do some stuff.') {
+ *        clean()
+ *        otherStuff()
  *      }
- *      target ( otherStuff : 'A target to do some other stuff' ) {
- *        depends ( clean )
+ *      target(otherStuff: 'A target to do some other stuff') {
+ *        depends(clean)
  *      }
- *      setDefaultTarget ( stuff )
+ *      setDefaultTarget(stuff)
  *  </pre>
  *
  *  <p><em>Note that there is an space between the two asterisks and the solidus in the fileset line that
@@ -114,20 +114,20 @@ final class Gant {
     *  @param url The  URL of the cache
     *  @return instance of the class.
     */
-  private final loadClassFromCache = { className , lastModified , url  ->
+  private final loadClassFromCache = {className, lastModified, url  ->
     try {
-      def classUrl = binding.classLoader.getResource ( "${className}.class" )
-      if ( classUrl ) {
-        if ( lastModified > classUrl.openConnection ( ).lastModified ) {
-          compileScript ( cacheDirectory , url.text , className )
+      final classUrl = binding.classLoader.getResource("${className}.class")
+      if (classUrl) {
+        if (lastModified > classUrl.openConnection().lastModified) {
+          compileScript(cacheDirectory, url.text, className)
         }
       }
-      return binding.classLoader.loadClass ( className ).newInstance ( )
+      return binding.classLoader.loadClass(className).newInstance()
     }
-    catch ( Exception e ) {
-      def fileText = url.text
-      compileScript ( cacheDirectory , fileText , className )
-      return binding.groovyShell.parse ( fileText , buildClassName )
+    catch (Exception e) {
+      final fileText = url.text
+      compileScript(cacheDirectory, fileText, className)
+      return binding.groovyShell.parse(fileText, buildClassName)
     }
   }
   /**
@@ -145,13 +145,13 @@ final class Gant {
   /**
    *  The location where the compiled scripts are cached. Defaults to "$USER_HOME/.gant/cache".
    */
-  File cacheDirectory = new File ( "${System.properties.'user.home'}/.gant/cache" )
+  File cacheDirectory = new File("${System.properties.'user.home'}/.gant/cache")
   /**
    *  A list of strings containing the locations of Gant modules.
    */
-  List<String> gantLib = [ ]
+  List<String> gantLib = []
   /**
-   *  The script that will be run when { @link #processTargets ( ) } is called. It is initialised when a
+   *  The script that will be run when { @link #processTargets() } is called. It is initialised when a
    *  script is loaded. Note that it has a dynamic type because the script may be loaded from a different
    *  class loader than the one used to load the Gant class. If we declared it as Script, there would likely
    *  be ClassCastExceptions.
@@ -170,14 +170,14 @@ final class Gant {
    *  Default constructor -- creates a new instance of <code>GantBinding</code> for the script binding,
    *  and the default class loader.
    */
-  public Gant ( ) { this ( (GantBinding) null ) }
+  public Gant() { this((GantBinding)null) }
   /**
    *  Constructor that uses the passed <code>GantBinding</code> for the script binding, and the default
    *  class loader.
    *
    *  @param b the <code>GantBinding</code> to use.
    */
-  public Gant ( GantBinding b ) { this ( b , null ) }
+  public Gant(GantBinding b) { this(b, null) }
   /**
    *  Constructor that uses the passed <code>GantBinding</code> for the script binding, and the passed
    *  <code>ClassLoader</code> as the class loader.
@@ -185,11 +185,11 @@ final class Gant {
    *  @param b the <code>GantBinding</code> to use.
    *  @param cl the <code>ClassLoader</code> to use.
    */
-  public Gant ( GantBinding b , ClassLoader cl ) {
-    binding = b ?: new GantBinding ( )
-    binding.classLoader = cl ?: getClass ( ).classLoader
-    binding.groovyShell = new GroovyShell ( (ClassLoader) binding.classLoader , binding )
-    final gantPackage = binding.classLoader.getPackage ( 'gant' )
+  public Gant(GantBinding b, ClassLoader cl) {
+    binding = b ?: new GantBinding()
+    binding.classLoader = cl ?: getClass().classLoader
+    binding.groovyShell = new GroovyShell((ClassLoader) binding.classLoader, binding)
+    final gantPackage = binding.classLoader.getPackage('gant')
     binding.'gant.version' = gantPackage?.implementationVersion
   }
   /**
@@ -197,18 +197,18 @@ final class Gant {
    *
    *  @param p the <code>org.apache.tools.ant.Project</code> to use.
    */
-  public Gant ( org.apache.tools.ant.Project p ) { this ( new GantBinding ( p ) ) }
+  public Gant(org.apache.tools.ant.Project p) { this(new GantBinding(p)) }
   /**
    *  Add a <code>BuildListener</code> instance to this <code>Gant</code> instance.
    */
-  public void addBuildListener ( final BuildListener buildListener ) {
-    binding.addBuildListener ( buildListener )
+  public void addBuildListener(final BuildListener buildListener) {
+    binding.addBuildListener(buildListener)
   }
   /**
    *  Remove a <code>BuildListener</code> instance from this <code>Gant</code> instance
    */
-  public void removeBuildListener ( final BuildListener buildListener ) {
-    binding.removeBuildListener ( buildListener )
+  public void removeBuildListener(final BuildListener buildListener) {
+    binding.removeBuildListener(buildListener)
   }
   /**
    *  Treat the given text as a Gant script and load it.
@@ -216,9 +216,9 @@ final class Gant {
    *  @params text The text of the Gant script to load.
    *  @return The <code>Gant</code> instance (to allow chaining).
    */
-  public Gant loadScript ( String text ) {
-    if ( ! buildClassName ) { buildClassName = textInputClassName }
-    script = binding.groovyShell.parse ( text , buildClassName )
+  public Gant loadScript(String text) {
+    if (! buildClassName) { buildClassName = textInputClassName }
+    script = binding.groovyShell.parse(text, buildClassName)
     binding.'gant.file' = '<text>'
     return this
   }
@@ -230,9 +230,9 @@ final class Gant {
    *  compiled class.
    *  @return The <code>Gant</code> instance (to allow chaining).
    */
-  public Gant loadScript ( InputStream scriptSource ) {
-    if ( ! buildClassName ) { buildClassName = streamInputClassName }
-    script = binding.groovyShell.parse ( new InputStreamReader ( scriptSource ) , buildClassName )
+  public Gant loadScript(InputStream scriptSource) {
+    if (! buildClassName) { buildClassName = streamInputClassName }
+    script = binding.groovyShell.parse(new InputStreamReader(scriptSource), buildClassName)
     binding.'gant.file' = '<stream>'
     return this
   }
@@ -244,8 +244,8 @@ final class Gant {
    *  compiled class.
    *  @return The <code>Gant</code> instance (to allow chaining).
    */
-  public Gant loadScript ( File scriptFile ) {
-    return loadScript ( scriptFile.toURI ( ).toURL ( ) )
+  public Gant loadScript(File scriptFile) {
+    return loadScript(scriptFile.toURI().toURL())
   }
   /**
    *  Load a Gant script from the given URL, using the default Groovy encoding to convert the bytes
@@ -254,19 +254,19 @@ final class Gant {
    *  @params scriptUrl The URL where the the Gant script source is located.
    *  @return The <code>Gant</code> instance (to allow chaining).
    */
-  public Gant loadScript ( URL scriptUrl ) {
-    if ( ! buildClassName ) {
-      def filename = scriptUrl.path.substring ( scriptUrl.path.lastIndexOf ( "/" ) + 1 )
-      buildClassName = classNameFromFileName ( filename )
+  public Gant loadScript(URL scriptUrl) {
+    if (! buildClassName) {
+      def filename = scriptUrl.path.substring(scriptUrl.path.lastIndexOf("/") + 1)
+      buildClassName = classNameFromFileName(filename)
     }
-    if ( useCache ) {
-      if ( binding.classLoader instanceof URLClassLoader ) { binding.classLoader.addURL ( cacheDirectory.toURI ( ).toURL ( ) ) }
-      else { binding.classLoader.rootLoader?.addURL ( cacheDirectory.toURI ( ).toURL ( ) ) }
+    if (useCache) {
+      if (binding.classLoader instanceof URLClassLoader) { binding.classLoader.addURL(cacheDirectory.toURI().toURL()) }
+      else { binding.classLoader.rootLoader?.addURL(cacheDirectory.toURI().toURL()) }
       binding.loadClassFromCache =  loadClassFromCache
-      script = loadClassFromCache ( buildClassName , scriptUrl.openConnection ( ).lastModified , scriptUrl )
+      script = loadClassFromCache(buildClassName, scriptUrl.openConnection().lastModified, scriptUrl)
     }
-    else { loadScript ( scriptUrl.openStream ( ) ) }
-    binding.'gant.file' = scriptUrl.toString ( )
+    else { loadScript(scriptUrl.openStream()) }
+    binding.'gant.file' = scriptUrl.toString()
     return this
   }
   /**
@@ -275,8 +275,8 @@ final class Gant {
    *  @params className The fully qualified name of the class to load.
    *  @return The <code>Gant</code> instance (to allow chaining).
    */
-  public Gant loadScriptClass ( String className ) {
-    script = binding.classLoader.loadClass ( className ).newInstance ( )
+  public Gant loadScriptClass(String className) {
+    script = binding.classLoader.loadClass(className).newInstance()
     binding.'gant.file' = '<class>'
     return this
   }
@@ -293,10 +293,10 @@ final class Gant {
    *  @param fileName The name of the file.
    *  @return The transformed name.
    */
-  private String classNameFromFileName ( fileName ) {
-    def index = fileName.lastIndexOf ( '.' )
-    if ( fileName[index..-1] in [ '.groovy' , '.gant' ] ) { fileName = fileName[0..<index] }
-    return fileName.replaceAll ( '\\.' , '_' )
+  private String classNameFromFileName(fileName) {
+    def index = fileName.lastIndexOf('.')
+    if (fileName[index..-1] in [ '.groovy', '.gant' ]) { fileName = fileName[0..<index] }
+    return fileName.replaceAll('\\.', '_')
   }
   /**
    *  Filter the stacktrace of the exception so as to create a printable message with the line number of the
@@ -305,19 +305,19 @@ final class Gant {
    *  @param exception The exception whose stack trace is to be filtered.
    *  @return The filteres stacktrace information.
    */
-  private String constructMessageFrom ( exception ) {
-    final buffer = new StringBuilder ( )
-    if ( exception instanceof GantException ) { exception = exception.cause }
-    for ( stackEntry in exception.stackTrace ) {
-      if ( ( stackEntry.fileName == buildClassName ) && ( stackEntry.lineNumber  != -1 ) ) {
-        def sourceName = ( buildClassName == standardInputClassName ) ? 'Standard input' : buildClassName
-        buffer.append ( sourceName + ', line ' + stackEntry.lineNumber + ' -- ' )
+  private String constructMessageFrom(exception) {
+    final buffer = new StringBuilder()
+    if (exception instanceof GantException) { exception = exception.cause }
+    for (stackEntry in exception.stackTrace) {
+      if ((stackEntry.fileName == buildClassName) && (stackEntry.lineNumber  != -1)) {
+        def sourceName = (buildClassName == standardInputClassName) ? 'Standard input' : buildClassName
+        buffer.append(sourceName + ', line ' + stackEntry.lineNumber + ' -- ')
       }
     }
-    if ( exception instanceof InvocationTargetException ) { exception = exception.cause }
-    if ( exception instanceof InvokerInvocationException ) { exception = exception.cause }
-    buffer.append ( 'Error evaluating Gantfile: ' + ( ( exception instanceof RuntimeException ) ? exception.message : exception.toString ( ) ) )
-    buffer.toString ( )
+    if (exception instanceof InvocationTargetException) { exception = exception.cause }
+    if (exception instanceof InvokerInvocationException) { exception = exception.cause }
+    buffer.append('Error evaluating Gantfile: ' +((exception instanceof RuntimeException) ? exception.message : exception.toString()))
+    buffer.toString()
   }
   /**
    *  Print of the list of targets for the -p and -T options.
@@ -325,25 +325,25 @@ final class Gant {
    *  @param targets The <code>List</code> (of <code>String</code>s) that is the list of targets to achieve.
    *  @return The return code.
    */
-  private Integer targetList ( targets ) {
+  private Integer targetList(targets) {
     def max = 0
-    binding.targetDescriptions.entrySet ( ).each { item ->
-      def size = item.key.size ( )
-      if ( size > max ) { max = size }
+    binding.targetDescriptions.entrySet().each{item ->
+      final size = item.key.size()
+      if (size > max) { max = size }
     }
-    println ( )
-    binding.targetDescriptions.entrySet ( ).each { item ->
-      println ( ' ' + item.key + ' ' * ( max - item.key.size ( ) ) + '  ' + item.value )
+    println()
+    binding.targetDescriptions.entrySet().each{item ->
+      println(' ' + item.key + ' ' * (max - item.key.size()) + '  ' + item.value)
     }
-    println ( )
+    println()
     String defaultTargetName = null
     try {
       final defaultTarget = binding.defaultTarget
       assert defaultTarget.class == String
-      if ( binding.getVariable ( defaultTarget ) ) { defaultTargetName = defaultTarget }
-      if ( defaultTargetName ) { println ( 'Default target is ' + defaultTargetName + '.' ) ; println ( ) }
+      if (binding.getVariable(defaultTarget)) { defaultTargetName = defaultTarget }
+      if (defaultTargetName) { println('Default target is ' + defaultTargetName + '.') ; println() }
     }
-    catch ( MissingPropertyException mpe ) { /* Intentionally blank. */ }
+    catch (MissingPropertyException mpe) { /* Intentionally blank. */ }
     0
   }
   /**
@@ -355,94 +355,94 @@ final class Gant {
    *  @param targets The <code>List</code> (of <code>String</code>s) that is the list of targets to achieve.
    *  @return The return code.
    */
-  private Integer dispatch ( List<String> targets ) {
+  private Integer dispatch(List<String> targets) {
     Integer returnCode = 0
-    final attemptFinalize = { ->
-      final finalizeTarget = owner.binding.getVariable ( 'finalizeTarget' )
+    final attemptFinalize = {->
+      final finalizeTarget = owner.binding.getVariable('finalizeTarget')
       try {
-        switch ( finalizeTarget.class ) {
-         case Closure :
-          finalizeTarget.call ( )
+        switch (finalizeTarget.class) {
+         case Closure:
+          finalizeTarget.call()
           break
-         case String :
-          owner.binding.getVariable ( finalizeTarget ).call ( )
+         case String:
+          owner.binding.getVariable(finalizeTarget).call()
           break
-         default :
-          throw new RuntimeException ( 'Gant finalizer is neither a closure nor a name.' )
-          break 
+         default:
+          throw new RuntimeException('Gant finalizer is neither a closure nor a name.')
+          break
         }
       }
-      catch ( MissingPropertyException mme ) { /* Intentionally blank. */ }
-      catch ( Exception e ) { throw new TargetExecutionException ( e.toString ( ) , e ) }
+      catch (MissingPropertyException mme) { /* Intentionally blank. */ }
+      catch (Exception e) { throw new TargetExecutionException(e.toString(), e) }
     }
-    final processDispatch = { target ->
+    final processDispatch = {target ->
       try {
-        owner.binding.forcedSettingOfVariable ( 'initiatingTarget' , target )
-        def returnValue = owner.binding.getVariable ( target ).call ( )
-        returnCode = ( returnValue instanceof Number ) ? returnValue.intValue ( ) : 0
+        owner.binding.forcedSettingOfVariable('initiatingTarget', target)
+        def returnValue = owner.binding.getVariable(target).call()
+        returnCode = (returnValue instanceof Number) ? returnValue.intValue() : 0
       }
-      catch ( MissingPropertyException mme ) {
-        attemptFinalize ( )
-        if ( target == mme.property ) { throw new MissingTargetException ( "Target ${target} does not exist." , mme ) }
-        else { throw new TargetMissingPropertyException ( mme.message , mme ) }
+      catch (MissingPropertyException mme) {
+        attemptFinalize()
+        if (target == mme.property) { throw new MissingTargetException("Target ${target} does not exist.", mme) }
+        else { throw new TargetMissingPropertyException(mme.message, mme) }
       }
-      catch ( Exception e ) {
-        attemptFinalize ( )
-        throw new TargetExecutionException ( e.toString ( ) , e )
+      catch (Exception e) {
+        attemptFinalize()
+        throw new TargetExecutionException(e.toString(), e)
       }
     }
     //  As part of GANT-77 output information about the buildfile.
-    ////binding.ant.project.log ( 'Buildfile: ' + binding.'gant.file' + '\n\n' )
+    ////binding.ant.project.log('Buildfile: ' + binding.'gant.file' + '\n\n')
     //  To support GANT-44 the script must have access to the targets and be able to edit it, this means
     //  iterating over the list of targets but knowing that if might change during execution.  So replace
     //  the original code:
     //
-    //    if ( targets.size ( ) > 0 ) { withBuildListeners { targets.each { target -> processDispatch ( target ) } } }
+    //    if (targets.size() > 0) { withBuildListeners { targets.each { target -> processDispatch(target) } } }
     //
     //  with something a little more amenable to alteration of the list mid loop.
-    binding.forcedSettingOfVariable ( 'targets' , targets )
-    if ( targets.size ( ) > 0 ) {
+    binding.forcedSettingOfVariable('targets', targets)
+    if (targets.size() > 0) {
       withBuildListeners {
-        while ( targets.size ( ) > 0 ) {
-          processDispatch ( targets[0] )
-          targets.remove ( 0 )
+        while (targets.size() > 0) {
+          processDispatch(targets[0])
+          targets.remove(0)
         }
       }
     }
     else {
       final defaultTarget = binding.defaultTarget
       assert defaultTarget.class == String
-      withBuildListeners { processDispatch ( defaultTarget ) }
+      withBuildListeners { processDispatch(defaultTarget) }
     }
-    attemptFinalize ( )
+    attemptFinalize()
     returnCode
   }
   /**
    *  Execute a dispatch with all the <code>BuildListener</code>s informed.
    */
-  private withBuildListeners ( Closure callable ) {
-      final event = new GantEvent ( (Project) binding.ant.antProject , (GantBinding) binding )
+  private withBuildListeners(Closure callable) {
+      final event = new GantEvent((Project)binding.ant.antProject, (GantBinding)binding)
       try {
-        binding.buildListeners.each { BuildListener listener -> listener.buildStarted ( event ) }
-        callable.call ( )
-        binding.buildListeners.each { BuildListener listener -> listener.buildFinished ( event ) }
+        binding.buildListeners.each{BuildListener listener -> listener.buildStarted(event)}
+        callable.call()
+        binding.buildListeners.each{BuildListener listener -> listener.buildFinished(event)}
       }
-      catch ( Exception e ) {
+      catch (Exception e) {
         event.exception = e
-        binding.buildListeners.each { BuildListener listener -> listener.buildFinished ( event ) }
+        binding.buildListeners.each{BuildListener listener -> listener.buildFinished(event)}
         throw e
       }
   }
   /**
    *  Process the command line options and then call the function to process the targets.
    */
-  public Integer processArgs ( String[] args ) {
+  public Integer processArgs(String[] args) {
     final rootLoader = binding.classLoader.rootLoader
-    def buildSource = new File ( "build.gant" )
+    def buildSource = new File("build.gant")
     //
     //  Commons CLI 1.0 and 1.1 are broken.  1.0 has one set of ideas about multiple args and is broken.
     //  1.1 has a different set of ideas about multiple args and is broken. 1.2 appears to be actually
-    //  fixed.  Multiple args are handled in the 1.0 semantics and are not broken :-)
+    //  fixed.  Multiple args are handled in the 1.0 semantics and are not broken:-)
     //
     //  1.0 PosixParser silently absorbs unknown single letter options.
     //
@@ -459,213 +459,219 @@ final class Gant {
     //  less totally useless and there are only three parsers available, there is not a big issue here.
     //  However, be explicit for comprehensibility.
     //
-    //def cli = new CliBuilder ( usage : 'gant [option]* [target]*' , posix : false )
-    def cli = new CliBuilder ( usage : 'gant [option]* [target]*' , parser : new GnuParser ( ) )
-    cli.c ( longOpt : 'usecache' , 'Whether to cache the generated class and perform modified checks on the file before re-compilation.' )
-    cli.d ( longOpt : 'debug' , 'Print debug levels of information.' )
-    cli.f ( longOpt : 'file' , args : 1 , argName : 'build-file' , 'Use the named build file instead of the default, build.gant.' )
-    cli.h ( longOpt : 'help' , 'Print out this message.' )
-    cli.l ( longOpt : 'gantlib' , args : 1 , argName : 'library' , 'A directory that contains classes to be used as extra Gant modules,' )
-    cli.n ( longOpt : 'dry-run' , 'Do not actually action any tasks.' )
-    cli.p ( longOpt : 'projecthelp' , 'Print out a list of the possible targets.' ) // Ant uses -p|-projecthelp for this.
-    cli.q ( longOpt : 'quiet' , 'Do not print out much when executing.' )
-    cli.s ( longOpt : 'silent' , 'Print out nothing when executing.' )
-    cli.v ( longOpt : 'verbose' , 'Print lots of extra information.' )
-    cli.C ( longOpt : 'cachedir' , args : 1 , argName : 'cache-file' , 'The directory where to cache generated classes to.' )
-    cli.D ( argName : 'name>=<value' , args : 1 , 'Define <name> to have value <value>.  Creates a variable named <name> for use in the scripts and a property named <name> for the Ant tasks.' )
-    cli.L ( longOpt : 'lib' , args : 1 , argName : 'path' , 'Add a directory to search for jars and classes.' )
-    cli.P ( longOpt : 'classpath' , args : 1 , argName : 'path-list' , 'Specify a path list to search for jars and classes.' )
-    cli.T ( longOpt : 'targets' , 'Print out a list of the possible targets.' ) // Rake and Rant use -T|--tasks for this.
-    cli.V ( longOpt : 'version' , 'Print the version number and exit.' )
-    def options = cli.parse ( args )
-    if ( options == null ) { println ( 'Error in processing command line options.' ) ; return -1 }
+    //def cli = new CliBuilder(usage: 'gant [option]* [target]*', posix: false)
+    def cli = new CliBuilder(usage: 'gant [option]* [target]*', parser: new GnuParser())
+    cli.c(longOpt: 'usecache', 'Whether to cache the generated class and perform modified checks on the file before re-compilation.')
+    cli.d(longOpt: 'debug', 'Print debug levels of information.')
+    cli.f(longOpt: 'file', args: 1, argName: 'build-file', 'Use the named build file instead of the default, build.gant.')
+    cli.h(longOpt: 'help', 'Print out this message.')
+    cli.l(longOpt: 'gantlib', args: 1, argName: 'library', 'A directory that contains classes to be used as extra Gant modules,')
+    cli.n(longOpt: 'dry-run', 'Do not actually action any tasks.')
+    cli.p(longOpt: 'projecthelp', 'Print out a list of the possible targets.') // Ant uses -p|-projecthelp for this.
+    cli.q(longOpt: 'quiet', 'Do not print out much when executing.')
+    cli.s(longOpt: 'silent', 'Print out nothing when executing.')
+    cli.v(longOpt: 'verbose', 'Print lots of extra information.')
+    cli.C(longOpt: 'cachedir', args: 1, argName: 'cache-file', 'The directory where to cache generated classes to.')
+    cli.D(argName: 'name>=<value', args: 1, 'Define <name> to have value <value>.  Creates a variable named <name> for use in the scripts and a property named <name> for the Ant tasks.')
+    cli.L(longOpt: 'lib', args: 1, argName: 'path', 'Add a directory to search for jars and classes.')
+    cli.P(longOpt: 'classpath', args: 1, argName: 'path-list', 'Specify a path list to search for jars and classes.')
+    cli.T(longOpt: 'targets', 'Print out a list of the possible targets.') // Rake and Rant use -T|--tasks for this.
+    cli.V(longOpt: 'version', 'Print the version number and exit.')
+    def options = cli.parse(args)
+    if (options == null) { println('Error in processing command line options.') ; return -1 }
     useCache = options.c ? true : false
-    if ( options.f ) {
-      if ( options.f == '-' ) { buildSource = System.in ; buildClassName = standardInputClassName }
-      else { buildSource = new File ( (String) options.f ) }
+    if (options.f) {
+      if (options.f == '-') { buildSource = System.in ; buildClassName = standardInputClassName }
+      else { buildSource = new File((String) options.f) }
     }
-    if ( options.h ) { cli.usage ( ) ; return 0 }
-    if ( options.l ) { gantLib.addAll ( options.l.split ( System.properties.'path.separator' ) as List ) }
-    if ( options.n ) { dryRun = true }
-    def function =  ( options.p || options.T ) ? 'targetList' : 'dispatch'
-    if ( options.d ) { GantState.verbosity = GantState.DEBUG }
-    if ( options.q ) { GantState.verbosity = GantState.ERRORS_ONLY }
-    if ( options.s ) { GantState.verbosity = GantState.SILENT }
-    if ( options.v ) { GantState.verbosity = GantState.VERBOSE }
-    if ( useCache && options.C ) { cacheDirectory = new File ( (String) options.C ) }
-    if ( options.D ) {
+    if (options.h) { cli.usage() ; return 0 }
+    if (options.l) { gantLib.addAll(options.l.split(System.properties.'path.separator') as List) }
+    if (options.n) { dryRun = true }
+    def function = (options.p || options.T) ? 'targetList' : 'dispatch'
+    if (options.d) { GantState.verbosity = GantState.DEBUG }
+    if (options.q) { GantState.verbosity = GantState.ERRORS_ONLY }
+    if (options.s) { GantState.verbosity = GantState.SILENT }
+    if (options.v) { GantState.verbosity = GantState.VERBOSE }
+    if (useCache && options.C) { cacheDirectory = new File((String) options.C) }
+    if (options.D) {
       options.Ds.each { definition ->
-        def pair = definition.split ( '=' ) as List
-        if ( pair.size ( ) < 2 ) { pair << '' }
+        def pair = definition.split('=') as List
+        if (pair.size() < 2) { pair << '' }
+        else if (pair.size() > 2) {
+          // Hack a solution to GROOVY-131. TODO: make this better.
+          def second = pair[1 .. -1].join('=')
+          if (second[0] == '"' && second[-1] !='"') { second = second[1 .. -1] }
+          pair = [pair[0], second]
+        }
         //  Do not allow the output of the ant.property call to escape.  If the output is allowed out then
         //  Ant, Gant, Maven, Eclipse and IntelliJ IDEA all behave slightly differently.  This makes testing
         //  nigh on impossible.  Also the user doesn't need to know about these.
         binding.ant.logger.messageOutputLevel = GantState.SILENT
-        binding.ant.property ( name : pair[0] , value : pair[1] )
+        binding.ant.property(name: pair[0], value: pair[1])
         binding.ant.logger.messageOutputLevel = GantState.verbosity
       }
     }
-    if ( options.L ) {
+    if (options.L) {
       options.Ls.each { String directoryName ->
-        def directory = new File ( directoryName )
-        if ( directory.isDirectory ( ) ) { directory.eachFile { item -> rootLoader?.addURL ( item.toURL ( ) ) } }
-        else { println ( 'Parameter to -L|--lib option is not a directory: ' + directory.name ) }
+        def directory = new File(directoryName)
+        if (directory.isDirectory()) { directory.eachFile { item -> rootLoader?.addURL(item.toURL()) } }
+        else { println('Parameter to -L|--lib option is not a directory: ' + directory.name) }
       }
     }
-    if ( options.P ) { options.P.split ( System.properties.'path.separator' ).each { String pathitem -> rootLoader?.addURL ( ( new File ( pathitem ) ).toURL ( ) ) } }
-    if ( options.V ) { println ( 'Gant version ' + ( binding.'gant.version' ?: '<unknown>' ) ) ; return 0 }
+    if (options.P) { options.P.split(System.properties.'path.separator').each { String pathitem -> rootLoader?.addURL((new File(pathitem)).toURL()) } }
+    if (options.V) { println('Gant version ' + (binding.'gant.version' ?: '<unknown>')) ; return 0 }
     //  The rest of the arguments appear to be delivered as a single string as the first item in a list.  This is surely an error but
     //  with Commons CLI 1.0 it is the case.  So we must partition.  NB the split method delivers an array
     //  of Strings so we cast to a List.
-    def targets = options.arguments ( )
-    if ( ( targets != null ) && ( targets.size ( ) == 1 ) ) { targets = targets[0].split ( ' ' ) as List }
+    def targets = options.arguments()
+    if ((targets != null) && (targets.size() == 1)) { targets = targets[0].split(' ') as List }
     def gotUnknownOptions = false ;
     targets.each { target ->
-      if ( target[0] == '-' ) {
-        println ( 'Unknown option: ' + target )
+      if (target[0] == '-') {
+        println('Unknown option: ' + target)
         gotUnknownOptions = true
       }
     }
-    if ( gotUnknownOptions ) { cli.usage ( ) ; return -1 ; }
-    try { loadScript ( buildSource ) }
-    catch ( FileNotFoundException fnfe ) { binding.ant.project.log ( 'Cannot open file ' + buildSource.name , Project.MSG_ERR ) ; return -3 }
-    catch ( Exception e ) { binding.ant.project.log ( constructMessageFrom ( e ) , Project.MSG_ERR ) ; return -2 }
-    script.metaClass = new GantMetaClass ( script.metaClass , binding )
-    def defaultReturnCode = targets?.size ( ) > 0 ? -11 : -12
+    if (gotUnknownOptions) { cli.usage() ; return -1 ; }
+    try { loadScript(buildSource) }
+    catch (FileNotFoundException fnfe) { binding.ant.project.log('Cannot open file ' + buildSource.name, Project.MSG_ERR) ; return -3 }
+    catch (Exception e) { binding.ant.project.log(constructMessageFrom(e), Project.MSG_ERR) ; return -2 }
+    script.metaClass = new GantMetaClass(script.metaClass, binding)
+    def defaultReturnCode = targets?.size() > 0 ? -11 : -12
     outputBuildTime = function == 'dispatch'
-    try { return processTargets ( function , targets ) }
-    catch ( TargetExecutionException tee ) {
-      if ( GantState.verbosity > GantState.NORMAL ) { binding.ant.project.log ( tee.message , tee , Project.MSG_ERR ) }
-      else { binding.ant.project.log ( tee.message , Project.MSG_ERR ) }
+    try { return processTargets(function, targets) }
+    catch (TargetExecutionException tee) {
+      if (GantState.verbosity > GantState.NORMAL) { binding.ant.project.log(tee.message, tee, Project.MSG_ERR) }
+      else { binding.ant.project.log(tee.message, Project.MSG_ERR) }
       return -13
     }
-    catch ( MissingTargetException mte ) {
-      if ( GantState.verbosity > GantState.NORMAL ) { binding.ant.project.log ( mte.message , mte , Project.MSG_ERR ) }
-      else { binding.ant.project.log ( mte.message , Project.MSG_ERR ) }
+    catch (MissingTargetException mte) {
+      if (GantState.verbosity > GantState.NORMAL) { binding.ant.project.log(mte.message, mte, Project.MSG_ERR) }
+      else { binding.ant.project.log(mte.message, Project.MSG_ERR) }
       return defaultReturnCode
     }
-    catch ( TargetMissingPropertyException tmpe ) {
-      if ( GantState.verbosity > GantState.NORMAL ) { binding.ant.project.log ( constructMessageFrom ( tmpe ) , tmpe , Project.MSG_ERR ) }
-      else { binding.ant.project.log ( constructMessageFrom ( tmpe ) , Project.MSG_ERR ) }
+    catch (TargetMissingPropertyException tmpe) {
+      if (GantState.verbosity > GantState.NORMAL) { binding.ant.project.log(constructMessageFrom(tmpe), tmpe, Project.MSG_ERR) }
+      else { binding.ant.project.log(constructMessageFrom(tmpe), Project.MSG_ERR) }
       return defaultReturnCode
     }
-    catch ( Exception e ) {
-      if ( GantState.verbosity > GantState.NORMAL ) { binding.ant.project.log ( constructMessageFrom ( e ) , e , Project.MSG_ERR ) }
-      else { binding.ant.project.log ( constructMessageFrom ( e ) , Project.MSG_ERR ) }
+    catch (Exception e) {
+      if (GantState.verbosity > GantState.NORMAL) { binding.ant.project.log(constructMessageFrom(e), e, Project.MSG_ERR) }
+      else { binding.ant.project.log(constructMessageFrom(e), Project.MSG_ERR) }
       return -4
     }
     //  Cannot get here.  Add an IntelliJ IDEA specific suppression.
     //noinspection GroovyUnreachableStatement
     assert 1 == 0
   }
-  public Integer processTargets ( ) { processTargets ( 'dispatch' , [ ] ) }
-  public Integer processTargets ( String s ) { processTargets ( 'dispatch' , [ s ] ) }
-  public Integer processTargets ( List<String> l ) { processTargets ( 'dispatch' , l ) }
+  public Integer processTargets() { processTargets('dispatch', [ ]) }
+  public Integer processTargets(String s) { processTargets('dispatch', [ s ]) }
+  public Integer processTargets(List<String> l) { processTargets('dispatch', l) }
   /**
    *  Process the targets, but first execute the build script so all the targets and other code are available.
    */
-  protected Integer processTargets ( String function , List<String> targets ) {
+  protected Integer processTargets(String function, List<String> targets) {
     prepareTargets()
-    return executeTargets( function, targets )
+    return executeTargets(function, targets)
   }
-  
+
   /**
    * <p>
    * Executes a pre-prepared set of targets. This method is typically used in conjunction
    * with #prepareTargets()</p>
-   * 
+   *
    * <pre>
    *     gant.prepareTargets()
    *     gant.executeTargets()
    * </pre>
-   *  
+   *
    *  <p>
    *  The #processTargets() method combines the above two methods
    *  </p>
-   * 
+   *
    * @param function
    * @param targets
    * @return
    */
-  public Integer executeTargets( String function = 'dispatch', List<String> targets = []) {
-	  (Integer) invokeMethod ( function , targets )	  
+  public Integer executeTargets(String function = 'dispatch', List<String> targets = []) {
+	  (Integer) invokeMethod(function, targets)
   }
-  
+
   /**
    * Prepares Gant for execution returning the Gant script that will be used for the execution
-   * 
+   *
    * @return The Gant script to be used
    */
-  public GroovyObject prepareTargets ( ) {
+  public GroovyObject prepareTargets() {
     // Configure the build based on this instance's settings.
-    if ( dryRun ) { GantState.dryRun = true }
-    //binding.ant.logger.setMessageOutputLevel ( GantState.verbosity )
+    if (dryRun) { GantState.dryRun = true }
+    //binding.ant.logger.setMessageOutputLevel(GantState.verbosity)
     binding.cacheEnabled = useCache
     binding.gantLib = gantLib
-    if ( script == null ) { throw new RuntimeException ( "No script has been loaded!" ) }
+    if (script == null) { throw new RuntimeException("No script has been loaded!") }
     script.binding = binding
-    script.run ( )	 
+    script.run()
     return script
   }
   /**
    * Sets all the pre hooks
    */
-  void setAllPerTargetPreHooks ( Closure<?> hook ) {
-    if ( script ) { this.script.setAllPerTargetPreHooks ( hook ) } // Must use function call here, fails using property access.
+  void setAllPerTargetPreHooks(Closure<?> hook) {
+    if (script) { this.script.setAllPerTargetPreHooks(hook) } // Must use function call here, fails using property access.
   }
   /**
    * Sets all the target post hooks
    */
-  void setAllPerTargetPostHooks ( Closure<?> hook ) {
-    if ( script ) { this.script.setAllPerTargetPostHooks ( hook ) } // Must use function call here, fails using property access.
-  }  
+  void setAllPerTargetPostHooks(Closure<?> hook) {
+    if (script) { this.script.setAllPerTargetPostHooks(hook) } // Must use function call here, fails using property access.
+  }
   /**
    *  Compile a script in the context of dealing with cached compiled build scripts.
    */
-  private void compileScript ( destDir , buildFileText , buildClassName ) {
-    if ( ! destDir.exists ( ) ) { destDir.mkdirs ( ) }
-    def configuration = new CompilerConfiguration ( )
+  private void compileScript(destDir, buildFileText, buildClassName) {
+    if (! destDir.exists()) { destDir.mkdirs() }
+    def configuration = new CompilerConfiguration()
     configuration.targetDirectory = destDir
-    def unit = new CompilationUnit ( configuration , null , new GroovyClassLoader ( (ClassLoader) binding.classLoader ) )
-    unit.addSource ( buildClassName , new ByteArrayInputStream ( (byte[]) buildFileText.bytes ) )
-    unit.compile ( )
+    def unit = new CompilationUnit(configuration, null, new GroovyClassLoader((ClassLoader) binding.classLoader))
+    unit.addSource(buildClassName, new ByteArrayInputStream((byte[]) buildFileText.bytes))
+    unit.compile()
   }
   /**
    *  Render the time interval for printing.
    */
-  private static String renderTimeInterval ( Number seconds ) {
-    def buffer = new StringBuffer ( )
-    def render = { int value , String units ->
-                   buffer.append ( value + ' ' + units )
-                   if ( value > 1 ) { buffer.append ( 's' ) }
-                   buffer.append ( ' ' )
+  private static String renderTimeInterval(Number seconds) {
+    def buffer = new StringBuffer()
+    def render = { int value, String units ->
+                   buffer.append(value + ' ' + units)
+                   if (value > 1) { buffer.append('s') }
+                   buffer.append(' ')
     }
-    if ( seconds > 60 ) {
+    if (seconds > 60) {
       int minutes = seconds / 60
       seconds -= minutes * 60
-      if ( minutes > 60 ) {
+      if (minutes > 60) {
         int hours = minutes / 60
         minutes -= hours * 60
-        render ( hours , 'hour' )
+        render(hours, 'hour')
       }
-      render ( minutes , 'minute' )
+      render(minutes, 'minute')
     }
-    buffer.append ( String.format ( '%.2f' , seconds ) + ' seconds' )
-    return buffer.toString ( )
+    buffer.append(String.format('%.2f', seconds) + ' seconds')
+    return buffer.toString()
   }
   /**
    *  The entry point for command line invocation.
    */
-  public static void main ( String[] args ) {
-    def startTime = System.nanoTime ( )
-    def gant = new Gant ( )
-    def returnValue = gant.processArgs ( args )
-    if ( outputBuildTime ) {
-      def terminateHook = gant.binding.getVariable ( 'terminateHook' )
-      if ( ( terminateHook != null ) && ( terminateHook instanceof Closure ) ) {
-        terminateHook.call ( returnValue , renderTimeInterval ( ( System.nanoTime ( ) - startTime ) / 1e9 ) )
+  public static void main(String[] args) {
+    def startTime = System.nanoTime()
+    def gant = new Gant()
+    def returnValue = gant.processArgs(args)
+    if (outputBuildTime) {
+      def terminateHook = gant.binding.getVariable('terminateHook')
+      if ((terminateHook != null) && (terminateHook instanceof Closure)) {
+        terminateHook.call(returnValue, renderTimeInterval((System.nanoTime() - startTime) / 1e9))
       }
     }
-    System.exit ( returnValue )
+    System.exit(returnValue)
   }
 }

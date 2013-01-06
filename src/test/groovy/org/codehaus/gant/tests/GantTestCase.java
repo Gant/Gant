@@ -1,6 +1,6 @@
 //  Gant -- A Groovy way of scripting Ant tasks.
 //
-//  Copyright © 2006-10 Russel Winder
+//  Copyright © 2006–2010, 2013  Russel Winder
 //
 //  Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in
 //  compliance with the License. You may obtain a copy of the License at
@@ -12,21 +12,21 @@
 //  implied. See the License for the specific language governing permissions and limitations under the
 //  License.
 
-package org.codehaus.gant.tests ;
+package org.codehaus.gant.tests;
 
-import java.util.Arrays ;
-import java.util.ArrayList ;
-import java.util.List ;
+import java.util.Arrays;
+import java.util.ArrayList;
+import java.util.List;
 
-import java.io.ByteArrayInputStream ;
-import java.io.ByteArrayOutputStream ;
-import java.io.PrintStream ;
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.PrintStream;
 
-import groovy.util.GroovyTestCase ;
+import groovy.util.GroovyTestCase;
 
-import gant.Gant ;
+import gant.Gant;
 
-import org.codehaus.gant.GantState ;
+import org.codehaus.gant.GantState;
 
 /**
  *  A Gant test case: Adds the required input stream manipulation features to avoid replication of code.
@@ -35,7 +35,7 @@ import org.codehaus.gant.GantState ;
  *  @author Russel Winder <russel@winder.org.uk>
  */
 public abstract class GantTestCase extends GroovyTestCase {
-  public static final String exitMarker = "------ " ;
+  public static final String exitMarker = "------ ";
   //
   //  Groovy version numbering is complicated:
   //
@@ -51,10 +51,10 @@ public abstract class GantTestCase extends GroovyTestCase {
   //  numbers will be like x.y-beta-z-SNAPSHOT or as of 2009-11-27 w.x.y-beta-z-SNAPSHOT.
   //
   public enum ReleaseType { RELEASED, RELEASED_SNAPSHOT, BETA, BETA_SNAPSHOT, RC, RC_SNAPSHOT }
-  public static final int groovyMajorVersion ;
-  public static final int groovyMinorVersion ;
-  public static final int groovyBugFixVersion ;
-  public static final ReleaseType releaseType ;
+  public static final int groovyMajorVersion;
+  public static final int groovyMinorVersion;
+  public static final int groovyBugFixVersion;
+  public static final ReleaseType releaseType;
   static {
     //
     //  Since Groovy 1.6 there has been a method groovy.lang.GroovySystem.getVersion for getting the version
@@ -65,31 +65,31 @@ public abstract class GantTestCase extends GroovyTestCase {
     //  for Groovy 1.5 from Gant.  In fact, Gant has failed to support Groovy 1.5 for a while so there is no
     //  risk of problems in only allowing Groovy 1.6 onwards.
     //
-    final String[] version = groovy.lang.GroovySystem.getVersion ( ).split ( "[.-]" ) ;
-    switch ( version.length ) {
+    final String[] version = groovy.lang.GroovySystem.getVersion().split("[.-]");
+    switch (version.length) {
      case 3 :
        //
        //  X.Y.Z
        //
-       groovyBugFixVersion =  Integer.parseInt ( version[2] ) ;
-       releaseType = ReleaseType.RELEASED ;
-       break ;
+       groovyBugFixVersion =  Integer.parseInt(version[2]);
+       releaseType = ReleaseType.RELEASED;
+       break;
      case 4 :
        //
        //  X.Y.Z-SNAPSHOT
-       //  X.Y-rc-Z 
-       //  X.Y-beta-Z 
+       //  X.Y-rc-Z
+       //  X.Y-beta-Z
        //
-       if ( version[3].equals ( "SNAPSHOT" ) ) {
-         groovyBugFixVersion =  Integer.parseInt ( version[2] ) ;
-         releaseType = ReleaseType.RELEASED_SNAPSHOT ;
+       if (version[3].equals("SNAPSHOT")) {
+         groovyBugFixVersion =  Integer.parseInt(version[2]);
+         releaseType = ReleaseType.RELEASED_SNAPSHOT;
        }
        else {
-         groovyBugFixVersion =  Integer.parseInt ( version[3] ) ;
-         final String discriminator = version[2] ;
-         releaseType = ( discriminator.equals ( "RC" ) || discriminator.equals ( "rc" ) ) ? ReleaseType.RC : ReleaseType.BETA ;
+         groovyBugFixVersion =  Integer.parseInt(version[3]);
+         final String discriminator = version[2];
+         releaseType = (discriminator.equals("RC") || discriminator.equals("rc")) ? ReleaseType.RC : ReleaseType.BETA;
        }
-       break ;
+       break;
      case 5 :
        //
        //  X.Y.0-rc-Z
@@ -97,86 +97,86 @@ public abstract class GantTestCase extends GroovyTestCase {
        //  X.Y-rc-Z-SNAPSHOT
        //  X.Y-beta-Z-SNAPSHOT
        //
-       if ( version[4].equals ( "SNAPSHOT" ) ) {
-         groovyBugFixVersion =  Integer.parseInt ( version[3] ) ;
-         final String discriminator = version[2] ;
-         releaseType = ( discriminator.equals ( "RC" ) || discriminator.equals ( "rc" ) ) ? ReleaseType.RC_SNAPSHOT : ReleaseType.BETA_SNAPSHOT ;
+       if (version[4].equals("SNAPSHOT")) {
+         groovyBugFixVersion =  Integer.parseInt(version[3]);
+         final String discriminator = version[2];
+         releaseType = (discriminator.equals("RC") || discriminator.equals("rc")) ? ReleaseType.RC_SNAPSHOT : ReleaseType.BETA_SNAPSHOT;
        }
        else {
-         assert version[2].equals ( "0" ) ;
-         groovyBugFixVersion =  Integer.parseInt ( version[4] ) ;
-         final String discriminator = version[3] ;
-         releaseType = ( discriminator.equals ( "RC" ) || discriminator.equals ( "rc" ) ) ? ReleaseType.RC : ReleaseType.BETA ;
+         assert version[2].equals("0");
+         groovyBugFixVersion =  Integer.parseInt(version[4]);
+         final String discriminator = version[3];
+         releaseType = (discriminator.equals("RC") || discriminator.equals("rc")) ? ReleaseType.RC : ReleaseType.BETA;
        }
-       break ;
+       break;
      case 6 : {
        //
        //  X.Y.0-rc-Z-SNAPSHOT
        //  X.Y.0-beta-Z-SNAPSHOT
        //
-       assert version[2].equals ( "0" ) ;
-       assert version[5].equals ( "SNAPSHOT" ) ;
-       groovyBugFixVersion =  Integer.parseInt ( version[4] ) ;
-       final String discriminator = version[3] ;
-       releaseType = ( discriminator.equals ( "RC" ) || discriminator.equals ( "rc" ) ) ? ReleaseType.RC_SNAPSHOT : ReleaseType.BETA_SNAPSHOT ;
-       break ;
+       assert version[2].equals("0");
+       assert version[5].equals("SNAPSHOT");
+       groovyBugFixVersion =  Integer.parseInt(version[4]);
+       final String discriminator = version[3];
+       releaseType = (discriminator.equals("RC") || discriminator.equals("rc")) ? ReleaseType.RC_SNAPSHOT : ReleaseType.BETA_SNAPSHOT;
+       break;
      }
      default :
-      throw new RuntimeException ( "Groovy version number is not well-formed." ) ;
+      throw new RuntimeException("Groovy version number is not well-formed.");
     }
-    groovyMajorVersion = Integer.parseInt ( version[0] ) ;
-    groovyMinorVersion = Integer.parseInt ( version[1] ) ;
+    groovyMajorVersion = Integer.parseInt(version[0]);
+    groovyMinorVersion = Integer.parseInt(version[1]);
   }
-  public static final boolean isWindows ;
+  public static final boolean isWindows;
   static {
-    final String osName = System.getProperty ( "os.name" ) ;
-    isWindows = ( osName.length ( ) > 6 ) && osName.substring ( 0 , 7 ).equals ( "Windows" ) ;
+    final String osName = System.getProperty("os.name");
+    isWindows = (osName.length() > 6) && osName.substring(0, 7).equals("Windows");
   }
-  private ByteArrayOutputStream output ;
-  private ByteArrayOutputStream error ;
-  private PrintStream savedOut ;
-  private PrintStream savedErr ;
-  protected Gant gant ;
-  protected String script ;
-  @Override protected void setUp ( ) throws Exception {
-    super.setUp ( ) ;
-    savedOut = System.out ;
-    savedErr = System.err ;
-    output = new ByteArrayOutputStream ( ) ;
-    error = new ByteArrayOutputStream ( ) ;
-    System.setOut ( new PrintStream ( output ) ) ;
-    System.setErr ( new PrintStream ( error ) ) ;
-    gant = new Gant ( ) ;
-    gant.setBuildClassName ( "standard_input" ) ;
-    script = "" ;
+  private ByteArrayOutputStream output;
+  private ByteArrayOutputStream error;
+  private PrintStream savedOut;
+  private PrintStream savedErr;
+  protected Gant gant;
+  protected String script;
+  @Override protected void setUp() throws Exception {
+    super.setUp();
+    savedOut = System.out;
+    savedErr = System.err;
+    output = new ByteArrayOutputStream();
+    error = new ByteArrayOutputStream();
+    System.setOut(new PrintStream(output));
+    System.setErr(new PrintStream(error));
+    gant = new Gant();
+    gant.setBuildClassName("standard_input");
+    script = "";
     //
     //  If the JUnit is run with fork mode 'perTest' then we do not have to worry about the static state.
     //  However, when the fork mode is 'perBatch' or 'once' then we have to ensure that the static state
     //  is reset to the normal state.
     //
-    GantState.verbosity = GantState.NORMAL ;
-    GantState.dryRun = false ;
+    GantState.verbosity = GantState.NORMAL;
+    GantState.dryRun = false;
   }
-  @Override protected void tearDown ( ) throws Exception {
-    System.setOut ( savedOut ) ;
-    System.setErr ( savedErr ) ;
-    super.tearDown ( ) ;
+  @Override protected void tearDown() throws Exception {
+    System.setOut(savedOut);
+    System.setErr(savedErr);
+    super.tearDown();
   }
-  protected void setScript ( final String s ) { script = s ; System.setIn ( new ByteArrayInputStream ( script.getBytes ( ) ) ) ; }
-  protected Integer processTargets ( ) { gant.loadScript ( System.in ) ; return gant.processTargets ( ) ; }
-  protected Integer processTargets ( final String s ) { gant.loadScript ( System.in ) ; return gant.processTargets ( s ) ; }
-  protected Integer processTargets ( final List<String> l ) { gant.loadScript ( System.in ) ; return gant.processTargets ( l ) ; }
-  protected Integer processCmdLineTargets ( ) { return gant.processArgs ( new String[] { "-f" , "-" } ) ; }
-  protected Integer processCmdLineTargets ( final String s ) { return gant.processArgs ( new String[] { "-f" , "-" , s } ) ; }
-  protected Integer processCmdLineTargets ( final List<String> l ) {
-    final List<String> args = new ArrayList<String> ( Arrays.asList ( "-f" , "-" ) ) ;
-    args.addAll ( l ) ;
-    return gant.processArgs ( args.toArray ( new String[0] ) ) ;
+  protected void setScript(final String s) { script = s; System.setIn(new ByteArrayInputStream(script.getBytes())); }
+  protected Integer processTargets() { gant.loadScript(System.in); return gant.processTargets(); }
+  protected Integer processTargets(final String s) { gant.loadScript(System.in); return gant.processTargets(s); }
+  protected Integer processTargets(final List<String> l) { gant.loadScript(System.in); return gant.processTargets(l); }
+  protected Integer processCmdLineTargets() { return gant.processArgs(new String[] {"-f", "-"}); }
+  protected Integer processCmdLineTargets(final String s) { return gant.processArgs(new String[] {"-f", "-", s}); }
+  protected Integer processCmdLineTargets(final List<String> l) {
+    final List<String> args = new ArrayList<String>(Arrays.asList("-f", "-"));
+    args.addAll(l);
+    return gant.processArgs(args.toArray(new String[0]));
   }
-  protected String getOutput ( ) { return output.toString ( ).replace ( "\r" , "" ) ; }
-  protected String getError ( ) { return error.toString ( ).replace ( "\r" , "" ) ; }
-  protected String escapeWindowsPath ( final String path ) { return isWindows ? path.replace ( "\\" ,  "\\\\" ) : path ; }
-  protected String resultString ( final String targetName , final String result ) {
-    return targetName + ":\n" + result + exitMarker + targetName + '\n' ;
+  protected String getOutput() { return output.toString().replace("\r", ""); }
+  protected String getError() { return error.toString().replace("\r", ""); }
+  protected String escapeWindowsPath(final String path) { return isWindows ? path.replace("\\",  "\\\\") : path; }
+  protected String resultString(final String targetName, final String result) {
+    return targetName + ":\n" + result + exitMarker + targetName + '\n';
   }
 }

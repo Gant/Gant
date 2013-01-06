@@ -1,6 +1,6 @@
 //  Gant -- A Groovy way of scripting Ant tasks.
 //
-//  Copyright © 2007-10 Russel Winder
+//  Copyright © 2007–2010, 2013  Russel Winder
 //
 //  Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in
 //  compliance with the License. You may obtain a copy of the License at
@@ -23,95 +23,95 @@ import org.codehaus.gant.tests.GantTestCase
  */
 final class Clean_Test extends GantTestCase {
   final targetName = 'targetName'
-  void testCleanDirectoryString ( ) {
+  void testCleanDirectoryString() {
     script = """
 includeTargets << gant.targets.Clean
 cleanDirectory << 'target'
-target ( ${targetName} : '' ) { println ( cleanDirectory ) }
+target(${targetName}: '') { println(cleanDirectory) }
 """
-    assertEquals ( 0 , processCmdLineTargets ( targetName ) )
-    assertEquals ( resultString ( targetName , '[target]\n' ) , output )
-    assertEquals ( '' , error )
+    assertEquals(0, processCmdLineTargets(targetName))
+    assertEquals(resultString(targetName, '[target]\n'), output)
+    assertEquals('', error)
   }
-  void testCleanDirectoryList ( ) {
+  void testCleanDirectoryList() {
     script = """
 includeTargets << gant.targets.Clean
-cleanDirectory << [ 'target_a' , 'target_b' ]
-target ( ${targetName} : '' ) { println ( cleanDirectory ) }
-""" 
-    assertEquals ( 0 , processCmdLineTargets ( targetName ) ) 
-    assertEquals ( resultString ( targetName , '[[target_a, target_b]]\n' ) , output )
-    assertEquals ( '' , error )
+cleanDirectory << ['target_a', 'target_b']
+target(${targetName}: '') { println(cleanDirectory) }
+"""
+    assertEquals(0, processCmdLineTargets(targetName))
+    assertEquals(resultString(targetName, '[[target_a, target_b]]\n'), output)
+    assertEquals('', error)
   }
-  void testCleanPatternString ( ) {
+  void testCleanPatternString() {
     script = """
 includeTargets << gant.targets.Clean
 cleanPattern << '**/*~'
-target ( ${targetName} : '' ) {println ( cleanPattern ) }
+target(${targetName}: '') {println(cleanPattern) }
 """
-    assertEquals ( 0 , processCmdLineTargets ( targetName ) )
-    assertEquals ( resultString ( targetName , '[**/*~]\n' ) , output ) 
-    assertEquals ( '' , error )
+    assertEquals(0, processCmdLineTargets(targetName))
+    assertEquals(resultString(targetName, '[**/*~]\n'), output)
+    assertEquals('', error)
   }
-  void testCleanPatternList ( ) {
+  void testCleanPatternList() {
     script = """
 includeTargets << gant.targets.Clean
-cleanPattern << [ '**/*~' , '**/*.bak' ]
-target ( ${targetName} : '' ) { println ( cleanPattern ) }
+cleanPattern << ['**/*~', '**/*.bak']
+target(${targetName}: '') { println(cleanPattern) }
 """
-    assertEquals ( 0 , processCmdLineTargets ( targetName ) )
-    assertEquals ( resultString ( targetName , '[[**/*~, **/*.bak]]\n' ) , output ) 
-    assertEquals ( '' , error )
+    assertEquals(0, processCmdLineTargets(targetName))
+    assertEquals(resultString(targetName, '[[**/*~, **/*.bak]]\n'), output)
+    assertEquals('', error)
   }
-  void testClobberDirectoryString ( ) {
+  void testClobberDirectoryString() {
     script = """
 includeTargets << gant.targets.Clean
 clobberDirectory << 'target'
-target ( ${targetName} : '' ) { println ( clobberDirectory ) }
+target(${targetName}: '') { println(clobberDirectory) }
 """
-    assertEquals ( 0 , processCmdLineTargets ( targetName ) )
-    assertEquals ( resultString ( targetName , '[target]\n' ) , output ) 
-    assertEquals ( '' , error )
+    assertEquals(0, processCmdLineTargets(targetName))
+    assertEquals(resultString(targetName, '[target]\n'), output)
+    assertEquals('', error)
   }
-  void testClobberDirectoryList ( ) {
+  void testClobberDirectoryList() {
     script = """
 includeTargets << gant.targets.Clean
-clobberDirectory << [ 'target_a' , 'target_b' ]
-target ( ${targetName} : '' ) { println ( clobberDirectory ) }
+clobberDirectory << ['target_a', 'target_b']
+target(${targetName}: '') { println(clobberDirectory) }
 """
-    assertEquals ( 0 , processCmdLineTargets ( targetName ) )
-    assertEquals ( resultString ( targetName , '[[target_a, target_b]]\n' ) , output ) 
-    assertEquals ( '' , error )
+    assertEquals(0, processCmdLineTargets(targetName))
+    assertEquals(resultString(targetName, '[[target_a, target_b]]\n'), output)
+    assertEquals('', error)
   }
-  void testClobberPatternString ( ) {
+  void testClobberPatternString() {
     script = """
 includeTargets << gant.targets.Clean
 clobberPattern << '**/*~'
-target ( ${targetName} : '' ) {
-  println ( clobberPattern )
+target(${targetName}: '') {
+  println(clobberPattern)
 }
 """
-    assertEquals ( 0 , processCmdLineTargets ( targetName ) )
-    assertEquals ( resultString ( targetName , '[**/*~]\n' ) , output ) 
-    assertEquals ( '' , error )
+    assertEquals(0, processCmdLineTargets(targetName))
+    assertEquals(resultString(targetName, '[**/*~]\n'), output)
+    assertEquals('', error)
   }
-  void testClobberPatternList ( ) {
+  void testClobberPatternList() {
     script = """
 includeTargets << gant.targets.Clean
-clobberPattern << [ '**/*~' , '**/*.bak' ]
-target ( ${targetName} : '' ) { println ( clobberPattern ) }
+clobberPattern << ['**/*~', '**/*.bak']
+target(${targetName}: '') { println(clobberPattern) }
 """
-    assertEquals ( 0 , processCmdLineTargets ( targetName ) )
-    assertEquals ( resultString ( targetName , '[[**/*~, **/*.bak]]\n' ) , output ) 
-    assertEquals ( '' , error )
+    assertEquals(0, processCmdLineTargets(targetName))
+    assertEquals(resultString(targetName, '[[**/*~, **/*.bak]]\n'), output)
+    assertEquals('', error)
   }
-  void testParameterizedInclude ( ) {
+  void testParameterizedInclude() {
    script = """
-includeTargets ** gant.targets.Clean * [ cleanDirectory : 'target' ]
-target ( ${targetName} : '' ) { println ( cleanDirectory ) }
+includeTargets ** gant.targets.Clean * [cleanDirectory: 'target']
+target(${targetName}: '') { println(cleanDirectory) }
 """
-    assertEquals ( 0 , processCmdLineTargets ( targetName ) )
-    assertEquals ( resultString ( targetName , '[target]\n' ) , output ) 
-    assertEquals ( '' , error )
+    assertEquals(0, processCmdLineTargets(targetName))
+    assertEquals(resultString(targetName, '[target]\n'), output)
+    assertEquals('', error)
   }
 }

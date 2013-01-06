@@ -1,6 +1,6 @@
 //  Gant -- A Groovy way of scripting Ant tasks.
 //
-//  Copyright © 2008-10 Russel Winder
+//  Copyright © 2008–2010, 2013  Russel Winder
 //
 //  Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in
 //  compliance with the License. You may obtain a copy of the License at
@@ -33,77 +33,77 @@ final class AntFile_Test extends GantTestCase {
   private File temporaryFile
   private String temporaryFilePath
 
-  void setUp ( ) {
-    super.setUp ( )
-    temporaryFile = File.createTempFile ( 'gant-antFile-' ,  '-executable' )
-    temporaryFilePath = temporaryFile.path.replaceAll ( '\\\\' , '/' )
-    temporaryFile.write ( '''
+  void setUp() {
+    super.setUp()
+    temporaryFile = File.createTempFile('gant-antFile-',  '-executable')
+    temporaryFilePath = temporaryFile.path.replaceAll('\\\\', '/')
+    temporaryFile.write('''
 <project name="Gant Ant Use Test" default="execute">
   <target name="execute" description="Do something.">
     <echo message="Hello world."/>
   </target>
 </project>
-''' )
+''')
   }
-  void tearDown ( ) {
-    temporaryFile.delete ( )
-    super.tearDown ( )
+  void tearDown() {
+    temporaryFile.delete()
+    super.tearDown()
   }
 
-  private void performExecutableTest ( ) {
-    assertEquals ( 0 , processCmdLineTargets ( ) )
-    assertEquals ( '     [echo] Hello world.\n' , output )
-    assertEquals ( '' , error )
+  private void performExecutableTest() {
+    assertEquals(0, processCmdLineTargets())
+    assertEquals('     [echo] Hello world.\n', output)
+    assertEquals('', error)
   }
-  private void performListingTest ( ) {
-    assertEquals ( 0 , gant.processArgs ( [ '-p' , '-f' , '-' ] as String[] ) )
-    assertEquals ( '''
+  private void performListingTest() {
+    assertEquals(0, gant.processArgs(['-p', '-f', '-'] as String[]))
+    assertEquals('''
  execute  Do something.
 
 Default target is execute.
 
-''' , output )
-    assertEquals ( '' , error )
+''', output)
+    assertEquals('', error)
   }
 
   private uninitializedScript = """
 includeTool << gant.tools.AntFile
-antFile.includeTargets ( '${-> temporaryFilePath}' )
-setDefaultTarget ( 'execute' )
+antFile.includeTargets('${-> temporaryFilePath}')
+setDefaultTarget('execute')
 """
   private initializedScriptString = """
-includeTool ** gant.tools.AntFile * [ filename : '${ -> temporaryFilePath}' ]
-setDefaultTarget ( 'execute' )
+includeTool ** gant.tools.AntFile * [ filename: '${ -> temporaryFilePath}' ]
+setDefaultTarget('execute')
 """
   private initializedScriptList = """
-includeTool ** gant.tools.AntFile * [ filename : [ '${ -> temporaryFilePath}' ] ]
-setDefaultTarget ( 'execute' )
+includeTool ** gant.tools.AntFile * [ filename: [ '${ -> temporaryFilePath}' ] ]
+setDefaultTarget('execute')
 """
 
-  void testExecutableUninitialized ( ) {
+  void testExecutableUninitialized() {
     script = uninitializedScript
-    performExecutableTest ( )
+    performExecutableTest()
   }
-  void testListingUninitialized ( ) {
+  void testListingUninitialized() {
     script = uninitializedScript
-    performListingTest ( )
+    performListingTest()
   }
 
-  void testExecutableInitializedString ( ) {
+  void testExecutableInitializedString() {
     script = initializedScriptString
-    performExecutableTest ( )
+    performExecutableTest()
   }
-  void testListingInitializedString ( ) {
+  void testListingInitializedString() {
     script = initializedScriptString
-    performListingTest ( )
+    performListingTest()
   }
 
-  void testExecutableInitializedList ( ) {
+  void testExecutableInitializedList() {
     script = initializedScriptList
-    performExecutableTest ( )
+    performExecutableTest()
   }
-  void testListingInitializedList ( ) {
+  void testListingInitializedList() {
     script = initializedScriptList
-    performListingTest ( )
+    performListingTest()
   }
 }

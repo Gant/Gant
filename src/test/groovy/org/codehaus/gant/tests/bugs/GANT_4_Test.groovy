@@ -1,6 +1,6 @@
 //  Gant -- A Groovy way of scripting Ant tasks.
 //
-//  Copyright © 2008-9 Russel Winder
+//  Copyright © 2008–2009, 2013  Russel Winder
 //
 //  Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in
 //  compliance with the License. You may obtain a copy of the License at
@@ -18,73 +18,73 @@ import org.codehaus.gant.tests.GantTestCase
 
 class GANT_4_Test extends GantTestCase {
   final theScript = '''
-target ( target1 : 'This has no properties.' ) {
+target(target1: 'This has no properties.') {
 	println "Target One"
 }
-target ( target2 : 'with command line properties' ) {
+target(target2: 'with command line properties') {
 	println "Target Two"
 	println "p1=${p1}"
 }
-target ( 'default' : 'The default target.' ) { 
+target('default': 'The default target.') {
 	println "Default Target"
 }
 '''
-  void testDefaultTarget ( ) {
+  void testDefaultTarget() {
     script = theScript
-    assertEquals ( 0 , processCmdLineTargets ( ) )
-    assertEquals ( resultString ( 'default' , 'Default Target\n' ) , output )
-    assertEquals ( '' , error )
+    assertEquals(0, processCmdLineTargets())
+    assertEquals(resultString('default', 'Default Target\n'), output)
+    assertEquals('', error)
   }
-  void testTarget1 ( ) {
+  void testTarget1() {
     final targetName = 'target1'
     script = theScript
-    assertEquals ( 0 , processCmdLineTargets ( targetName ) )
-    assertEquals ( resultString ( targetName , 'Target One\n' ) , output )
-    assertEquals ( '' , error )
+    assertEquals(0, processCmdLineTargets(targetName))
+    assertEquals(resultString(targetName, 'Target One\n'), output)
+    assertEquals('', error)
   }
-  void testTarget2 ( ) {
+  void testTarget2() {
     final targetName = 'target2'
     script = theScript
-    assertEquals ( -11 , processCmdLineTargets ( targetName ) ) 
-    assertEquals ( "${targetName}:\nTarget Two\n" , output )
-    assertEquals ( "Standard input, line 7 -- Error evaluating Gantfile: No such property: p1 for class: standard_input\n" , error )
+    assertEquals(-11, processCmdLineTargets(targetName))
+    assertEquals("${targetName}:\nTarget Two\n", output)
+    assertEquals("Standard input, line 7 -- Error evaluating Gantfile: No such property: p1 for class: standard_input\n", error)
   }
-  void testDefaultTargetCommandLine ( ) {
+  void testDefaultTargetCommandLine() {
     script = theScript
-    assertEquals ( 0 , gant.processArgs ( [ '-f' , '-' ] as String[] ) )
-    assertEquals ( resultString ( 'default' , 'Default Target\n' ) , output )
-    assertEquals ( '' , error )
+    assertEquals(0, gant.processArgs(['-f', '-'] as String[]))
+    assertEquals(resultString('default', 'Default Target\n'), output)
+    assertEquals('', error)
   }
-  void testTarget1CommandLine ( ) {
+  void testTarget1CommandLine() {
     final targetName = 'target1'
     script = theScript
-    assertEquals ( 0 , gant.processArgs ( [ '-f' , '-' , targetName ] as String[] ) )
-    assertEquals ( resultString ( targetName , 'Target One\n' ) , output )
-    assertEquals ( '' , error )
+    assertEquals(0, gant.processArgs(['-f', '-', targetName] as String[]))
+    assertEquals(resultString(targetName, 'Target One\n'), output)
+    assertEquals('', error)
   }
-  void testTarget2CommandLine ( ) {
+  void testTarget2CommandLine() {
     final targetName = 'target2'
     script = theScript
-    assertEquals ( -11 , gant.processArgs ( [ '-f' , '-' , targetName ] as String[] ) )
-    assertEquals ( "${targetName}:\nTarget Two\n" , output )
-    assertEquals ( "Standard input, line 7 -- Error evaluating Gantfile: No such property: p1 for class: standard_input\n" , error )
+    assertEquals(-11, gant.processArgs(['-f', '-', targetName] as String[]))
+    assertEquals("${targetName}:\nTarget Two\n", output)
+    assertEquals("Standard input, line 7 -- Error evaluating Gantfile: No such property: p1 for class: standard_input\n", error)
   }
-  void testTarget2CommandLineWithDefinitionNoSpace ( ) {
+  void testTarget2CommandLineWithDefinitionNoSpace() {
     final targetName = 'target2'
     script = theScript
-    assertEquals ( 0 , gant.processArgs ( [ '-Dp1=MyVal' , '-f' , '-' , targetName ] as String[] ) )
-    assertEquals (resultString ( targetName ,  '''Target Two
+    assertEquals(0, gant.processArgs(['-Dp1=MyVal', '-f', '-', targetName] as String[]))
+    assertEquals (resultString(targetName,  '''Target Two
 p1=MyVal
-''' ) , output )
-    assertEquals ( '' , error )
+'''), output)
+    assertEquals('', error)
   }
-  void testTarget2CommandLineWithDefinitionWithSpace ( ) {
+  void testTarget2CommandLineWithDefinitionWithSpace() {
     final targetName = 'target2'
     script = theScript
-    assertEquals ( 0 , gant.processArgs ( [ '-D' , 'p1=MyVal' , '-f' , '-' , targetName ] as String[] ) )
-    assertEquals ( resultString ( targetName , '''Target Two
+    assertEquals(0, gant.processArgs(['-D', 'p1=MyVal', '-f', '-', targetName] as String[]))
+    assertEquals(resultString(targetName, '''Target Two
 p1=MyVal
-''' ) , output )
-    assertEquals ( '' , error )
+'''), output)
+    assertEquals('', error)
   }
 }

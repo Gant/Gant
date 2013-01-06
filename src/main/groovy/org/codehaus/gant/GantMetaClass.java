@@ -1,6 +1,6 @@
 //  Gant -- A Groovy way of scripting Ant tasks.
 //
-//  Copyright © 2006-11 Russel Winder
+//  Copyright © 2006–2011, 2013  Russel Winder
 //
 //  Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in
 //  compliance with the License. You may obtain a copy of the License at
@@ -12,11 +12,11 @@
 //  implied. See the License for the specific language governing permissions and limitations under the
 //  License.
 
-package org.codehaus.gant ;
+package org.codehaus.gant;
 
-import java.util.HashSet ;
-import java.util.List ;
-import java.util.Set ;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////
 //  In Groovy 1.7.x Closure was a type, in Groovy 1.8.x Closure is a parameterized type.
@@ -24,17 +24,17 @@ import java.util.Set ;
 //  suffer the "raw type" warnings that Eclipse issues.
 //////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-import groovy.lang.Closure ;
-import groovy.lang.DelegatingMetaClass ;
-import groovy.lang.GString ;
-import groovy.lang.MetaClass ;
-import groovy.lang.MissingMethodException ;
-import groovy.lang.MissingPropertyException ;
-import groovy.lang.Tuple ;
+import groovy.lang.Closure;
+import groovy.lang.DelegatingMetaClass;
+import groovy.lang.GString;
+import groovy.lang.MetaClass;
+import groovy.lang.MissingMethodException;
+import groovy.lang.MissingPropertyException;
+import groovy.lang.Tuple;
 
-import org.codehaus.groovy.runtime.MetaClassHelper ;
+import org.codehaus.groovy.runtime.MetaClassHelper;
 
-import org.apache.tools.ant.BuildException ;
+import org.apache.tools.ant.BuildException;
 
 /**
  *  This class is the metaclass used for target <code>Closure</code>s, and any enclosed <code>Closures</code>.
@@ -56,16 +56,16 @@ public class GantMetaClass extends DelegatingMetaClass {
    *  Should a different data structure be used, one that is a bit more thread safe?  Arguably it is
    *  reasonable for this to be a synchronized object.</p>
    */
-  private static final Set<Closure<?>> methodsInvoked = new HashSet<Closure<?>> ( ) ;
+  private static final Set<Closure<?>> methodsInvoked = new HashSet<Closure<?>>();
   /**
    *  The binding (aka global shared state) that is being used.
    */
-  private final GantBinding binding ;
+  private final GantBinding binding;
   /*
    */
-  public GantMetaClass ( final MetaClass metaClass , final GantBinding binding ) {
-    super ( metaClass ) ;
-    this.binding = binding ;
+  public GantMetaClass(final MetaClass metaClass, final GantBinding binding) {
+    super(metaClass);
+    this.binding = binding;
   }
   /**
    *  Execute a <code>Closure</code> only if it hasn't been executed previously.  If it is executed, record
@@ -75,12 +75,12 @@ public class GantMetaClass extends DelegatingMetaClass {
    *  @return the result of the <code>Closure</code> call, or <code>null</code> if the closure was not
    *  called.
    */
-  private Object processClosure ( final Closure<?> closure ) {
-    if ( ! methodsInvoked.contains ( closure ) ) {
-      methodsInvoked.add ( closure ) ;
-      return closure.call ( ) ;
+  private Object processClosure(final Closure<?> closure) {
+    if (! methodsInvoked.contains(closure)) {
+      methodsInvoked.add(closure);
+      return closure.call();
     }
-    return null ;
+    return null;
   }
   /**
    *  Process the argument to a <code>depends</code> call.  If the parameter is a <code>Closure</code> just
@@ -90,21 +90,21 @@ public class GantMetaClass extends DelegatingMetaClass {
    *  @param argument The argument.
    *  @return The result of the <code>Closure</code>.
    */
-  private Object processArgument ( final Object argument ) {
-    final Object returnObject ;
-    if ( argument instanceof Closure ) { returnObject = processClosure ( (Closure<?>) argument ) ; }
+  private Object processArgument(final Object argument) {
+    final Object returnObject;
+    if (argument instanceof Closure) { returnObject = processClosure((Closure<?>) argument); }
     else {
-      final String errorReport = "depends called with an argument (" + argument + ") that is not a known target or list of targets." ;
-      Object theArgument = argument ;
-      if ( theArgument instanceof GString ) { theArgument = theArgument.toString ( ) ; }
-      if ( theArgument instanceof String ) {
-        final Object entry = binding.getVariable ( (String) theArgument ) ;
-        if ( ( entry != null ) && ( entry instanceof Closure ) ) { returnObject = processClosure ( (Closure<?>) entry ) ; }
-        else { throw new RuntimeException ( errorReport ) ; }
+      final String errorReport = "depends called with an argument (" + argument + ") that is not a known target or list of targets.";
+      Object theArgument = argument;
+      if (theArgument instanceof GString) { theArgument = theArgument.toString(); }
+      if (theArgument instanceof String) {
+        final Object entry = binding.getVariable((String) theArgument);
+        if ((entry != null) && (entry instanceof Closure)) { returnObject = processClosure((Closure<?>) entry); }
+        else { throw new RuntimeException(errorReport); }
       }
-      else { throw new RuntimeException ( errorReport ) ; }
+      else { throw new RuntimeException(errorReport); }
     }
-    return returnObject ;
+    return returnObject;
   }
   /**
    *  Invokes a method on the given object with the given name and arguments. The <code>MetaClass</code>
@@ -118,40 +118,40 @@ public class GantMetaClass extends DelegatingMetaClass {
    *  @return The return value of the method which is <code>null</code> if the return type is
    *  <code>void</code>.
    */
-  @Override public Object invokeMethod ( final Object object , final String methodName , final Object[] arguments ) {
-    Object returnObject = null ;
-    if ( methodName.equals ( "depends" ) ) {
-      for ( final Object argument : arguments ) {
-        if ( argument instanceof List<?> ) {
-          for ( final Object item : (List<?>) argument ) { returnObject = processArgument ( item ) ; }
+  @Override public Object invokeMethod(final Object object, final String methodName, final Object[] arguments) {
+    Object returnObject = null;
+    if (methodName.equals("depends")) {
+      for (final Object argument : arguments) {
+        if (argument instanceof List<?>) {
+          for (final Object item : (List<?>) argument) { returnObject = processArgument(item); }
         }
-        else { returnObject = processArgument ( argument ) ; }
+        else { returnObject = processArgument(argument); }
       }
     }
     else {
       try {
-        returnObject = super.invokeMethod ( object , methodName , arguments ) ;
+        returnObject = super.invokeMethod(object, methodName, arguments);
         try {
-          final Closure<?> closure = (Closure<?>) binding.getVariable ( methodName ) ;
-          if ( closure != null ) { methodsInvoked.add ( closure ) ; }
+          final Closure<?> closure = (Closure<?>) binding.getVariable(methodName);
+          if (closure != null) { methodsInvoked.add(closure); }
         }
-        catch ( final MissingPropertyException mpe ) { /* Purposefully empty */ }
+        catch (final MissingPropertyException mpe) { /* Purposefully empty */ }
       }
-      catch ( final MissingMethodException mme ) {
-        try { returnObject = ( (GantBuilder) ( binding.getVariable ( "ant" ) ) ).invokeMethod ( methodName , arguments ) ; }
-        catch ( final BuildException be ) {
+      catch (final MissingMethodException mme) {
+        try { returnObject = ((GantBuilder)(binding.getVariable("ant"))).invokeMethod(methodName, arguments); }
+        catch (final BuildException be) {
           //  This BuildException could be a real exception due to a failed execution of a found Ant task
           //  (in which case it should be propagated), or it could be due to a failed name lookup (in which
           //  case the MissingMethodException should be propagated).  The big problem is distinguishing the
           //  various uses of Build Exception here -- for now use string search of the exception message to
           //  distinguish the cases.  NB GANT-49 and GANT-68 are the main conflicting issues here :-(
-          if ( be.getMessage ( ).startsWith ( "Problem: failed to create task or type" ) ) { throw mme ; }
-          else { throw be ; }
+          if (be.getMessage().startsWith("Problem: failed to create task or type")) { throw mme; }
+          else { throw be; }
         }
-        catch ( final Exception e ) { throw mme ; }
+        catch (final Exception e) { throw mme; }
       }
     }
-    return returnObject ;
+    return returnObject;
   }
   /**
    *  Invokes a method on the given object, with the given name and single argument.
@@ -162,11 +162,11 @@ public class GantMetaClass extends DelegatingMetaClass {
    *  @param arguments The argument to the method
    *  @return The return value of the method which is null if the return type is void
    */
-  @Override public Object invokeMethod ( final Object object , final String methodName , final Object arguments ) {
-    if ( arguments == null ) { return invokeMethod ( object , methodName , MetaClassHelper.EMPTY_ARRAY ) ; }
-    else if ( arguments instanceof Tuple ) { return invokeMethod ( object , methodName , ( (Tuple) arguments ).toArray ( ) ) ; }
-    else if ( arguments instanceof Object[] ) { return invokeMethod ( object , methodName , (Object[]) arguments ) ; }
-    else { return invokeMethod ( object , methodName , new Object[] { arguments } ) ; }
+  @Override public Object invokeMethod(final Object object, final String methodName, final Object arguments) {
+    if (arguments == null) { return invokeMethod(object, methodName, MetaClassHelper.EMPTY_ARRAY); }
+    else if (arguments instanceof Tuple) { return invokeMethod(object, methodName,((Tuple)arguments).toArray()); }
+    else if (arguments instanceof Object[]) { return invokeMethod(object, methodName, (Object[])arguments); }
+    else { return invokeMethod(object, methodName, new Object[] { arguments }); }
   }
   /**
    *  Invoke the given method.
@@ -175,8 +175,8 @@ public class GantMetaClass extends DelegatingMetaClass {
    *  @param args the arguments to use for the method call
    *  @return the result of invoking the method
    */
-  @Override public Object invokeMethod ( final String name , final Object args ) {
-    return invokeMethod ( this , name , args ) ;
+  @Override public Object invokeMethod(final String name, final Object args) {
+    return invokeMethod(this, name, args);
   }
   //////////////////////////////////////////////////////////////////////////////////////////////////////////
   //  As at 2012-05-31 it is believed that groovy.lang.DelegatingMetaClass (the invokeMethod method
@@ -203,7 +203,7 @@ public class GantMetaClass extends DelegatingMetaClass {
    *  @return The return value of the method
    */
   @SuppressWarnings("rawtypes")
-  @Override public Object invokeMethod ( final Class sender , final Object receiver , final String methodName , final Object[] arguments, final boolean isCallToSuper, final boolean fromInsideClass ) {
-    return invokeMethod ( receiver , methodName , arguments ) ;
+  @Override public Object invokeMethod(final Class sender, final Object receiver, final String methodName, final Object[] arguments, final boolean isCallToSuper, final boolean fromInsideClass) {
+    return invokeMethod(receiver, methodName, arguments);
   }
 }
