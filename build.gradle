@@ -16,6 +16,9 @@
 //
 //  Author: Russel Winder <russel@winder.org.uk>
 
+apply plugin: 'eclipse'
+apply plugin: 'idea'
+
 import org.apache.tools.ant.filters.ReplaceTokens
 
 ext.artifact = 'gant'
@@ -673,3 +676,31 @@ task clobber(description: 'Do a really detailed clean.') << {
   forEachProject{item -> delete item}
   delete buildDir, 'texput.log'
 }
+
+
+idea {
+    module {
+        excludeDirs += file('gradle/') // Gradle directory including the wrapper subdirectory.
+        excludeDirs += file('.gradle/') // Gradle directory
+        excludeDirs += file('.settings/') // Eclipse settings directory.
+        excludeDirs += file('bin') // Eclipse compilation directory.
+        excludeDirs += file('out') // IDEA compilation directory.
+        excludeDirs += file('build') // Gradle compilation directory.
+    }
+    project {
+        ext.javaVersion = '1.6'
+        ipr {
+            withXml { provider ->
+                def node = provider.asNode()
+                def vcsConfig = node.component.find { it.'@name' == 'VcsDirectoryMappings' }
+                vcsConfig.mapping[0].'@vcs' = 'Git'
+                def gradleSettings = node.appendNode('component', [name: 'GradleSettings'])
+                gradleSettings.appendNode('option', [name: 'SDK_HOME', value: gradle.gradleHomeDir.absolutePath])
+            }
+            whenMerged { project ->
+                project.jdk.languageLevel = 'JDK_1_6'
+            }
+        }
+    }
+}
+

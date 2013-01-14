@@ -2,7 +2,6 @@
 /artwork/*.png
 /bin/
 /out/
-Gant.iws
 .gradle
 /build/
 /gant/
@@ -11,3 +10,10 @@ Gant.iws
 texput.log
 nbbuild.xml
 /nbproject/
+Gant.iws
+Gant.iml
+Gant.ipr
+/.idea/
+.classpath
+.project
+/.settings/
