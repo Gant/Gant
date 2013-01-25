@@ -217,7 +217,7 @@ set CMD_LINE_ARGS=%$
 
 :execute
 @rem Setup the command line
-set STARTER_CLASSPATH=%GROOVY_HOME%\@GROOVYPATH@\@GROOVYJAR@;%STARTER_CLASSPATH%
+set STARTER_CLASSPATH=%GROOVY_HOME%\lib\@GROOVYJAR@
 
 if exist "%USERPROFILE%/.groovy/init.bat" call "%USERPROFILE%/.groovy/init.bat"
 
@@ -235,9 +235,9 @@ set CP=%CLASSPATH%;%CP%
 :after_cp
 
 set STARTER_MAIN_CLASS=org.codehaus.groovy.tools.GroovyStarter
-if "%STARTER_CONF%" == "" set STARTER_CONF=%GROOVY_HOME%\conf\groovy-starter.conf
+set STARTER_CONF=%GROOVY_HOME%\conf\groovy-starter.conf
 
-if "%GROOVY_OPTS%" == "" set GROOVY_OPTS="-Xmx128m"
+set GROOVY_OPTS="-Xmx128m"
 set GROOVY_OPTS=%GROOVY_OPTS% -Dprogram.name="%PROGNAME%"
 set GROOVY_OPTS=%GROOVY_OPTS% -Dgroovy.home="%GROOVY_HOME%"
 if not "%TOOLS_JAR%" == "" set GROOVY_OPTS=%GROOVY_OPTS% -Dtools.jar="%TOOLS_JAR%"
