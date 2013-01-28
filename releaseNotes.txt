@@ -1,6 +1,11 @@
-Updated to Groovy 1.8.8 and 2.0.4.
+1.9.9
+-----
+
+Updated to Groovy 1.8.8, 2.0.6 and 2.1.0.
 
 Various changes to cause less compilation warnings.
+
+This release triggered by the release of Groovy 2.1.0
 
 
 1.9.8
