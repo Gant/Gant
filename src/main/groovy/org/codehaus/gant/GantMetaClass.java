@@ -37,19 +37,19 @@ import org.codehaus.groovy.runtime.MetaClassHelper;
 import org.apache.tools.ant.BuildException;
 
 /**
- *  This class is the metaclass used for target <code>Closure</code>s, and any enclosed <code>Closures</code>.
+ *  This class is the metaclass used for target {@code Closure}s, and any enclosed {@code Closures}.
  *
- *  <p>This metaclass deals with <code>depends</code> method calls and redirects unknown method calls to the
- *  instance of <code>GantBuilder</code>.  To process the <code>depends</code> all closures from the
+ *  <p>This metaclass deals with {@code depends} method calls and redirects unknown method calls to the
+ *  instance of {@code GantBuilder}.  To process the {@code depends} all closures from the
  *  binding called during execution of the Gant specification must be logged so that when a depends happens
  *  the full closure call history is available.</p>
  *
- *  @author Russel Winder <russel@winder.org.uk>
+ *  @author Russel Winder &lt;russel@winder.org.uk&gt;
  */
 public class GantMetaClass extends DelegatingMetaClass {
   /**
    *  The set of all targets that have been called.  This is a global variable shared by all instances of
-   *  <code>GantMetaClass</code>.
+   *  {@code GantMetaClass}.
    *
    *  <p>TODO : This code is a long way from thread safe, and so it needs fixing.  Should this variable be
    *  moved to the GantState class, which is the class that holds other bits of the internal shared state?
@@ -68,11 +68,11 @@ public class GantMetaClass extends DelegatingMetaClass {
     this.binding = binding;
   }
   /**
-   *  Execute a <code>Closure</code> only if it hasn't been executed previously.  If it is executed, record
-   *  the execution.  Only used for processing a <code>depends</code> call.
+   *  Execute a {@code Closure} only if it hasn't been executed previously.  If it is executed, record
+   *  the execution.  Only used for processing a {@code depends} call.
    *
-   *  @param closure The <code>Closure</code> to potentially call.
-   *  @return the result of the <code>Closure</code> call, or <code>null</code> if the closure was not
+   *  @param closure The {@code Closure} to potentially call.
+   *  @return the result of the {@code Closure} call, or {@code null} if the closure was not
    *  called.
    */
   private Object processClosure(final Closure<?> closure) {
@@ -83,12 +83,12 @@ public class GantMetaClass extends DelegatingMetaClass {
     return null;
   }
   /**
-   *  Process the argument to a <code>depends</code> call.  If the parameter is a <code>Closure</code> just
-   *  process it. If it is a <code>String</code> then do a lookup for the <code>Closure</code> in the
+   *  Process the argument to a {@code depends} call.  If the parameter is a {@code Closure} just
+   *  process it. If it is a {@code String} then do a lookup for the {@code Closure} in the
    *  binding, and if found process it.
    *
    *  @param argument The argument.
-   *  @return The result of the <code>Closure</code>.
+   *  @return The result of the {@code Closure}.
    */
   private Object processArgument(final Object argument) {
     final Object returnObject;
@@ -107,16 +107,16 @@ public class GantMetaClass extends DelegatingMetaClass {
     return returnObject;
   }
   /**
-   *  Invokes a method on the given object with the given name and arguments. The <code>MetaClass</code>
+   *  Invokes a method on the given object with the given name and arguments. The {@code MetaClass}
    *  will attempt to pick the best method for the given name and arguments. If a method cannot be invoked a
-   *  <code>MissingMethodException</code> will be thrown.
+   *  {@code MissingMethodException} will be thrown.
    *
    *  @see MissingMethodException
    *  @param object The instance on which the method is invoked.
    *  @param methodName The name of the method.
    *  @param arguments The arguments to the method.
-   *  @return The return value of the method which is <code>null</code> if the return type is
-   *  <code>void</code>.
+   *  @return The return value of the method which is {@code null} if the return type is
+   *  {@code void}.
    */
   @Override public Object invokeMethod(final Object object, final String methodName, final Object[] arguments) {
     Object returnObject = null;
@@ -191,10 +191,10 @@ public class GantMetaClass extends DelegatingMetaClass {
    *  invoked the method on the object.  Attempt to establish the method to invoke based on the name and
    *  arguments provided.
    *
-   *  <p>The <code>isCallToSuper</code> and <code>fromInsideClass</code> help the Groovy runtime perform
+   *  <p>The {@code isCallToSuper} and {@code fromInsideClass} help the Groovy runtime perform
    *  optimizations on the call to go directly to the superclass if necessary.</p>
    *
-   *  @param sender The <code>java.lang.Class</code> instance that invoked the method.
+   *  @param sender The {@code java.lang.Class} instance that invoked the method.
    *  @param receiver The object which the method was invoked on.
    *  @param methodName The name of the method.
    *  @param arguments The arguments to the method.

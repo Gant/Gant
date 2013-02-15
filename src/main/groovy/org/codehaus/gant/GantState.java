@@ -23,10 +23,10 @@ import org.apache.tools.ant.Project;
  *  <p>This class was originally needed because parts of Gant are written in Java and parts in Groovy and it
  *  was not possible to compile them all at the same time.  All references to Groovy classes had to be
  *  avoided in the Java classes so that the Java could be compiled and then the Groovy compiled.  This class
- *  contains things that should be in the <code>Gant</code> class but could not be.  All this is no longer
- *  true, so the material could go back into the <code>Gant</code> class.</p>
+ *  contains things that should be in the {@code Gant} class but could not be.  All this is no longer
+ *  true, so the material could go back into the {@code Gant} class.</p>
  *
- *  @author Russel Winder <russel@winder.org.uk>
+ *  @author Russel Winder &lt;russel@winder.org.uk&gt;
  */
 public class GantState {
 
@@ -69,7 +69,7 @@ public class GantState {
    */
   public static final int DEBUG = Project.MSG_DEBUG;
   /**
-   *  The current state of the verbosity of execution -- default is <code>NORMAL</code>.
+   *  The current state of the verbosity of execution -- default is {@code NORMAL}.
    */
   public static int verbosity = NORMAL;
   /**

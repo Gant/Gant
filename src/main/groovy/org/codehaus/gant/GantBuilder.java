@@ -32,11 +32,11 @@ import org.apache.tools.ant.BuildLogger;
 import org.apache.tools.ant.Project;
 
 /**
- *  This class is a sub-class of <code>AntBuilder</code> to provide extra capabilities.  In particular, a
+ *  This class is a sub-class of {@code AntBuilder} to provide extra capabilities.  In particular, a
  *  dry-run capability, and things to help support interaction between Gant and the underlying
- *  <code>Project</code>.
+ *  {@code Project}.
  *
- *  @author Russel Winder <russel@winder.org.uk>
+ *  @author Russel Winder &lt;russel@winder.org.uk&gt;
  */
 public class GantBuilder extends AntBuilder {
   /**
@@ -44,19 +44,19 @@ public class GantBuilder extends AntBuilder {
    */
   public GantBuilder() { }
   /**
-   *  Constructor that specifies which <code>Project</code> to be associated with.
+   *  Constructor that specifies which {@code Project} to be associated with.
    *
    *  <p>If execution is from a command line Gant or call from a Groovy script then the class loader for all
-   *  objects is a single instance of <code>org.codehaus.groovy.tools.RootLoader</code>, which already has
+   *  objects is a single instance of {@code org.codehaus.groovy.tools.RootLoader}, which already has
    *  Ant and Groovy jars in the classpath.  If, however, execution is from an Ant execution via the Gant
    *  Ant Task, then the classloader for the instance is an instance of
-   *  <code>org.apache.tools.ant.AntClassLoader</code> with Ant and Groovy jars on the classpath BUT the
-   *  class loader for the <code>Project</code> instance is a simple <code>java.net.URLClassLoader</code>
+   *  {@code org.apache.tools.ant.AntClassLoader} with Ant and Groovy jars on the classpath BUT the
+   *  class loader for the {@code Project} instance is a simple {@code java.net.URLClassLoader}
    *  and does not have the necessary jars on the classpath.  When using Ant, the Ant jar has been loaded
    *  before the Groovy aspects of the classpath have been set up.  So we must allow for a specialized
-   *  constructor (this one) taking a preprepared <code>Project</code> to handle this situation.</p>
+   *  constructor (this one) taking a preprepared {@code Project} to handle this situation.</p>
    *
-   *  @param project The <code>Project</code> to be associated with.
+   *  @param project The {@code Project} to be associated with.
    */
   public GantBuilder(final Project project) { super(project); }
   /**
@@ -99,9 +99,9 @@ public class GantBuilder extends AntBuilder {
     return super.invokeMethod(name, arguments);
   }
   /**
-   *  Accessor for the logger associated with the <code>Project</code>.
+   *  Accessor for the logger associated with the {@code Project}.
    *
-   *  @return The <code>BuildLogger</code>.
+   *  @return The {@code BuildLogger}.
    */
   public BuildLogger getLogger() {
     @SuppressWarnings("unchecked") final List<? extends BuildListener> listeners = getProject().getBuildListeners();
