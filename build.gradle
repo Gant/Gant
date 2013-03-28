@@ -2,7 +2,7 @@
 
 //  Gant -- A Groovy way of scripting Ant tasks.
 //
-//  Copyright © 2008–2013 Russel Winder
+//  Copyright © 2008–2013  Russel Winder <russel@winder.org.uk>
 //
 //  Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in
 //  compliance with the License. You may obtain a copy of the License at
@@ -668,7 +668,7 @@ task uploadRelease(dependsOn: archivesUploadTasks + [uploadDistribution, uploadD
 task ciBuild(description: 'Run just the builds that use Groovy from the Maven repository.  Used mainly on CI servers.', dependsOn: ciBuildTasks)
 
 task wrapper(type: Wrapper) {
-  gradleVersion = '1.4'
+  gradleVersion = '1.5'
 }
 
 task clobber(description: 'Do a really detailed clean.') << {
