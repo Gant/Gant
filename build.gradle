@@ -59,8 +59,8 @@ final groovyArtefactName = 'groovy-all'
 
 ext.groovyVersions = [
   '1.8': '1.8.9',
-  '2.0': '2.0.7',
-  '2.1': '2.1.2'
+  '2.0': '2.0.8',
+  '2.1': '2.1.3'
 ]
 
 //  One series of Groovy needs using for the standalone distribution. This version of Groovy will be packaged with
@@ -687,17 +687,13 @@ idea {
         excludeDirs += file 'build' // Gradle compilation directory.
     }
     project{
-        ext.javaVersion = '1.6'
+        jdkName = '1.8'
         ipr{
             withXml{provider ->
-                def node = provider.asNode()
-                def vcsConfig = node.component.find{it.'@name' == 'VcsDirectoryMappings'}
-                vcsConfig.mapping[0].'@vcs' = 'Git'
-                def gradleSettings = node.appendNode 'component', [name: 'GradleSettings']
-                gradleSettings.appendNode 'option', [name: 'SDK_HOME', value: gradle.gradleHomeDir.absolutePath]
+                provider.asNode().component.find{it.'@name' == 'VcsDirectoryMappings'}.mapping[0].'@vcs' = 'Git'
             }
             whenMerged{project ->
-                project.jdk.languageLevel = 'JDK_1_6'
+                project.jdk.languageLevel = 'JDK_1_8'
             }
         }
     }
