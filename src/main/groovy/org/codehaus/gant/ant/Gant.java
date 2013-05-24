@@ -202,12 +202,12 @@ public class Gant extends Task {
    */
   //  Russel Winder rehacked the code provided by Eric Van Dewoestine.
   private void addAlmostAll(final Project newProject, final Project oldProject) {
-    @SuppressWarnings("unchecked") final Hashtable<String,String> properties = oldProject.getProperties();
+    final Hashtable<String,Object> properties = oldProject.getProperties();
     final Enumeration<String> e = properties.keys();
     while (e.hasMoreElements()) {
       final String key = e.nextElement();
       if (!(MagicNames.PROJECT_BASEDIR.equals(key) || MagicNames.ANT_FILE.equals(key))) {
-        if (newProject.getProperty(key) == null) { newProject.setNewProperty(key, properties.get(key)); }
+        if (newProject.getProperty(key) == null) { newProject.setNewProperty(key, (String)properties.get(key)); }
       }
     }
   }

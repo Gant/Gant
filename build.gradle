@@ -170,7 +170,7 @@ subprojects {
   dependencies{
     compile(
       'commons-cli:commons-cli:1.2',
-      'org.apache.ant:ant:1.8.4'
+      'org.apache.ant:ant:1.9.1'
     )
     testCompile 'junit:junit:4.11'
     testRuntime 'org.apache.ivy:ivy:2.2.0'
@@ -668,7 +668,7 @@ task uploadRelease(dependsOn: archivesUploadTasks + [uploadDistribution, uploadD
 task ciBuild(description: 'Run just the builds that use Groovy from the Maven repository.  Used mainly on CI servers.', dependsOn: ciBuildTasks)
 
 task wrapper(type: Wrapper) {
-  gradleVersion = '1.5'
+  gradleVersion = '1.6'
 }
 
 task clobber(description: 'Do a really detailed clean.') << {
