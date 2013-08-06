@@ -661,7 +661,7 @@ task uploadRelease(dependsOn: archivesUploadTasks + [uploadDistribution, uploadD
 task ciBuild(description: 'Run just the builds that use Groovy from the Maven repository.  Used mainly on CI servers.', dependsOn: ciBuildTasks)
 
 task wrapper(type: Wrapper) {
-  gradleVersion = '1.7-rc-1'
+  gradleVersion = '1.7'
 }
 
 task clobber(description: 'Do a really detailed clean.') << {
