@@ -1,3 +1,11 @@
+1.9.10
+------
+
+Updated to Groovy 1.8.9, 2.0.8, 2.1.9.
+
+This release triggered by the arrival of Groovy 2.2.0.
+
+
 1.9.9
 -----
 
