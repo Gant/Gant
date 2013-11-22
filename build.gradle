@@ -58,13 +58,14 @@ final groovyArtefactName = 'groovy-all'
 ext.groovyVersions = [
   '1.8': '1.8.9',
   '2.0': '2.0.8',
-  '2.1': '2.1.7',
+  '2.1': '2.1.9',
+  '2.2': '2.2.0',
 ]
 
 //  One series of Groovy needs using for the standalone distribution. This version of Groovy will be packaged with
 //  the "standalone" distribution of Gant.  It will generally be the latest widely available released version of Groovy.
 
-final groovyStandaloneSeries = '2.1'
+final groovyStandaloneSeries = '2.2'
 
 //  Organize the build using subprojects.  There is a subproject gant which is for the build using the
 //  locally installed Groovy and there is one for each version of Groovy obtained from the Maven repository
@@ -90,12 +91,11 @@ ext.debTasks = []
 //  Using the JackRabbit wagon gets round some problems associated with uploading the distributions that
 //  occurs with the standard wagon.  However, it does not solve the problem of not creating missing
 //  directories that gives difficulties with new artefact uploads.  Have to cadaver in and create the
-//  hierarchy first:-( Using the lightweight HTTP wagon. Still requires creating the directory structure
+//  hierarchy first:-( Using the lightweight HTTP wagon still requires creating the directory structure
 //  with cadaver or equivalent:-(
 
-//final webdavWagonName = 'org.apache.maven.wagon:wagon-webdav:1.0-beta-2'
-final webdavWagonName = 'org.apache.maven.wagon:wagon-webdav-jackrabbit:2.4'
-//final webdavWagonName = 'org.apache.maven.wagon:wagon-http-lightweight:2.4'
+final webdavWagonName = 'org.apache.maven.wagon:wagon-webdav-jackrabbit:2.5'
+//final webdavWagonName = 'org.apache.maven.wagon:wagon-http-lightweight:2.5'
 
 //  In creating distributions which include jar files for the source, javadoc, and groovydoc, it is
 //  imperative to ensure that they do not get located into the library directory for jars containing
@@ -168,7 +168,7 @@ subprojects{
       'org.apache.ant:ant:1.9.2'
     )
     testCompile 'junit:junit:4.11'
-    testRuntime 'org.apache.ivy:ivy:2.2.0'
+    testRuntime 'org.apache.ivy:ivy:2.3.0'
     deployJars webdavWagonName
   }
   compileGroovy.options.compilerArgs = ['-Xlint']
@@ -661,7 +661,7 @@ task uploadRelease(dependsOn: archivesUploadTasks + [uploadDistribution, uploadD
 task ciBuild(description: 'Run just the builds that use Groovy from the Maven repository.  Used mainly on CI servers.', dependsOn: ciBuildTasks)
 
 task wrapper(type: Wrapper) {
-  gradleVersion = '1.7'
+  gradleVersion = '1.9'
 }
 
 task clobber(description: 'Do a really detailed clean.') << {

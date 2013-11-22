@@ -14,4 +14,4 @@
 //
 //  Author: Russel Winder <russel@winder.org.uk>
 
-include 'gant', 'gant_groovy1.8', 'gant_groovy2.0', 'gant_groovy2.1'
+include 'gant', 'gant_groovy1.8', 'gant_groovy2.0', 'gant_groovy2.1', 'gant_groovy2.2'
