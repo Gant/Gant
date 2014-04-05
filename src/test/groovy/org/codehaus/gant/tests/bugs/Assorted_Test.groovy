@@ -1,6 +1,6 @@
 //  Gant -- A Groovy way of scripting Ant tasks.
 //
-//  Copyright © 2009–2010, 2013  Russel Winder
+//  Copyright © 2009–2010, 2013, 2014  Russel Winder
 //
 //  Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in
 //  compliance with the License. You may obtain a copy of the License at
@@ -48,12 +48,12 @@ def foo { badvariable }
 """
     assertEquals(-2, processCmdLineTargets( targetName))
     assertEquals('', output)
-    assertEquals('Error evaluating Gantfile: startup failed' +(((groovyMajorVersion > 1) ||(groovyMinorVersion > 6)) ? ':\n': ', ') + '''standard_input: 3: unexpected token: foo @ line 3, column 5.''' +
-                 (((groovyMajorVersion > 1) ||(( groovyMinorVersion > 6) && !(( groovyMinorVersion == 7) &&(releaseType == GantTestCase.ReleaseType.BETA) &&(groovyBugFixVersion < 2)))) ? '''
+    assertEquals('''Error evaluating Gantfile: startup failed:
+standard_input: 3: unexpected token: foo @ line 3, column 5.
    def foo { badvariable }
        ^
 
-''': '\n') + '''1 error
+1 error
 ''', error)
   }
   void test_GANT_32_multipleFilesFailsCorrectly() {
@@ -65,7 +65,7 @@ def foo { badvariable }
     try { assertEquals(-4, processCmdLineTargets(targetName)) }
     finally { file.delete() }
     assertEquals('', output)
-    assertTrue(error.startsWith('Standard input, line 1 -- Error evaluating Gantfile: org.codehaus.groovy.control.MultipleCompilationErrorsException: startup failed' +(((groovyMajorVersion > 1) ||(groovyMinorVersion > 6)) ? ':\n': ', ')))
+    assertTrue(error.startsWith('Standard input, line 1 -- Error evaluating Gantfile: org.codehaus.groovy.control.MultipleCompilationErrorsException: startup failed:\n'))
     assertTrue(error.endsWith('''GANT_32.groovy: 2: unexpected token: foo @ line 2, column 5.
    def foo { badvariable }
        ^
@@ -154,10 +154,7 @@ target('default', '') { }
     try {
       assertEquals(-4, processCmdLineTargets())
       assertEquals('', output)
-      //  There is a change made to the error reporting in 1.8.x and 1.7.x, x > 2, compared to 1.6.x and 1.7.x[012].
-      assertEquals("Standard input, line 2 -- Error evaluating Gantfile: ${file.path}, line 4 -- java.lang.ArithmeticException: " +
-                    (((groovyMajorVersion > 1) ||(( groovyMinorVersion > 7) ||(( groovyMinorVersion == 7) &&(groovyBugFixVersion > 2)))) ? 'Division': '/') +
-                     ' by zero\n', error)
+      assertEquals("Standard input, line 2 -- Error evaluating Gantfile: ${file.path}, line 4 -- java.lang.ArithmeticException: Division by zero\n", error)
     }
     finally { file.delete() }
   }

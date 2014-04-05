@@ -3,6 +3,10 @@
 
 Updated 2.2 series to 2.2.2.
 
+Drop support for Groovy 1.8.
+
+Add support for Groovy 2.3.
+
 
 1.9.10
 ------

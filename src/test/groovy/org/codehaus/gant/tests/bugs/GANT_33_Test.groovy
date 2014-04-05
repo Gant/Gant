@@ -1,6 +1,6 @@
 //  Gant -- A Groovy way of scripting Ant tasks.
 //
-//  Copyright © 2008–2011, 2013  Russel Winder
+//  Copyright © 2008–2011, 2013, 2014  Russel Winder
 //
 //  Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in
 //  compliance with the License. You may obtain a copy of the License at
@@ -97,14 +97,7 @@ private fileNameSuffix = '_GANT_33_Test'
                           .replace('__LOAD_SCRIPT__', 'gant.loadScript(new File(buildScript))')
                           .replace('__PROCESS_TARGET__', 'gant.processTargets(target)')
                          )
-    //  TODO: It seems that there is a change to the actual result as of 1.8.0-beta-3, it delivers 2 instead
-    //  of 3 for a reason that is completely unknown:-(((( Assume no-one will use the earlier 1.8.0 betas
-    //  so as to keep decision making simple.
-	//
-	//  1.8.4 reverts to returning 3 instead of 2.
-	//
-	//  The question is has this test been hacked to make it work thereby introducing a test error?
-    assertEquals(((groovyMajorVersion == 1) && (groovyMinorVersion == 8) && (groovyBugFixVersion < 4)) ? 2 : 3, binding.output.size())
+    assertEquals(3, binding.output.size())
     //  if there is a garbage collected object then it should be the one we expect.
     if (binding.output.size() > 2) { assertEquals(binding.output[0], binding.output[2]) }
   }

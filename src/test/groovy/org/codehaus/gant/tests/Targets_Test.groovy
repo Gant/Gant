@@ -1,6 +1,6 @@
 //  Gant -- A Groovy way of scripting Ant tasks.
 //
-//  Copyright © 2006–2010, 2013  Russel Winder
+//  Copyright © 2006–2010, 2013, 2014  Russel Winder
 //
 //  Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in
 //  compliance with the License. You may obtain a copy of the License at
@@ -98,14 +98,12 @@ target = 10
     assertEquals(-2, processCmdLineTargets())
     assertEquals('', output)
     //  Error messages seem to get changed at bizarre parts of the lifecycle of Groovy.  Ho humm...
-    assertEquals('Error evaluating Gantfile: startup failed' +(((groovyMajorVersion > 1) ||(groovyMinorVersion > 6)) ? ':\n': ', ') + 'standard_input: 1: ' +
-                  (((groovyMajorVersion > 1) ||(( groovyMinorVersion > 7)  && !(( groovyMinorVersion == 8) &&(releaseType == GantTestCase.ReleaseType.BETA) &&(groovyBugFixVersion < 3)))) ? "expecting EOF, found '->'": 'unexpected token: ->') +
-                   ' @ line 1, column 14.' +
-                  (((groovyMajorVersion > 1) ||(( groovyMinorVersion > 6)  && !(( groovyMinorVersion == 7) &&(releaseType == GantTestCase.ReleaseType.BETA) &&(groovyBugFixVersion < 2)))) ? '''
+    assertEquals('''Error evaluating Gantfile: startup failed:
+standard_input: 1: expecting EOF, found '->' @ line 1, column 14.
    XXXXX: YYYYY ->
                 ^
 
-''': '\n') + '''1 error
+1 error
 ''', error)
   }
 
