@@ -2,7 +2,7 @@
 
 //  Gant -- A Groovy way of scripting Ant tasks.
 //
-//  Copyright © 2008–2013  Russel Winder <russel@winder.org.uk>
+//  Copyright © 2008–2014  Russel Winder <russel@winder.org.uk>
 //
 //  Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in
 //  compliance with the License. You may obtain a copy of the License at
@@ -59,7 +59,7 @@ ext.groovyVersions = [
   '1.8': '1.8.9',
   '2.0': '2.0.8',
   '2.1': '2.1.9',
-  '2.2': '2.2.0',
+  '2.2': '2.2.2',
 ]
 
 //  One series of Groovy needs using for the standalone distribution. This version of Groovy will be packaged with
