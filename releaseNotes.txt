@@ -7,6 +7,8 @@ Drop support for Groovy 1.8.
 
 Add support for Groovy 2.3.
 
+Fix a problem with the Windows batch launch script. Thanks to Hubbitus.
+
 
 1.9.10
 ------
