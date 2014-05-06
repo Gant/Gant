@@ -165,7 +165,7 @@ subprojects{
   dependencies{
     compile(
       'commons-cli:commons-cli:1.2',
-      'org.apache.ant:ant:1.9.2'
+      'org.apache.ant:ant:1.9.4'
     )
     testCompile 'junit:junit:4.11'
     testRuntime 'org.apache.ivy:ivy:2.3.0'
