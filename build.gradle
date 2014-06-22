@@ -133,10 +133,10 @@ subprojects{
     test{groovy{srcDir '../src/test/groovy'}}
     integTest{groovy{srcDir '../src/integTest/groovy'}}
   }
-  metaInf << fileTree(dir: '..').matching{include 'LICENCE.txt'}
   final theVendor = 'The Codehaus'
   final theTitle = 'Gant: Scripting Ant tasks with Groovy.'
   jar{
+    metaInf{from('..'){include 'LICENCE.txt'}}
     manifest{
       name = 'Gant'
       version = gantBundleVersion
