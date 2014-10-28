@@ -1,6 +1,6 @@
-//  Gant -- A Groovy way of scripting Ant tasks.
+//  Gant — A Groovy way of scripting Ant tasks.
 //
-//  Copyright © 2006–2008, 2010, 2013  Russel Winder
+//  Copyright © 2006–2008, 2010, 2013, 2014  Russel Winder
 //
 //  Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in
 //  compliance with the License. You may obtain a copy of the License at
@@ -23,7 +23,7 @@ sourceDirectory = 'source'
 
 includeTargets << gant.targets.Clean
 cleanDirectory << buildDirectory
-cleanPattern << ['**/*~' , '**/*.bak']
+cleanPattern << ['**/*~', '**/*.bak']
 
 //  We are testing the Ivy tool so we need to include it.
 
@@ -33,14 +33,14 @@ includeTool << gant.tools.Ivy
 
 target(runTest: 'Run the Ivy "Hello" test.') {
   def classpathId = 'libraryClasspath'
-  ivy.cachepath(organisation: 'commons-lang', module: 'commons-lang', revision: '2.5',  pathid: classpathId, inline: 'true')
-  mkdir(dir: buildDirectory)
-  javac(srcdir: sourceDirectory, destdir: buildDirectory, debug: 'true', classpathref: classpathId)
+  ivy.cachepath organisation: 'commons-lang', module: 'commons-lang', revision: '2.6',  pathid: classpathId, inline: 'true'
+  mkdir dir: buildDirectory
+  javac srcdir: sourceDirectory, destdir: buildDirectory, debug: 'true', classpathref: classpathId
   java(classname: 'example.Hello', classpathref: classpathId) {
-    classpath { pathelement(location: buildDirectory) }
+    classpath { pathelement location: buildDirectory }
   }
 }
 
 target(cleanCache: 'Clean the Ivy cache.') { ivy.cleancache() }
 
-setDefaultTarget(runTest)
+setDefaultTarget runTest

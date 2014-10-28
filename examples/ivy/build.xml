@@ -4,7 +4,7 @@
 
   Gant - A Groovy way of scripting Ant tasks.
 
-  Copyright © 2006-10 Russel Winder
+  Copyright © 2006–2010, 2014  Russel Winder
 
   Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in
   compliance with the License. You may obtain a copy of the License at
@@ -24,17 +24,17 @@
 
   <property environment="environment"/>
   <property name="groovyLibraryDirectory" value="${environment.GROOVY_HOME}/lib" />
-  
+
   <property name="buildDirectory" value="build" />
   <property name="sourceDirectory" value="source" />
 
   <path id="ivy.lib.path">
     <fileset dir="${groovyLibraryDirectory}" includes="ivy*.jar"/>
-  </path>  
+  </path>
   <taskdef resource="org/apache/ivy/ant/antlib.xml" uri="antlib:org.apache.ivy.ant" classpathref="ivy.lib.path"/>
 
   <target name="run" description="Resolve dependencies, compile and run the project.">
-    <ivy:cachepath organisation="commons-lang" module="commons-lang" revision="2.5"  pathid="lib.path.id" inline="true"/>
+    <ivy:cachepath organisation="commons-lang" module="commons-lang" revision="2.6"  pathid="lib.path.id" inline="true"/>
     <mkdir dir="${buildDirectory}" />
     <javac srcdir="${sourceDirectory}" destdir="${buildDirectory}" classpathref="lib.path.id" />
     <java classname="example.Hello">
@@ -44,7 +44,7 @@
       </classpath>
     </java>
   </target>
-  
+
   <target name="clean" description="Clean the project.">
     <delete dir="${buildDirectory}"/>
     <delete>
