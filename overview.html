@@ -3,7 +3,6 @@
   <head>
     <title>Gant</title>
   </head>
-
   <body>
     <p>
       Gant is a Groovy-based framework for scripting Ant tasks.
@@ -32,20 +31,20 @@
     <blockquote>
       <pre>
 includeTargets << gant.targets.Clean
-cleanPattern << [ '**/*~' ,  '**/*.bak' ]
+cleanPattern << ['**/*~',  '**/*.bak']
 cleanDirectory << 'build'
 
-target ( 'default' : 'The default target.' ) {
-  println ( 'Default' )
-  depends ( clean )
-  echo ( message : 'A default message from Ant.' )
-  otherStuff ( )
+target('default': 'The default target.') {
+  println 'Default'
+  depends clean
+  echo message: 'A default message from Ant.'
+  otherStuff()
 }
 
-target ( otherStuff : 'Other stuff' ) {
-  println ( 'OtherStuff' )
-  echo ( message : 'Another message from Ant.' )
-  clean ( )
+target(otherStuff: 'Other stuff') {
+  println 'OtherStuff'
+  echo message: 'Another message from Ant.'
+  clean()
 }
       </pre>
     </blockquote>
