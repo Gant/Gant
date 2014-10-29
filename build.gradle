@@ -203,7 +203,6 @@ subprojects{
       windowTitle packageTitle
       docTitle packageTitle
       footer copyrightString
-      //failOnError false
     }
   }
   javadoc.doFirst{
