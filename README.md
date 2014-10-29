@@ -1,4 +1,4 @@
--> https://travis-ci.org/Gant/Gant.svg <-
+![TravisCI status](https://travis-ci.org/Gant/Gant.svg)
 
 # Introduction
 
