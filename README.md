@@ -1,3 +1,5 @@
+-> https://travis-ci.org/Gant/Gant.svg <-
+
 # Introduction
 
 Gant is a lightweight dependency programming framework for Groovy and Java systems.
