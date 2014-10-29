@@ -68,16 +68,16 @@ build.xml.
 
 Gant provides a way of finding what the documented targets are:
 
-> |> gant -p
->
->  clean       Action the cleaning.
->  clobber     Action the clobbering.  Do the cleaning first.
->  otherStuff  A target to do some other stuff.
->  stuff       A target to do some stuff.
->
-> Default target is stuff.
->
-> |>
+    |> gant -p
+
+    clean       Action the cleaning.
+    clobber     Action the clobbering.  Do the cleaning first.
+    otherStuff  A target to do some other stuff.
+    stuff       A target to do some stuff.
+
+    Default target is stuff.
+
+    |>
 
 The messages on this output are exactly the strings associated with the target name in the introduction to the target.
 
