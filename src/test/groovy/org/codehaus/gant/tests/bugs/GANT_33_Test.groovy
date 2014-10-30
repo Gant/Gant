@@ -25,7 +25,7 @@ import org.codehaus.gant.tests.GantTestCase
  */
 final class GANT_33_Test extends GantTestCase {
   private final buildScript =  '''
-function = { -> }
+function = {-> }
 target(main: 'simpleTest') {
   println('Main target executing...')
   function()
@@ -75,8 +75,12 @@ private fileNameSuffix = '_GANT_33_Test'
   }
   void tearDown() {
     buildScriptFile.delete()
-    //  Need to ensure that this cache directory actually is the real cache directory as listed in gant.Gant.
-    new AntBuilder().delete {
+    //  Must ensure that this cache directory is the cache directory as listed in gant.Gant.
+    //
+    //  This action succeeds locally and on Codehaus' Atlassian Bamboo without the quiet:true but fails on
+    //  TravisCI. It is not clear where the cache directory is on TravisCI. However by not failing if the
+    //  delete fails we putatively solve the problem.
+    new AntBuilder().delete(quiet: true) {
       fileset(dir: [System.properties.'user.home', '.gant', 'cache'].join(System.properties.'file.separator'), includes: fileNamePrefix + '*' + fileNameSuffix + '*')
     }
   }
