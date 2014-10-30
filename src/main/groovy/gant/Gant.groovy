@@ -60,29 +60,29 @@ import org.codehaus.groovy.runtime.InvokerInvocationException
  *        otherStuff()
  *      }
  *      target(otherStuff: 'A target to do some other stuff') {
- *        depends(clean)
+ *        depends clean
  *      }
  *      target(clean: 'Clean the directory and subdirectories') {
- *        delete(dir: 'build', quiet: 'true')
- *        delete(quiet: 'true') { fileset(dir: '.', includes: '** /*~,** /*.bak' , defaultexcludes: 'false') }
+ *        delete dir: 'build', quiet: 'true'
+ *        delete(quiet: 'true') {fileset(dir: '.', includes: '** /*~,** /*.bak' , defaultexcludes: 'false')}
  *      }
- *      setDefaultTarget(stuff)
+ *      setDefaultTarget stuff
  * </pre>
  *
  *  <p>or, using some a ready made targets class:</p>
  *
  *  <pre>
  *      includeTargets << gant.targets.Clean
- *      cleanPattern << [ '** / *~', '** / *.bak' ]
+ *      cleanPattern << ['** / *~', '** / *.bak']
  *      cleanDirectory << 'build'
  *      target(stuff: 'A target to do some stuff.') {
  *        clean()
  *        otherStuff()
  *      }
  *      target(otherStuff: 'A target to do some other stuff') {
- *        depends(clean)
+ *        depends clean
  *      }
- *      setDefaultTarget(stuff)
+ *      setDefaultTarget stuff
  *  </pre>
  *
  *  <p><em>Note that there is an space between the two asterisks and the solidus in the fileset line that
