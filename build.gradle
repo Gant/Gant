@@ -59,7 +59,7 @@ ext.groovyVersions = [
   '2.0': '2.0.8',
   '2.1': '2.1.9',
   '2.2': '2.2.2',
-  '2.3': '2.3.8',
+  '2.3': '2.3.9',
 ]
 
 //  One series of Groovy needs using for the standalone distribution. This version of Groovy will be packaged with
@@ -191,7 +191,7 @@ subprojects{
     signing{sign configurations.archives}
   }
   final packageTitle = 'Gant ' + gantVersion
-  final copyrightString = 'Copyright &#169; 2006&#8211;2013  The Codehaus.  All Rights Reserved.'
+  final copyrightString = 'Copyright &#169; 2006&#8211;2014  The Codehaus.  All Rights Reserved.'
   javadoc{
     options{
       overview '../overview.html'
