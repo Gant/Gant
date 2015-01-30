@@ -16,9 +16,6 @@
 //
 //  Author: Russel Winder <russel@winder.org.uk>
 
-apply plugin: 'eclipse'
-apply plugin: 'idea'
-
 import org.apache.tools.ant.filters.ReplaceTokens
 
 ext.artifact = 'gant'
@@ -41,7 +38,7 @@ ext.mavenNameExtension = '_groovy'
  *  other situations a minus is used.
  */
 final gantVersionBase = '1.9.12'
-final isPrereleaseSnapshot = true
+final isPrereleaseSnapshot = false // true
 
 final createVersionString = {isForOSGi -> gantVersionBase + (isPrereleaseSnapshot ? (isForOSGi ? '.': '-') + 'SNAPSHOT': '')}
 
@@ -670,28 +667,4 @@ task wrapper(type: Wrapper) {
 task clobber(description: 'Do a really detailed clean.') << {
   forEachProject{item -> delete item}
   delete buildDir, 'texput.log'
-}
-
-// Russel uses Java 8 with IntelliJ IDEA and assumes everyone else is.
-
-idea {
-    module {
-        excludeDirs += file 'gradle/' // Gradle directory including the wrapper subdirectory.
-        excludeDirs += file '.gradle/' // Gradle directory
-        excludeDirs += file '.settings/' // Eclipse settings directory.
-        excludeDirs += file 'bin' // Eclipse compilation directory.
-        excludeDirs += file 'out' // IDEA compilation directory.
-        excludeDirs += file 'build' // Gradle compilation directory.
-    }
-    project{
-        jdkName = '1.8'
-        ipr{
-            withXml{provider ->
-                provider.asNode().component.find{it.'@name' == 'VcsDirectoryMappings'}.mapping[0].'@vcs' = 'Git'
-            }
-            whenMerged{project ->
-                project.jdk.languageLevel = 'JDK_1_8'
-            }
-        }
-    }
 }
