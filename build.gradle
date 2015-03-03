@@ -16,6 +16,11 @@
 //
 //  Author: Russel Winder <russel@winder.org.uk>
 
+plugins {
+  id 'com.jfrog.bintray' version '1.0'
+  id 'com.jfrog.artifactory' version '3.0.1'
+}
+
 import org.apache.tools.ant.filters.ReplaceTokens
 
 ext.artifact = 'gant'
@@ -53,11 +58,8 @@ final gantBundleVersion =  createVersionString true
 final groovyArtefactName = 'groovy-all'
 
 ext.groovyVersions = [
-  '2.0': '2.0.8',
-  '2.1': '2.1.9',
-  '2.2': '2.2.2',
-  '2.3': '2.3.9',
-  '2.4': '2.4.0',
+  '2.3': '2.3.10',
+  '2.4': '2.4.1',
 ]
 
 //  One series of Groovy needs using for the standalone distribution. This version of Groovy will be packaged with
@@ -85,15 +87,6 @@ forEachProject{item ->  if (! new File(item).isDirectory()) { mkdir item }}
 
 ext.distributionTasks = []
 ext.debTasks = []
-
-//  Using the JackRabbit wagon gets round some problems associated with uploading the distributions that
-//  occurs with the standard wagon.  However, it does not solve the problem of not creating missing
-//  directories that gives difficulties with new artefact uploads.  Have to cadaver in and create the
-//  hierarchy first:-( Using the lightweight HTTP wagon still requires creating the directory structure
-//  with cadaver or equivalent:-(
-
-final webdavWagonName = 'org.apache.maven.wagon:wagon-webdav-jackrabbit:2.5'
-//final webdavWagonName = 'org.apache.maven.wagon:wagon-http-lightweight:2.5'
 
 //  In creating distributions which include jar files for the source, javadoc, and groovydoc, it is
 //  imperative to ensure that they do not get located into the library directory for jars containing
@@ -156,9 +149,9 @@ subprojects{
     }
   }
   repositories{
-    if (project.hasProperty('gant_useMavenLocal') && gant_useMavenLocal) { mavenLocal() }
+    if (gant_useMavenLocal) { mavenLocal() }
+    jcenter()
     mavenCentral()
-    maven{url 'http://repository.codehaus.org/'}
   }
   dependencies{
     compile(
@@ -167,7 +160,6 @@ subprojects{
     )
     testCompile 'junit:junit:4.12'
     testRuntime 'org.apache.ivy:ivy:2.4.0'
-    deployJars webdavWagonName
   }
   compileGroovy.options.compilerArgs = ['-Xlint']
   [compileGroovy, compileTestGroovy]*.options*.encoding = 'UTF-8'
@@ -179,15 +171,11 @@ subprojects{
     //  Gradle build or not.  Use a property.
     systemProperties['buildFrameworkIdentifier'] = 'Gradle'
   }
-  clean.doLast{
-    delete 'texput.log', 'target_forMavenTest'
-  }
+  clean.doLast{ delete 'texput.log', 'target_forMavenTest' }
   task integTest(type: Test, dependsOn: /* 'assemble' */ 'classes') {
     include file('src/integTest/groovy').absolutePath + '/org/codehaus/gant/ant/tests/*_Test.*'
   }
-  if (signingPropertiesAreSet()) {
-    signing{sign configurations.archives}
-  }
+  if (signingPropertiesAreSet()) { signing{sign configurations.archives} }
   final packageTitle = 'Gant ' + gantVersion
   final copyrightString = 'Copyright &#169; 2006&#8211;2015  The Codehaus.  All Rights Reserved.'
   javadoc{
@@ -588,71 +576,74 @@ distributionTasks += [srcTgz, srcZip]
 
 // =====================================================================
 //
-//  Tasks for getting all the distribution materials uploaded to Codehaus.
-
-final checkAuthority = {->
-  if (! project.hasProperty('gant_experimentalDistributionLocation') && !(project.hasProperty('codehausUsername') && project.hasProperty('codehausPassword'))) {
-    throw new RuntimeException('Must define both codehausUsername and codehausPassword to upload distributions.')
-  }
-}
-
-final undertakeUpload = {copySpec, uploadSpec ->
-  if (project.hasProperty('gant_experimentalDistributionLocation')) {
-    if (! gant_experimentalDistributionLocation) { throw new RuntimeException('gant_experimentalDistributionLocation value not reasonable.') }
-    copy copySpec
-  }
-  else {
-    configurations{upload}
-    repositories{
-      if (project.hasProperty('gant_useMavenLocal') && gant_useMavenLocal) { mavenLocal() }
-      mavenCentral()
-    }
-    dependencies { upload 'com.googlecode.sardine:sardine:146' }
-    assert uploadSpec.size() == 2
-    final targetDirectoryUrl = 'https://dav.codehaus.org/' + (gantVersion.contains('SNAPSHOT') ? 'snapshots.' : '') + 'dist/gant/' + uploadSpec[0]
-    /*
-    com.googlecode.sardine.Sardine sardine = com.googlecode.sardine.SardineFactory.begin(codehausUsername, codehausPassword)
-    */
-  }
-}
-
-task buildDistribution(dependsOn: distributionTasks, description: 'Build all the uploadable distribution archives.')
-
-task uploadDistribution(dependsOn: buildDistribution, description: 'Upload all the distribution archives.') << {
-  checkAuthority()
-  undertakeUpload(
-    {
-      distributionTasks.each { task -> from task }
-      into rootProject.buildDir.absolutePath + '/' + gant_experimentalDistributionLocation + '/distributions'
-    },
-    ['distributions', distributionTasks])
-}
-
-// =====================================================================
-//
-//  Tasks for getting all the debs uploaded to Codehaus.
-
-task buildDebs(dependsOn: debTasks, description: 'Build all the uploadable debs.')
-
-task uploadDebs(dependsOn: buildDebs, description: 'Upload all the debs.') << {
-  checkAuthority()
-  undertakeUpload(
-    {
-      debTasks.each{task -> from task}
-      into rootProject.buildDir.absolutePath + '/' + gant_experimentalDistributionLocation + '/debs'
-    },
-    ['debs', debTasks])
-}
-
-
-// =====================================================================
-//
 //  Do a complete release.
 
 final archivesUploadTasks = []
 forEachDistributionVersion{archivesUploadTasks << ':' + it + ':uploadArchives'}
 
-task uploadRelease(dependsOn: archivesUploadTasks + [uploadDistribution, uploadDebs], description: 'Upload all elements of a release.')
+//task uploadRelease(dependsOn: archivesUploadTasks + [uploadDistribution, uploadDebs], description: 'Upload all elements of a release.')
+
+bintray {
+    user = project.properties.bintrayUser
+    key = project.properties.bintrayKey
+    publish = false
+    dryRun = true
+    configurations = ['archives']
+    pkg {
+        userOrg = 'gant'
+        repo = 'maven'
+        name = 'gant'
+        desc = project.description
+        labels = ['groovy','gant']
+        publicDownloadNumbers = true
+        websiteUrl = 'http://gant.github.io'
+        issueTrackerUrl = 'https://github.com/Gant/Gant/issues'
+        vcsUrl = 'https://github.com/Gant/Gant.git'
+        licenses = ['Apache-2.0']
+        version {
+            name = project.version
+            vcsTag = "v${project.version}"
+            gpg {
+                sign = false
+                passphrase = project.properties.bintrayGpgPassphrase
+            }
+//            mavenCentralSync {
+//                sync = true //Optional (true by default). Determines whether to sync the version to Maven Central.
+//                user = 'userToken' //OSS user token
+//                password = 'paasword' //OSS user password
+//                close = '1' //Optional property. By default the staging repository is closed and artifacts are released to Maven Central. You can optionally turn this behaviour off (by puting 0 as value) and release the version manually.
+//            }
+        }
+    }
+}
+
+/*
+bintrayUpload {
+    dependsOn build, jarDoc, jarSrc
+    onlyIf{project.properties.bintrayUser && project.properties.bintrayKey && !version.contains('SNAPSHOT')}
+}
+*/
+
+artifactory {
+    publish {
+        contextUrl = 'http://oss.jfrog.org'
+        repository {
+            repoKey = 'oss-snapshot-local'
+            username = project.properties.bintrayUser
+            password = project.properties.bintrayKey
+        }
+    }
+}
+
+artifactoryPublish {
+    onlyIf{project.properties.bintrayUser && project.properties.bintrayKey && version.contains('SNAPSHOT')}
+}
+
+/*
+task release(dependsOn: ['build', 'jarSrc', 'jarDoc', 'zipSamples', 'zipJavaDemo', 'zipDist', 'zipGuide']) << {
+    println 'We release now'
+}
+*/
 
 // =====================================================================
 //
