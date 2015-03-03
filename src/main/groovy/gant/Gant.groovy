@@ -125,7 +125,9 @@ final class Gant {
       return binding.classLoader.loadClass(className).newInstance()
     }
     catch (Exception e) {
-      final fileText = url.text
+      // Groovy 2.5 finally (!) does proper final checking, previously "final" was the same as "def".
+      // This particular case causes a problem. cf. https://jira.codehaus.org/browse/GROOVY-7284
+      /*final*/ def fileText = url.text
       compileScript(cacheDirectory, fileText, className)
       return binding.groovyShell.parse(fileText, buildClassName)
     }
