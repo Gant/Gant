@@ -1,5 +1,7 @@
 ![TravisCI status](https://travis-ci.org/Gant/Gant.svg)
 
+![Codeship Status for Gant/Gant](https://codeship.com/projects/62ada4f0-a3ef-0132-a5cd-2e02871ce1a0/status?branch=master)
+
 # Introduction
 
 Gant is a lightweight dependency programming framework for Groovy and Java systems.
