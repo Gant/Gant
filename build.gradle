@@ -149,7 +149,7 @@ subprojects{
     }
   }
   repositories{
-    if (gant_useMavenLocal) { mavenLocal() }
+    mavenLocal()
     jcenter()
     mavenCentral()
   }
