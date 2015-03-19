@@ -58,8 +58,8 @@ final gantBundleVersion =  createVersionString true
 final groovyArtefactName = 'groovy-all'
 
 ext.groovyVersions = [
-  '2.3': '2.3.10',
-  '2.4': '2.4.1',
+  '2.3': '2.3.11',
+  '2.4': '2.4.2',
 ]
 
 //  One series of Groovy needs using for the standalone distribution. This version of Groovy will be packaged with
