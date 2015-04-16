@@ -8,7 +8,7 @@
 
 Gant is a lightweight dependency programming framework for Groovy and Java systems.
 
-Gant was originally created as a build framework: [Groovy](http://groovy.codehaus.org) has AntBuilder and
+Gant was originally created as a build framework: [Groovy](http://www.groovy-lang.org) has AntBuilder and
 Gant was a framework built around it, created so as to be able to avoid using XML with Ant. Groovy makes a
 much better build specification language than XML; Gant gives access to all the Ant tasks using Groovy. So
 successful was this model that Gant was forked to create the official Groovy Front-End to Ant that is now an
@@ -19,10 +19,10 @@ allow for a fully fledged build framework.  Thus was [Gradle](http://www.gradle.
 the standard Groovy-based build framework.  Even Gant, which originally used Gant for its build, now uses
 Gradle for its build.
 
-Gant is an integral part of the [Grails](http://www.grails.org) Web application framework.
+Gant has been an integral part of the [Grails](http://www.grails.org) Web application framework until
+version 3, at which point it switched to using Gradle.
 
-Gant is the basis for the [GINT](https://studio.plugins.atlassian.com/wiki/display/GINT/Home) integration
-testing framework.
+Gant is the basis for the [GINT](http://gint.org) integration testing framework.
 
 # Overview
 
@@ -90,16 +90,9 @@ The messages on this output are exactly the strings associated with the target n
 The Gant mainline source is in a [Git repository](https://github.com/Gant/Gant) held on GitHub. Feel free to
 fork, amend and send in pull requests. The master branch is currently both the 1.9.x series maintenance
 branch and the development branch. All development should though happen on feature branches until accepted
-and merged into master..
+and merged into master.
 
-The Git repository held at Codehaus is an administrative mirror and shouldn't really be the repository to
-fork in order to work on Gant development.
-
-# Support
-
-Although GitHub is used for the Gant source, [Codehaus](http://www.codehaus.org) is used for the
-[website](http://gant.codehaus.org), wiki, [issue tracker](http://jira.codehaus.org/browse/GANT) and
-[continuous integration](http://bamboo.ci.codehaus.org/browse/GANT).
+The website for the project can be found [here](http://gant.github.io), though it could do with a makeover.
 
 # Licence
 
