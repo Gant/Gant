@@ -59,7 +59,7 @@ final groovyArtefactName = 'groovy-all'
 
 ext.groovyVersions = [
   '2.3': '2.3.11',
-  '2.4': '2.4.2',
+  '2.4': '2.4.4',
 ]
 
 //  One series of Groovy needs using for the standalone distribution. This version of Groovy will be packaged with
@@ -652,7 +652,7 @@ task release(dependsOn: ['build', 'jarSrc', 'jarDoc', 'zipSamples', 'zipJavaDemo
 task ciBuild(description: 'Run just the builds that use Groovy from the Maven repository.  Used mainly on CI servers.', dependsOn: ciBuildTasks)
 
 task wrapper(type: Wrapper) {
-  gradleVersion = '2.2.1'
+  gradleVersion = '2.6'
 }
 
 task clobber(description: 'Do a really detailed clean.') << {
