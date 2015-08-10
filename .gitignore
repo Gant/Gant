@@ -17,3 +17,4 @@ Gant.ipr
 .classpath
 .project
 /.settings/
+/.nb-gradle/profiles/private/
