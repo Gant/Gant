@@ -2,7 +2,7 @@
 
 //  Gant -- A Groovy way of scripting Ant tasks.
 //
-//  Copyright © 2008–2015  Russel Winder <russel@winder.org.uk>
+//  Copyright © 2008–2016  Russel Winder <russel@winder.org.uk>
 //
 //  Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in
 //  compliance with the License. You may obtain a copy of the License at
@@ -17,8 +17,8 @@
 //  Author: Russel Winder <russel@winder.org.uk>
 
 plugins {
-  id 'com.jfrog.bintray' version '1.0'
-  id 'com.jfrog.artifactory' version '3.0.1'
+  id 'com.jfrog.bintray' version '1.7.1'
+  id 'com.jfrog.artifactory' version '4.4.7'
 }
 
 import org.apache.tools.ant.filters.ReplaceTokens
@@ -59,7 +59,7 @@ final groovyArtefactName = 'groovy-all'
 
 ext.groovyVersions = [
   '2.3': '2.3.11',
-  '2.4': '2.4.4',
+  '2.4': '2.4.7',
 ]
 
 //  One series of Groovy needs using for the standalone distribution. This version of Groovy will be packaged with
@@ -155,8 +155,8 @@ subprojects{
   }
   dependencies{
     compile(
-      'commons-cli:commons-cli:1.2',
-      'org.apache.ant:ant:1.9.4'
+      'commons-cli:commons-cli:1.3.1',
+      'org.apache.ant:ant:1.9.7'
     )
     testCompile 'junit:junit:4.12'
     testRuntime 'org.apache.ivy:ivy:2.4.0'
@@ -177,7 +177,7 @@ subprojects{
   }
   if (signingPropertiesAreSet()) { signing{sign configurations.archives} }
   final packageTitle = 'Gant ' + gantVersion
-  final copyrightString = 'Copyright &#169; 2006&#8211;2015  The Codehaus.  All Rights Reserved.'
+  final copyrightString = 'Copyright &#169; 2006&#8211;2016  The Codehaus.  All Rights Reserved.'
   javadoc{
     options{
       overview '../overview.html'
@@ -196,7 +196,7 @@ subprojects{
     javadoc.options.docTitle = javadoc.title
   }
   groovydoc{
-    overview = 'overview.html'
+    overviewText = resources.text.fromFile('overview.html')
     includePrivate = false
     use = true
     windowTitle = packageTitle
@@ -652,7 +652,7 @@ task release(dependsOn: ['build', 'jarSrc', 'jarDoc', 'zipSamples', 'zipJavaDemo
 task ciBuild(description: 'Run just the builds that use Groovy from the Maven repository.  Used mainly on CI servers.', dependsOn: ciBuildTasks)
 
 task wrapper(type: Wrapper) {
-  gradleVersion = '2.6'
+  gradleVersion = '3.1'
 }
 
 task clobber(description: 'Do a really detailed clean.') << {
