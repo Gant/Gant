@@ -1,6 +1,6 @@
 // -*- mode:groovy; coding:utf-8 -*-
 
-//  Gant -- A Groovy way of scripting Ant tasks.
+//  Gant — A Groovy way of scripting Ant tasks.
 //
 //  Copyright © 2008–2016  Russel Winder <russel@winder.org.uk>
 //
@@ -43,7 +43,7 @@ ext.mavenNameExtension = '_groovy'
  *  other situations a minus is used.
  */
 final gantVersionBase = '1.9.12'
-final isPrereleaseSnapshot = false // true
+final isPrereleaseSnapshot = false // true // false
 
 final createVersionString = {isForOSGi -> gantVersionBase + (isPrereleaseSnapshot ? (isForOSGi ? '.': '-') + 'SNAPSHOT': '')}
 
