@@ -200,7 +200,7 @@ target(name: '${targetName}') {
 }
 """
     assertEquals(0, processCmdLineTargets(['-Dkey="xxx=yyy"', targetName]))
-    assertEquals(resultString(targetName, 'key: xxx=yyy\n'), output)
+    assertEquals(resultString(targetName, 'key: "xxx=yyy"\n'), output)
     assertEquals('', error)
   }
 }
