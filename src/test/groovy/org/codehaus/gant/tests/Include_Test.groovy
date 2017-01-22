@@ -555,6 +555,7 @@ target(${something}: '') { }
 """
     assertEquals(-4, processCmdLineTargets(something))
     assertEquals('', output)
+    // TODO Groovy 2.4 to 2.5 changes the error massage.
     assertEquals('Standard input, line 2 -- Error evaluating Gantfile: No signature of method: org.codehaus.gant.IncludeTargets.multiply() is applicable for argument types: (java.lang.Class) values: [class gant.targets.Clean]\nPossible solutions: multiply(java.util.Map), multiply(java.util.Map)\n', error)
   }
   void testErrorNullPower() {
