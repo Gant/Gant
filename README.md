@@ -1,9 +1,5 @@
 [Travis-CI](https://travis-ci.org/Gant/Gant) status: ![TravisCI status](https://travis-ci.org/Gant/Gant.svg)
 
-[Codeship](https://codeship.com/projects/66201) status: ![Codeship status](https://codeship.com/projects/62ada4f0-a3ef-0132-a5cd-2e02871ce1a0/status?branch=master)
-
-[Drone](https://drone.io/github.com/Gant/Gant/latest) status:  ![Drone.io status](https://drone.io/github.com/Gant/Gant/status.png)
-
 # Introduction
 
 Gant is a lightweight dependency programming framework for Groovy and Java systems.
@@ -96,4 +92,4 @@ The website for the project can be found [here](http://gant.github.io), though i
 
 # Licence
 
-Gant is licenced under ASL 2.0.
+Gant is licenced under [ASL 2.0](https://www.apache.org/licenses/LICENSE-2.0). 
