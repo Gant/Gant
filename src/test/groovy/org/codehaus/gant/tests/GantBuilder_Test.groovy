@@ -36,8 +36,11 @@ final class GantBuilder_Test extends GantTestCase {
     final targetName = 'hello'
     final sourceDirectory = '.'
     final destinationDirectory = '/tmp/tmp/tmp/tmp'
-    // TODO Groovy 2.4 → 2.5 changes the error message.
-    final expectedError = "groovy.lang.MissingMethodException: No signature of method: standard_input.groovyc() is applicable for argument types: (java.util.LinkedHashMap) values: [[srcdir:${sourceDirectory}, destdir:${destinationDirectory}]]\n"
+    def typeName = 'java.util.LinkedHashMap'
+    if (groovyMinorVersion > 4) {
+      typeName = 'LinkedHashMap'
+    }
+    final expectedError = "groovy.lang.MissingMethodException: No signature of method: standard_input.groovyc() is applicable for argument types: (${typeName}) values: [[srcdir:${sourceDirectory}, destdir:${destinationDirectory}]]\n"
     //
     //  This test may only be guaranteed to work if JUnit is operating in perTest fork mode since otherwise
     //  another test may have caused the Groovyc task to be loaded which leads to a 0 return value.
