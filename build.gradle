@@ -192,7 +192,7 @@ subprojects{
     javadoc.options.docTitle = javadoc.title
   }
   groovydoc{
-    overviewText = resources.text.fromFile('overview.html')
+    overviewText = resources.text.fromFile('../overview.html')
     includePrivate = false
     use = true
     windowTitle = packageTitle
