@@ -43,7 +43,7 @@ ext.mavenNameExtension = '_groovy'
  *  other situations a minus is used.
  */
 final gantVersionBase = '1.10.0'
-final isPrereleaseSnapshot = true // false
+final isPrereleaseSnapshot = false // true // false
 
 final createVersionString = {isForOSGi -> gantVersionBase + (isPrereleaseSnapshot ? (isForOSGi ? '.': '-') + 'SNAPSHOT': '')}
 
