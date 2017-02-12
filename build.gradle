@@ -473,10 +473,7 @@ distributionTasks += [srcTgz, srcZip]
 //
 //  Do a complete release.
 
-final archivesUploadTasks = []
-forEachDistributionVersion{archivesUploadTasks << ':' + it + ':uploadArchives'}
-
-//task uploadRelease(dependsOn: archivesUploadTasks + [uploadDistribution], description: 'Upload all elements of a release.')
+task prepareRelease(dependsOn: distributionTasks, description: 'Prepare all the bits for the release.')
 
 bintray {
     user = project.properties.bintrayUser
@@ -515,7 +512,7 @@ bintray {
 /*
 bintrayUpload {
     dependsOn build, jarDoc, jarSrc
-    onlyIf{project.properties.bintrayUser && project.properties.bintrayKey && !version.contains('SNAPSHOT')}
+    onlyIf{project.properties.gant_bintrayUser && project.properties.gant_bintrayKey && !version.contains('SNAPSHOT')}
 }
 */
 
@@ -524,21 +521,15 @@ artifactory {
         contextUrl = 'http://oss.jfrog.org'
         repository {
             repoKey = 'oss-snapshot-local'
-            username = project.properties.bintrayUser
-            password = project.properties.bintrayKey
+            username = project.properties.gant_bintrayUser
+            password = project.properties.gant_bintrayKey
         }
     }
 }
 
 artifactoryPublish {
-    onlyIf{project.properties.bintrayUser && project.properties.bintrayKey && version.contains('SNAPSHOT')}
+    onlyIf{project.properties.gant_bintrayUser && project.properties.gant_bintrayKey && version.contains('SNAPSHOT')}
 }
-
-/*
-task release(dependsOn: ['build', 'jarSrc', 'jarDoc', 'zipSamples', 'zipJavaDemo', 'zipDist', 'zipGuide']) << {
-    println 'We release now'
-}
-*/
 
 // =====================================================================
 //
