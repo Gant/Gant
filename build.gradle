@@ -476,8 +476,8 @@ distributionTasks += [srcTgz, srcZip]
 task prepareRelease(dependsOn: distributionTasks, description: 'Prepare all the bits for the release.')
 
 bintray {
-    user = project.properties.bintrayUser
-    key = project.properties.bintrayKey
+    user = project.properties.gant_bintrayUser
+    key = project.properties.gant_bintrayKey
     publish = false
     dryRun = true
     configurations = ['archives']
@@ -497,24 +497,22 @@ bintray {
             vcsTag = "v${project.version}"
             gpg {
                 sign = true
-                passphrase = project.properties.bintrayGpgPassphrase
+                passphrase = project.properties.gant_bintrayGpgPassphrase
             }
-//            mavenCentralSync {
-//                sync = true //Optional (true by default). Determines whether to sync the version to Maven Central.
-//                user = 'userToken' //OSS user token
-//                password = 'paasword' //OSS user password
-//                close = '1' //Optional property. By default the staging repository is closed and artifacts are released to Maven Central. You can optionally turn this behaviour off (by puting 0 as value) and release the version manually.
-//            }
+            mavenCentralSync {
+                sync = true //Optional (true by default). Determines whether to sync the version to Maven Central.
+                user = 'userToken' //OSS user token
+                password = 'paasword' //OSS user password
+                close = '1' //Optional property. By default the staging repository is closed and artifacts are released to Maven Central. You can optionally turn this behaviour off (by puting 0 as value) and release the version manually.
+            }
         }
     }
 }
 
-/*
 bintrayUpload {
-    dependsOn build, jarDoc, jarSrc
+    dependsOn 'gant_groovy2.4:allArtifacts'
     onlyIf{project.properties.gant_bintrayUser && project.properties.gant_bintrayKey && !version.contains('SNAPSHOT')}
 }
-*/
 
 artifactory {
     publish {
