@@ -1,4 +1,0 @@
-#! /bin/sh
-
-cd /usr/bin
-ln -s /usr/share/gant/bin/gant gant

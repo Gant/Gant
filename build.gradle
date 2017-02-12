@@ -18,7 +18,7 @@
 
 plugins {
   id 'com.jfrog.bintray' version '1.7.3'
-  id 'com.jfrog.artifactory' version '4.4.12'
+  id 'com.jfrog.artifactory' version '4.4.13'
 }
 
 import org.apache.tools.ant.filters.ReplaceTokens
@@ -42,12 +42,10 @@ ext.mavenNameExtension = '_groovy'
  *  The core difference is that for OSGi bundle numbers the qualifier is separated by a full stop where in
  *  other situations a minus is used.
  */
-final gantVersionBase = '1.9.12'
-final isPrereleaseSnapshot = false // true // false
+final gantVersionBase = '1.10.0'
+final isPrereleaseSnapshot = true // false
 
 final createVersionString = {isForOSGi -> gantVersionBase + (isPrereleaseSnapshot ? (isForOSGi ? '.': '-') + 'SNAPSHOT': '')}
-
-final debPackagingNumber = '1'
 
 final gantVersion = createVersionString false
 final gantPrefix = artifact + '-' + gantVersion
@@ -85,7 +83,6 @@ def forEachProject(Closure c) {
 forEachProject{item ->  if (! new File(item).isDirectory()) { mkdir item }}
 
 ext.distributionTasks = []
-ext.debTasks = []
 
 //  In creating distributions which include jar files for the source, javadoc, and groovydoc, it is
 //  imperative to ensure that they do not get located into the library directory for jars containing
@@ -113,8 +110,8 @@ subprojects{
   apply plugin: 'groovy'
   apply plugin: 'osgi'
   if (signingPropertiesAreSet()) { apply plugin: 'signing' }
-  sourceCompatibility = 6
-  targetCompatibility = 6
+  sourceCompatibility = 7
+  targetCompatibility = 7
   configurations{deployJars}
   sourceSets{
     //  NB All the subprojects are actually using the same source code and this is in a different place so
@@ -133,7 +130,7 @@ subprojects{
       symbolicName = 'gant'
       instruction 'Bundle-Vendor', theVendor
       instruction 'Bundle-Description', group
-      instruction 'Bundle-DocURL', 'http://gant.codehaus.org'
+      instruction 'Bundle-DocURL', 'http://gant.github.io/'
       instruction 'Built-By', System.properties.'user.name'
       instruction 'Extension-Name', artifact
       instruction 'Specification-Title', theTitle
@@ -155,7 +152,7 @@ subprojects{
   dependencies{
     compile(
       'commons-cli:commons-cli:1.3.1',
-      'org.apache.ant:ant:1.10.0'
+      'org.apache.ant:ant:1.10.1'
     )
     testCompile 'junit:junit:4.12'
     testRuntime 'org.apache.ivy:ivy:2.4.0'
@@ -303,7 +300,7 @@ final ciBuildTasks = []
 final pomSpecification = {
   project{
     name 'Gant'
-    url 'http://gant.codehaus.org.uk'
+    url 'http://gant.github.io'
     description 'A framework for programming dependencies.'
     packaging 'bundle'
     licenses{
@@ -340,38 +337,6 @@ forEachDistributionVersion{projectName->
                          gradleClasspathString: classPath.join(System.properties.'path.separator')
                        ])
     install.repositories.mavenInstaller{pom pomSpecification}
-    gradle.taskGraph.whenReady{taskGraph ->
-      if (taskGraph.hasTask(uploadArchives)) {
-        if (! project.hasProperty('gant_experimentalMavenRepository') && !(project.hasProperty('codehausUsername') && project.hasProperty('codehausPassword'))) {
-          throw new RuntimeException('Must define both codehausUsername and codehausPassword to upload archives.')
-        }
-        if (! signingPropertiesAreSet()) {
-          throw new RuntimeException('Must define signing.keyId, signing.password, and signing.secretKeyRingFile')
-        }
-        uploadArchives.repositories.mavenDeployer{
-          uniqueVersion = false
-          configuration = configurations.deployJars
-          beforeDeployment{MavenDeployment deployment -> signing.signPom(deployment)}
-          if (project.hasProperty('gant_experimentalMavenRepository')) {
-            if (! gant_experimentalMavenRepository) { throw new RuntimeException('gant_experimentalMavenRepository value not reasonable.') }
-            repository url: "file://${rootProject.buildDir}/${gant_experimentalMavenRepository}"
-          }
-          else {
-            if (project.hasProperty('codehausUsername') && project.hasProperty('codehausPassword')) {
-              if (! codehausUsername) { throw new RuntimeException('codehausUsername value not reasonable.') }
-              if (! codehausPassword) { throw new RuntimeException('codehausPassword value not reasonable.') }
-              repository(url: 'https://nexus.codehaus.org/service/local/staging/deploy/maven2'){
-                authentication userName: codehausUsername, password: codehausPassword
-              }
-              snapshotRepository(url: 'https://nexus.codehaus.org/content/repositories/snapshots'){
-                authentication userName: codehausUsername, password: codehausPassword
-              }
-            }
-            pom pomSpecification
-          }
-        }
-      }
-    }
     final binCopySpec = copySpec{
       final scriptsDirectory = '../scripts'
       from('..'){include 'README*'}
@@ -452,75 +417,6 @@ distributionTasks += [standaloneBinTgz, standaloneBinZip]
 
 // =====================================================================
 //
-//  Create the deb file of the standalone distribution.
-
-final debsDirectory = new File(buildDir, 'debs')
-final distDirectory = new File(buildDir, 'dist')
-
-task clean(type: Delete) {
-  delete debsDirectory
-  delete distDirectory
-}
-
-task standaloneDeb(dependsOn: standaloneBinTgz, description: 'Create a deb for use with Debian and Ubuntu.') << {
-  final packageName = 'gant-standalone'
-  final architecture = 'all'
-  final createdDebFileName = packageName + '_' + gantVersion + '-' + debPackagingNumber + '_' + architecture + '.deb'
-  final installPrefixBase = 'usr/share/gant'
-  final expandDirectory = (new File(distDirectory, 'gant-' + gantVersion)).path
-  final packagingDirectory = 'packaging/AntDebTask'
-  inputs.file packagingDirectory + '/gant'
-  inputs.file expandDirectory + '/bin/startGroovy'
-  inputs.file expandDirectory + '/conf/gant-starter.conf'
-  inputs.dir expandDirectory + '/lib'
-  outputs.file debsDirectory.absolutePath + '/' + createdDebFileName
-  // Using doLast here causes a concurrent modification exception.
-  //doLast {
-    delete distDirectory
-    distDirectory.mkdirs()
-    ant.taskdef resource: 'ant_deb_task.properties', classpath: [System.properties.'user.home', '.groovy', 'lib', 'ant-deb.jar'].join(System.properties.'file.separator')
-    logger.info "==>  Untaring ${buildDir}/gant-${gantVersion}.tgz to ${distDirectory}"
-    final process = ['sh', '-x', '-c', "cd ${distDirectory} && tar xvf ${buildDir}/gant-${gantVersion}.tgz"].execute()
-    process.consumeProcessOutput()
-    process.waitFor()
-    debsDirectory.mkdirs()
-    final result = ant.deb(todir: debsDirectory, 'package': packageName, section: 'devel', priority: 'optional', architecture: architecture,
-                             depends: 'java2-runtime', postinst: packagingDirectory+ '/postinst', prerm: packagingDirectory + '/prerm',
-                             conflicts: 'gant'){
-      //  Hack required to make Gradle get things right.
-      //version upstream: gantVersion, debian: debPackagingNumber
-      delegate.version upstream: gantVersion, debian: debPackagingNumber
-      maintainer name: 'Russel Winder', email: 'russel@winder.org.uk'
-      description synopsis: 'Gant -- Groovy scripting of Ant tasks.', '''
-Gant is a tool for scripting Ant tasks using Groovy instead of XML to specify
-the logic. A Gant specification is just a Groovy script and so can bring all
-the power of Groovy to bear directly, something not possible with Ant scripts.
-Whilst it might be seen as a competitor to Ant, Gant relies on all the Ant
-tasks for the complex actions, so it is really an alternative way of doing
-builds using Ant, but using a programming language rather than XML to specify
-the rules.
-.
-This package provides a self-contained installation of Gant that does not
-depend on a separate installation of Groovy -- all the jars needed for Gant to
-run are included in the package.
-.
-Homepage: http://gant.codehaus.org/
-'''
-      tarfileset file: packagingDirectory + '/gant', prefix: installPrefixBase + '/bin', filemode: '755'
-      tarfileset file: expandDirectory + '/bin/startGroovy', prefix: installPrefixBase + '/bin', filemode: '644'
-      tarfileset file: expandDirectory + '/conf/gant-starter.conf', prefix: installPrefixBase + '/conf', filemode: '644'
-      tarfileset dir: expandDirectory + '/lib', includes: '*.jar', prefix: installPrefixBase + '/lib', filemode: '644'
-    }
-    //  The deb Ant task appears not to record the name of the resultant deb file so we have to construct it
-    //  by replicating the algorithm:-((
-    assert createdDebFileName == result._package + '_' + result._version + '_' + result._architecture + '.deb'
-    //}
-}
-
-debTasks << standaloneDeb
-
-// =====================================================================
-//
 //  Create the documentation distribution.
 
 task docTgz(type: Tar, dependsOn: [':gant:javadoc', ':gant:groovydoc'], description: 'Create a tarball of the documentation') {
@@ -580,7 +476,7 @@ distributionTasks += [srcTgz, srcZip]
 final archivesUploadTasks = []
 forEachDistributionVersion{archivesUploadTasks << ':' + it + ':uploadArchives'}
 
-//task uploadRelease(dependsOn: archivesUploadTasks + [uploadDistribution, uploadDebs], description: 'Upload all elements of a release.')
+//task uploadRelease(dependsOn: archivesUploadTasks + [uploadDistribution], description: 'Upload all elements of a release.')
 
 bintray {
     user = project.properties.bintrayUser
@@ -603,7 +499,7 @@ bintray {
             name = project.version
             vcsTag = "v${project.version}"
             gpg {
-                sign = false
+                sign = true
                 passphrase = project.properties.bintrayGpgPassphrase
             }
 //            mavenCentralSync {
