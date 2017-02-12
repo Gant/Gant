@@ -1,3 +1,16 @@
+1.10.0
+------
+
+Removed all but newly added Groovy 2.4 series.
+
+Require at least Java 7.
+
+Various small fixes.
+
+(There are no changes to the application code needing a minor release, this is really a bugfix
+release. However the changes to Groovy version and Java version indicate a minor version was in order.)
+
+
 1.9.11
 ------
 
