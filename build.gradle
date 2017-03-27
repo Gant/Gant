@@ -56,7 +56,7 @@ final gantBundleVersion =  createVersionString true
 final groovyArtefactName = 'groovy-all'
 
 ext.groovyVersions = [
-  '2.4': '2.4.8',
+  '2.4': '2.4.10',
 ]
 
 //  One series of Groovy needs using for the standalone distribution. This version of Groovy will be packaged with
@@ -151,7 +151,7 @@ subprojects{
   }
   dependencies{
     compile(
-      'commons-cli:commons-cli:1.3.1',
+      'commons-cli:commons-cli:1.4',
       'org.apache.ant:ant:1.10.1'
     )
     testCompile 'junit:junit:4.12'
@@ -536,7 +536,7 @@ artifactoryPublish {
 task ciBuild(description: 'Run just the builds that use Groovy from the Maven repository.  Used mainly on CI servers.', dependsOn: ciBuildTasks)
 
 task wrapper(type: Wrapper) {
-  gradleVersion = '3.3'
+  gradleVersion = '3.4.1'
 }
 
 task clobber(description: 'Do a really detailed clean.') << {
