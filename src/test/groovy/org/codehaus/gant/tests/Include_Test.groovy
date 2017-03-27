@@ -1,6 +1,6 @@
 //  Gant -- A Groovy way of scripting Ant tasks.
 //
-//  Copyright © 2006–2010, 2013, 2014  Russel Winder
+//  Copyright © 2006–2010, 2013, 2014, 2017  Russel Winder
 //
 //  Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in
 //  compliance with the License. You may obtain a copy of the License at
@@ -556,7 +556,7 @@ target(${something}: '') { }
     assertEquals(-4, processCmdLineTargets(something))
     assertEquals('', output)
     def typeName = 'java.lang.Class'
-    if (groovyMinorVersion  > 4) {
+    if (groovyMajorVersion > 2 || (groovyMajorVersion == 2 && groovyMinorVersion  > 4)) {
       typeName = 'Class'
     }
     assertEquals("Standard input, line 2 -- Error evaluating Gantfile: No signature of method: org.codehaus.gant.IncludeTargets.multiply() is applicable for argument types: (${typeName}) values: [class gant.targets.Clean]\nPossible solutions: multiply(java.util.Map), multiply(java.util.Map)\n", error)

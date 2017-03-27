@@ -37,7 +37,7 @@ final class GantBuilder_Test extends GantTestCase {
     final sourceDirectory = '.'
     final destinationDirectory = '/tmp/tmp/tmp/tmp'
     def typeName = 'java.util.LinkedHashMap'
-    if (groovyMinorVersion > 4) {
+    if (groovyMajorVersion > 2 || (groovyMajorVersion == 2 && groovyMinorVersion > 4)) {
       typeName = 'LinkedHashMap'
     }
     final expectedError = "groovy.lang.MissingMethodException: No signature of method: standard_input.groovyc() is applicable for argument types: (${typeName}) values: [[srcdir:${sourceDirectory}, destdir:${destinationDirectory}]]\n"
