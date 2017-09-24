@@ -1,4 +1,4 @@
-//  Gant -- A Groovy way of scripting Ant tasks.
+//  Gant – A Groovy way of scripting Ant tasks.
 //
 //  Copyright © 2009–2011, 2013–2015, 2017  Russel Winder
 //
@@ -14,4 +14,4 @@
 //
 //  Author: Russel Winder <russel@winder.org.uk>
 
-include 'gant', 'gant_groovy2.4', 'gant_groovy2.5'
+include 'gant', 'gant_groovy2.4', 'gant_groovy2.5', 'gant_groovy2.6'
