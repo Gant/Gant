@@ -1,6 +1,6 @@
 // -*- mode:groovy; coding:utf-8 -*-
 
-//  Gant — A Groovy way of scripting Ant tasks.
+//  Gant – A Groovy way of scripting Ant tasks.
 //
 //  Copyright © 2008–2017  Russel Winder <russel@winder.org.uk>
 //
@@ -18,7 +18,7 @@
 
 plugins {
   id 'com.jfrog.bintray' version '1.7.3'
-  id 'com.jfrog.artifactory' version '4.4.13'
+  id 'com.jfrog.artifactory' version '4.4.17'
 }
 
 import org.apache.tools.ant.filters.ReplaceTokens
@@ -56,8 +56,9 @@ final gantBundleVersion =  createVersionString true
 final groovyArtefactName = 'groovy-all'
 
 ext.groovyVersions = [
-    '2.4': '2.4.10',
-    '2.5': '2.5.0-alpha-1',
+    '2.4': '2.4.12',
+    '2.5': '2.5.0-beta-1',
+    '2.6': '2.6.0-alpha-1',
 ]
 
 //  One series of Groovy needs using for the standalone distribution. This version of Groovy will be packaged with
@@ -267,7 +268,8 @@ project(':gant'){
   final installDirectory = '/usr/share/gant'
   try { installDirectory = evaluate('"' + gant_installPath + '"') }
   catch (MissingPropertyException mpe) { /* Intentionally left blank. */ }
-  task install(dependsOn: 'assemble', description: "Install Gant (compiled against Groovy ${groovyVersion}) to ${installDirectory}.") << {
+  task install(dependsOn: 'assemble', description: "Install Gant (compiled against Groovy ${groovyVersion}) to ${installDirectory}.")
+  install.doLast{
     delete installDirectory
     final installBinDirectory = installDirectory + '/bin'
     final scriptsDirectory = '../scripts'
@@ -488,24 +490,29 @@ bintray {
         name = 'gant'
         desc = project.description
         labels = ['groovy','gant']
-        publicDownloadNumbers = true
+        publicDownloadNumbers = false
         websiteUrl = 'http://gant.github.io'
         issueTrackerUrl = 'https://github.com/Gant/Gant/issues'
         vcsUrl = 'https://github.com/Gant/Gant.git'
         licenses = ['Apache-2.0']
         version {
             name = project.version
-            vcsTag = "v${project.version}"
+            vcsTag = project.version
+            released = new Date()
+            /*
             gpg {
                 sign = true
                 passphrase = project.properties.gant_bintrayGpgPassphrase
             }
+           */
+           /*
             mavenCentralSync {
                 sync = true //Optional (true by default). Determines whether to sync the version to Maven Central.
                 user = 'userToken' //OSS user token
                 password = 'paasword' //OSS user password
                 close = '1' //Optional property. By default the staging repository is closed and artifacts are released to Maven Central. You can optionally turn this behaviour off (by puting 0 as value) and release the version manually.
             }
+            */
         }
     }
 }
@@ -536,11 +543,8 @@ artifactoryPublish {
 
 task ciBuild(description: 'Run just the builds that use Groovy from the Maven repository.  Used mainly on CI servers.', dependsOn: ciBuildTasks)
 
-task wrapper(type: Wrapper) {
-  gradleVersion = '3.5'
-}
-
-task clobber(description: 'Do a really detailed clean.') << {
+task clobber(description: 'Do a really detailed clean.')
+clobber.doLast{
   forEachProject{item -> delete item}
   delete buildDir, 'texput.log'
 }
