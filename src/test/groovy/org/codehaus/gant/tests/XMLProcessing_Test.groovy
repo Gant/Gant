@@ -1,6 +1,6 @@
-//  Gant -- A Groovy way of scripting Ant tasks.
+//  Gant – A Groovy way of scripting Ant tasks.
 //
-//  Copyright © 2008–2012, 2013  Russel Winder
+//  Copyright © 2008–2012, 2013, 2018  Russel Winder
 //
 //  Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in
 //  compliance with the License. You may obtain a copy of the License at
@@ -23,8 +23,9 @@ package org.codehaus.gant.tests
  *  @author Russel Winder <russel@winder.org.uk>
  */
 final class XMLProcessing_Test extends GantTestCase {
-  public void testMikeNooneyXMLExampleToEnsureNoProblemWithXMLJars() {
-    def xmlScript = '''<Document>
+
+	public void testMikeNooneyXMLExampleToEnsureNoProblemWithXMLJars() {
+		def xmlScript = '''<Document>
     <Sentence code="S0001" format="Document.Title"/>
     <Sentence code="S0002" format="Section.Title"/>
     <Sentence code="S0003" format="Subsection.Title"/>
@@ -34,8 +35,8 @@ final class XMLProcessing_Test extends GantTestCase {
     <Sentence code="S0007" format="Sentence"/>
 </Document>
 '''
-    def targetName = 'testing'
-    script = """
+		def targetName = 'testing'
+		script = """
 target(${targetName}: '') {
   def testClass = new GroovyShell(binding).evaluate('''
 class Test {
@@ -51,7 +52,8 @@ return Test
   testClass.test()
 }
 """
-    assertEquals(0, processCmdLineTargets(targetName))
-    assertEquals(resultString(targetName, 'root element:<?xml version="1.0" encoding="UTF-8"?>' + xmlScript + '\n'), output)
-  }
+		assertEquals(0, processCmdLineTargets(targetName))
+		assertEquals(resultString(targetName, 'root element:<?xml version="1.0" encoding="UTF-8"?>' + xmlScript.replaceAll('\n    ', '\n      \n  ').replace('</Document>', '  \n</Document>\n')), output)
+	}
+
 }
