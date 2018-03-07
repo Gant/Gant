@@ -59,7 +59,7 @@ includeTargets ** gant.targets.Maven * [
 	javaCompileProperties: [ source: '${versionNumber}', target: '${versionNumber}', debug: 'false' ],
 ]
 """
-		processCmdLineTargets(targetName) // assertEquals(0, processCmdLineTargets(targetName))
+		assertEquals(0, processCmdLineTargets(targetName))
 		assertEquals(resultString(targetName, resultString('initialize', '') + """    [mkdir] Created dir: ${compiledClassesDirectory.absolutePath}
     [javac] : warning: 'includeantruntime' was not set, defaulting to build.sysclasspath=last; set to false for repeatable builds
     [javac] Compiling 1 source file to ${compiledClassesDirectory.absolutePath}
