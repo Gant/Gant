@@ -379,7 +379,7 @@ forEachDistributionVersion{projectName->
 	// Due to weird effective scoping of projects -- caused by cloning of bindings for projects? -- need to
 	// do the following to get the above tasks into the list defined by the main script.
 	distributionTasks += project(projectName).distributionTasks
-	ciBuildTasks << projectName + ':build'
+	ciBuildTasks << projectName + ':test'
 }
 
 // =====================================================================
