@@ -1,20 +1,20 @@
 // -*- mode:groovy; coding:utf-8 -*-
 
-//	Gant – A Groovy way of scripting Ant tasks.
+// Gant – A Groovy way of scripting Ant tasks.
 //
-//	Copyright © 2008–2018  Russel Winder <russel@winder.org.uk>
+// Copyright © 2008–2018  Russel Winder <russel@winder.org.uk>
 //
-//	Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in
-//	compliance with the License. You may obtain a copy of the License at
+// Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in
+// compliance with the License. You may obtain a copy of the License at
 //
-//	  http://www.apache.org/licenses/LICENSE-2.0
+//    http://www.apache.org/licenses/LICENSE-2.0
 //
-//	Unless required by applicable law or agreed to in writing, software distributed under the License is
-//	distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or
-//	implied. See the License for the specific language governing permissions and limitations under the
-//	License.
+// Unless required by applicable law or agreed to in writing, software distributed under the License is
+// distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or
+// implied. See the License for the specific language governing permissions and limitations under the
+// License.
 //
-//	Author: Russel Winder <russel@winder.org.uk>
+// Author: Russel Winder <russel@winder.org.uk>
 
 plugins {
 	id 'com.jfrog.bintray' version '1.8.0'
@@ -27,20 +27,20 @@ ext.artifact = 'gant'
 ext.mavenNameExtension = '_groovy'
 
 /*
- *	As discussed on the Groovy developer mail list (thanks to Roshan Dawrani and Paul King), the grammar for
- *	OSGi bundle numbers is fixed and slightly different to the expected grammar for version numbers and Maven
- *	artefacts:
+ * As discussed on the Groovy developer mail list (thanks to Roshan Dawrani and Paul King), the grammar for
+ * OSGi bundle numbers is fixed and slightly different to the expected grammar for version numbers and Maven
+ * artefacts:
  *
- *	 version::= major('.'minor('.'micro('.'qualifier)?)?)?
- *	 major::= digit+
- *	 minor::= digit+
- *	 micro::= digit+
- *	 qualifier::= (alpha|digit|'_'|'-')+
- *	 digit::= [0..9]
- *	 alpha::= [a..zA..Z]
+ *    version::= major('.'minor('.'micro('.'qualifier)?)?)?
+ *    major::= digit+
+ *    minor::= digit+
+ *    micro::= digit+
+ *    qualifier::= (alpha|digit|'_'|'-')+
+ *    digit::= [0..9]
+ *    alpha::= [a..zA..Z]
  *
- *	The core difference is that for OSGi bundle numbers the qualifier is separated by a full stop where in
- *	other situations a minus is used.
+ * The core difference is that for OSGi bundle numbers the qualifier is separated by a full stop where in
+ * other situations a minus is used.
  */
 final gantVersionBase = '1.10.0'
 final isPrereleaseSnapshot = false // true // false
@@ -51,7 +51,7 @@ final gantVersion = createVersionString false
 final gantPrefix = artifact + '-' + gantVersion
 final gantBundleVersion =  createVersionString true
 
-//	Nominate for each supported series of Groovy, exactly which version to use.
+// Nominate for each supported series of Groovy, exactly which version to use.
 
 ext.groovyVersions = [
 	'2.4': '2.4.14',
@@ -60,17 +60,17 @@ ext.groovyVersions = [
 	'3.0': '3.0.0-alpha-1'
 ]
 
-//	One series of Groovy needs using for the standalone distribution. This version of Groovy will be packaged with
-//	the "standalone" distribution of Gant.	It will generally be the latest widely available released version of Groovy.
+// One series of Groovy needs using for the standalone distribution. This version of Groovy will be packaged with
+// the "standalone" distribution of Gant. It will generally be the latest widely available released version of Groovy.
 
 final groovyStandaloneSeries = '2.4'
 
-//	Organize the build using subprojects.  There is a subproject gant which is for the build using the
-//	locally installed Groovy and there is one for each version of Groovy obtained from the Maven repository
-//	that is supported.	These functions ease doing the iteration over all the subprojects.	NB Gradle
-//	requires the directories for each of the subprojects to exist.	There is an assumption that each
-//	subproject has its own source, etc.	 This build slightly perverts the general approach by using exactly
-//	the same source for each subproject, the only difference is the version of Groovy used for compilation.
+// Organize the build using subprojects. There is a subproject gant which is for the build using the
+// locally installed Groovy and there is one for each version of Groovy obtained from the Maven repository
+// that is supported. These functions ease doing the iteration over all the subprojects. NB Gradle
+// requires the directories for each of the subprojects to exist. There is an assumption that each
+// subproject has its own source, etc. This build slightly perverts the general approach by using exactly
+// the same source for each subproject, the only difference is the version of Groovy used for compilation.
 
 def forEachDistributionVersion(Closure c) {
 	groovyVersions.keySet().each{String s -> c(artifact + mavenNameExtension + s) }
@@ -85,18 +85,18 @@ forEachProject{item ->	if (! new File(item).isDirectory()) { mkdir item }}
 
 ext.distributionTasks = []
 
-//	In creating distributions which include jar files for the source, javadoc, and groovydoc, it is
-//	imperative to ensure that they do not get located into the library directory for jars containing
-//	compiled code for execution: it is critical to avoid getting the source, javadoc, and groovydoc jars on
-//	the classpath.	Rather than build with defaults and sift when creating the distributions, cause the
-//	source, javadoc, and groovydoc jars to be located in a different place.	 This is the name of that place
-//	which will be a peer to the executables jars directory.
+// In creating distributions which include jar files for the source, javadoc, and groovydoc, it is
+// imperative to ensure that they do not get located into the library directory for jars containing
+// compiled code for execution: it is critical to avoid getting the source, javadoc, and groovydoc jars on
+// the classpath. Rather than build with defaults and sift when creating the distributions, cause the
+// source, javadoc, and groovydoc jars to be located in a different place. This is the name of that place
+// which will be a peer to the executables jars directory.
 
 final docsJarsDirName = 'docsJars'
 
 // =====================================================================
 //
-//	Specifications of things for all the (sub)projects.
+// Specifications of things for all the (sub)projects.
 
 allprojects{
 	group =	 'org.codehaus.gant'
@@ -115,8 +115,8 @@ subprojects{
 	targetCompatibility = 7
 	configurations{deployJars}
 	sourceSets{
-		//	NB All the subprojects are actually using the same source code and this is in a different place so
-		//	the location of the source must be specified explicitly.
+		// NB All the subprojects are actually using the same source code and this is in a different place so
+		// the location of the source must be specified explicitly.
 		main{groovy{srcDir '../src/main/groovy'}}
 		test{groovy{srcDir '../src/test/groovy'}}
 		integTest{groovy{srcDir '../src/integTest/groovy'}}
@@ -160,11 +160,11 @@ subprojects{
 	compileGroovy.options.compilerArgs = ['-Xlint']
 	[compileGroovy, compileTestGroovy]*.options*.encoding = 'UTF-8'
 	test{
-		//	The Gant Ant task test has to know the absolute locations of certain files.	 Because Gradle uses a
-		//	multi-project build there is an extra level complexity in paths compared to Eclipse, or IntelliJ
-		//	IDEA builds because the multi-project builds happen in subdirectories.
-		//	org.codehaus.gant.ant.tests.Gant_Test has a decision to make, it needs to know whether this is a
-		//	Gradle build or not.  Use a property.
+		// The Gant Ant task test has to know the absolute locations of certain files. Because Gradle uses a
+		// multi-project build there is an extra level complexity in paths compared to Eclipse, or IntelliJ
+		// IDEA builds because the multi-project builds happen in subdirectories.
+		// org.codehaus.gant.ant.tests.Gant_Test has a decision to make, it needs to know whether this is a
+		// Gradle build or not. Use a property.
 		systemProperties['buildFrameworkIdentifier'] = 'Gradle'
 	}
 	clean.doLast{ delete 'texput.log', 'target_forMavenTest' }
@@ -228,12 +228,12 @@ subprojects{
 
 // =====================================================================
 //
-//	Use the locally installed Groovy or the standalone version from the Maven repository.  This subproject
-//	is used for local installation and also for generating the documentation.
+// Use the locally installed Groovy or the standalone version from the Maven repository.  This subproject
+// is used for local installation and also for generating the documentation.
 
 project(':gant'){
-	//	If the user has GROOVY_HOME set then use that Groovy rather than the one specified in the properties
-	//	files.	However we have to fiddle to find the version number.
+	// If the user has GROOVY_HOME set then use that Groovy rather than the one specified in the properties
+	// files. However we have to fiddle to find the version number.
 	final groovyHome = System.getenv().'GROOVY_HOME'
 	final groovyLib = null
 	def groovyVersion
@@ -298,7 +298,7 @@ project(':gant'){
 
 // =====================================================================
 //
-//	The subprojects compiling the source against specific Groovy version from the Maven repository.
+// The subprojects compiling the source against specific Groovy version from the Maven repository.
 
 final ciBuildTasks = []
 
@@ -376,15 +376,15 @@ forEachDistributionVersion{projectName->
 		}
 		distributionTasks += [binTgz, binZip]
 	}
-	//	Due to weird effective scoping of projects -- caused by cloning of bindings for projects? -- need to
-	//	do the following to get the above tasks into the list defined by the main script.
+	// Due to weird effective scoping of projects -- caused by cloning of bindings for projects? -- need to
+	// do the following to get the above tasks into the list defined by the main script.
 	distributionTasks += project(projectName).distributionTasks
 	ciBuildTasks << projectName + ':build'
 }
 
 // =====================================================================
 //
-//	Create the standalone distribution.
+// Create the standalone distribution.
 
 final projectNameForStandalone = 'gant_groovy' + groovyStandaloneSeries
 
@@ -426,7 +426,7 @@ distributionTasks += [standaloneBinTgz, standaloneBinZip]
 
 // =====================================================================
 //
-//	Create the documentation distribution.
+// Create the documentation distribution.
 
 task docTgz(type: Tar, dependsOn: [':gant:javadoc', ':gant:groovydoc'], description: 'Create a tarball of the documentation') {
 	baseName = artifact + '_doc'
@@ -447,7 +447,7 @@ distributionTasks += [docTgz, docZip]
 
 // =====================================================================
 //
-//	Create the source distribution.
+// Create the source distribution.
 
 final srcContent = [
 	'artwork/', 'documentation/', 'examples/', 'packaging', 'scripts/', 'src/',
@@ -480,7 +480,7 @@ distributionTasks += [srcTgz, srcZip]
 
 // =====================================================================
 //
-//	Do a complete release.
+// Do a complete release.
 
 task prepareRelease(dependsOn: distributionTasks, description: 'Prepare all the bits for the release.')
 
@@ -545,7 +545,7 @@ artifactoryPublish {
 
 // =====================================================================
 //
-//	Odds and sods.
+// Odds and sods.
 
 task ciBuild(description: 'Run just the builds that use Groovy from the Maven repository.  Used mainly on CI servers.', dependsOn: ciBuildTasks)
 
