@@ -1,59 +1,56 @@
-<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
 <html>
-  <head>
-    <title>Gant</title>
-  </head>
-  <body>
-    <p>
-      Gant is a Groovy-based framework for scripting Ant tasks.
-    </p>
-    <p>
-      Gant is a lightweight wrapper around Groovy's <code>AntBuilder</code> that allows Ant tasks to be
-      scripted using Groovy.  This means it can be used as a replacement for Ant:  instead of specifying
-      things using XML, they are specified with Groovy.
-    </p>
-    <p>
-      A Gant file is a specification of a set of targets plus other bits and pieces of Groovy code.  Thus a
-      Gant specification is of a set of targets just as an Ant specification is.  Each target creates a
-      closure in the binding so that it can be called as a function from other targets.  This means that
-      dependencies between targets are programmed as function calls.
-    </p>
-    <p>
-      Gant has a number of predefined objects, for example <code>ant</code>, <code>includeTargets</code>
-      and <code>includeTool</code>. <code>ant</code> refers to a pre-constructed <code>GantBuilder</code>
-      object. <code>includeTargets</code> is the object that controls the inclusion of ready-made targets,
-      for example <code>gant.targets.Clean</code>.  <code>includeTool</code> is the object that controls the
-      inclusion of ready-made tools, for example <code>gant.tools.Execute</code>.
-    </p>
-    <p>
-      Here is an example Gant script:
-    </p>
-    <blockquote>
-      <pre>
-includeTargets << gant.targets.Clean
-cleanPattern << ['**/*~',  '**/*.bak']
-cleanDirectory << 'build'
+	<body>
+			Gant is a Groovy-based framework for scripting Ant tasks.
+		<p>
+			Gant is a lightweight wrapper around Groovy's <code>AntBuilder</code> that allows Ant tasks to be
+			scripted using Groovy.  This means it can be used as a replacement for Ant:  instead of specifying
+			things using XML, they are specified with Groovy.
+		</p>
+		<p>
+			A Gant file is a specification of a set of targets plus other bits and pieces of Groovy code.  Thus a
+			Gant specification is of a set of targets just as an Ant specification is.  Each target creates a
+			closure in the binding so that it can be called as a function from other targets.  This means that
+			dependencies between targets are programmed as function calls.
+		</p>
+		<p>
+			Gant has a number of predefined objects, for example <code>ant</code>, <code>includeTargets</code>
+			and <code>includeTool</code>. <code>ant</code> refers to a pre-constructed <code>GantBuilder</code>
+			object. <code>includeTargets</code> is the object that controls the inclusion of ready-made targets,
+			for example <code>gant.targets.Clean</code>.  <code>includeTool</code> is the object that controls the
+			inclusion of ready-made tools, for example <code>gant.tools.Execute</code>.
+		</p>
+		<p>
+			Here is an example Gant script:
+		</p>
+		<blockquote>
+			<pre>
+includeTargets %lt;%lt; gant.targets.Clean
+cleanPattern %lt;%lt; ['**/*~',  '**/*.bak']
+cleanDirectory %lt;%lt; 'build'
 
 target('default': 'The default target.') {
-  println 'Default'
-  depends clean
-  echo message: 'A default message from Ant.'
-  otherStuff()
+	println 'Default'
+	depends clean
+	echo message: 'A default message from Ant.'
+	otherStuff()
 }
 
 target(otherStuff: 'Other stuff') {
-  println 'OtherStuff'
-  echo message: 'Another message from Ant.'
-  clean()
+	println 'OtherStuff'
+	echo message: 'Another message from Ant.'
+	clean()
 }
-      </pre>
-    </blockquote>
-    <p>
-      The function <code>depends</code> takes a list of targets and 'executes' them if and only if they have
-      not previously been executed.  This means that dependencies can be handled far more flexibly than they
-      can in Ant, leading to simpler target structures.
-    <hr>
-    <address><a href="mailto:russel@winder.org.uk">Russel Winder</a></address>
-    Last modified: 2010-04-05T08:30+01:00
-  </body>
+			</pre>
+		</blockquote>
+		<p>
+			The function <code>depends</code> takes a list of targets and 'executes' them if and only if they have
+			not previously been executed.  This means that dependencies can be handled far more flexibly than they
+			can in Ant, leading to simpler target structures.
+		</p>
+		<hr>
+		<address><a href="mailto:russel@winder.org.uk">Russel Winder</a></address>
+		<p>
+			Last modified: 2010-04-05T08:30+01:00
+		</p>
+	</body>
 </html>

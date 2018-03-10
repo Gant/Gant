@@ -4,6 +4,7 @@ jdk:
   # - openjdk9
   - oraclejdk9
   - openjdk8
+  - oraclejdk9
 
 env:
   - TARGET=gant_groovy2.4:test
