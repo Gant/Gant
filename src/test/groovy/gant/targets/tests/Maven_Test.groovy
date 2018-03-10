@@ -51,7 +51,13 @@ includeTargets << gant.targets.Maven
 		// Java 7 introduced a new warning message about setting bootclasspath when setting a source level
 		// lower than the current Java version.  Circumvent this for all cases by enforcing not using the
 		// default, but the same version as the running version.
-		final versionNumber = System.getProperty('java.version').split('\\.')[0]
+		//
+		// NB before JDK9 the property was 1.W.X_Y, from JDK9 it is W.X.Y.Z.
+		final javaVersionNumber = System.getProperty('java.version').split('\\.')
+		def versionNumber = javaVersionNumber[0]
+		if (versionNumber == '1') {
+			versionNumber = javaVersionNumber[1]
+		}
 		script = """
 includeTargets ** gant.targets.Maven * [
 	sourcePath: '${sourceDirectory.path}',
