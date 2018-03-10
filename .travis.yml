@@ -1,2 +1,15 @@
 language: groovy
-script: ./ciBuild
+
+jdk:
+  - openjdk9
+  - openjdk8
+  - openjdk7
+
+env:
+  - TARGET=gant_groovy2.4:test
+  - TARGET=gant_groovy2.5:test
+  - TARGET=gant_groovy2.6:test
+  - TARGET=gant_groovy3.0:test
+
+script:
+  - ./gradlew $TARGET

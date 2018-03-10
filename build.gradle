@@ -300,8 +300,6 @@ project(':gant'){
 //
 // The subprojects compiling the source against specific Groovy version from the Maven repository.
 
-final ciBuildTasks = []
-
 final pomSpecification = {
 	project{
 		name 'Gant'
@@ -379,7 +377,6 @@ forEachDistributionVersion{projectName->
 	// Due to weird effective scoping of projects -- caused by cloning of bindings for projects? -- need to
 	// do the following to get the above tasks into the list defined by the main script.
 	distributionTasks += project(projectName).distributionTasks
-	ciBuildTasks << projectName + ':test'
 }
 
 // =====================================================================
@@ -452,8 +449,6 @@ distributionTasks += [docTgz, docZip]
 final srcContent = [
 	'artwork/', 'documentation/', 'examples/', 'packaging', 'scripts/', 'src/',
 	'build.gradle', 'settings.gradle', 'gradlew','gradlew.bat', 'wrapper/',
-	'ciBuild',
-	'Gant.ipr', 'Gant.iws',
 	'.classpath', '.project', '.settings/',
 	'LICENCE.txt',
 	'README_Install.txt',
@@ -546,8 +541,6 @@ artifactoryPublish {
 // =====================================================================
 //
 // Odds and sods.
-
-task ciBuild(description: 'Run just the builds that use Groovy from the Maven repository.  Used mainly on CI servers.', dependsOn: ciBuildTasks)
 
 task clobber(description: 'Do a really detailed clean.')
 clobber.doLast{
