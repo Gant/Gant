@@ -53,7 +53,12 @@ return Test
 }
 """
 		assertEquals(0, processCmdLineTargets(targetName))
-		assertEquals(resultString(targetName, 'root element:<?xml version="1.0" encoding="UTF-8"?>' + xmlScript.replaceAll('\n    ', '\n      \n  ').replace('</Document>', '  \n</Document>\n')), output)
+		final javaVersionNumber = System.getProperty('java.version').split('\\.')
+		if (javaVersionNumber[0] == '9') {
+			assertEquals(resultString(targetName, 'root element:<?xml version="1.0" encoding="UTF-8"?>' + xmlScript.replaceAll('\n    ', '\n      \n  ').replace('</Document>', '  \n</Document>\n')), output)
+		} else {
+			assertEquals(resultString(targetName, 'root element:<?xml version="1.0" encoding="UTF-8"?>' + xmlScript + '\n'), output)
+		}
 	}
 
 }
