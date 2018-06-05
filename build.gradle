@@ -18,7 +18,7 @@
 
 plugins {
 	id 'com.jfrog.bintray' version '1.8.0'
-	id 'com.jfrog.artifactory' version '4.7.1'
+	id 'com.jfrog.artifactory' version '4.7.3'
 }
 
 import org.apache.tools.ant.filters.ReplaceTokens
@@ -55,15 +55,15 @@ final gantBundleVersion =  createVersionString true
 
 ext.groovyVersions = [
 	'2.4': '2.4.15',
-	'2.5': '2.5.0-rc-3',
+	'2.5': '2.5.0',
 	'2.6': '2.6.0-alpha-3',
-	'3.0': '3.0.0-alpha-1'
+	'3.0': '3.0.0-alpha-2'
 ]
 
 // One series of Groovy needs using for the standalone distribution. This version of Groovy will be packaged with
 // the "standalone" distribution of Gant. It will generally be the latest widely available released version of Groovy.
 
-final groovyStandaloneSeries = '2.4'
+final groovyStandaloneSeries = '2.5'
 
 // Organize the build using subprojects. There is a subproject gant which is for the build using the
 // locally installed Groovy and there is one for each version of Groovy obtained from the Maven repository
@@ -152,10 +152,10 @@ subprojects{
 	dependencies{
 		compile(
 			'commons-cli:commons-cli:1.4',
-			'org.apache.ant:ant:1.10.1'
+			'org.apache.ant:ant:1.10.3'
 		)
 		testCompile 'junit:junit:4.12'
-		testRuntime 'org.apache.ivy:ivy:2.4.0'
+		testRuntime 'org.apache.ivy:ivy:2.5.0-rc1'
 	}
 	compileGroovy.options.compilerArgs = ['-Xlint']
 	[compileGroovy, compileTestGroovy]*.options*.encoding = 'UTF-8'
