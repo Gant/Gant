@@ -1,6 +1,6 @@
 //  Gant -- A Groovy way of scripting Ant tasks.
 //
-//  Copyright © 2006–2011, 2013  Russel Winder
+//  Copyright © 2006–2011, 2013, 2018  Russel Winder
 //
 //  Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in
 //  compliance with the License. You may obtain a copy of the License at
@@ -16,7 +16,7 @@ package gant
 
 import java.lang.reflect.InvocationTargetException
 
-import org.apache.commons.cli.GnuParser
+import groovy.cli.picocli.CliBuilder
 
 import org.apache.tools.ant.BuildListener
 import org.apache.tools.ant.Project
@@ -441,28 +441,7 @@ final class Gant {
   public Integer processArgs(String[] args) {
     final rootLoader = binding.classLoader.rootLoader
     def buildSource = new File("build.gant")
-    //
-    //  Commons CLI 1.0 and 1.1 are broken.  1.0 has one set of ideas about multiple args and is broken.
-    //  1.1 has a different set of ideas about multiple args and is broken. 1.2 appears to be actually
-    //  fixed.  Multiple args are handled in the 1.0 semantics and are not broken:-)
-    //
-    //  1.0 PosixParser silently absorbs unknown single letter options.
-    //
-    //  1.0 cannot deal with options having only a long form as the access mechanism that works only works
-    //  for short form.  This is fixed in 1.1 and 1.2.
-    //
-    //  The PosixParser does not handle incorrectly formed options at all well.  Also the standard printout
-    //  actually assumes GnuParser form.  So although PosixParser is the default for CliBuilder, we actually
-    //  want GnuParser.
-    //
-    //  We can either specify the parser explicitly or simply say "do not use the PosixParser".  The latter
-    //  does of course require knowing that setting posix to false causes the GnuParser to be used.  This
-    //  information is only gleanable by reading the source code.  Given that the BasicParser is more or
-    //  less totally useless and there are only three parsers available, there is not a big issue here.
-    //  However, be explicit for comprehensibility.
-    //
-    //def cli = new CliBuilder(usage: 'gant [option]* [target]*', posix: false)
-    def cli = new CliBuilder(usage: 'gant [option]* [target]*', parser: new GnuParser())
+    def cli = new CliBuilder(usage: 'gant [option]* [target]*')
     cli.c(longOpt: 'usecache', 'Whether to cache the generated class and perform modified checks on the file before re-compilation.')
     cli.d(longOpt: 'debug', 'Print debug levels of information.')
     cli.f(longOpt: 'file', args: 1, argName: 'build-file', 'Use the named build file instead of the default, build.gant.')
