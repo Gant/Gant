@@ -1,9 +1,9 @@
 1.10.0
 ------
 
-Removed all but newly added Groovy 2.4 series.
+Require Groovy 2.5.0 or later.
 
-Require at least Java 7.
+Require at least Java 8.
 
 Various small fixes.
 
