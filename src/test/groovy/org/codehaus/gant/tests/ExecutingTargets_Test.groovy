@@ -55,10 +55,10 @@ target(${somethingElse}: '') { }
 
  //  GANT-44 asks for targets to have access to the command line target list so that it can be processed in targets.
 
-  void testTargetsListIsAccessbileAnChangeable() {
+  void testTargetsListIsAccessibleAndChangeable() {
     script = """
 target(${targetName}: '') {
-  assert targets.class == ArrayList
+  assert targets instanceof List
   assert targets.size() == 3
   assert targets[0] == 'testing'
   assert targets[1] == 'one'
