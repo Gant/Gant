@@ -54,7 +54,7 @@ final gantBundleVersion =  createVersionString true
 // Nominate for each supported series of Groovy, exactly which version to use.
 
 ext.groovyVersions = [
-	'2.5': '2.5.1',
+	'2.5': '2.5.2',
 	'3.0': '3.0.0-alpha-3'
 ]
 
