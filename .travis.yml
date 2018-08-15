@@ -1,16 +1,18 @@
 language: groovy
 
 jdk:
-  # - openjdk9
-  - oraclejdk9
+  - oraclejdk8
   - openjdk8
   - oraclejdk9
+  - openjdk9
+  - oraclejdk10
+  - openjdk10
+  - oraclejdk11
+  - openjdk11
 
 env:
-  - TARGET=gant_groovy2.4:test
   - TARGET=gant_groovy2.5:test
-  - TARGET=gant_groovy2.6:test
-  # - TARGET=gant_groovy3.0:test
+  - TARGET=gant_groovy3.0:test
 
 script:
   - ./gradlew $TARGET
